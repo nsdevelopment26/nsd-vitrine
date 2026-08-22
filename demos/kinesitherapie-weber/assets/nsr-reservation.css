@@ -1,0 +1,582 @@
+/* ============================================================================
+   NS Development — Module de réservation en ligne
+   Feuille de style de base, identique chez tous les clients. Version 1.0
+   ----------------------------------------------------------------------------
+   Ce fichier ne se modifie pas pour un client. L'adaptation à sa charte se
+   fait en redéfinissant quelques variables dans son propre CSS, après ce
+   fichier. Exemple complet dans exemples/theme-exemple.css.
+
+   Les valeurs par défaut ci-dessous sont volontairement neutres : le module
+   reste lisible et propre même si le client n'a rien personnalisé.
+   ============================================================================ */
+
+.nsr {
+  /* --- couleurs ---------------------------------------------------------- */
+  --nsr-fond:          #ffffff;   /* le bloc lui-même */
+  --nsr-fond-2:        #f5f4f1;   /* les zones en creux : jours, champs */
+  --nsr-fond-3:        #ecebe7;   /* bandeau d'étapes, récapitulatif */
+  --nsr-bordure:       #e2e0da;
+  --nsr-texte:         #2b2926;
+  --nsr-texte-doux:    #6f6a63;
+  --nsr-accent:        #2f6bff;   /* boutons, créneau choisi */
+  --nsr-accent-texte:  #ffffff;
+  --nsr-accent-doux:   rgba(47, 107, 255, .12);
+  --nsr-ok:            #4b8b5c;
+  --nsr-erreur:        #b4554c;
+  --nsr-erreur-fond:   #fdf3f1;
+
+  /* --- formes ------------------------------------------------------------ */
+  --nsr-radius:        14px;
+  --nsr-radius-lg:     24px;
+  --nsr-radius-sm:     9px;
+  --nsr-ombre:         0 18px 50px -28px rgba(20, 18, 16, .3);
+
+  /* --- typographie ------------------------------------------------------- */
+  --nsr-titre-font:    inherit;
+  --nsr-titre-poids:   700;
+
+  /* --- grille ------------------------------------------------------------ */
+  --nsr-cols:          6;
+  --nsr-jour-mini:     104px;   /* largeur minimale d'une colonne de jour */
+
+  background: var(--nsr-fond);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: var(--nsr-radius-lg);
+  box-shadow: var(--nsr-ombre);
+  overflow: hidden;
+  color: var(--nsr-texte-doux);
+}
+
+.nsr *, .nsr *::before, .nsr *::after { box-sizing: border-box; }
+
+
+/* ============================================================================
+   Le fil des étapes
+   ============================================================================ */
+.nsr__steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--nsr-fond-3);
+  border-bottom: 1px solid var(--nsr-bordure);
+}
+.nsr__step {
+  padding: 1rem .7rem;
+  text-align: center;
+  font-size: .7rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--nsr-texte-doux);
+  opacity: .7;
+  transition: color .35s, background .35s, opacity .35s;
+}
+.nsr__step.is-active { color: var(--nsr-accent); background: var(--nsr-fond); opacity: 1; }
+.nsr__step.is-done   { color: var(--nsr-ok); opacity: 1; }
+.nsr__step em {
+  display: block;
+  font-style: normal;
+  font-family: var(--nsr-titre-font);
+  font-size: 1.2rem;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-bottom: .18rem;
+}
+
+.nsr__body { padding: clamp(1.3rem, 4vw, 2.5rem); }
+
+.nsr__panel { display: none; }
+.nsr__panel.is-on { display: block; animation: nsr-monte .5s cubic-bezier(.22,.7,.2,1); }
+@keyframes nsr-monte { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.nsr h3 {
+  font-family: var(--nsr-titre-font);
+  font-weight: var(--nsr-titre-poids);
+  color: var(--nsr-texte);
+  margin: 0 0 .35rem;
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+.nsr__hint { font-size: .88rem; color: var(--nsr-texte-doux); margin: 0 0 1.5rem; }
+.nsr__opt  { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--nsr-texte-doux); }
+
+
+/* ============================================================================
+   Boutons
+   ============================================================================ */
+.nsr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: .82rem 1.6rem;
+  font: inherit;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .3s, color .3s, border-color .3s, transform .3s, opacity .3s;
+}
+.nsr-btn--go   { background: var(--nsr-accent); color: var(--nsr-accent-texte); }
+.nsr-btn--go:hover:not([disabled])   { transform: translateY(-2px); filter: brightness(.93); }
+.nsr-btn--back { background: transparent; border-color: var(--nsr-bordure); color: var(--nsr-texte); }
+.nsr-btn--back:hover { border-color: var(--nsr-accent); transform: translateY(-2px); }
+.nsr-btn[disabled] { opacity: .4; cursor: not-allowed; transform: none; }
+.nsr-btn.is-busy   { opacity: .7; cursor: progress; }
+
+.nsr__actions {
+  margin-top: 1.8rem;
+  display: flex;
+  justify-content: space-between;
+  gap: .9rem;
+  flex-wrap: wrap;
+}
+.nsr__actions--end    { justify-content: flex-end; }
+.nsr__actions--center { justify-content: center; }
+
+
+/* ============================================================================
+   Étape 1 — le choix de la prestation
+   ============================================================================ */
+.nsr__choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(228px, 1fr));
+  gap: .85rem;
+}
+.nsr__choice {
+  text-align: left;
+  background: var(--nsr-fond-2);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: var(--nsr-radius);
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  font: inherit;
+  color: var(--nsr-texte-doux);
+  transition: border-color .3s, background .3s, transform .3s, box-shadow .3s;
+}
+.nsr__choice:hover { border-color: var(--nsr-accent); transform: translateY(-3px); box-shadow: var(--nsr-ombre); }
+.nsr__choice.is-sel {
+  border-color: var(--nsr-accent);
+  background: var(--nsr-fond);
+  box-shadow: 0 0 0 3px var(--nsr-accent-doux);
+}
+.nsr__choice b {
+  display: block;
+  font-family: var(--nsr-titre-font);
+  font-weight: var(--nsr-titre-poids);
+  font-size: 1.06rem;
+  color: var(--nsr-texte);
+  margin-bottom: .22rem;
+}
+.nsr__choice > span { display: block; font-size: .8rem; line-height: 1.45; }
+.nsr__dur {
+  display: inline-block;
+  margin-top: .7rem;
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--nsr-accent);
+  background: var(--nsr-accent-doux);
+  padding: .26rem .62rem;
+  border-radius: 999px;
+}
+
+
+/* ============================================================================
+   Étape 2 — la semaine
+   ============================================================================ */
+.nsr__weeknav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.nsr__weeklabel {
+  font-family: var(--nsr-titre-font);
+  font-weight: var(--nsr-titre-poids);
+  font-size: 1.08rem;
+  color: var(--nsr-texte);
+  text-align: center;
+}
+.nsr__weeknav button {
+  background: var(--nsr-fond-2);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  cursor: pointer;
+  color: var(--nsr-texte);
+  display: grid;
+  place-items: center;
+  transition: background .28s, border-color .28s, transform .28s, opacity .28s;
+}
+.nsr__weeknav button svg { width: 16px; height: 16px; }
+.nsr__weeknav button:hover:not([disabled]) { border-color: var(--nsr-accent); transform: scale(1.07); }
+.nsr__weeknav button[disabled] { opacity: .3; cursor: not-allowed; }
+
+.nsr__week {
+  display: grid;
+  grid-template-columns: repeat(var(--nsr-cols, 6), minmax(var(--nsr-jour-mini), 1fr));
+  gap: .6rem;
+}
+.nsr__day {
+  background: var(--nsr-fond-2);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: var(--nsr-radius);
+  padding: .8rem .45rem;
+  min-height: 148px;
+}
+.nsr__day.is-today { border-color: var(--nsr-accent); background: var(--nsr-fond); }
+.nsr__dayhead {
+  text-align: center;
+  padding-bottom: .6rem;
+  margin-bottom: .65rem;
+  border-bottom: 1px solid var(--nsr-bordure);
+}
+.nsr__dow {
+  display: block;
+  font-size: .64rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--nsr-texte-doux);
+}
+.nsr__daynum {
+  display: block;
+  font-family: var(--nsr-titre-font);
+  font-weight: var(--nsr-titre-poids);
+  font-size: 1.4rem;
+  line-height: 1.15;
+  color: var(--nsr-texte);
+}
+.nsr__day.is-today .nsr__daynum { color: var(--nsr-accent); }
+
+.nsr__slots { display: flex; flex-direction: column; gap: .32rem; }
+.nsr__slot {
+  border: 1px solid var(--nsr-bordure);
+  background: var(--nsr-fond);
+  border-radius: var(--nsr-radius-sm);
+  padding: .42rem .2rem;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--nsr-texte);
+  cursor: pointer;
+  text-align: center;
+  transition: background .25s, color .25s, border-color .25s, transform .25s;
+}
+.nsr__slot:hover {
+  background: var(--nsr-accent);
+  border-color: var(--nsr-accent);
+  color: var(--nsr-accent-texte);
+  transform: translateY(-2px);
+}
+.nsr__slot.is-sel {
+  background: var(--nsr-accent);
+  border-color: var(--nsr-accent);
+  color: var(--nsr-accent-texte);
+}
+.nsr__slot.is-taken {
+  background: transparent;
+  border-style: dashed;
+  color: var(--nsr-texte-doux);
+  cursor: not-allowed;
+  opacity: .55;
+  text-decoration: line-through;
+  font-weight: 400;
+  transform: none;
+}
+.nsr__slot.is-taken:hover { background: transparent; color: var(--nsr-texte-doux); border-color: var(--nsr-bordure); transform: none; }
+
+.nsr__none {
+  font-size: .73rem;
+  color: var(--nsr-texte-doux);
+  text-align: center;
+  padding: .8rem .2rem;
+  line-height: 1.4;
+  margin: 0;
+}
+.nsr__void {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2.6rem 1rem;
+  font-size: .9rem;
+  color: var(--nsr-texte-doux);
+  background: var(--nsr-fond-2);
+  border-radius: var(--nsr-radius);
+  margin: 0;
+}
+.nsr__void--load { animation: nsr-pulse 1.3s ease-in-out infinite; }
+@keyframes nsr-pulse { 0%,100% { opacity: .45; } 50% { opacity: .9; } }
+
+.nsr__legend {
+  display: flex;
+  gap: 1.3rem;
+  flex-wrap: wrap;
+  margin-top: 1.1rem;
+  font-size: .76rem;
+  color: var(--nsr-texte-doux);
+}
+.nsr__legend i {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  vertical-align: -2px;
+  margin-right: .38rem;
+  border: 1px solid var(--nsr-bordure);
+}
+.nsr__legend i.is-free  { background: var(--nsr-fond); }
+.nsr__legend i.is-taken { background: transparent; border-style: dashed; }
+.nsr__legend i.is-mine  { background: var(--nsr-accent); border-color: var(--nsr-accent); }
+
+
+/* ============================================================================
+   Étape 3 — le formulaire
+   ============================================================================ */
+.nsr__recap {
+  background: var(--nsr-fond-3);
+  border-radius: var(--nsr-radius);
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  gap: .45rem;
+}
+.nsr__recap div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: .9rem;
+}
+.nsr__recap b { color: var(--nsr-texte); font-weight: 700; text-align: right; }
+
+.nsr__alert {
+  background: var(--nsr-erreur-fond);
+  border: 1px solid var(--nsr-erreur);
+  color: var(--nsr-erreur);
+  border-radius: var(--nsr-radius);
+  padding: .85rem 1.1rem;
+  font-size: .88rem;
+  margin-bottom: 1.2rem;
+}
+.nsr__alert[hidden] { display: none; }
+
+.nsr__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.nsr__field { display: flex; flex-direction: column; gap: .38rem; }
+.nsr__field--full { grid-column: 1 / -1; }
+.nsr__field > label {
+  font-size: .71rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--nsr-texte);
+}
+.nsr__field input:not([type="checkbox"]),
+.nsr__field textarea,
+.nsr__field select {
+  font: inherit;
+  font-size: .98rem;
+  color: var(--nsr-texte);
+  background: var(--nsr-fond-2);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: 12px;
+  padding: .78rem 1rem;
+  width: 100%;
+  transition: border-color .28s, background .28s, box-shadow .28s;
+}
+.nsr__field input:focus, .nsr__field textarea:focus, .nsr__field select:focus {
+  outline: none;
+  border-color: var(--nsr-accent);
+  background: var(--nsr-fond);
+  box-shadow: 0 0 0 4px var(--nsr-accent-doux);
+}
+.nsr__field textarea { resize: vertical; min-height: 92px; }
+
+.nsr__check {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  font-size: .85rem;
+  line-height: 1.5;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--nsr-texte-doux);
+  cursor: pointer;
+}
+.nsr__check input { width: 18px; height: 18px; margin-top: 2px; flex: none; accent-color: var(--nsr-accent); }
+
+.nsr__err { font-size: .74rem; color: var(--nsr-erreur); display: none; }
+.nsr__field.is-error .nsr__err { display: block; }
+.nsr__field.is-error input:not([type="checkbox"]),
+.nsr__field.is-error textarea {
+  border-color: var(--nsr-erreur);
+  background: var(--nsr-erreur-fond);
+}
+
+
+/* ============================================================================
+   Étape 4 — la confirmation
+   ============================================================================ */
+.nsr__done { text-align: center; padding: 1.2rem 0; }
+.nsr__mark {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 1.4rem;
+  border-radius: 50%;
+  background: var(--nsr-accent-doux);
+  color: var(--nsr-accent);
+  display: grid;
+  place-items: center;
+  animation: nsr-pop .55s cubic-bezier(.3,1.5,.5,1);
+}
+.nsr__mark svg { width: 32px; height: 32px; }
+@keyframes nsr-pop { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Une demande en attente de validation ne se célèbre pas comme un rendez-vous
+   confirmé : le patient doit comprendre qu'il n'a pas encore sa place. */
+.nsr__done.is-pending .nsr__mark { background: rgba(190,140,60,.14); color: #b0813c; }
+
+.nsr__done .nsr__recap { text-align: left; max-width: 430px; margin-inline: auto; }
+.nsr__after { font-size: .88rem; max-width: 48ch; margin: 0 auto; line-height: 1.6; }
+.nsr__after[hidden] { display: none; }
+
+
+/* ============================================================================
+   Panneau « côté professionnel » (maquettes de démonstration uniquement)
+   ----------------------------------------------------------------------------
+   Il vit hors du bloc .nsr, donc il redéclare les variables dont il a besoin
+   en héritant de celles du site quand elles existent.
+   ============================================================================ */
+.nsr-pro {
+  --nsr-fond:       #ffffff;
+  --nsr-bordure:    #e2e0da;
+  --nsr-texte:      #2b2926;
+  --nsr-texte-doux: #6f6a63;
+  --nsr-accent:     #2f6bff;
+  --nsr-erreur:     #b4554c;
+  --nsr-radius-lg:  24px;
+  --nsr-titre-font: inherit;
+  --nsr-titre-poids: 700;
+
+  margin-top: 2.4rem;
+  background: var(--nsr-fond);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: var(--nsr-radius-lg);
+  overflow: hidden;
+  color: var(--nsr-texte-doux);
+}
+.nsr-pro > summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.05rem 1.4rem;
+  background: var(--nsr-texte);
+  color: #f2efea;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.nsr-pro > summary::-webkit-details-marker { display: none; }
+.nsr-pro > summary h3 {
+  flex: 1;
+  margin: 0;
+  font-family: var(--nsr-titre-font);
+  font-weight: var(--nsr-titre-poids);
+  font-size: 1.02rem;
+  color: #ffffff;
+}
+.nsr-pro > summary svg { width: 20px; height: 20px; flex: none; }
+.nsr-pro__chev { transition: transform .35s; }
+.nsr-pro[open] .nsr-pro__chev { transform: rotate(180deg); }
+.nsr-pro__body { padding: 1.4rem; }
+.nsr-pro__body > p { font-size: .86rem; margin: 0 0 1.3rem; line-height: 1.6; }
+
+.nsr__prolist { list-style: none; margin: 0; padding: 0; }
+.nsr__prolist li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--nsr-bordure);
+  font-size: .9rem;
+}
+.nsr__prolist li:last-child { border-bottom: 0; }
+.nsr__prolist time {
+  font-family: var(--nsr-titre-font);
+  font-weight: var(--nsr-titre-poids);
+  font-size: .98rem;
+  color: var(--nsr-accent);
+  white-space: nowrap;
+}
+.nsr__prolist time span { display: block; }
+.nsr__prolist b { display: block; color: var(--nsr-texte); }
+.nsr__prolist div span { font-size: .8rem; color: var(--nsr-texte-doux); }
+.nsr__prolist button {
+  background: none;
+  border: 1px solid var(--nsr-bordure);
+  border-radius: 999px;
+  padding: .3rem .8rem;
+  font: inherit;
+  font-size: .7rem;
+  cursor: pointer;
+  color: var(--nsr-texte-doux);
+  transition: border-color .28s, color .28s;
+}
+.nsr__prolist button:hover { border-color: var(--nsr-erreur); color: var(--nsr-erreur); }
+
+
+/* ============================================================================
+   Petits écrans
+   ----------------------------------------------------------------------------
+   La semaine ne se replie pas en colonne : on garde la grille, qui défile
+   latéralement avec un accrochage. Un patient sur téléphone continue de voir
+   « lundi, mardi, mercredi » et pas une liste de 60 horaires à la file.
+   ============================================================================ */
+@media (max-width: 860px) {
+  .nsr__week {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(var(--nsr-jour-mini), 1fr);
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: .6rem;
+  }
+  .nsr__day { scroll-snap-align: start; }
+  .nsr__void { grid-column: auto; min-width: 100%; }
+}
+
+@media (max-width: 620px) {
+  .nsr__grid { grid-template-columns: 1fr; }
+  .nsr__steps { grid-template-columns: repeat(4, 1fr); }
+  .nsr__step { font-size: .58rem; letter-spacing: .06em; padding: .8rem .3rem; }
+  .nsr__step em { font-size: 1.05rem; }
+  .nsr__actions { flex-direction: column-reverse; }
+  .nsr__actions .nsr-btn { width: 100%; }
+  .nsr__recap div { flex-direction: column; gap: .1rem; }
+  .nsr__recap b { text-align: left; }
+}
+
+
+/* ============================================================================
+   Accessibilité
+   ============================================================================ */
+.nsr :focus-visible {
+  outline: 2px solid var(--nsr-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nsr__panel.is-on, .nsr__mark, .nsr__void--load { animation: none; }
+  .nsr *, .nsr *::before, .nsr *::after {
+    transition-duration: .01ms !important;
+  }
+}

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr" class="i18n-attente">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="rdv.titre">Prendre rendez-vous — Kinésithérapie Weber · Junglinster</title>
+<meta name="description" data-i18n-attr="content:rdv.meta" content="Réservez votre séance de kinésithérapie en ligne, 24h/24, chez Nora Weber à Junglinster. Agenda en direct : les créneaux déjà pris disparaissent immédiatement.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Prendre rendez-vous — Kinésithérapie Weber">
+<meta property="og:description" content="L'agenda réel du cabinet, en ligne, 24h/24.">
+<meta property="og:image" content="assets/img/seance-cabinet.jpg">
+<meta name="theme-color" content="#F7F3EC">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Manrope:wght@400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ns-motion.css">
+<link rel="stylesheet" href="assets/nsr-reservation.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var l=localStorage.getItem('ns.langue');if(!l||l==='fr')
+document.documentElement.classList.remove('i18n-attente');}catch(e){
+document.documentElement.classList.remove('i18n-attente');}
+setTimeout(function(){document.documentElement.classList.remove('i18n-attente');},1200);})();
+</script>
+</head>
+<body data-page-transition>
+
+<div class="demo-bar" data-i18n="bar.demo.rdv">
+  Exemple de site réalisé par <strong>NS Development</strong> — cabinet fictif ; les rendez-vous pris ici restent sur votre navigateur.
+</div>
+
+<nav class="nav" data-nav-solid>
+  <div class="wrap nav__in">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-mark.svg" alt="" width="42" height="42">
+      <span class="brand__txt"><span class="brand__name">Weber</span><span class="brand__sub" data-i18n="marque.sous">Kinésithérapie</span></span>
+    </a>
+    <button class="burger" data-i18n-attr="aria-label:nav.menu" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="nav__links">
+      <a href="index.html" data-i18n="nav.accueil">Accueil</a>
+      <a href="soins.html" data-i18n="nav.soins">Les soins</a>
+      <a href="cabinet.html" data-i18n="nav.cabinet">Le cabinet</a>
+      <a href="rendez-vous.html" aria-current="page" data-i18n="nav.rdv">Rendez-vous</a>
+      <a href="a-propos.html" data-i18n="nav.nora">Nora Weber</a>
+      <div class="lang-switch" role="group" data-i18n-attr="aria-label:nav.langue" aria-label="Choix de la langue">
+        <button type="button" data-langue-choix="fr" lang="fr" title="Français">FR</button>
+        <button type="button" data-langue-choix="lb" lang="lb" title="Lëtzebuergesch">LB</button>
+      </div>
+      <a class="btn btn--primary btn--sm" href="tel:+35227000000">27 00 00 00</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:1.5rem">
+  <div class="aurora"><i></i><i></i><i></i></div>
+  <div class="wrap narrow" style="text-align:center">
+    <p class="eyebrow is-center" data-reveal data-i18n="rdv.oeil">Réservation en ligne</p>
+    <h1 data-split data-i18n="rdv.h1">L'agenda du cabinet, ouvert 24h/24</h1>
+    <p class="lead" style="margin:1.4rem auto 0" data-reveal data-delay="140">
+      <span data-i18n="rdv.chapeau">Ce que vous voyez ici, c'est le planning réel de Nora Weber.
+      Dès qu'un créneau est réservé, il disparaît pour les patients suivants.</span>
+      <span data-i18n="rdv.chapeau.a">Il reste</span> <strong class="hl"><span data-nsr-libres>—</span> <span data-i18n="rdv.chapeau.b">créneaux libres</span></strong> <span data-i18n="rdv.chapeau.c">sur les sept prochains jours.</span>
+    </p>
+  </div>
+</header>
+
+<!-- ======================= MODULE DE RÉSERVATION =======================
+     Le contenu est entièrement produit par le moteur NS Development
+     (assets/nsr-reservation.js). Il n'y a rien à écrire ici : le vocabulaire,
+     les motifs et les horaires viennent de assets/reservation-config.js,
+     dans les deux langues.
+     ==================================================================== -->
+<section class="sec" style="padding-top:1.5rem">
+  <div class="wrap">
+    <div class="nsr" data-nsr data-reveal="scale"></div>
+
+    <!-- Panneau de démonstration : montre au prospect que le rendez-vous
+         qu'il vient de prendre arrive quelque part. Retiré automatiquement
+         en production. -->
+    <details class="nsr-pro" data-reveal>
+      <summary>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <h3 data-i18n="rdv.pro.titre">Mon agenda — côté praticienne</h3>
+        <svg class="nsr-pro__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </summary>
+      <div class="nsr-pro__body">
+        <p data-i18n="rdv.pro.texte">Voici ce que Nora voit de son côté. Chaque réservation faite par un patient
+           arrive ici en direct, et chaque annulation faite ici relibère aussitôt le créneau
+           sur le site. C'est le même agenda, vu des deux côtés.</p>
+        <div data-nsr-pro></div>
+      </div>
+    </details>
+
+    <p style="text-align:center;margin-top:1.6rem;font-size:.85rem;color:var(--ink-mute);max-width:64ch;margin-inline:auto" data-reveal data-i18n="rdv.note">
+      Sur la version en ligne, la confirmation part aussi par e-mail, et le rendez-vous
+      s'ajoute automatiquement à l'agenda de la praticienne.
+    </p>
+  </div>
+</section>
+
+<!-- QUESTIONS -->
+<section class="sec sec--paper">
+  <div class="wrap narrow">
+    <div class="spine-rule" data-reveal><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="sec__head is-center" data-reveal>
+      <p class="eyebrow is-center" data-i18n="rdv.q.oeil">Avant de réserver</p>
+      <h2 data-i18n="rdv.q.titre">Trois choses à savoir</h2>
+    </div>
+    <ul class="ticks" data-reveal data-delay="120" data-i18n="rdv.q.liste">
+      <li><strong>Il faut une ordonnance.</strong> Vous pouvez réserver sans l'avoir encore en main, mais apportez-la à la première séance.</li>
+      <li><strong>Le premier rendez-vous dure 45 minutes.</strong> Les séances de suivi durent 30 minutes, le drainage lymphatique 60.</li>
+      <li><strong>Une annulation se fait la veille.</strong> Un créneau libéré à temps profite à un autre patient qui attend.</li>
+    </ul>
+    <div style="text-align:center;margin-top:2.4rem" data-reveal>
+      <a class="btn btn--ghost" href="soins.html" data-i18n="acc.s1.lien">Voir le détail des soins</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html" style="margin-bottom:1.1rem">
+          <img src="assets/logo-mark.svg" alt="" width="42" height="42">
+          <span class="brand__txt"><span class="brand__name">Weber</span><span class="brand__sub" data-i18n="marque.sous">Kinésithérapie</span></span>
+        </a>
+        <p style="max-width:34ch" data-i18n="pied.intro">Cabinet de kinésithérapie de Nora Weber, à Junglinster,
+           canton de Grevenmacher. Rééducation orthopédique, sport, drainage lymphatique, respiratoire.</p>
+      </div>
+      <div>
+        <h4 data-i18n="pied.cabinet">Le cabinet</h4>
+        <ul>
+          <li><a href="soins.html" data-i18n="nav.soins">Les soins</a></li>
+          <li><a href="cabinet.html" data-i18n="pied.infos">Infos pratiques</a></li>
+          <li><a href="rendez-vous.html" data-i18n="nav.cta">Prendre rendez-vous</a></li>
+          <li><a href="a-propos.html" data-i18n="nav.nora">Nora Weber</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="pied.contact">Contact</h4>
+        <ul>
+          <li><a href="tel:+35227000000">+352 27 00 00 00</a></li>
+          <li><a href="tel:+352621000000">+352 621 00 00 00</a></li>
+          <li>21, rue de la Gare<br>L-6117 Junglinster</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="pied.horaires">Horaires</h4>
+        <ul data-i18n="pied.horaires.liste">
+          <li>Lun – Mer &nbsp;8h–12h · 13h30–18h30</li>
+          <li>Jeudi &nbsp;8h–12h · 13h30–19h</li>
+          <li>Vendredi &nbsp;8h–12h · 13h30–17h</li>
+          <li>Samedi &nbsp;9h–12h</li>
+          <li>Dimanche &nbsp;fermé</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-annee>2026</span> Kinésithérapie Weber — Junglinster, Luxembourg</span>
+      <span class="footer__ns" data-i18n="pied.ns">Réalisé par <b>NS&nbsp;Development</b></span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/traductions.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/ns-motion.js" defer></script>
+<script src="assets/reservation-config.js" defer></script>
+<script src="assets/nsr-reservation.js" defer></script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

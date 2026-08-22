@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PULSE — Studio de fitness · Luxembourg</title>
+<meta name="description" content="PULSE, studio de fitness et coaching au Luxembourg. Cours collectifs, coaching personnalisé, résultats réels.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<script src="ns-motion.js" defer></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0a0a0c;--bg2:#111114;--card:#16161b;--line:#26262e;--ink:#f4f4f2;--grey:#8b8b95;--volt:#c8fa3c;--volt-d:#a6d61f;
+    --disp:'Anton',Impact,sans-serif;--sans:'Inter',system-ui,sans-serif;--tr:.4s cubic-bezier(.3,0,.2,1);
+    --ns-dur:.62s;--ns-ease:cubic-bezier(.3,0,.2,1);--ns-progress-color:#c8fa3c}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:var(--disp);font-weight:400;line-height:.95;text-transform:uppercase;letter-spacing:.01em}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 26px}
+  .kick{font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--volt)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:14px;letter-spacing:.06em;text-transform:uppercase;padding:16px 32px;transition:var(--tr);cursor:pointer;border:none}
+  .btn.volt{background:var(--volt);color:#0a0a0c;clip-path:polygon(0 0,100% 0,92% 100%,0 100%)}
+  .btn.volt:hover{background:var(--volt-d);transform:translateX(4px)}
+  .btn.line{border:2px solid var(--line);color:var(--ink)}
+  .btn.line:hover{border-color:var(--volt);color:var(--volt)}
+
+  nav{position:fixed;inset:0 0 auto 0;z-index:50;height:76px;display:flex;align-items:center;transition:var(--tr)}
+  nav.ns-solid{background:rgba(10,10,12,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-in{width:100%;max-width:1200px;margin:0 auto;padding:0 26px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:var(--disp);font-size:26px;letter-spacing:.04em}.logo span{color:var(--volt)}
+  .nav-links{display:flex;gap:32px;align-items:center}
+  .nav-links a{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--grey)}
+  .nav-links a:hover{color:var(--ink)}
+  .hamb{display:none;background:none;border:none;color:var(--ink);font-size:24px;cursor:pointer}
+
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:120px 0 70px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 60% at 85% 20%,rgba(200,250,60,.10),transparent 60%)}
+  .hero-in{position:relative;z-index:1;width:100%}
+  .hero h1{font-size:clamp(64px,15vw,190px);letter-spacing:-.01em}
+  .hero h1 .o{-webkit-text-stroke:2px var(--volt);color:transparent}
+  .hero-row{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap;margin-top:20px}
+  .hero p{font-size:19px;color:var(--grey);max-width:440px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+
+  .marquee{border-top:2px solid var(--volt);border-bottom:2px solid var(--volt);background:var(--volt)}
+  .marquee .track{padding:14px 0}
+  .marquee span{font-family:var(--disp);font-size:30px;color:#0a0a0c;text-transform:uppercase;margin:0 26px}
+
+  section{padding:110px 0}
+  .sec-head h2{font-size:clamp(40px,7vw,90px)}
+  .sec-head .kick{margin-bottom:18px;display:block}
+  .progs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:56px}
+  .prog{background:var(--card);border:1px solid var(--line);padding:36px 30px;transition:var(--tr);position:relative;overflow:hidden}
+  .prog:hover{border-color:var(--volt);transform:translateY(-6px)}
+  .prog .num{font-family:var(--disp);font-size:60px;color:var(--line);line-height:1;transition:var(--tr)}
+  .prog:hover .num{color:var(--volt)}
+  .prog h3{font-size:26px;margin:12px 0 10px}
+  .prog p{font-size:14px;color:var(--grey)}
+
+  .stats{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stats-in{display:grid;grid-template-columns:repeat(4,1fr)}
+  .stat{padding:52px 20px;text-align:center;border-right:1px solid var(--line)}
+  .stat:last-child{border-right:none}
+  .stat .n{font-family:var(--disp);font-size:clamp(44px,6vw,72px);color:var(--volt);line-height:1}
+  .stat .l{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-top:8px}
+
+  .planning{max-width:860px;margin:56px auto 0}
+  .slot{display:grid;grid-template-columns:120px 1fr auto;gap:20px;align-items:center;padding:20px 24px;border:1px solid var(--line);margin-bottom:10px;transition:var(--tr)}
+  .slot:hover{border-color:var(--volt);background:var(--card)}
+  .slot .t{font-family:var(--disp);font-size:26px;color:var(--volt)}
+  .slot .c{font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:16px}
+  .slot .c small{display:block;color:var(--grey);font-weight:400;text-transform:none;letter-spacing:0;font-size:12.5px;margin-top:2px}
+  .slot .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--volt);border:1px solid var(--volt);padding:5px 10px}
+
+  .cta{background:var(--volt);color:#0a0a0c;text-align:center}
+  .cta h2{font-size:clamp(46px,9vw,120px)}
+  .cta p{font-size:18px;font-weight:600;max-width:460px;margin:16px auto 34px}
+  .cta .btn{background:#0a0a0c;color:var(--volt);clip-path:none}
+  .cta .btn:hover{background:#111}
+
+  footer{padding:60px 0 32px;border-top:1px solid var(--line)}
+  .foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+  .foot-in .logo{font-size:30px}
+  .foot-c{color:var(--grey);font-size:14px;text-align:right}
+  .made{margin-top:34px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;color:#5f5f68}.made b{color:var(--volt)}
+
+  /* Accessoires de gym en fond : bandes qui défilent dans le hero,
+     éléments en parallaxe dans le bloc d'appel final. */
+  .hero-acc{position:absolute;inset:0;z-index:0;pointer-events:none;
+    display:flex;flex-direction:column;justify-content:center;gap:clamp(30px,7vh,80px)}
+  .hero-acc svg{width:clamp(56px,7vw,96px);height:clamp(56px,7vw,96px);margin:0 clamp(22px,3.4vw,52px);
+    stroke:var(--volt);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;
+    opacity:.13;flex:none;vertical-align:middle}
+  .acc-row--rev .ns-marquee__track{animation-direction:reverse}
+  .acc-row--dim svg{opacity:.07}
+
+  .cta{position:relative;overflow:hidden}
+  .cta .wrap{position:relative;z-index:1}
+  .cta-acc{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .acc-float{position:absolute;display:block}
+  .acc-float svg{width:clamp(54px,8vw,116px);height:auto;
+    stroke:#0a0a0c;fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;opacity:.17}
+
+  /* accents propres à cette maquette : sec, rapide, sans fioriture */
+  .hero h1 .o{display:inline-block}
+  .slot{transition:var(--tr),padding-left .3s var(--tr)}
+  .slot:hover{padding-left:32px}
+  .stat .n{font-variant-numeric:tabular-nums}
+
+  @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.progs{grid-template-columns:1fr}.stats-in{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.slot{grid-template-columns:80px 1fr;gap:12px}.slot .tag{display:none}}
+</style>
+</head>
+<body>
+
+<!-- Accessoires de gym, dessinés une fois puis réutilisés partout -->
+<svg style="display:none" aria-hidden="true"><defs>
+  <g id="ic-halt"><path d="M7 18v12M13 13v22M13 24h22M35 13v22M41 18v12"/></g>
+  <g id="ic-kettle"><path d="M18 17c0-5 2.7-8 6-8s6 3 6 8"/><path d="M31 16.5c5 3.8 8 9.8 8 16.5 0 3.3-2.7 6-6 6H15c-3.3 0-6-2.7-6-6 0-6.7 3-12.7 8-16.5"/></g>
+  <g id="ic-disque"><circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="5.5"/></g>
+  <g id="ic-corde"><path d="M12 9v7M36 9v7"/><path d="M12 16c-7 9-4 24 12 24s19-15 12-24"/></g>
+  <g id="ic-barre"><path d="M4 19v10M9.5 14v20M15 18v12M15 24h18M33 18v12M38.5 14v20M44 19v10"/></g>
+  <g id="ic-medball"><circle cx="24" cy="24" r="16"/><path d="M8 24h32M24 8c6 6 6 26 0 32M24 8c-6 6-6 26 0 32"/></g>
+  <g id="ic-gourde"><path d="M19.5 6h9v5.5h-9z"/><path d="M17.5 11.5h13v27a3.5 3.5 0 0 1-3.5 3.5h-6a3.5 3.5 0 0 1-3.5-3.5z"/><path d="M17.5 21h13"/></g>
+  <g id="ic-chrono"><circle cx="24" cy="28" r="14"/><path d="M19 6h10M24 6v8M24 28v-8M35 17l2.5-2.5"/></g>
+</defs></svg>
+
+<nav data-nav-solid><div class="nav-in">
+  <a href="#" class="logo">PUL<span>SE</span></a>
+  <div class="nav-links"><a href="#progs" class="ns-link">Programmes</a><a href="#planning" class="ns-link">Planning</a><a href="#stats" class="ns-link">Résultats</a><a href="#essai" class="btn volt" style="padding:11px 22px">Essai gratuit</a></div>
+  <button class="hamb">☰</button>
+</div></nav>
+
+<header class="hero">
+<div class="hero-acc" aria-hidden="true">
+  <div class="acc-row ns-marquee" style="--ns-marquee-speed:38s"><div class="ns-marquee__track"><svg viewBox="0 0 48 48"><use href="#ic-halt"/></svg><svg viewBox="0 0 48 48"><use href="#ic-kettle"/></svg><svg viewBox="0 0 48 48"><use href="#ic-disque"/></svg><svg viewBox="0 0 48 48"><use href="#ic-corde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-barre"/></svg><svg viewBox="0 0 48 48"><use href="#ic-medball"/></svg><svg viewBox="0 0 48 48"><use href="#ic-gourde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-chrono"/></svg><svg viewBox="0 0 48 48"><use href="#ic-disque"/></svg><svg viewBox="0 0 48 48"><use href="#ic-halt"/></svg><svg viewBox="0 0 48 48"><use href="#ic-medball"/></svg><svg viewBox="0 0 48 48"><use href="#ic-corde"/></svg></div></div>
+  <div class="acc-row acc-row--rev acc-row--dim ns-marquee" style="--ns-marquee-speed:56s"><div class="ns-marquee__track"><svg viewBox="0 0 48 48"><use href="#ic-disque"/></svg><svg viewBox="0 0 48 48"><use href="#ic-chrono"/></svg><svg viewBox="0 0 48 48"><use href="#ic-halt"/></svg><svg viewBox="0 0 48 48"><use href="#ic-gourde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-kettle"/></svg><svg viewBox="0 0 48 48"><use href="#ic-barre"/></svg><svg viewBox="0 0 48 48"><use href="#ic-corde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-medball"/></svg><svg viewBox="0 0 48 48"><use href="#ic-gourde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-barre"/></svg><svg viewBox="0 0 48 48"><use href="#ic-kettle"/></svg><svg viewBox="0 0 48 48"><use href="#ic-chrono"/></svg></div></div>
+  <div class="acc-row ns-marquee" style="--ns-marquee-speed:46s"><div class="ns-marquee__track"><svg viewBox="0 0 48 48"><use href="#ic-corde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-medball"/></svg><svg viewBox="0 0 48 48"><use href="#ic-barre"/></svg><svg viewBox="0 0 48 48"><use href="#ic-halt"/></svg><svg viewBox="0 0 48 48"><use href="#ic-chrono"/></svg><svg viewBox="0 0 48 48"><use href="#ic-kettle"/></svg><svg viewBox="0 0 48 48"><use href="#ic-disque"/></svg><svg viewBox="0 0 48 48"><use href="#ic-gourde"/></svg><svg viewBox="0 0 48 48"><use href="#ic-kettle"/></svg><svg viewBox="0 0 48 48"><use href="#ic-chrono"/></svg><svg viewBox="0 0 48 48"><use href="#ic-disque"/></svg><svg viewBox="0 0 48 48"><use href="#ic-barre"/></svg></div></div>
+</div>
+<div class="wrap hero-in">
+  <div class="kick" data-reveal="left">Studio de fitness · Luxembourg</div>
+  <h1 style="margin-top:20px"><span data-split="chars">DÉPASSE</span><br><span class="o" data-reveal="scale" data-delay="380">TES LIMITES.</span></h1>
+  <div class="hero-row">
+    <p data-reveal data-delay="700">Cours collectifs qui envoient, coaching sur-mesure et une communauté qui te pousse. Ici, on transpire et on progresse.</p>
+    <div class="hero-cta" data-reveal data-delay="820"><a href="#essai" class="btn volt ns-shine">Ton essai gratuit</a><a href="#progs" class="btn line">Les programmes</a></div>
+  </div>
+</div></header>
+
+<div class="marquee ns-marquee" style="--ns-marquee-speed:24s"><div class="track ns-marquee__track">
+  <span>Force ✦ Cardio ✦ HIIT ✦ Cross-training ✦ Coaching ✦ Force ✦ Cardio ✦ HIIT ✦ Cross-training ✦ Coaching ✦</span>
+</div></div>
+
+<section id="progs"><div class="wrap">
+  <div class="sec-head"><span class="kick" data-reveal="left">Nos programmes</span><h2 data-reveal="up" data-delay="90">Trouve ton<br>terrain de jeu</h2></div>
+  <div class="progs" data-stagger="130">
+    <div class="prog"><div class="num">01</div><h3>Force & muscu</h3><p>Programmes de renforcement pour prendre du muscle et de la puissance, encadrés de A à Z.</p></div>
+    <div class="prog"><div class="num">02</div><h3>HIIT & cardio</h3><p>Des séances explosives pour brûler, transpirer et repousser ton cardio à chaque cours.</p></div>
+    <div class="prog"><div class="num">03</div><h3>Coaching perso</h3><p>Un coach rien que pour toi, un plan sur-mesure et un suivi de tes résultats semaine après semaine.</p></div>
+  </div>
+</div></section>
+
+<div id="stats" class="stats"><div class="stats-in" data-stagger="110">
+  <div class="stat"><div class="n"><span data-count="30" data-suffix="+" data-duration="1300">0</span></div><div class="l">Cours / semaine</div></div>
+  <div class="stat"><div class="n"><span data-count="6" data-duration="1300">0</span></div><div class="l">Coachs certifiés</div></div>
+  <div class="stat"><div class="n"><span data-count="7" data-suffix="j/7" data-duration="1300">0</span></div><div class="l">Ouvert</div></div>
+  <div class="stat"><div class="n">1</div><div class="l">Communauté</div></div>
+</div></div>
+
+<section id="planning"><div class="wrap">
+  <div class="sec-head"><span class="kick" data-reveal="left">Cette semaine</span><h2 data-split="chars" data-delay="90">Le planning</h2></div>
+  <div class="planning" data-stagger="90">
+    <div class="slot"><div class="t">07:00</div><div class="c">Cross-training<small>45 min · tous niveaux</small></div><div class="tag">Places dispo</div></div>
+    <div class="slot"><div class="t">12:15</div><div class="c">HIIT express<small>30 min · pause déj</small></div><div class="tag">Places dispo</div></div>
+    <div class="slot"><div class="t">18:30</div><div class="c">Force & muscu<small>60 min · intermédiaire</small></div><div class="tag">Complet</div></div>
+    <div class="slot"><div class="t">19:45</div><div class="c">Cardio boxing<small>50 min · défoulement</small></div><div class="tag">Places dispo</div></div>
+  </div>
+</div></section>
+
+<section id="essai" class="cta">
+<div class="cta-acc" aria-hidden="true">
+  <span class="acc-float" data-parallax="0.18" style="top:9%;left:4%"><svg viewBox="0 0 48 48"><use href="#ic-kettle"/></svg></span>
+  <span class="acc-float" data-parallax="0.12" style="top:15%;right:6%"><svg viewBox="0 0 48 48"><use href="#ic-disque"/></svg></span>
+  <span class="acc-float" data-parallax="0.10" style="top:43%;left:-2%"><svg viewBox="0 0 48 48"><use href="#ic-chrono"/></svg></span>
+  <span class="acc-float" data-parallax="0.21" style="top:38%;right:0%"><svg viewBox="0 0 48 48"><use href="#ic-corde"/></svg></span>
+  <span class="acc-float" data-parallax="0.23" style="bottom:11%;left:8%"><svg viewBox="0 0 48 48"><use href="#ic-barre"/></svg></span>
+  <span class="acc-float" data-parallax="0.15" style="bottom:7%;right:5%"><svg viewBox="0 0 48 48"><use href="#ic-halt"/></svg></span>
+</div>
+<div class="wrap">
+  <h2 data-reveal="scale">PREMIÈRE<br>SÉANCE OFFERTE</h2>
+  <p data-reveal data-delay="220">Viens tester un cours gratuitement. Sans engagement, juste pour voir ce que ça donne.</p>
+  <div data-reveal data-delay="340"><a href="tel:+352000000" class="btn">Réserve ton essai</a></div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="foot-in">
+    <a href="#" class="logo">PUL<span>SE</span></a>
+    <div class="foot-c">Studio de fitness · Luxembourg<br>+352 00 00 00 · @pulse.studio</div>
+  </div>
+  <div class="made">Maquette de démonstration réalisée par <b>NS Development</b> — création de sites web au Luxembourg</div>
+</div></footer>
+
+<script>
+  /* Animations : NS Motion Kit (ns-motion.css + ns-motion.js) */
+  document.querySelector('.hamb').addEventListener('click',()=>{const l=document.querySelector('.nav-links');const open=l.style.display==='flex';l.style.cssText=open?'':'display:flex;position:fixed;top:76px;left:0;right:0;background:var(--bg2);flex-direction:column;padding:24px 26px;border-bottom:1px solid var(--line);gap:20px'});
+</script>
+</body>
+</html>

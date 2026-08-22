@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="clair-b">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NS Development — Création de sites web au Luxembourg</title>
+<meta name="description" content="NS Development crée des sites web modernes, rapides et multilingues pour les commerçants, restaurants et indépendants du Luxembourg. Devis gratuit.">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<!-- Aperçu lors du partage sur les réseaux (remplacer le domaine par le vôtre) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="NS Development — Création de sites web au Luxembourg">
+<meta property="og:description" content="Des sites web modernes, rapides et multilingues pour les commerçants, restaurants et indépendants du Luxembourg. Devis gratuit.">
+<meta property="og:image" content="https://nsdevelopment.lu/assets/og-cover.png">
+<meta property="og:url" content="https://nsdevelopment.lu/">
+<meta property="og:site_name" content="NS Development">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NS Development — Création de sites web au Luxembourg">
+<meta name="twitter:description" content="Des sites web modernes, rapides et multilingues pour les commerçants et indépendants du Luxembourg.">
+<meta name="twitter:image" content="https://nsdevelopment.lu/assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<link rel="stylesheet" href="ns-fx.css?v=6">
+<link rel="stylesheet" href="ns-clair.css?v=5">
+<script src="ns-motion.js" defer></script>
+<script src="ns-fx.js?v=11" defer></script>
+<!-- Incrémenter ?v= à chaque modification du dictionnaire, sinon les navigateurs gardent l'ancienne version en cache -->
+<script src="i18n.js?v=5" defer></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0c11;--bg2:#0f1320;--card:#131826;--card2:#171d2e;--line:#232b3d;--line2:#2f3950;
+    --ink:#eef2fb;--soft:#9aa6bd;--muted:#5d6a85;
+    --acc:#3b78ff;--acc2:#7ea6ff;--acc-deep:#1e4fd6;--glow:rgba(59,120,255,.22);--glow2:rgba(59,120,255,.10);
+    --nav-bg:rgba(10,12,17,.85);
+    --ok:#35d29a;--ok-ink:#7ff0c4;--ok-glow:rgba(53,210,154,.14);--ok-line:rgba(53,210,154,.4);--ok-halo:rgba(53,210,154,.18);
+    --btn-ink:#fff;
+    --sans:'Inter',system-ui,sans-serif;--disp:'Sora',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+    --nav:78px;--tr:.35s cubic-bezier(.4,0,.2,1);
+    /* NS Motion Kit : réglages maison */
+    --ns-dur:.85s;--ns-ease:cubic-bezier(.2,.7,.2,1);
+    --ns-g1:#7ea6ff;--ns-g2:#3b78ff;--ns-progress-color:#3b78ff;
+  }
+
+  /* ================================================================
+     THÈME MONOCHROME — noir / blanc / gris, rendu premium
+     Activation : <html lang="fr" data-theme="mono">
+     Aucun autre changement nécessaire, tout le site suit ces variables.
+     ================================================================ */
+  :root[data-theme="mono"]{
+    --bg:#08080a;--bg2:#0d0d10;--card:#111114;--card2:#17171b;--line:#242429;--line2:#35353d;
+    --ink:#f4f4f5;--soft:#a1a1aa;--muted:#6b6b75;
+    /* L'accent devient un argent métallique : pas de couleur, mais de la matière */
+    --acc:#d8d8de;--acc2:#ffffff;--acc-deep:#8a8a94;--glow:rgba(255,255,255,.14);--glow2:rgba(255,255,255,.055);
+    --nav-bg:rgba(8,8,10,.86);
+    --ok:#e6e6ea;--ok-ink:#ffffff;--ok-glow:rgba(255,255,255,.10);--ok-line:rgba(255,255,255,.32);--ok-halo:rgba(255,255,255,.14);
+    --btn-ink:#0a0a0c;
+    --ns-g1:#ffffff;--ns-g2:#9a9aa4;--ns-progress-color:#e6e6ea;
+  }
+  /* Le bouton plein s'inverse : blanc sur noir, c'est ce qui fait le côté haut de gamme */
+  :root[data-theme="mono"] .btn.primary{background:linear-gradient(135deg,#ffffff,#c8c8d0);color:var(--btn-ink);box-shadow:0 8px 30px rgba(255,255,255,.10)}
+  :root[data-theme="mono"] .btn.primary:hover{box-shadow:0 14px 44px rgba(255,255,255,.18)}
+  :root[data-theme="mono"] .price .badge{background:linear-gradient(135deg,#ffffff,#b9b9c2);color:var(--btn-ink)}
+  :root[data-theme="mono"] .sim-num{background:rgba(255,255,255,.09);border-color:var(--line2);color:var(--ink)}
+  :root[data-theme="mono"] .sim-o input{accent-color:#ffffff}
+  /* Grain léger : évite le noir plat et donne de la matière à l'écran */
+  :root[data-theme="mono"] body::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+  html{scroll-behavior:smooth;scroll-padding-top:90px}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
+  h1,h2,h3{font-family:var(--disp);font-weight:700;line-height:1.08;letter-spacing:-.02em}
+  ::selection{background:var(--glow);color:var(--acc2)}
+  ::-webkit-scrollbar{width:9px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--line2);border-radius:5px}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--acc2);display:inline-flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--acc)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.01em;padding:14px 26px;border-radius:11px;cursor:pointer;border:none;transition:transform var(--tr),box-shadow var(--tr),background var(--tr);position:relative;overflow:hidden}
+  .btn.primary{background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:#fff;box-shadow:0 8px 28px var(--glow)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px var(--glow)}
+  .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--acc);color:var(--acc2);transform:translateY(-2px)}
+  .btn.primary::after{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg)}
+  .btn.primary:hover::after{animation:shine .9s ease}
+  @keyframes shine{to{left:130%}}
+
+  /* NAV */
+  nav{position:fixed;inset:0 0 auto 0;z-index:100;height:var(--nav);display:flex;align-items:center;transition:background var(--tr),box-shadow var(--tr)}
+  nav.ns-solid{background:var(--nav-bg);backdrop-filter:blur(18px);box-shadow:0 1px 0 var(--line),0 8px 30px rgba(0,0,0,.4)}
+  .nav-in{width:100%;max-width:1180px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img{height:40px;width:auto}
+  .brand .bt{font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.01em}
+  .brand .bt em{font-style:normal;color:var(--soft);font-weight:500}
+  .nav-links{display:flex;align-items:center;gap:20px}
+  .nav-links a{font-size:13.5px;color:var(--soft);font-weight:500;transition:color var(--tr);position:relative}
+  .nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:1.5px;background:var(--acc);transition:width var(--tr)}
+  .nav-links a:not(.btn):hover{color:var(--ink)}
+  .nav-links a:not(.btn):hover::after{width:100%}
+  /* Accès à l'espace client : présent mais discret, il ne concerne que les clients déjà signés */
+  .nav-links a.espace-lien{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid var(--line2);border-radius:9px;color:var(--soft)}
+  .nav-links a.espace-lien::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-halo)}
+  .nav-links a.espace-lien:hover{border-color:var(--acc);color:var(--acc2)}
+  .nav-links a.espace-lien::after{display:none}
+  /* Sélecteur de langue — FR · LB · DE · EN · PT */
+  .lang-sel{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:9px;background:var(--card)}
+  .lang-b{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--muted);background:none;border:none;border-radius:6px;padding:5px 7px;cursor:pointer;transition:color var(--tr),background var(--tr)}
+  .lang-b:hover{color:var(--ink)}
+  .lang-b.on{background:var(--glow);color:var(--acc2)}
+  :root[data-theme="mono"] .lang-b.on{background:rgba(255,255,255,.12);color:#fff}
+
+  .hamb{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
+  .hamb span{width:24px;height:2px;background:var(--ink);display:block;transition:.3s}
+
+  /* HERO */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:calc(var(--nav) + 40px) 0 80px;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(60% 50% at 78% 8%,var(--glow),transparent 60%),radial-gradient(50% 40% at 8% 100%,var(--glow2),transparent 60%)}
+  .hero-grid{position:absolute;inset:0;z-index:0;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;mask-image:radial-gradient(90% 70% at 60% 20%,#000 25%,transparent 75%)}
+  .hero-in{position:relative;z-index:1;max-width:920px}
+  .hero h1{font-size:clamp(42px,7vw,82px);font-weight:800;margin:22px 0 26px;line-height:1.05}
+  .hero h1 .hl-a{display:block}
+  .hero h1 .fx-cycle{display:block;margin-top:.06em}
+  /* le dégradé du titre est animé par le kit (.ns-gradient-text) */
+  .hero p.lead{font-size:clamp(17px,2.2vw,21px);color:var(--soft);max-width:620px;line-height:1.7}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:38px}
+  .hero-scroll{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:1;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .hero-scroll .ln{width:1px;height:44px;background:linear-gradient(var(--acc),transparent);animation:sp 2s ease infinite}
+  @keyframes sp{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.15)}}
+
+  /* TRUST STRIP */
+  .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg2)}
+  .strip-in{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 44px;padding:22px 24px;max-width:1180px;margin:0 auto}
+  .strip span{font-size:13.5px;color:var(--soft);display:inline-flex;align-items:center;gap:9px}
+  .strip b{color:var(--acc2)}
+
+  section.sec{padding:110px 0;position:relative}
+  .sec-head{max-width:640px;margin-bottom:56px}
+  .sec-head h2{font-size:clamp(28px,4.4vw,46px);font-weight:800;margin:14px 0 16px}
+  .sec-head p{color:var(--soft);font-size:16.5px}
+
+  /* SERVICES */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .scard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px 28px;transition:transform var(--tr),border-color var(--tr),box-shadow var(--tr),background var(--tr);position:relative;overflow:hidden}
+  .scard::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--acc),var(--acc2));transform:scaleX(0);transform-origin:left;transition:transform var(--tr)}
+  .scard:hover{transform:translateY(-6px);border-color:var(--line2);background:var(--card2);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .scard:hover::before{transform:scaleX(1)}
+  .sic{width:52px;height:52px;border-radius:13px;background:var(--glow);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;margin-bottom:22px;transition:transform var(--tr)}
+  .scard:hover .sic{transform:scale(1.08)}
+  .sic svg{width:24px;height:24px;stroke:var(--acc2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .scard h3{font-size:19px;margin-bottom:9px}
+  .scard p{font-size:14px;color:var(--soft);line-height:1.7}
+
+  /* PORTFOLIO */
+  #work{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .works{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .work{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card);transition:transform var(--tr),border-color var(--tr),box-shadow var(--tr)}
+  .work:hover{transform:translateY(-6px);border-color:var(--line2);box-shadow:0 30px 70px rgba(0,0,0,.5)}
+  .work-img{position:relative;aspect-ratio:16/10;overflow:hidden;border-bottom:1px solid var(--line)}
+  .work-img img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+  .work:hover .work-img img{transform:scale(1.05)}
+  .work-body{padding:24px 26px}
+  .work-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc2);margin-bottom:8px}
+  .work-body h3{font-size:20px;margin-bottom:8px}
+  .work-body p{font-size:14px;color:var(--soft);line-height:1.65}
+  .work-feats{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .work-feats span{font-size:11.5px;color:var(--soft);border:1px solid var(--line2);border-radius:20px;padding:5px 12px}
+  a.work-img{display:block}
+  .work-link{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:13px;color:var(--acc2);letter-spacing:.03em;transition:color var(--tr)}
+  .work-link:hover{color:var(--acc)}
+
+  /* METHODE */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:st}
+  .step{position:relative;padding:28px 24px;border:1px solid var(--line);border-radius:16px;background:var(--card);transition:border-color var(--tr),transform var(--tr)}
+  .step:hover{border-color:var(--line2);transform:translateY(-4px)}
+  .step .num{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--acc);border:1px solid var(--line2);border-radius:9px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;background:var(--glow)}
+  .step h3{font-size:17px;margin-bottom:8px}
+  .step p{font-size:13.5px;color:var(--soft);line-height:1.65}
+
+  /* PRICING */
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .price{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px 30px;position:relative;transition:transform var(--tr),border-color var(--tr),box-shadow var(--tr)}
+  .price.feat{border-color:var(--acc);box-shadow:0 20px 60px var(--glow)}
+  .price:hover{transform:translateY(-6px)}
+  .price .badge{position:absolute;top:-12px;left:30px;background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:#fff;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px}
+  .price .pname{font-family:var(--disp);font-weight:700;font-size:20px;margin-bottom:4px}
+  .price .pfor{font-size:13px;color:var(--muted);margin-bottom:20px}
+  .price .amt{font-family:var(--disp);font-weight:800;font-size:38px;line-height:1}
+  .price .amt small{font-family:var(--mono);font-size:12px;color:var(--soft);font-weight:500;display:block;margin-bottom:6px;letter-spacing:.05em}
+  .price ul{list-style:none;margin:24px 0 28px;display:flex;flex-direction:column;gap:11px}
+  .price li{font-size:13.5px;color:var(--soft);display:flex;align-items:flex-start;gap:11px}
+  .price li svg{width:17px;height:17px;stroke:var(--acc2);fill:none;stroke-width:2.2;flex-shrink:0;margin-top:2px}
+  .price .btn{width:100%;justify-content:center}
+  .price-note{text-align:center;margin-top:28px;font-size:14px;color:var(--soft)}
+  .price-note b{color:var(--ink)}
+
+  /* BANDE DES NIVEAUX — repère instantané avant le simulateur */
+  .ptiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+  .ptier{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px 20px;transition:border-color var(--tr),transform var(--tr)}
+  .ptier:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .ptier.feat{border-color:var(--acc);background:linear-gradient(150deg,var(--glow),transparent 70%)}
+  .ptier b{display:block;font-family:var(--disp);font-size:15px;font-weight:700}
+  .ptier b em{font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);display:block;margin-bottom:4px}
+  .ptier span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
+  .ptier i{font-style:normal;font-family:var(--disp);font-weight:800;font-size:21px;white-space:nowrap}
+  .ptier i small{display:block;font-family:var(--mono);font-size:9.5px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-align:right}
+
+  /* SIMULATEUR DE DEVIS */
+  .sim-grid{display:grid;grid-template-columns:1fr 400px;gap:26px;align-items:start}
+  .sim-panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px}
+  .sim-step{margin-bottom:30px}
+  .sim-step:last-child{margin-bottom:0}
+  .sim-lab{display:flex;align-items:center;gap:11px;font-family:var(--disp);font-weight:700;font-size:15px;margin-bottom:16px}
+  .sim-num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--glow);border:1px solid var(--acc);color:var(--acc2);font-family:var(--mono);font-size:11px;font-weight:700;display:grid;place-items:center}
+  .sim-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px}
+  .sim-o{display:flex;align-items:flex-start;gap:11px;background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:14px 15px;cursor:pointer;transition:border-color var(--tr),background var(--tr),transform var(--tr)}
+  .sim-o:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .sim-o input{flex:none;margin-top:3px;accent-color:var(--acc);width:15px;height:15px;cursor:pointer}
+  .sim-o.on{border-color:var(--acc);background:linear-gradient(160deg,var(--glow),transparent 70%)}
+  .sim-o b{display:block;font-family:var(--disp);font-size:13.5px;font-weight:600;line-height:1.35}
+  .sim-o span{display:block;font-size:12px;color:var(--soft);margin-top:3px;line-height:1.45}
+  .sim-o i{display:block;font-family:var(--mono);font-style:normal;font-size:12px;font-weight:700;color:var(--acc2);margin-top:6px}
+
+  .sim-out{position:sticky;top:calc(var(--nav) + 20px);background:linear-gradient(165deg,var(--card2),var(--card));border:1px solid var(--line2);border-radius:20px;padding:28px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+  .sim-out .oh{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+  .sim-tot{font-family:var(--disp);font-weight:800;font-size:clamp(26px,3.6vw,34px);line-height:1.1;margin:8px 0 2px;letter-spacing:-.02em;white-space:nowrap}
+  .sim-ht{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .sim-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .sim-line:last-of-type{border-bottom:none}
+  .sim-line span{color:var(--soft)}
+  .sim-line b{font-family:var(--mono);font-weight:700;font-size:13px;white-space:nowrap}
+  .sim-detail{margin:20px 0 4px;max-height:210px;overflow-y:auto}
+  .sim-sub{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:18px}
+  .sim-sub span{font-size:12.5px;color:var(--soft);line-height:1.4}
+  .sim-sub b{font-family:var(--disp);font-size:19px;white-space:nowrap}
+  .sim-aide{display:none;margin-top:16px;border-radius:14px;padding:16px;background:linear-gradient(160deg,var(--ok-glow),transparent 75%);border:1px solid var(--ok-line)}
+  .sim-aide.on{display:block}
+  .sim-aide .at{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ok);font-weight:700}
+  .sim-aide .an{font-family:var(--disp);font-weight:800;font-size:32px;line-height:1;margin:10px 0 4px;color:var(--ok-ink)}
+  .sim-aide p{font-size:12px;color:var(--soft);line-height:1.5;margin-top:8px}
+  .sim-near{display:none;margin-top:16px;background:var(--bg2);border:1px dashed var(--line2);border-radius:12px;padding:13px 15px;font-size:12.5px;color:var(--soft);line-height:1.5}
+  .sim-near.on{display:block}
+  .sim-near b{color:var(--ink)}
+  .sim-cta{width:100%;justify-content:center;margin-top:20px}
+  .sim-legal{font-size:11px;color:var(--muted);line-height:1.5;margin-top:14px;text-align:center}
+  @media(max-width:960px){
+    .sim-grid{grid-template-columns:1fr}
+    .sim-out{position:static}
+    .ptiers{grid-template-columns:1fr}
+  }
+
+  /* ABOUT */
+  #about{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
+  .about-grid p{color:var(--soft);font-size:15.5px;margin-bottom:16px}
+  .team{display:flex;flex-direction:column;gap:16px}
+  .tm{display:flex;gap:18px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;transition:border-color var(--tr),transform var(--tr)}
+  .tm:hover{border-color:var(--line2);transform:translateX(4px)}
+  .tm .av{position:relative;width:56px;height:56px;border-radius:13px;background:linear-gradient(135deg,var(--acc),var(--acc-deep));display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:19px;color:#fff;flex-shrink:0;overflow:hidden}
+  .tm .av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+  .tm .nm{font-family:var(--disp);font-weight:700;font-size:16px}
+  .tm .rl{font-size:12.5px;color:var(--acc2);font-family:var(--mono);letter-spacing:.04em}
+
+  /* CONTACT */
+  .contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+  .cinfo .cline{display:flex;gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .cinfo .ci-ic{width:42px;height:42px;border-radius:11px;background:var(--glow);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .cinfo .ci-ic svg{width:18px;height:18px;stroke:var(--acc2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .cinfo .ci-l{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:var(--mono)}
+  .cinfo .ci-v{font-size:15px;font-weight:500}
+  form.cf{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px}
+  .cf-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  .cf-f{display:flex;flex-direction:column;gap:7px}
+  .cf-f.full{grid-column:1/-1}
+  .cf label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc2)}
+  .cf input,.cf select,.cf textarea{font-family:var(--sans);font-size:14.5px;padding:13px 15px;background:var(--bg);border:1px solid var(--line2);border-radius:10px;color:var(--ink);transition:border-color var(--tr),box-shadow var(--tr)}
+  .cf input:focus,.cf select:focus,.cf textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--glow)}
+  .cf textarea{resize:vertical;min-height:120px;line-height:1.6}
+  .cf .btn{width:100%;justify-content:center;margin-top:4px}
+  .cf-ok{display:none;margin-top:16px;text-align:center;color:var(--acc2);font-size:13.5px;background:var(--glow);border:1px solid var(--line2);border-radius:10px;padding:13px}
+
+  footer{border-top:1px solid var(--line);padding:56px 0 34px;background:var(--bg)}
+  .foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:44px;padding-bottom:38px;border-bottom:1px solid var(--line)}
+  .foot-brand img{height:52px;margin-bottom:16px}
+  .foot-brand p{font-size:13.5px;color:var(--muted);line-height:1.7;max-width:36ch}
+  .foot-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:16px}
+  .foot-col a{display:block;font-size:13.5px;color:var(--muted);padding:5px 0;transition:color var(--tr)}
+  .foot-col a:hover{color:var(--acc2)}
+  .foot-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;font-size:12.5px;color:var(--muted)}
+
+  /* Animations : NS Motion Kit. Ci-dessous, les accents propres à ce site. */
+  .price.feat[data-tilt]:hover{transform:none}
+  .price.feat[data-tilt] .badge{transform:translateZ(40px)}
+  .strip span{transition:color var(--tr)}
+  .strip span:hover{color:var(--ink)}
+
+  /* Le menu passe en tiroir dès 1150 px : avec le sélecteur de langue,
+     la barre complète ne tient plus proprement en dessous de cette largeur */
+  @media(max-width:1150px){
+    .nav-links{position:fixed;inset:0 0 0 auto;width:78%;max-width:320px;flex-direction:column;justify-content:center;gap:28px;background:var(--bg2);border-left:1px solid var(--line);transform:translateX(100%);transition:transform var(--tr);padding:40px}
+    .nav-links.open{transform:none}
+    .hamb{display:flex;z-index:110}
+  }
+  @media(max-width:900px){
+    .grid3,.works,.steps,.prices,.about-grid,.contact-grid,.foot-top{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr 1fr}
+    .about-grid{gap:36px}
+  }
+  @media(max-width:560px){.steps{grid-template-columns:1fr}.cf-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="fx-lock">
+
+<!-- Écran d'ouverture -->
+<div class="fx-preload" id="fxPreload">
+  <div class="pl-in">
+    <div class="pl-mark"><span>NS Development</span></div>
+    <div class="pl-bar"><i></i></div>
+    <div class="pl-num">000</div>
+  </div>
+</div>
+
+<!-- Sécurité : déverrouille le défilement même si ns-fx.js ne se charge pas -->
+<script>setTimeout(function(){document.body.classList.remove('fx-lock');},4500);</script>
+
+<!-- Grain de surface -->
+<div class="fx-noise" aria-hidden="true"></div>
+
+<nav data-nav-solid>
+  <div class="nav-in">
+    <a href="#top" class="brand"><img src="assets/logo-ns-tuile-header.png" alt="NS Development"><span class="bt">NS <em>Development</em></span></a>
+    <div class="nav-links" id="navlinks">
+      <a href="#services">Services</a>
+      <a href="#demos">Exemples</a>
+      <a href="#method">Méthode</a>
+      <a href="#pricing">Tarifs</a>
+      <a href="#contact">Contact</a>
+      <div class="lang-sel" id="langSel" role="group" aria-label="Choix de la langue"></div>
+      <a href="espace-client.html" class="espace-lien">Espace client</a>
+      <a href="#contact" class="btn primary" style="padding:11px 20px">Devis gratuit</a>
+    </div>
+    <button class="hamb" id="hamb" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="fx-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="hero-bg"></div><div class="hero-grid" data-parallax="0.08"></div>
+  <div class="wrap hero-in">
+    <span class="eyebrow" data-reveal="blur">Agence web · Luxembourg</span>
+    <h1><span class="hl-a" data-split>Des sites web qui</span><span class="fx-cycle" data-cycle='["convertissent.","font vendre.","remplissent.","rapportent.","marquent."]'></span></h1>
+    <p class="lead" data-reveal data-delay="820">NS Development crée des sites modernes, rapides et multilingues pour les commerçants, restaurants et indépendants du Luxembourg. Livrés vite, pensés pour vendre.</p>
+    <div class="hero-cta" data-reveal data-delay="960">
+      <a href="#contact" class="btn primary">Demander un devis gratuit
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#demos" class="btn ghost">Voir des exemples</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Découvrir</span><div class="ln"></div></div>
+</header>
+
+<!-- TRUST -->
+<div class="strip">
+  <div class="strip-in" data-stagger="90">
+    <span>📍 <b>Luxembourgeois</b>, un interlocuteur direct</span>
+    <span>🌐 <b>Multilingue</b> FR · DE · EN · PT</span>
+    <span>🔍 <b>SEO local</b> pour être trouvé sur Google</span>
+    <span>⚡ <b>Livraison rapide</b>, en jours plutôt qu'en mois</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="sec" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Ce qu'on fait</span>
+      <h2 data-reveal data-delay="120">Tout pour votre présence en ligne</h2>
+      <p data-reveal="blur" data-delay="240">Du site vitrine à la boutique en ligne, on gère la création, le contenu et le suivi. Vous vous concentrez sur votre métier.</p>
+    </div>
+    <div class="grid3" data-stagger="100">
+      <div class="scard fx-spot">
+        <div class="sic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h3>Sites vitrines</h3><p>Un site professionnel, moderne et responsive qui présente votre activité et inspire confiance dès la première seconde.</p>
+      </div>
+      <div class="scard fx-spot">
+        <div class="sic"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.6 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></div>
+        <h3>E-commerce & réservation</h3><p>Boutique en ligne, commande à emporter, prise de rendez-vous et paiement en ligne intégrés à votre site.</p>
+      </div>
+      <div class="scard fx-spot">
+        <div class="sic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>Référencement local (SEO)</h3><p>On optimise votre site pour Google et Google Maps : vous apparaissez quand un client cherche « près de moi ».</p>
+      </div>
+      <div class="scard fx-spot">
+        <div class="sic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <h3>Multilingue</h3><p>FR, DE, EN, PT : votre site parle à toutes les communautés du Luxembourg. Un vrai atout que peu d'agences maîtrisent.</p>
+      </div>
+      <div class="scard fx-spot">
+        <div class="sic"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Maintenance & hébergement</h3><p>Votre site reste en ligne, à jour et sécurisé. On s'occupe de l'hébergement, des sauvegardes et des modifications.</p>
+      </div>
+      <div class="scard fx-spot">
+        <div class="sic"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></div>
+        <h3>Identité & visuels</h3><p>Logo, contenus, photos et visuels pour vos réseaux sociaux. Une image cohérente et professionnelle sur tous les supports.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXEMPLES PAR MÉTIER -->
+<section class="sec" id="demos" style="background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Exemples par métier</span>
+      <h2 data-split>À quoi votre site pourrait ressembler</h2>
+      <p data-reveal="blur" data-delay="240">Chaque métier a son ambiance. Voici des exemples de sites qu'on crée, à personnaliser entièrement à votre image. Cliquez pour explorer.</p>
+    </div>
+    <div class="works" data-stagger="140">
+      <article class="work fx-spot">
+        <a href="demos/kinesitherapie-weber/index.html" target="_blank" rel="noopener" class="work-img" data-cursor="view"><img src="assets/demo-kine-weber.png" alt="Exemple de site de cabinet de kinésithérapie — Kinésithérapie Weber"></a>
+        <div class="work-body">
+          <div class="work-tag">Santé &amp; cabinets</div>
+          <h3>Kinésithérapie Weber</h3>
+          <p>Doux et rassurant : cinq pages, prise de rendez-vous en ligne et agenda côté praticienne.</p>
+          <div class="work-feats"><span>Rendez-vous en ligne</span><span>Agenda praticienne</span><span>Bilingue FR / LB</span></div>
+          <a href="demos/kinesitherapie-weber/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+        </div>
+      </article>
+      <article class="work fx-spot">
+        <a href="demos/vitrines/immobilier/index.html" target="_blank" rel="noopener" class="work-img" data-cursor="view"><img src="assets/demo-immobilier.png" alt="Exemple de site agence immobilière"></a>
+        <div class="work-body">
+          <div class="work-tag">Agence immobilière</div>
+          <h3>HORIZON</h3>
+          <p>Raffiné et haut de gamme : annonces, estimation et capture de contacts.</p>
+          <div class="work-feats"><span>Annonces</span><span>Estimation</span><span>Leads</span></div>
+          <a href="demos/vitrines/immobilier/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+        </div>
+      </article>
+      <article class="work fx-spot">
+        <a href="demos/vitrines/automobile/index.html" target="_blank" rel="noopener" class="work-img" data-cursor="view"><img src="assets/demo-automobile.png" alt="Exemple de site garage / auto"></a>
+        <div class="work-body">
+          <div class="work-tag">Garage & auto</div>
+          <h3>MOTORLINE</h3>
+          <p>Technique et premium : catalogue de véhicules et prise de rendez-vous.</p>
+          <div class="work-feats"><span>Catalogue</span><span>Prise de RDV</span><span>Services</span></div>
+          <a href="demos/vitrines/automobile/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+        </div>
+      </article>
+      <article class="work fx-spot">
+        <a href="demos/vitrines/fitness/index.html" target="_blank" rel="noopener" class="work-img" data-cursor="view"><img src="assets/demo-fitness.png" alt="Exemple de site fitness"></a>
+        <div class="work-body">
+          <div class="work-tag">Fitness & coachs</div>
+          <h3>PULSE</h3>
+          <p>Brut et énergique : programmes, planning des cours et essai gratuit.</p>
+          <div class="work-feats"><span>Planning</span><span>Programmes</span><span>Essai gratuit</span></div>
+          <a href="demos/vitrines/fitness/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+        </div>
+      </article>
+      <article class="work fx-spot">
+        <a href="demos/fiduciaire-atlas/index.html" target="_blank" rel="noopener" class="work-img" data-cursor="view"><img src="assets/demo-fiduciaire-atlas.png" alt="Exemple de site fiduciaire — Fiduciaire Atlas"></a>
+        <div class="work-body">
+          <div class="work-tag">Fiduciaire & comptable</div>
+          <h3>Fiduciaire Atlas</h3>
+          <p>Sobre et rassurant : présentation des services, prise de rendez-vous et contact.</p>
+          <div class="work-feats"><span>Services</span><span>Rendez-vous</span><span>Multilingue</span></div>
+          <a href="demos/fiduciaire-atlas/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+        </div>
+      </article>
+      <article class="work fx-spot">
+        <a href="demos/maison-safran/index.html" target="_blank" rel="noopener" class="work-img" data-cursor="view"><img src="assets/demo-maison-safran.png" alt="Exemple de site restaurant — Maison Safran"></a>
+        <div class="work-body">
+          <div class="work-tag">Restaurant</div>
+          <h3>Maison Safran</h3>
+          <p>Chaleureux et raffiné : carte en ligne, réservation, take-away et bascule FR / EN.</p>
+          <div class="work-feats"><span>Menu</span><span>Réservation</span><span>Multilingue</span></div>
+          <a href="demos/maison-safran/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- METHODE -->
+<section class="sec" id="method">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Notre méthode</span>
+      <h2 data-reveal data-delay="120">De l'idée au site en ligne, en 4 étapes</h2>
+      <p data-reveal="blur" data-delay="240">Un processus clair et rapide. Vous validez, on exécute.</p>
+    </div>
+    <div class="steps" data-stagger="110">
+      <div class="step"><div class="num">01</div><h3>Découverte</h3><p>On comprend votre activité, vos clients et vos objectifs. Gratuit et sans engagement.</p></div>
+      <div class="step"><div class="num">02</div><h3>Design sur-mesure</h3><p>On conçoit une maquette moderne à votre image, que vous validez avant tout développement.</p></div>
+      <div class="step"><div class="num">03</div><h3>Développement rapide</h3><p>Votre site est construit, optimisé et testé en quelques jours. Vous suivez l'avancement à chaque étape.</p></div>
+      <div class="step"><div class="num">04</div><h3>Mise en ligne & suivi</h3><p>On publie, on référence, et on maintient votre site à jour grâce à la maintenance.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BANDEAU DÉFILANT -->
+<div class="fx-band" aria-hidden="true">
+  <div class="fx-band-track">
+    <span><b>Restaurants</b> <i>◆</i> Garages <i>◆</i> <b>Immobilier</b> <i>◆</i> Fitness <i>◆</i> <b>Commerces</b> <i>◆</i> Indépendants <i>◆</i>&nbsp;</span>
+    <span><b>Restaurants</b> <i>◆</i> Garages <i>◆</i> <b>Immobilier</b> <i>◆</i> Fitness <i>◆</i> <b>Commerces</b> <i>◆</i> Indépendants <i>◆</i>&nbsp;</span>
+  </div>
+</div>
+
+<!-- HÉBERGEMENT LUXEMBOURGEOIS -->
+<section class="sec fx-globe-sec" id="hosting">
+  <div class="fx-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="globe-grid">
+      <div>
+        <span class="eyebrow" data-reveal="blur">Hébergement</span>
+        <h2 data-reveal data-delay="120" style="font-size:clamp(28px,4.4vw,44px);margin:14px 0 20px">Vos données restent au Luxembourg</h2>
+        <p data-reveal="blur" data-delay="240">Votre site est hébergé dans un datacenter luxembourgeois, pas à l'autre bout du monde. Vos données et celles de vos clients ne quittent jamais le pays. C'est un choix de principe, et un argument que vos clients apprécient.</p>
+        <div class="globe-facts" data-stagger="110">
+          <div class="globe-fact fx-spot"><b data-count="100" data-suffix="%">0%</b><span>Hébergé au Luxembourg</span></div>
+          <div class="globe-fact fx-spot"><b data-count="99" data-suffix=",9%">0</b><span>Disponibilité visée</span></div>
+          <div class="globe-fact fx-spot"><b>RGPD</b><span>Conforme par défaut</span></div>
+        </div>
+      </div>
+      <div class="globe-stage">
+        <div class="globe-halo" aria-hidden="true"></div>
+        <div class="globe-ring" aria-hidden="true"></div>
+        <div class="globe-ring" aria-hidden="true"></div>
+        <canvas id="fxGlobe" role="img" aria-label="Globe montrant l'hébergement au Luxembourg relié aux principales villes d'Europe"></canvas>
+        <div class="globe-tag t1"><b>Datacenter · Luxembourg</b></div>
+        <div class="globe-tag t2"><b>Sauvegardes quotidiennes</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VÉRIFICATEUR DE NOM DE DOMAINE -->
+<section class="sec" id="domaine">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Nom de domaine</span>
+      <h2 data-reveal data-delay="120">Votre adresse web est-elle libre ?</h2>
+      <p data-reveal="blur" data-delay="240">Tapez le nom de votre entreprise, on vérifie les extensions en direct. Si c'est libre, on s'occupe de le réserver à votre nom.</p>
+    </div>
+    <div class="dom-box" data-reveal="blur" data-delay="200">
+      <form class="dom-form" id="domForm" autocomplete="off">
+        <span class="dom-prefix">www.</span>
+        <input id="domInput" type="text" inputmode="url" spellcheck="false" placeholder="votre-entreprise" aria-label="Nom de domaine à vérifier">
+        <button type="submit" class="btn primary">Vérifier</button>
+      </form>
+      <p class="dom-hint">On teste .lu, .com, .be, .fr et .eu en un clic.</p>
+      <div class="dom-results" id="domResults" aria-live="polite"></div>
+      <div class="dom-cta" id="domCta">
+        <p>Une extension est libre ? <b>On la réserve à votre nom</b> et on la gère pour vous, sans que vous ayez à créer de compte.</p>
+        <a href="#contact" class="btn primary" style="flex:none">Réserver ce nom</a>
+      </div>
+      <p class="dom-legal">Vérification indicative en temps réel. La disponibilité définitive est confirmée au moment de la réservation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING + SIMULATEUR -->
+<section class="sec" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Tarifs</span>
+      <h2 data-reveal data-delay="120">Des prix clairs, sans surprise</h2>
+      <p data-reveal="blur" data-delay="240">Choisissez le type de site qui vous ressemble : vous voyez tout de suite une fourchette de prix. Le tarif exact, on l'établit ensemble, gratuitement.</p>
+    </div>
+
+    <div class="ptiers" data-stagger="90">
+      <div class="ptier">
+        <div><b>Essentiel</b><span>Indépendants, artisans</span></div>
+        <i>1 350 €<small>à partir de</small></i>
+      </div>
+      <div class="ptier feat">
+        <div><b><em>Le plus demandé</em>Standard</b><span>Commerces, restaurants</span></div>
+        <i>2 625 €<small>à partir de</small></i>
+      </div>
+      <div class="ptier">
+        <div><b>Sur-mesure</b><span>E-commerce, projets avancés</span></div>
+        <i>3 750 €<small>à partir de</small></i>
+      </div>
+    </div>
+
+    <div id="simulateur" style="scroll-margin-top:90px"></div>
+    <div class="sim-grid" data-reveal="blur" data-delay="200">
+      <!-- Choix : un seul geste, le type de site -->
+      <div class="sim-panel">
+        <div class="sim-step" style="margin-bottom:0">
+          <div class="sim-lab"><span class="sim-num">€</span> Quel type de site vous ressemble ?</div>
+          <div class="sim-opts" id="simBase"></div>
+        </div>
+      </div>
+
+      <!-- Résultat : une fourchette indicative, pas un devis -->
+      <aside class="sim-out">
+        <div class="oh">Estimation approximative</div>
+        <div class="sim-tot"><span id="simTot">—</span></div>
+        <div class="sim-ht">hors TVA · fourchette indicative</div>
+
+        <div class="sim-detail" id="simDetail"></div>
+
+        <div class="sim-sub">
+          <span>Puis une <b>maintenance</b> pour l'hébergement, la sécurité et le support, au trimestre ou à l'année</span>
+          <b><small style="font-family:var(--sans);font-size:11px;color:var(--soft);font-weight:600;display:block">à partir de</small>150 €<small style="font-family:var(--sans);font-size:12px;color:var(--soft);font-weight:400">/trimestre</small></b>
+        </div>
+
+        <a href="#contact" class="btn primary sim-cta" id="simCta">Obtenir mon devis précis</a>
+        <p class="sim-legal">Une estimation pour vous donner un ordre d'idée, pas un devis. Le prix exact dépend de votre projet : on l'établit ensemble, gratuitement, lors d'un échange rapide.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div>
+        <span class="eyebrow" data-reveal="blur">Qui sommes-nous</span>
+        <h2 data-reveal data-delay="120" style="font-size:clamp(28px,4.4vw,44px);margin:14px 0 20px">Une agence web luxembourgeoise, à taille humaine</h2>
+        <p data-reveal="blur" data-delay="240">NS Development accompagne les commerçants luxembourgeois pour réussir en ligne. On parle votre langue, on connaît votre marché, et on va droit au but.</p>
+        <p data-reveal="blur" data-delay="240">Pas d'intermédiaire, pas de jargon : un contact direct, un travail soigné et un site qui vous ramène de vrais clients.</p>
+      </div>
+      <div class="team" data-reveal="blur" data-delay="200">
+        <div class="tm3d" id="samCard">
+          <div class="tm3d-card">
+            <div class="tm3d-photo">
+              <span class="tm3d-dot">Disponible</span>
+              <img src="assets/sam.jpg?v=1" alt="Samir Dinis Da Rosa — votre contact chez NS Development">
+              <span class="tm3d-shine"></span>
+            </div>
+            <div class="tm3d-name">
+              <div class="nm">Samir Dinis Da Rosa</div>
+              <div class="rl">Votre contact — conseil & suivi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Contact</span>
+      <h2 data-reveal data-delay="120">Parlons de votre projet</h2>
+      <p data-reveal="blur" data-delay="240">Un devis gratuit, sans engagement, sous 24 h. Dites-nous ce dont vous avez besoin.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="cinfo" data-reveal="left">
+        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">nsdevelopment26@gmail.com</div></div></div>
+        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="ci-l">Zone</div><div class="ci-v">Luxembourg & alentours</div></div></div>
+        <div class="cline" style="border-bottom:none"><div class="ci-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="ci-l">Réponse</div><div class="ci-v">Sous 24 h ouvrées</div></div></div>
+      </div>
+      <form class="cf" data-reveal="right" data-delay="140" id="nsForm" onsubmit="return sendNS(event)">
+        <div class="cf-row">
+          <div class="cf-f"><label for="n">Nom</label><input id="n" name="nom" type="text" required></div>
+          <div class="cf-f"><label for="e">Email</label><input id="e" name="email" type="email" required></div>
+        </div>
+        <div class="cf-row">
+          <div class="cf-f"><label for="t">Téléphone</label><input id="t" name="tel" type="tel"></div>
+          <div class="cf-f"><label for="ty">Type de projet</label>
+            <select id="ty" name="type" required>
+              <option value="">Choisir…</option>
+              <option>Site vitrine</option><option>Site restaurant / réservation</option>
+              <option>E-commerce / take-away</option><option>Refonte de site existant</option><option>Autre</option>
+            </select>
+          </div>
+        </div>
+        <div class="cf-row"><div class="cf-f full"><label for="m">Votre message</label><textarea id="m" name="message" required></textarea></div></div>
+        <button type="submit" class="btn primary">Envoyer ma demande
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <div class="cf-ok" id="nsOk">✓ Merci ! Votre messagerie va s'ouvrir avec votre demande pré-remplie. Envoyez-la et on vous répond sous 24 h.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top" data-stagger="100">
+      <div class="foot-brand">
+        <img src="assets/logo-ns-tuile-header.png" alt="NS Development">
+        <p>Création de sites web modernes pour les commerçants, restaurants et indépendants du Luxembourg.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Navigation</h4>
+        <a href="#services">Services</a><a href="#demos">Exemples</a><a href="#method">Méthode</a><a href="#pricing">Tarifs</a><a href="#contact">Contact</a><a href="espace-client.html">Espace client</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="mailto:nsdevelopment26@gmail.com">nsdevelopment26@gmail.com</a>
+        <a href="#contact">Devis gratuit</a>
+        <span style="display:block;font-size:13.5px;color:var(--muted);padding:5px 0">Luxembourg</span>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 NS Development. Tous droits réservés.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap">
+        <a href="mentions-legales.html" style="color:var(--muted)">Mentions légales</a>
+        <a href="confidentialite.html" style="color:var(--muted)">Confidentialité</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Animations : NS Motion Kit (ns-motion.css + ns-motion.js) */
+  const hamb=document.getElementById('hamb'),nl=document.getElementById('navlinks');
+  hamb.addEventListener('click',()=>nl.classList.toggle('open'));
+  nl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nl.classList.remove('open')));
+  // Pour recevoir les demandes proprement : créez un compte gratuit sur formspree.io,
+  // créez un formulaire, et remplacez VOTRE_ID ci-dessous par votre identifiant.
+  // Tant que ce n'est pas fait, le formulaire ouvre l'email (repli automatique).
+  /* ---------------------------------------------------------------
+     SIMULATEUR DE DEVIS
+     Prix issus de entreprise/tarifs/grille-tarifaire.md.
+     Pour modifier un tarif, il suffit de changer le chiffre ici.
+
+     AIDE_ETAT : passer à true UNIQUEMENT une fois que NS Development
+     est officiellement référencé comme prestataire SME Packages – Digital
+     auprès de la House of Entrepreneurship. Tant que c'est false, le bloc
+     "aide de l'État" reste invisible sur le site.
+     Voir entreprise/strategie/sme-packages-digital.md
+  --------------------------------------------------------------- */
+  // Aide SME Packages : gérée par Sam au moment du devis, pas affichée sur le site.
+  const AIDE_ETAT = false;
+
+  /* Un seul geste : le client choisit le type de site, on affiche une fourchette
+     approximative. Le chiffrage précis (options, sur-mesure, maintenance, aide de
+     l'État) est établi par Sam lors de l'échange qui aboutit au devis. */
+  const NS_TYPES = [
+    {id:'essentiel', nom:'Essentiel', desc:'Une page, tout l\'essentiel',         min:1200, max:1800},
+    {id:'vitrine',   nom:'Vitrine',   desc:'4 à 5 pages, galerie, services',      min:2500, max:3500},
+    {id:'pro',       nom:'Pro',       desc:'8 à 10 pages, bilingue, SEO renforcé', min:3500, max:5000},
+    {id:'boutique',  nom:'Boutique',  desc:'Vente en ligne jusqu\'à 50 produits',  min:3700, max:6500},
+    {id:'signature', nom:'Signature', desc:'Sur-mesure, catalogue, haut de gamme', min:6000, max:12000}
+  ];
+
+  // Espace insécable classique : l'espace fine de toLocaleString est trop serrée en Sora 800
+  const eur = n => n.toLocaleString('fr-FR').replace(/ /g,' ');
+  let simType = 'vitrine';
+
+  function simCarte(o, coche){
+    return '<label class="sim-o'+(coche?' on':'')+'" data-id="'+o.id+'">'
+      + '<input type="radio" name="sim-base" '+(coche?'checked':'')+'>'
+      + '<span style="flex:1"><b>'+o.nom+'</b><span>'+o.desc+'</span>'
+      + '<i>'+eur(o.min)+' – '+eur(o.max)+' €</i></span></label>';
+  }
+
+  function simRender(){
+    document.getElementById('simBase').innerHTML = NS_TYPES.map(o=>simCarte(o,o.id===simType)).join('');
+    document.querySelectorAll('.sim-o').forEach(el=>{
+      el.addEventListener('click', ev=>{
+        ev.preventDefault();
+        simType = el.dataset.id;
+        simRender(); simCalc();
+      });
+    });
+    // Les libellés sont toujours générés en français, puis retraduits si besoin
+    if(window.nsRetranslate) window.nsRetranslate();
+  }
+
+  function simCalc(){
+    const t = NS_TYPES.find(x=>x.id===simType);
+    document.getElementById('simTot').textContent = eur(t.min)+' – '+eur(t.max)+' €';
+    document.getElementById('simDetail').innerHTML =
+      '<div class="sim-line" style="border:none;padding-top:0"><span>'+t.desc+'</span></div>';
+
+    // Le bouton pré-remplit le formulaire de contact avec le type choisi
+    document.getElementById('simCta').dataset.resume =
+      'Type de site : '+t.nom+' (estimation '+eur(t.min)+' – '+eur(t.max)+' € HT).';
+    if(window.nsRetranslate) window.nsRetranslate();
+  }
+
+  document.getElementById('simCta').addEventListener('click', ()=>{
+    const m = document.getElementById('m');
+    if(m && !m.value.trim()){
+      m.value = 'Bonjour, j\'ai fait une estimation sur votre simulateur :\n\n'
+              + document.getElementById('simCta').dataset.resume
+              + '\n\nJ\'aimerais un devis précis pour mon projet.';
+    }
+  });
+
+  simRender(); simCalc();
+
+  /* -----------------------------------------------------------------
+     TEST DE PALETTE — À SUPPRIMER AVANT LA MISE EN LIGNE
+     Petit bouton flottant pour comparer la palette bleue et la palette
+     monochrome. Une fois le choix fait : supprimer ce bloc, et si c'est
+     le monochrome qui est retenu, écrire <html lang="fr" data-theme="mono">.
+     ----------------------------------------------------------------- */
+  (function(){
+    /* override de thème de test retiré pour la version finale */
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9998;display:flex;gap:2px;padding:3px;'
+      + 'border-radius:10px;background:var(--card);border:1px solid var(--line2);box-shadow:0 8px 24px rgba(0,0,0,.45)';
+    box.innerHTML = '<button type="button" data-t="bleu">Bleu</button><button type="button" data-t="mono">Mono</button>';
+    box.querySelectorAll('button').forEach(b=>{
+      b.style.cssText = 'font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;'
+        + 'border:none;border-radius:7px;padding:7px 11px;cursor:pointer;background:none;color:var(--muted)';
+      b.addEventListener('click', ()=>{
+        const mono = b.dataset.t === 'mono';
+        document.documentElement.dataset.theme = mono ? 'mono' : '';
+        localStorage.setItem('ns-theme', mono ? 'mono' : 'bleu');
+        marque();
+      });
+    });
+    function marque(){
+      const actif = document.documentElement.dataset.theme === 'mono' ? 'mono' : 'bleu';
+      box.querySelectorAll('button').forEach(b=>{
+        const on = b.dataset.t === actif;
+        b.style.background = on ? 'var(--glow)' : 'none';
+        b.style.color = on ? 'var(--ink)' : 'var(--muted)';
+      });
+    }
+    /* bouton de test Bleu/Mono retiré pour la version finale */
+  })();
+
+  // Traduit si i18n.js est chargé, sinon renvoie le français
+  const T = s => (window.nsT ? window.nsT(s) : s);
+  const FORMSPREE = "https://formspree.io/f/VOTRE_ID";
+  function sendNS(ev){
+    ev.preventDefault();
+    const f=ev.target, ok=document.getElementById('nsOk');
+    if(FORMSPREE.indexOf('VOTRE_ID')!==-1){
+      const s=encodeURIComponent('Demande de devis — '+f.type.value+' — '+f.nom.value);
+      const b=encodeURIComponent('Nom : '+f.nom.value+'\nEmail : '+f.email.value+'\nTéléphone : '+(f.tel.value||'—')+'\nType de projet : '+f.type.value+'\n\nMessage :\n'+f.message.value+'\n');
+      window.location.href='mailto:nsdevelopment26@gmail.com?subject='+s+'&body='+b;
+      ok.textContent=T("✓ Merci ! Votre messagerie va s'ouvrir avec votre demande pré-remplie. Envoyez-la et on vous répond sous 24 h.");
+      ok.style.display='block';
+      return false;
+    }
+    fetch(FORMSPREE,{method:'POST',body:new FormData(f),headers:{'Accept':'application/json'}})
+      .then(r=>{ if(!r.ok) throw new Error(); f.reset(); ok.textContent="✓ Merci ! Votre demande a bien été envoyée, on vous répond sous 24 h ouvrées."; ok.style.display='block'; })
+      .catch(()=>{ ok.textContent=T("Une erreur est survenue. Écrivez-nous directement à nsdevelopment26@gmail.com"); ok.style.display='block'; });
+    return false;
+  }
+</script>
+</body>
+</html>

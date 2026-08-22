@@ -1,0 +1,116 @@
+/* =================================================================
+   NS CLAIR — thèmes clairs pour le site NS Development
+   Deux directions à comparer, activées via l'attribut data-theme
+   sur la balise <html> :
+     data-theme="clair-a"  → « Clair & Net »  (blanc pur, éditorial)
+     data-theme="clair-b"  → « Clair Premium »(gris clair, cartes en relief)
+
+   Ne touche NI la structure NI les animations : uniquement la palette
+   et quelques neutralisations du look « IA/tech » (grille, blobs, ombres
+   noires) qui n'ont de sens que sur fond sombre.
+
+   La spécificité des sélecteurs (:root[data-theme=...]) passe volontairement
+   AU-DESSUS des règles de base du <style> inline, donc l'ordre de
+   chargement n'a pas d'importance.
+   ================================================================= */
+
+/* ============================================================
+   VERSION A — « Clair & Net »
+   Blanc pur, noir/gris, bleu minimal. Le plus épuré.
+   ============================================================ */
+:root[data-theme="clair-a"]{
+  --bg:#ffffff;--bg2:#f6f7f9;--card:#ffffff;--card2:#f7f8fa;--line:#e9ebef;--line2:#d9dde4;
+  --ink:#0e1116;--soft:#586274;--muted:#98a1b0;
+  --acc:#2563eb;--acc2:#1d4ed8;--acc-deep:#1e40af;
+  --glow:rgba(37,99,235,.08);--glow2:rgba(37,99,235,.04);
+  --nav-bg:rgba(255,255,255,.82);
+  --ok:#0e9f6e;--ok-ink:#057a55;--ok-glow:rgba(14,159,110,.10);--ok-line:rgba(14,159,110,.35);--ok-halo:rgba(14,159,110,.16);
+  --btn-ink:#ffffff;
+  --ns-g1:#0e1116;--ns-g2:#2563eb;--ns-progress-color:#2563eb;
+}
+/* Titre du hero : dégradé encre → bleu, lisible sur blanc */
+:root[data-theme="clair-a"] .fx-cycle .cy-word{background-image:linear-gradient(100deg,#0e1116,#2563eb,#0e1116)}
+/* Eyebrow neutre (pas de mono bleu = moins "tech") */
+:root[data-theme="clair-a"] .eyebrow{color:#586274}
+:root[data-theme="clair-a"] .eyebrow::before{background:#c7ccd5}
+/* On supprime la grille technique et on adoucit le fond du hero */
+:root[data-theme="clair-a"] .hero-grid{display:none}
+:root[data-theme="clair-a"] .hero-bg{background:radial-gradient(58% 48% at 82% -6%,rgba(37,99,235,.05),transparent 60%)}
+/* Blobs "aurore" : quasi éteints, sinon effet nuage dégradé façon IA */
+:root[data-theme="clair-a"] .fx-aurora i{opacity:.05;filter:blur(120px)}
+:root[data-theme="clair-a"] .fx-aurora i:nth-child(3){opacity:.04}
+/* Marquee : trait de contour plus marqué, sinon invisible sur blanc */
+:root[data-theme="clair-a"] .fx-band-track span{-webkit-text-stroke:1px #cbd2dc}
+/* Sélection de texte lisible */
+:root[data-theme="clair-a"] ::selection{background:rgba(37,99,235,.14);color:#0e1116}
+/* Ombres : du noir dense vers des ombres douces bleutées */
+:root[data-theme="clair-a"] nav.ns-solid{box-shadow:0 1px 0 var(--line),0 8px 30px rgba(16,24,40,.06)}
+:root[data-theme="clair-a"] .btn.primary{box-shadow:0 8px 22px rgba(37,99,235,.22)}
+:root[data-theme="clair-a"] .btn.primary:hover{box-shadow:0 14px 34px rgba(37,99,235,.28)}
+:root[data-theme="clair-a"] .scard:hover{box-shadow:0 18px 40px rgba(16,24,40,.08)}
+:root[data-theme="clair-a"] .work:hover{box-shadow:0 24px 55px rgba(16,24,40,.10)}
+:root[data-theme="clair-a"] .sim-out{box-shadow:0 20px 50px rgba(16,24,40,.08)}
+:root[data-theme="clair-a"] .globe-tag{box-shadow:0 12px 34px rgba(16,24,40,.10)}
+:root[data-theme="clair-a"] .tm3d-photo{box-shadow:0 30px 60px rgba(16,24,40,.16),0 4px 14px rgba(16,24,40,.08)}
+
+/* ============================================================
+   VERSION B — « Clair Premium »
+   Canevas gris très clair, sections blanches qui se détachent,
+   cartes en relief (ombres douces), bleu un peu plus présent.
+   ============================================================ */
+:root[data-theme="clair-b"]{
+  --bg:#e7eaf1;--bg2:#f2f4f9;--card:#ffffff;--card2:#f7f9fc;--line:#dfe3ec;--line2:#cdd3df;
+  --ink:#0f1522;--soft:#565e6f;--muted:#939cad;
+  --acc:#2f6bff;--acc2:#2f6bff;--acc-deep:#1b4fd6;
+  --glow:rgba(47,107,255,.10);--glow2:rgba(47,107,255,.05);
+  --nav-bg:rgba(233,236,243,.86);
+  --ok:#0e9f6e;--ok-ink:#057a55;--ok-glow:rgba(14,159,110,.10);--ok-line:rgba(14,159,110,.35);--ok-halo:rgba(14,159,110,.16);
+  --btn-ink:#ffffff;
+  --ns-g1:#0f1522;--ns-g2:#2f6bff;--ns-progress-color:#2f6bff;
+}
+/* Fond travaillé : dégradé doux et légèrement bleuté, au lieu d'un blanc plat.
+   Les sections sont transparentes, donc ce dégradé devient le canevas du site,
+   et les cartes/bandes blanches s'en détachent nettement. */
+:root[data-theme="clair-b"] body{
+  background:
+    radial-gradient(1200px 520px at 50% -6%, #f4f6fb 0%, transparent 58%),
+    radial-gradient(900px 600px at 92% 8%, rgba(47,107,255,.05), transparent 60%),
+    linear-gradient(180deg, #edeff6 0%, #e4e7f0 46%, #e8eaf2 100%);
+  background-attachment:fixed;
+}
+/* Cartes blanches nettes sur le canevas coloré */
+:root[data-theme="clair-b"] .scard,
+:root[data-theme="clair-b"] .work,
+:root[data-theme="clair-b"] .sim-panel,
+:root[data-theme="clair-b"] .sim-out,
+:root[data-theme="clair-b"] .dom-box,
+:root[data-theme="clair-b"] .globe-fact,
+:root[data-theme="clair-b"] .step{background:#ffffff}
+/* Logo : la tuile (logo-ns-tuile-header.png) est déjà noire avec le monogramme
+   en clair, elle se pose telle quelle sur le fond clair. Aucun filtre :
+   un brightness(0) écraserait le monogramme et donnerait un carré noir plein. */
+:root[data-theme="clair-b"] .brand img,
+:root[data-theme="clair-b"] .foot-brand img{filter:none}
+:root[data-theme="clair-b"] .fx-cycle .cy-word{background-image:linear-gradient(100deg,#0f1522,#2f6bff,#0f1522)}
+/* Eyebrow : on garde une touche de bleu discrète (différenciateur vs A) */
+:root[data-theme="clair-b"] .hero-grid{display:none}
+:root[data-theme="clair-b"] .hero-bg{background:radial-gradient(68% 54% at 80% -6%,rgba(47,107,255,.06),transparent 62%),radial-gradient(48% 38% at 4% 100%,rgba(47,107,255,.04),transparent 60%)}
+:root[data-theme="clair-b"] .fx-aurora i{opacity:.06;filter:blur(110px)}
+:root[data-theme="clair-b"] .fx-aurora i:nth-child(3){opacity:.045}
+:root[data-theme="clair-b"] .fx-band-track span{-webkit-text-stroke:1px #cbd2dc}
+:root[data-theme="clair-b"] ::selection{background:rgba(47,107,255,.14);color:#0f1522}
+/* Relief : cartes qui lévitent légèrement au repos, ombre franche au survol */
+:root[data-theme="clair-b"] nav.ns-solid{box-shadow:0 1px 0 var(--line),0 10px 34px rgba(16,24,40,.07)}
+:root[data-theme="clair-b"] .btn.primary{box-shadow:0 8px 24px rgba(47,107,255,.24)}
+:root[data-theme="clair-b"] .btn.primary:hover{box-shadow:0 16px 38px rgba(47,107,255,.30)}
+:root[data-theme="clair-b"] .scard{box-shadow:0 1px 2px rgba(16,24,40,.04)}
+:root[data-theme="clair-b"] .scard:hover{box-shadow:0 22px 48px rgba(16,24,40,.12)}
+:root[data-theme="clair-b"] .work{box-shadow:0 1px 3px rgba(16,24,40,.05)}
+:root[data-theme="clair-b"] .work:hover{box-shadow:0 26px 60px rgba(16,24,40,.14)}
+:root[data-theme="clair-b"] .sim-panel,
+:root[data-theme="clair-b"] .dom-box,
+:root[data-theme="clair-b"] .globe-fact,
+:root[data-theme="clair-b"] .step{box-shadow:0 1px 3px rgba(16,24,40,.05)}
+:root[data-theme="clair-b"] .sim-out{box-shadow:0 24px 55px rgba(16,24,40,.12)}
+:root[data-theme="clair-b"] .globe-tag{box-shadow:0 14px 34px rgba(16,24,40,.12)}
+:root[data-theme="clair-b"] .tm3d-photo{box-shadow:0 34px 66px rgba(16,24,40,.18),0 4px 14px rgba(16,24,40,.10)}

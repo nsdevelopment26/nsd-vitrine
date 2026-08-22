@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="Kinésithérapie Weber">
+  <g fill="none" stroke="#C6B8A8" stroke-linecap="round" stroke-width="2.2">
+    <path d="M 96 78 A 108 108 0 0 0 96 222" opacity=".5"/>
+    <path d="M 204 78 A 108 108 0 0 1 204 222" opacity=".5"/>
+  </g>
+  <g fill="#CBBDAC">
+    <rect x="-7.00" y="-2.60" width="14.00" height="5.20" rx="1.87" transform="translate(150.00 54.00) rotate(203.19)"/>
+    <rect x="-2.10" y="-1.20" width="4.20" height="2.39" rx="0.86" transform="translate(158.16 57.50) rotate(203.19)"/>
+    <rect x="-7.36" y="-2.65" width="14.72" height="5.29" rx="1.91" transform="translate(145.38 65.00) rotate(201.93)"/>
+    <rect x="-2.21" y="-1.22" width="4.42" height="2.44" rx="0.88" transform="translate(153.90 68.43) rotate(201.93)"/>
+    <rect x="-7.75" y="-2.69" width="15.49" height="5.39" rx="1.94" transform="translate(141.32 76.00) rotate(198.17)"/>
+    <rect x="-2.32" y="-1.24" width="4.65" height="2.48" rx="0.89" transform="translate(150.36 78.96) rotate(198.17)"/>
+    <rect x="-8.14" y="-2.74" width="16.29" height="5.48" rx="1.97" transform="translate(138.31 87.00) rotate(192.09)"/>
+    <rect x="-2.44" y="-1.26" width="4.89" height="2.52" rx="0.91" transform="translate(147.93 89.06) rotate(192.09)"/>
+    <rect x="-8.55" y="-2.79" width="17.09" height="5.58" rx="2.01" transform="translate(136.71 98.00) rotate(184.25)"/>
+    <rect x="-2.56" y="-1.28" width="5.13" height="2.57" rx="0.92" transform="translate(146.86 98.76) rotate(184.25)"/>
+    <rect x="-8.95" y="-2.84" width="17.91" height="5.67" rx="2.04" transform="translate(136.71 109.00) rotate(175.75)"/>
+    <rect x="-2.69" y="-1.30" width="5.37" height="2.61" rx="0.94" transform="translate(147.20 108.22) rotate(175.75)"/>
+    <rect x="-9.37" y="-2.88" width="18.73" height="5.77" rx="2.08" transform="translate(138.31 120.00) rotate(167.91)"/>
+    <rect x="-2.81" y="-1.33" width="5.62" height="2.65" rx="0.95" transform="translate(148.94 117.72) rotate(167.91)"/>
+    <rect x="-9.78" y="-2.93" width="19.56" height="5.86" rx="2.11" transform="translate(141.32 131.00) rotate(161.83)"/>
+    <rect x="-2.93" y="-1.35" width="5.87" height="2.70" rx="0.97" transform="translate(151.98 127.50) rotate(161.83)"/>
+    <rect x="-10.20" y="-2.98" width="20.40" height="5.96" rx="2.14" transform="translate(145.38 142.00) rotate(158.07)"/>
+    <rect x="-3.06" y="-1.37" width="6.12" height="2.74" rx="0.99" transform="translate(156.11 137.68) rotate(158.07)"/>
+    <rect x="-10.62" y="-3.02" width="21.24" height="6.05" rx="2.18" transform="translate(150.00 153.00) rotate(156.81)"/>
+    <rect x="-3.19" y="-1.39" width="6.37" height="2.78" rx="1.00" transform="translate(160.96 148.31) rotate(156.81)"/>
+    <rect x="-11.05" y="-3.07" width="22.09" height="6.14" rx="2.21" transform="translate(154.62 164.00) rotate(158.07)"/>
+    <rect x="-3.31" y="-1.41" width="6.63" height="2.83" rx="1.02" transform="translate(166.01 159.41) rotate(158.07)"/>
+    <rect x="-11.47" y="-3.12" width="22.94" height="6.24" rx="2.25" transform="translate(158.68 175.00) rotate(161.83)"/>
+    <rect x="-3.44" y="-1.43" width="6.88" height="2.87" rx="1.03" transform="translate(170.68 171.06) rotate(161.83)"/>
+    <rect x="-11.90" y="-3.17" width="23.80" height="6.33" rx="2.28" transform="translate(161.69 186.00) rotate(167.91)"/>
+    <rect x="-3.57" y="-1.46" width="7.14" height="2.91" rx="1.05" transform="translate(174.40 183.28) rotate(167.91)"/>
+    <rect x="-12.33" y="-3.21" width="24.66" height="6.43" rx="2.31" transform="translate(163.29 197.00) rotate(175.75)"/>
+    <rect x="-3.70" y="-1.48" width="7.40" height="2.96" rx="1.06" transform="translate(176.61 196.01) rotate(175.75)"/>
+    <rect x="-12.76" y="-3.26" width="25.52" height="6.52" rx="2.35" transform="translate(163.29 208.00) rotate(184.25)"/>
+    <rect x="-3.83" y="-1.50" width="7.66" height="3.00" rx="1.08" transform="translate(176.98 209.02) rotate(184.25)"/>
+    <rect x="-13.19" y="-3.31" width="26.39" height="6.62" rx="2.38" transform="translate(161.69 219.00) rotate(192.09)"/>
+    <rect x="-3.96" y="-1.52" width="7.92" height="3.04" rx="1.10" transform="translate(175.46 221.95) rotate(192.09)"/>
+    <rect x="-13.63" y="-3.36" width="27.26" height="6.71" rx="2.42" transform="translate(158.68 230.00) rotate(198.17)"/>
+    <rect x="-4.09" y="-1.54" width="8.18" height="3.09" rx="1.11" transform="translate(172.40 234.50) rotate(198.17)"/>
+    <rect x="-14.06" y="-3.40" width="28.13" height="6.81" rx="2.45" transform="translate(154.62 241.00) rotate(201.93)"/>
+    <rect x="-4.22" y="-1.57" width="8.44" height="3.13" rx="1.13" transform="translate(168.36 246.53) rotate(201.93)"/>
+    <rect x="-14.50" y="-3.45" width="29.00" height="6.90" rx="2.48" transform="translate(150.00 252.00) rotate(203.19)"/>
+    <rect x="-4.35" y="-1.59" width="8.70" height="3.17" rx="1.14" transform="translate(163.95 257.98) rotate(203.19)"/>
+  </g>
+</svg>

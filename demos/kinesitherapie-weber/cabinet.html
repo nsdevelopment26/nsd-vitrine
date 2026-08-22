@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="fr" class="i18n-attente">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="cab.titre">Le cabinet — Kinésithérapie Weber · 21 rue de la Gare, Junglinster</title>
+<meta name="description" data-i18n-attr="content:cab.meta" content="Cabinet de kinésithérapie Weber, 21 rue de la Gare, L-6117 Junglinster. Horaires, accès, parking, première visite, contact et téléphone.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Le cabinet — Kinésithérapie Weber, Junglinster">
+<meta property="og:description" content="Horaires, accès et infos pratiques du cabinet de Nora Weber à Junglinster.">
+<meta property="og:image" content="assets/img/facade-cabinet.jpg">
+<meta name="theme-color" content="#F7F3EC">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Manrope:wght@400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ns-motion.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var l=localStorage.getItem('ns.langue');if(!l||l==='fr')
+document.documentElement.classList.remove('i18n-attente');}catch(e){
+document.documentElement.classList.remove('i18n-attente');}
+setTimeout(function(){document.documentElement.classList.remove('i18n-attente');},1200);})();
+</script>
+</head>
+<body data-page-transition>
+
+<div class="demo-bar" data-i18n="bar.demo">
+  Exemple de site réalisé par <strong>NS Development</strong> — cabinet fictif, contenus de démonstration.
+</div>
+
+<nav class="nav" data-nav-solid>
+  <div class="wrap nav__in">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-mark.svg" alt="" width="42" height="42">
+      <span class="brand__txt"><span class="brand__name">Weber</span><span class="brand__sub" data-i18n="marque.sous">Kinésithérapie</span></span>
+    </a>
+    <button class="burger" data-i18n-attr="aria-label:nav.menu" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="nav__links">
+      <a href="index.html" data-i18n="nav.accueil">Accueil</a>
+      <a href="soins.html" data-i18n="nav.soins">Les soins</a>
+      <a href="cabinet.html" aria-current="page" data-i18n="nav.cabinet">Le cabinet</a>
+      <a href="rendez-vous.html" data-i18n="nav.rdv">Rendez-vous</a>
+      <a href="a-propos.html" data-i18n="nav.nora">Nora Weber</a>
+      <div class="lang-switch" role="group" data-i18n-attr="aria-label:nav.langue" aria-label="Choix de la langue">
+        <button type="button" data-langue-choix="fr" lang="fr" title="Français">FR</button>
+        <button type="button" data-langue-choix="lb" lang="lb" title="Lëtzebuergesch">LB</button>
+      </div>
+      <a class="btn btn--primary btn--sm" href="rendez-vous.html" data-i18n="nav.cta">Prendre rendez-vous</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:2.5rem">
+  <div class="aurora"><i></i><i></i><i></i></div>
+  <div class="wrap hero__grid">
+    <div>
+      <p class="eyebrow" data-reveal data-i18n="cab.oeil">Infos pratiques</p>
+      <h1><span class="script" data-reveal data-i18n="cab.h1a">Bienvenue</span><span data-split data-i18n="cab.h1b">au cabinet de Junglinster.</span></h1>
+      <p class="lead" data-reveal data-delay="140" style="margin-top:1.3rem" data-i18n="cab.chapeau">
+        Une maison en pierre du pays, à l'écart du bruit, à l'entrée du village.
+        On se gare devant, on entre de plain-pied, et on commence à l'heure.
+      </p>
+      <div class="hero__cta" data-reveal data-delay="220">
+        <a class="btn btn--primary ns-shine" href="rendez-vous.html" data-magnetic data-i18n="acc.cta1">Réserver un créneau</a>
+        <a class="btn btn--ghost" href="https://www.google.com/maps/search/?api=1&query=21+rue+de+la+Gare+6117+Junglinster+Luxembourg" target="_blank" rel="noopener" data-i18n="cab.itineraire">Itinéraire</a>
+      </div>
+    </div>
+    <div class="blob blob--soft" data-reveal="scale" data-delay="160">
+      <img src="assets/img/facade-cabinet.jpg" data-i18n-attr="alt:cab.alt.facade" alt="Façade en pierre du cabinet Kinésithérapie Weber, fenêtres blanches et volets sombres" width="1000" height="1000" fetchpriority="high">
+    </div>
+  </div>
+</header>
+
+<!-- HORAIRES + CONTACT -->
+<section class="sec sec--paper">
+  <div class="wrap info-grid">
+    <div data-reveal="left">
+      <p class="eyebrow" data-i18n="cab.h.oeil">Horaires d'ouverture</p>
+      <h2 style="margin-bottom:1.6rem" data-i18n="cab.h.titre">Quand je consulte</h2>
+      <ul class="hours">
+        <li data-jour="1"><b data-i18n="jour.lundi">Lundi</b><span>08:00 – 12:00 · 13:30 – 18:30</span></li>
+        <li data-jour="2"><b data-i18n="jour.mardi">Mardi</b><span>08:00 – 12:00 · 13:30 – 18:30</span></li>
+        <li data-jour="3"><b data-i18n="jour.mercredi">Mercredi</b><span>08:00 – 12:00 · 13:30 – 18:30</span></li>
+        <li data-jour="4"><b data-i18n="jour.jeudi">Jeudi</b><span>08:00 – 12:00 · 13:30 – 19:00</span></li>
+        <li data-jour="5"><b data-i18n="jour.vendredi">Vendredi</b><span>08:00 – 12:00 · 13:30 – 17:00</span></li>
+        <li data-jour="6"><b data-i18n="jour.samedi">Samedi</b><span>09:00 – 12:00</span></li>
+        <li data-jour="0" class="is-off"><b data-i18n="jour.dimanche">Dimanche</b><span data-i18n="jour.ferme">Fermé</span></li>
+      </ul>
+      <p style="margin-top:1.3rem;font-size:.88rem;color:var(--ink-mute)">
+        <b data-ouvert style="font-weight:700"></b><span data-i18n="cab.h.note"> — Les créneaux de fin de journée et du samedi
+        partent vite : réservez-les à l'avance.</span>
+      </p>
+    </div>
+
+    <div data-reveal="right">
+      <p class="eyebrow" data-i18n="cab.c.oeil">Contact &amp; accès</p>
+      <h2 style="margin-bottom:1.6rem" data-i18n="cab.c.titre">Où me trouver</h2>
+      <ul class="contact-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div><b data-i18n="cab.c.adresse">Adresse</b><span data-i18n="cab.c.adresse.v">21, rue de la Gare<br>L-6117 Junglinster</span></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.8a2 2 0 0 1 1.7 2Z"/></svg>
+          <div><b data-i18n="cab.c.tel">Téléphone du cabinet</b><a href="tel:+35227000000">+352 27 00 00 00</a></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg>
+          <div><b data-i18n="cab.c.mobile">Mobile</b><a href="tel:+352621000000">+352 621 00 00 00</a></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></svg>
+          <div><b data-i18n="cab.c.mail">E-mail</b><span style="color:var(--ink-mute)" data-i18n="cab.c.mail.v">contact@kine-weber.lu</span></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9h18M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><path d="M9 13h6"/></svg>
+          <div><b data-i18n="cab.c.parking">Parking</b><span data-i18n="cab.c.parking.v">Places gratuites devant le cabinet, sans limitation de durée</span></div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+          <div><b data-i18n="cab.c.acces">Accessibilité</b><span data-i18n="cab.c.acces.v">Entrée de plain-pied, salle de soin au rez-de-chaussée</span></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CARTE -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec__head is-center" data-reveal>
+      <p class="eyebrow is-center" data-i18n="cab.map.oeil">Y aller</p>
+      <h2 data-i18n="cab.map.titre">À Junglinster, à vingt minutes de la capitale</h2>
+      <p data-i18n="cab.map.texte">Junglinster est le chef-lieu de sa commune, dans le canton de Grevenmacher.
+         Depuis Luxembourg-Ville, une vingtaine de minutes par la N11.</p>
+    </div>
+    <div class="map-card" data-reveal="scale">
+      <iframe
+        data-i18n-attr="title:cab.map.iframe" title="Carte : 21 rue de la Gare, L-6117 Junglinster"
+        loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=6.2230%2C49.6920%2C6.2830%2C49.7260&layer=mapnik&marker=49.7092%2C6.2528"></iframe>
+    </div>
+    <p style="text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--ink-mute)" data-reveal data-i18n="cab.map.note">
+      Le repère est posé sur le centre de Junglinster.
+      <a href="https://www.google.com/maps/search/?api=1&query=21+rue+de+la+Gare+6117+Junglinster+Luxembourg" target="_blank" rel="noopener" style="color:var(--taupe-deep)">Ouvrir dans Google Maps</a>
+    </p>
+  </div>
+</section>
+
+<!-- PREMIÈRE VISITE -->
+<section class="sec sec--sand">
+  <div class="wrap">
+    <div class="spine-rule" data-reveal><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="sec__head is-center" data-reveal>
+      <p class="eyebrow is-center" data-i18n="cab.v.oeil">Votre première venue</p>
+      <h2 data-i18n="cab.v.titre">Ce qu'il faut apporter</h2>
+    </div>
+    <div class="cards" data-stagger="110">
+      <article class="card" data-reveal>
+        <div class="card__body">
+          <span class="card__tag" data-i18n="cab.v.indispensable">Indispensable</span>
+          <h3 data-i18n="cab.v1.titre">L'ordonnance</h3>
+          <p data-i18n="cab.v1.texte">La prescription de votre médecin, avec le nombre de séances et la zone à traiter.
+             Sans elle, pas de prise en charge CNS.</p>
+        </div>
+      </article>
+      <article class="card" data-reveal>
+        <div class="card__body">
+          <span class="card__tag" data-i18n="cab.v.indispensable">Indispensable</span>
+          <h3 data-i18n="cab.v2.titre">Votre carte de sécurité sociale</h3>
+          <p data-i18n="cab.v2.texte">La carte CNS, pour l'enregistrement du dossier dès la première séance.</p>
+        </div>
+      </article>
+      <article class="card" data-reveal>
+        <div class="card__body">
+          <span class="card__tag card__tag--blush" data-i18n="cab.v.utile">Utile</span>
+          <h3 data-i18n="cab.v3.titre">Vos examens</h3>
+          <p data-i18n="cab.v3.texte">Radios, IRM, compte-rendu opératoire. Même anciens : ils racontent une histoire
+             que l'examen clinique seul ne dit pas.</p>
+        </div>
+      </article>
+      <article class="card" data-reveal>
+        <div class="card__body">
+          <span class="card__tag card__tag--blush" data-i18n="cab.v.utile">Utile</span>
+          <h3 data-i18n="cab.v4.titre">Une tenue souple</h3>
+          <p data-i18n="cab.v4.texte">Legging ou short, tee-shirt confortable. On va bouger, tester, mesurer.</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="cta" style="margin-top:3rem" data-reveal="scale">
+      <p class="eyebrow is-center" data-i18n="cab.cta.oeil">Tout est prêt&nbsp;?</p>
+      <h2 data-i18n="cab.cta.titre">Choisissez votre créneau</h2>
+      <p data-i18n="cab.cta.texte">Le premier rendez-vous dure 45 minutes. Vous voyez l'agenda réel du cabinet
+         et vous réservez en trois clics.</p>
+      <div class="cta__btns">
+        <a class="btn btn--primary ns-shine" href="rendez-vous.html" data-magnetic data-i18n="cab.cta.b1">Voir les disponibilités</a>
+        <a class="btn btn--ghost" href="tel:+35227000000" data-i18n="acc.cta.b2">Appeler le cabinet</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="index.html" style="margin-bottom:1.1rem">
+          <img src="assets/logo-mark.svg" alt="" width="42" height="42">
+          <span class="brand__txt"><span class="brand__name">Weber</span><span class="brand__sub" data-i18n="marque.sous">Kinésithérapie</span></span>
+        </a>
+        <p style="max-width:34ch" data-i18n="pied.intro">Cabinet de kinésithérapie de Nora Weber, à Junglinster,
+           canton de Grevenmacher. Rééducation orthopédique, sport, drainage lymphatique, respiratoire.</p>
+      </div>
+      <div>
+        <h4 data-i18n="pied.cabinet">Le cabinet</h4>
+        <ul>
+          <li><a href="soins.html" data-i18n="nav.soins">Les soins</a></li>
+          <li><a href="cabinet.html" data-i18n="pied.infos">Infos pratiques</a></li>
+          <li><a href="rendez-vous.html" data-i18n="nav.cta">Prendre rendez-vous</a></li>
+          <li><a href="a-propos.html" data-i18n="nav.nora">Nora Weber</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="pied.contact">Contact</h4>
+        <ul>
+          <li><a href="tel:+35227000000">+352 27 00 00 00</a></li>
+          <li><a href="tel:+352621000000">+352 621 00 00 00</a></li>
+          <li>21, rue de la Gare<br>L-6117 Junglinster</li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="pied.horaires">Horaires</h4>
+        <ul data-i18n="pied.horaires.liste">
+          <li>Lun – Mer &nbsp;8h–12h · 13h30–18h30</li>
+          <li>Jeudi &nbsp;8h–12h · 13h30–19h</li>
+          <li>Vendredi &nbsp;8h–12h · 13h30–17h</li>
+          <li>Samedi &nbsp;9h–12h</li>
+          <li>Dimanche &nbsp;fermé</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© <span data-annee>2026</span> Kinésithérapie Weber — Junglinster, Luxembourg</span>
+      <span class="footer__ns" data-i18n="pied.ns">Réalisé par <b>NS&nbsp;Development</b></span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/traductions.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/ns-motion.js" defer></script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

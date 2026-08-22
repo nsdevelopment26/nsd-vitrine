@@ -1,0 +1,32 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Maison Safran">
+  <defs>
+    <linearGradient id="msGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e7c877"/>
+      <stop offset="0.5" stop-color="#d3a24a"/>
+      <stop offset="1" stop-color="#b3852f"/>
+    </linearGradient>
+    <path id="msTop" d="M40,100 A60,60 0 0 1 160,100" fill="none"/>
+    <path id="msBot" d="M44,100 A56,56 0 0 0 156,100" fill="none"/>
+  </defs>
+  <circle cx="100" cy="100" r="76" fill="none" stroke="url(#msGold)" stroke-width="2"/>
+  <circle cx="100" cy="100" r="68" fill="none" stroke="url(#msGold)" stroke-width="0.8" opacity="0.6"/>
+  <!-- Motif central : flamme / lotus de safran stylisé -->
+  <g fill="url(#msGold)">
+    <path d="M100,58 C112,74 118,86 118,98 C118,113 110,122 100,122 C90,122 82,113 82,98 C82,86 88,74 100,58 Z" opacity="0.95"/>
+    <path d="M100,72 C106,82 109,90 109,98 C109,108 105,114 100,114 C95,114 91,108 91,98 C91,90 94,82 100,72 Z" fill="#22160d" opacity="0.85"/>
+    <path d="M100,80 C103,86 105,92 105,98 C105,105 103,109 100,109 C97,109 95,105 95,98 C95,92 97,86 100,80 Z"/>
+  </g>
+  <!-- Petites feuilles latérales -->
+  <g fill="url(#msGold)" opacity="0.85">
+    <path d="M76,104 C68,102 62,104 58,110 C66,112 72,110 76,104 Z"/>
+    <path d="M124,104 C132,102 138,104 142,110 C134,112 128,110 124,104 Z"/>
+  </g>
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="13" letter-spacing="3" fill="url(#msGold)">
+    <textPath href="#msTop" startOffset="50%" text-anchor="middle">MAISON</textPath>
+  </text>
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="13" letter-spacing="3" fill="url(#msGold)">
+    <textPath href="#msBot" startOffset="50%" text-anchor="middle">SAFRAN</textPath>
+  </text>
+  <circle cx="52" cy="100" r="1.6" fill="url(#msGold)"/>
+  <circle cx="148" cy="100" r="1.6" fill="url(#msGold)"/>
+</svg>
