@@ -142,7 +142,7 @@ const NS_I18N = {
      en:"Dark and cinematic: full-bleed photography, fluid scrolling and a magazine layout.",
      pt:"Escuro e cinematográfico: fotografia em grande formato, deslocamento fluido e layout de revista."},
   "Photo plein cadre": {lb:"Foto iwwer de ganze Kader", de:"Vollformat-Foto", en:"Full-bleed photography", pt:"Fotografia em grande formato"},
-  "Scroll cinématique": {lb:"Kinemateschen Scroll", de:"Filmisches Scrollen", en:"Cinematic scroll", pt:"Scroll cinematográfico"},
+  "Rendez-vous en ligne": {lb:"Rendez-vous online", de:"Online-Terminbuchung", en:"Online booking", pt:"Marcações online"},
   "Galerie de chevaux": {lb:"Päerdsgalerie", de:"Pferdegalerie", en:"Horse gallery", pt:"Galeria de cavalos"},
   "Fitness & coachs": {lb:"Fitness & Coachen", de:"Fitness & Coaches", en:"Fitness & coaches", pt:"Fitness e treinadores"},
   "Garage & auto": {lb:"Garage & Auto", de:"Werkstatt & Auto", en:"Garage & cars", pt:"Garagem e automóvel"},
