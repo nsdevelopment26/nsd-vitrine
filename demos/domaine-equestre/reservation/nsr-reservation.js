@@ -132,6 +132,7 @@
       chargement: 'Chargement de l\'agenda…',
       ferme: 'Fermé',
       plusDeCreneau: 'Plus de créneau',
+      passe: 'Passé',
       complet: 'Complet',
       aucunePrestation: 'Aucune prestation n\'est proposée à la réservation pour le moment.',
 
@@ -192,6 +193,7 @@
       chargement: 'Agenda gëtt gelueden…',
       ferme: 'Zou',
       plusDeCreneau: 'Kee Termin méi',
+      passe: 'Vergaangen',
       complet: 'Ausgebucht',
       aucunePrestation: 'Am Moment gëtt näischt online ugebueden.',
 
@@ -795,13 +797,21 @@
       joursAffiches.forEach(function (j) {
         var decal = (j === 0 ? 6 : j - 1);
         var d = ajoute(etat.semaine, decal);
+        /* La grille ouvre sur le lundi de la semaine en cours : en milieu de
+           semaine, les premières colonnes sont derrière nous. Elles disaient
+           « Plus de créneau », ce qui se lit « c'est complet » — l'inverse du
+           message à faire passer. Un jour passé est passé, il le dit. */
+        var estPasse = cle(d) < aujourdhui;
         var res = creneauxDuJour(cfg, etat, d, etat.prestation);
 
-        html += '<div class="nsr__day' + (cle(d) === aujourdhui ? ' is-today' : '') + '">' +
+        html += '<div class="nsr__day' + (cle(d) === aujourdhui ? ' is-today' : '') +
+          (estPasse ? ' is-past' : '') + '">' +
           '<div class="nsr__dayhead"><span class="nsr__dow">' + L.joursC[d.getDay()] + '</span>' +
           '<span class="nsr__daynum">' + d.getDate() + '</span></div>';
 
-        if (res.ferme) {
+        if (estPasse) {
+          html += '<p class="nsr__none">' + txt(L.passe) + '</p>';
+        } else if (res.ferme) {
           html += '<p class="nsr__none">' + txt(L.ferme) + '</p>';
         } else if (res.horsHorizon) {
           html += '<p class="nsr__none">—</p>';

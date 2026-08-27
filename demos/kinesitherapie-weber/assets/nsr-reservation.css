@@ -232,6 +232,11 @@
   min-height: 148px;
 }
 .nsr__day.is-today { border-color: var(--nsr-accent); background: var(--nsr-fond); }
+
+/* Un jour derrière nous : présent pour garder le rythme de la semaine,
+   mais visiblement hors jeu. Il ne doit jamais se lire comme « complet ». */
+.nsr__day.is-past { opacity: .38; }
+.nsr__day.is-past .nsr__none { font-style: italic; }
 .nsr__dayhead {
   text-align: center;
   padding-bottom: .6rem;

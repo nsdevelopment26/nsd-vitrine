@@ -23,9 +23,9 @@ window.NS_TRADUCTIONS = {
          --------------------------------------------------------------- */
       'marque.sous': "Kinesitherapie",
 
-      'bar.demo': "Beispillsäit realiséiert vun <strong>NS Development</strong> — fiktive Cabinet, Demo-Inhalter.",
-      'bar.demo.bio': "Beispillsäit realiséiert vun <strong>NS Development</strong> — fiktive Cabinet, Demo-Inhalter.",
-      'bar.demo.rdv': "Beispillsäit realiséiert vun <strong>NS Development</strong> — fiktive Cabinet; d'Rendez-vousen, déi hei geholl ginn, bleiwen an Ärem Browser.",
+      'bar.demo': "Demo-Maquette gemaach vun <strong>NS Development</strong> — Websäite-Kreatioun zu Lëtzebuerg",
+      'bar.demo.bio': "Demo-Maquette gemaach vun <strong>NS Development</strong> — Websäite-Kreatioun zu Lëtzebuerg",
+      'bar.demo.rdv': "Demo-Maquette gemaach vun <strong>NS Development</strong> — Websäite-Kreatioun zu Lëtzebuerg ; d'Rendez-vousen, déi hei geholl ginn, bleiwen an Ärem Browser.",
 
       'nav.accueil': "Haaptsäit",
       'nav.soins': "Behandlungen",
