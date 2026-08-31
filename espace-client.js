@@ -16,10 +16,10 @@
   var CLIENT = {
     prenom: "Amir",
     nom: "Rahman",
-    etablissement: "Maison Safran",
+    etablissement: "Maison Vaurenne",
     metier: "Restaurant indien",
     ville: "Luxembourg-Ville",
-    site: "maison-safran.lu",
+    site: "maison-vaurenne.lu",
     depuis: "client depuis mars 2026",
     formule: "Vitrine",
     formulePrix: 150,          // forfait trimestriel de la catégorie (colonne clients.maintenance_trimestre)
@@ -164,7 +164,7 @@
     { id: "doc2", titre: "Devis site vitrine Standard", meta: "PDF · 2 pages · accepté le 28 février 2026", type: "devis" },
     { id: "doc3", titre: "Conditions générales de service", meta: "PDF · 3 pages · version du 1er janvier 2026", type: "contrat" },
     { id: "doc4", titre: "Accès Google Business Profile", meta: "Fiche gérée par NS Development · accès partagé", type: "acces" },
-    { id: "doc5", titre: "Nom de domaine maison-safran.lu", meta: "Enregistré au nom de Maison Safran Sàrl · expire le 3 mars 2027", type: "acces" },
+    { id: "doc5", titre: "Nom de domaine maison-vaurenne.lu", meta: "Enregistré au nom de Maison Vaurenne Sàrl · expire le 3 mars 2027", type: "acces" },
     { id: "doc6", titre: "Rapport SEO — juin 2026", meta: "PDF · 6 pages · publié le 3 juillet 2026", type: "rapport" }
   ];
 
@@ -575,7 +575,7 @@
   function vueDocuments() {
     var infos = [
       ["Nom de domaine", CLIENT.site],
-      ["Propriétaire du domaine", "Maison Safran Sàrl"],
+      ["Propriétaire du domaine", "Maison Vaurenne Sàrl"],
       ["Mise en ligne", "18 mars 2026"],
       ["Formule", CLIENT.formule + " · " + euros(abonnementMontant()) + abonnementPeriode().replace("/ ", "/")]
     ].map(function (l) {
@@ -825,7 +825,7 @@
     /* ------------------------------------------------------------------
        MODE DÉMONSTRATION — espace-client.html?demo=1
        Ouvre l'espace sans connexion, sur les seules données de démo de ce
-       fichier (Maison Safran). Aucun appel à Supabase n'est fait : aucune
+       fichier (Maison Vaurenne). Aucun appel à Supabase n'est fait : aucune
        donnée réelle ne peut donc transiter, et la sécurité côté serveur
        (RLS) n'est pas affaiblie puisqu'aucune session n'est ouverte.
        Sert à montrer l'espace client à un prospect sans lui créer de compte.

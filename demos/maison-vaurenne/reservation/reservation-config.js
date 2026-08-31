@@ -1,5 +1,5 @@
 /* ============================================================================
-   Maison Safran — configuration de la réservation en ligne
+   Maison Vaurenne — configuration de la réservation en ligne
    ----------------------------------------------------------------------------
    SEUL fichier propre au site. Le moteur (nsr-reservation.js) et le style de
    base (nsr-reservation.css) sont ceux du module NS Development, identiques
@@ -15,11 +15,11 @@
    ============================================================================ */
 window.NSR_CONFIG = {
   backend: 'local',
-  slug: 'maison-safran',
-  prefixeReference: 'MS',
+  slug: 'maison-vaurenne',
+  prefixeReference: 'MV',
 
   etablissement: {
-    nom: 'Maison Safran',
+    nom: 'Maison Vaurenne',
     adresse: '00, rue des Capucins — L-0000 Luxembourg', // à compléter
     telephone: '+352 00 00 00 00', // à compléter
 
@@ -100,7 +100,7 @@ window.NSR_CONFIG = {
     valider: 'Demander cette table',
     noteLabel: 'Allergies, régime, occasion',
     notePlaceholder: 'Sans gluten, anniversaire, menu végétarien…',
-    premiereVisite: 'C’est ma première venue à la Maison Safran',
+    premiereVisite: 'C’est ma première venue à la Maison Vaurenne',
     apresConfirmation:
       'La maison vous rappelle pour confirmer, en général dans la demi-journée. ' +
       'La table est tenue quinze minutes après l’heure convenue.',
