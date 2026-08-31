@@ -653,9 +653,17 @@
   }
 
   /* Ce que les deux chemins ont à savoir du rendez-vous. `r` est la réponse
-     de la réservation, `code` le code de la prestation choisie. */
+     de la réservation, `code` le code de la prestation choisie.
+
+     `r` peut porter lui-même le nom, l'adresse et le téléphone de
+     l'établissement : c'est le cas quand le rendez-vous vient d'être relu
+     dans la base, depuis la page « mon rendez-vous ». Ce que dit la base
+     l'emporte sur ce que le site embarque, qui peut dater. */
   function evenement(cfg, r, code) {
     var e = cfg.etablissement;
+    var nomEtab  = r.etablissement || e.nom || '';
+    var adresse  = r.adresse !== undefined && r.adresse !== null ? r.adresse : (e.adresse || '');
+    var telEtab  = r.telephone || e.telephone || '';
     var fuseau = e.fuseau || 'Europe/Luxembourg';
     var debut = instant(r.jour, r.debut, fuseau);
     var fin = r.fin
@@ -665,8 +673,8 @@
     var titre = cfg.calendrier.titre
       ? String(cfg.calendrier.titre)
           .replace(/\{prestation\}/g, r.prestation || '')
-          .replace(/\{etablissement\}/g, e.nom || '')
-      : [r.prestation, e.nom].filter(Boolean).join(' — ');
+          .replace(/\{etablissement\}/g, nomEtab)
+      : [r.prestation, nomEtab].filter(Boolean).join(' — ');
 
     // À domicile, l'adresse de l'établissement serait un contresens, et
     // celle du visiteur, on ne l'a pas : on laisse le lieu vide.
@@ -674,13 +682,13 @@
 
     var lignes = [];
     if (r.reference) lignes.push(L.recapReference + ' : ' + r.reference);
-    if (e.telephone) lignes.push(L.telephone + ' : ' + e.telephone);
+    if (telEtab) lignes.push(L.telephone + ' : ' + telEtab);
 
     return {
       titre: titre,
       debut: debut,
       fin: fin,
-      lieu: aDomicile ? '' : (e.adresse || ''),
+      lieu: aDomicile ? '' : adresse,
       details: lignes.join('\n'),
       reference: r.reference || '',
       slug: cfg.slug || 'nsr'
@@ -786,6 +794,106 @@
     });
   }
 
+  /* --- le bouton et son menu ----------------------------------------------
+     Écrit une fois, posé à deux endroits : l'écran de confirmation du module,
+     et la page « mon rendez-vous » au bout du lien de l'e-mail. Le patient y
+     retrouve le même bouton au même endroit, ce qui est exactement ce qu'on
+     veut : deux boutons différents pour la même action, c'est déjà une
+     hésitation de trop.
+
+     `hote` est l'élément à remplir. On rend de quoi le piloter :
+       montre(ev)   affiche le bouton pour cet évènement ; null le cache
+       detruire()   reprend les écouteurs posés sur le document
+     ------------------------------------------------------------------------ */
+  function ComposantCalendrier(hote, options) {
+    options = options || {};
+
+    var choix = [
+      ['google',  L.calGoogle],
+      ['apple',   L.calApple],
+      ['outlook', L.calOutlook],
+      ['office',  L.calOffice],
+      ['ics',     L.calAutre]
+    ];
+
+    hote.innerHTML =
+      '<div class="nsr__cal" data-cal hidden>' +
+        '<button type="button" class="nsr-btn nsr-btn--cal" data-cal-ouvre ' +
+          'aria-expanded="false" aria-haspopup="true">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>' +
+            '<path d="m9 15 2 2 4-4"/></svg>' +
+          txt(L.calAjouter) +
+        '</button>' +
+        '<div class="nsr__calmenu" data-cal-menu hidden role="menu">' +
+          '<p class="nsr__calaide">' + txt(L.calAide) + '</p>' +
+          choix.map(function (c) {
+            return '<button type="button" role="menuitem" class="nsr__calitem" ' +
+                   'data-cal-choix="' + c[0] + '">' + txt(c[1]) +
+                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+                     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+                     '<path d="m9 6 6 6-6 6"/></svg></button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+
+    var bloc  = hote.querySelector('[data-cal]');
+    var ouvre = hote.querySelector('[data-cal-ouvre]');
+    var menu  = hote.querySelector('[data-cal-menu]');
+    var ev    = null;
+
+    function ferme() {
+      menu.hidden = true;
+      ouvre.setAttribute('aria-expanded', 'false');
+    }
+
+    ouvre.addEventListener('click', function () {
+      var ouvert = menu.hidden;
+      menu.hidden = !ouvert;
+      ouvre.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+      if (ouvert) {
+        var premier = menu.querySelector('.nsr__calitem');
+        if (premier) premier.focus();
+      }
+    });
+
+    menu.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cal-choix]');
+      if (!b || !ev) return;
+      var cible = b.getAttribute('data-cal-choix');
+
+      if (cible === 'apple' || cible === 'ics') {
+        telechargeIcs(fichierIcs(ev, options.rappelMinutes),
+                      'rendez-vous-' + (ev.reference || ev.slug) + '.ics');
+      } else {
+        window.open(urlCalendrier(cible, ev), '_blank', 'noopener');
+      }
+      ferme();
+      ouvre.focus();
+      document.dispatchEvent(new CustomEvent('nsr:calendrier', { detail: { cible: cible } }));
+    });
+
+    // Un menu ouvert se ferme comme partout ailleurs : Échap, ou un clic à
+    // côté. Sans ça, il resterait ouvert derrière le doigt du visiteur.
+    function surTouche(e) {
+      if (e.key === 'Escape' && !menu.hidden) { ferme(); ouvre.focus(); }
+    }
+    function surClic(e) {
+      if (!menu.hidden && !bloc.contains(e.target)) ferme();
+    }
+    document.addEventListener('keydown', surTouche);
+    document.addEventListener('click', surClic);
+
+    return {
+      montre: function (n) { ev = n || null; bloc.hidden = !ev; ferme(); },
+      detruire: function () {
+        document.removeEventListener('keydown', surTouche);
+        document.removeEventListener('click', surClic);
+      }
+    };
+  }
+
   /* =========================================================================
      6. L'interface
      ========================================================================= */
@@ -878,7 +986,7 @@
             '<h3 data-done-titre></h3>' +
             '<p class="nsr__hint" data-done-aide></p>' +
             '<div class="nsr__recap" data-done-recap></div>' +
-            calendrierHtml() +
+            '<div data-cal-hote></div>' +
             '<p class="nsr__after" data-after></p>' +
             '<div class="nsr__actions nsr__actions--center">' +
               '<button type="button" class="nsr-btn nsr-btn--back" data-restart>' + txt(T.recommencer) + '</button>' +
@@ -889,39 +997,6 @@
       '</div>';
 
     function masque(nom) { return cfg.champsMasques.indexOf(nom) !== -1; }
-
-    /* Le bouton « Ajouter à mon calendrier » et son petit menu. Il reste
-       caché tant qu'il n'y a pas de rendez-vous confirmé à y mettre. */
-    function calendrierHtml() {
-      if (cfg.calendrier.actif === false) return '';
-      var choix = [
-        ['google',  L.calGoogle],
-        ['apple',   L.calApple],
-        ['outlook', L.calOutlook],
-        ['office',  L.calOffice],
-        ['ics',     L.calAutre]
-      ];
-      return '<div class="nsr__cal" data-cal hidden>' +
-        '<button type="button" class="nsr-btn nsr-btn--cal" data-cal-ouvre ' +
-          'aria-expanded="false" aria-haspopup="true">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
-            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-            '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>' +
-            '<path d="m9 15 2 2 4-4"/></svg>' +
-          txt(L.calAjouter) +
-        '</button>' +
-        '<div class="nsr__calmenu" data-cal-menu hidden role="menu">' +
-          '<p class="nsr__calaide">' + txt(L.calAide) + '</p>' +
-          choix.map(function (c) {
-            return '<button type="button" role="menuitem" class="nsr__calitem" ' +
-                   'data-cal-choix="' + c[0] + '">' + txt(c[1]) +
-                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-                     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-                     '<path d="m9 6 6 6-6 6"/></svg></button>';
-          }).join('') +
-        '</div>' +
-      '</div>';
-    }
 
     function champsHtml() {
       var h = '<div class="nsr__grid">' +
@@ -1276,60 +1351,11 @@
     }
 
     /* --- « Ajouter à mon calendrier » -------------------------------------- */
-    var calBloc  = $('[data-cal]');
-    var calMenu  = calBloc && $('[data-cal-menu]');
-    var calOuvre = calBloc && $('[data-cal-ouvre]');
-    var calEv    = null;
+    var cal = cfg.calendrier.actif === false
+      ? null
+      : ComposantCalendrier($('[data-cal-hote]'), { rappelMinutes: cfg.calendrier.rappelMinutes });
 
-    function montreCalendrier(ev) {
-      if (!calBloc) return;
-      calEv = ev;
-      calBloc.hidden = !ev;
-      fermeCalendrier();
-    }
-
-    function fermeCalendrier() {
-      if (!calMenu) return;
-      calMenu.hidden = true;
-      calOuvre.setAttribute('aria-expanded', 'false');
-    }
-
-    if (calBloc) {
-      calOuvre.addEventListener('click', function () {
-        var ouvert = calMenu.hidden;
-        calMenu.hidden = !ouvert;
-        calOuvre.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
-        if (ouvert) {
-          var premier = calMenu.querySelector('.nsr__calitem');
-          if (premier) premier.focus();
-        }
-      });
-
-      calMenu.addEventListener('click', function (e) {
-        var b = e.target.closest('[data-cal-choix]');
-        if (!b || !calEv) return;
-        var cible = b.dataset.calChoix;
-
-        if (cible === 'apple' || cible === 'ics') {
-          telechargeIcs(fichierIcs(calEv, cfg.calendrier.rappelMinutes),
-                        'rendez-vous-' + (calEv.reference || calEv.slug) + '.ics');
-        } else {
-          window.open(urlCalendrier(cible, calEv), '_blank', 'noopener');
-        }
-        fermeCalendrier();
-        calOuvre.focus();
-        document.dispatchEvent(new CustomEvent('nsr:calendrier', { detail: { cible: cible } }));
-      });
-
-      // Un menu ouvert se ferme comme partout ailleurs : Échap, ou un clic
-      // à côté. Sans ça il resterait ouvert derrière le doigt du visiteur.
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !calMenu.hidden) { fermeCalendrier(); calOuvre.focus(); }
-      });
-      document.addEventListener('click', function (e) {
-        if (!calMenu.hidden && !calBloc.contains(e.target)) fermeCalendrier();
-      });
-    }
+    function montreCalendrier(ev) { if (cal) cal.montre(ev); }
 
     /* --- recommencer ------------------------------------------------------ */
     $('[data-restart]').addEventListener('click', function () {
@@ -1351,7 +1377,10 @@
       etat: etat,
       rafraichir: chargeSemaine,
       // Appelé avant de reconstruire le module dans une autre langue.
-      detruire: function () { document.removeEventListener('nsr:maj', surMaj); }
+      detruire: function () {
+        document.removeEventListener('nsr:maj', surMaj);
+        if (cal) cal.detruire();
+      }
     };
   }
 
@@ -1452,6 +1481,30 @@
       return;
     }
     var cfg = fusionne(DEFAUTS, brute);
+
+    // Le vocabulaire du moteur suit la langue de la page dès maintenant :
+    // l'API calendrier ci-dessous est utilisable sans qu'un module ait été
+    // monté, et elle doit parler la bonne langue.
+    L = LANGUES[langueConnue(cfg.langue || document.documentElement.getAttribute('lang'))];
+
+    /* Ce que le moteur sait faire pour les autres pages du site. La page
+       « mon rendez-vous » s'en sert pour proposer le même bouton
+       « Ajouter à mon calendrier » qu'à la réservation, sans réécrire une
+       ligne : un seul endroit à corriger le jour où un format change. */
+    window.NSRCalendrier = {
+      config: function (b) { return fusionne(DEFAUTS, b || window.NSR_CONFIG || {}); },
+      evenement: evenement,          // (config, rendezVous, codePrestation)
+      bouton: ComposantCalendrier,   // (élémentHôte, { rappelMinutes }) → { montre, detruire }
+      ics: fichierIcs,               // (évènement, rappelMinutes) → texte .ics
+      url: urlCalendrier,            // ('google'|'outlook'|'office', évènement)
+      telecharge: telechargeIcs
+    };
+
+    // Une page sans agenda, sans panneau professionnel et sans encart n'a
+    // rien à monter. On s'arrête là plutôt que d'interroger le serveur pour
+    // rien : la page « mon rendez-vous » charge ce fichier uniquement pour
+    // le calendrier ci-dessus.
+    if (!document.querySelector('[data-nsr], [data-nsr-pro], [data-nsr-prochain], [data-nsr-libres]')) return;
 
     if (cfg.backend === 'supabase' && (!cfg.supabase || !cfg.supabase.url || !cfg.supabase.cle)) {
       if (window.console) console.error('[NSR] backend « supabase » sans url ni clé.');

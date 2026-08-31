@@ -453,33 +453,38 @@
 
 
 /* ============================================================================
-   Étape 4 — « Ajouter à mon calendrier »
+   « Ajouter à mon calendrier »
    ----------------------------------------------------------------------------
    Le menu vit dans le flux et non en surcouche : sur un téléphone, un panneau
    flottant sortirait du bloc ou passerait sous le clavier. Ici il pousse le
    contenu vers le bas, ce qui ne casse jamais rien.
+
+   Ce bloc est le seul du module à vivre aussi HORS de `.nsr` : la page
+   « mon rendez-vous » le pose dans sa propre carte. Chaque variable y porte
+   donc son repli, sinon les couleurs y seraient vides.
    ============================================================================ */
 .nsr__cal { margin: 1.6rem auto 0; max-width: 430px; }
+.nsr__cal, .nsr__cal * { box-sizing: border-box; }
 .nsr__cal[hidden] { display: none; }
 
 .nsr-btn--cal {
   background: transparent;
-  border-color: var(--nsr-bordure);
-  color: var(--nsr-texte);
+  border-color: var(--nsr-bordure, #e2e0da);
+  color: var(--nsr-texte, #2b2926);
   width: 100%;
 }
 .nsr-btn--cal svg { width: 17px; height: 17px; opacity: .75; }
-.nsr-btn--cal:hover { border-color: var(--nsr-accent); color: var(--nsr-accent); transform: translateY(-2px); }
+.nsr-btn--cal:hover { border-color: var(--nsr-accent, #2f6bff); color: var(--nsr-accent, #2f6bff); transform: translateY(-2px); }
 .nsr-btn--cal:hover svg { opacity: 1; }
-.nsr-btn--cal[aria-expanded="true"] { border-color: var(--nsr-accent); color: var(--nsr-accent); }
+.nsr-btn--cal[aria-expanded="true"] { border-color: var(--nsr-accent, #2f6bff); color: var(--nsr-accent, #2f6bff); }
 
 .nsr__calmenu {
   margin-top: .7rem;
   padding: .5rem;
   text-align: left;
-  background: var(--nsr-fond-2);
-  border: 1px solid var(--nsr-bordure);
-  border-radius: var(--nsr-radius);
+  background: var(--nsr-fond-2, #f5f4f1);
+  border: 1px solid var(--nsr-bordure, #e2e0da);
+  border-radius: var(--nsr-radius, 14px);
   animation: nsr-cal-ouvre .28s cubic-bezier(.2,.9,.3,1);
 }
 .nsr__calmenu[hidden] { display: none; }
@@ -492,7 +497,7 @@
   margin: .35rem .6rem .6rem;
   font-size: .78rem;
   line-height: 1.5;
-  color: var(--nsr-texte-doux);
+  color: var(--nsr-texte-doux, #6f6a63);
 }
 
 .nsr__calitem {
@@ -503,9 +508,9 @@
   width: 100%;
   padding: .72rem .8rem;
   border: 0;
-  border-radius: var(--nsr-radius-sm);
+  border-radius: var(--nsr-radius-sm, 9px);
   background: transparent;
-  color: var(--nsr-texte);
+  color: var(--nsr-texte, #2b2926);
   font: inherit;
   font-size: .9rem;
   text-align: left;
@@ -513,7 +518,7 @@
   transition: background .2s, color .2s;
 }
 .nsr__calitem svg { width: 15px; height: 15px; flex: none; opacity: .4; transition: transform .2s, opacity .2s; }
-.nsr__calitem:hover, .nsr__calitem:focus-visible { background: var(--nsr-fond); color: var(--nsr-accent); }
+.nsr__calitem:hover, .nsr__calitem:focus-visible { background: var(--nsr-fond, #fff); color: var(--nsr-accent, #2f6bff); }
 .nsr__calitem:hover svg, .nsr__calitem:focus-visible svg { opacity: 1; transform: translateX(3px); }
 
 
