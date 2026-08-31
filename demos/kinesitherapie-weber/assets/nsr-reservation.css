@@ -1,6 +1,6 @@
 /* ============================================================================
    NS Development — Module de réservation en ligne
-   Feuille de style de base, identique chez tous les clients. Version 1.0
+   Feuille de style de base, identique chez tous les clients. Version 1.2
    ----------------------------------------------------------------------------
    Ce fichier ne se modifie pas pour un client. L'adaptation à sa charte se
    fait en redéfinissant quelques variables dans son propre CSS, après ce
@@ -453,6 +453,71 @@
 
 
 /* ============================================================================
+   Étape 4 — « Ajouter à mon calendrier »
+   ----------------------------------------------------------------------------
+   Le menu vit dans le flux et non en surcouche : sur un téléphone, un panneau
+   flottant sortirait du bloc ou passerait sous le clavier. Ici il pousse le
+   contenu vers le bas, ce qui ne casse jamais rien.
+   ============================================================================ */
+.nsr__cal { margin: 1.6rem auto 0; max-width: 430px; }
+.nsr__cal[hidden] { display: none; }
+
+.nsr-btn--cal {
+  background: transparent;
+  border-color: var(--nsr-bordure);
+  color: var(--nsr-texte);
+  width: 100%;
+}
+.nsr-btn--cal svg { width: 17px; height: 17px; opacity: .75; }
+.nsr-btn--cal:hover { border-color: var(--nsr-accent); color: var(--nsr-accent); transform: translateY(-2px); }
+.nsr-btn--cal:hover svg { opacity: 1; }
+.nsr-btn--cal[aria-expanded="true"] { border-color: var(--nsr-accent); color: var(--nsr-accent); }
+
+.nsr__calmenu {
+  margin-top: .7rem;
+  padding: .5rem;
+  text-align: left;
+  background: var(--nsr-fond-2);
+  border: 1px solid var(--nsr-bordure);
+  border-radius: var(--nsr-radius);
+  animation: nsr-cal-ouvre .28s cubic-bezier(.2,.9,.3,1);
+}
+.nsr__calmenu[hidden] { display: none; }
+@keyframes nsr-cal-ouvre {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.nsr__calaide {
+  margin: .35rem .6rem .6rem;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--nsr-texte-doux);
+}
+
+.nsr__calitem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  width: 100%;
+  padding: .72rem .8rem;
+  border: 0;
+  border-radius: var(--nsr-radius-sm);
+  background: transparent;
+  color: var(--nsr-texte);
+  font: inherit;
+  font-size: .9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.nsr__calitem svg { width: 15px; height: 15px; flex: none; opacity: .4; transition: transform .2s, opacity .2s; }
+.nsr__calitem:hover, .nsr__calitem:focus-visible { background: var(--nsr-fond); color: var(--nsr-accent); }
+.nsr__calitem:hover svg, .nsr__calitem:focus-visible svg { opacity: 1; transform: translateX(3px); }
+
+
+/* ============================================================================
    Panneau « côté professionnel » (maquettes de démonstration uniquement)
    ----------------------------------------------------------------------------
    Il vit hors du bloc .nsr, donc il redéclare les variables dont il a besoin
@@ -568,6 +633,7 @@
   .nsr__actions .nsr-btn { width: 100%; }
   .nsr__recap div { flex-direction: column; gap: .1rem; }
   .nsr__recap b { text-align: left; }
+  .nsr__calitem { padding: .85rem .8rem; }
 }
 
 
@@ -580,7 +646,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nsr__panel.is-on, .nsr__mark, .nsr__void--load { animation: none; }
+  .nsr__panel.is-on, .nsr__mark, .nsr__void--load, .nsr__calmenu { animation: none; }
   .nsr *, .nsr *::before, .nsr *::after {
     transition-duration: .01ms !important;
   }

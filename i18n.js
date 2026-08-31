@@ -176,11 +176,13 @@ const NS_I18N = {
   "Leads": {lb:"Leads", de:"Leads", en:"Leads", pt:"Leads"},
   "Voir la démo →": {lb:"Demo kucken →", de:"Demo ansehen →", en:"View demo →", pt:"Ver demo →"},
   "Fiduciaire & comptable": {lb:"Fiduciaire & Comptabel", de:"Treuhand & Buchhaltung", en:"Accountancy firm", pt:"Fiduciária & contabilidade"},
-  "Chaleureux et raffiné : carte en ligne, réservation, take-away et bascule FR / EN.":
-    {lb:"Waarm a raffinéiert: Kaart online, Reservatioun, Take-away a Wiessel FR / EN.",
-     de:"Warm und edel: Online-Karte, Reservierung, Take-away und Umschaltung FR / EN.",
-     en:"Warm and refined: online menu, booking, takeaway and FR / EN switching.",
-     pt:"Acolhedor e requintado: menu online, reservas, take-away e alternância FR / EN."},
+  "Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.":
+    {lb:"Gastronomesch Tafel: Menüen, illustréiert Kaart, Wäikeller an eng Online-Reservatioun déi e vollen Service wierklech spaart.",
+     de:"Gastronomisches Restaurant: Menüs, bebilderte Karte, Weinkeller und eine Online-Buchung, die einen ausgebuchten Service wirklich sperrt.",
+     en:"Fine-dining restaurant: set menus, an illustrated à la carte, a wine cellar, and online booking that really turns away a full service.",
+     pt:"Restaurante gastronómico: menus, carta ilustrada, cave de vinhos e reserva online que bloqueia mesmo um serviço cheio."},
+  "Menus": {lb:"Menüen", de:"Menüs", en:"Set menus", pt:"Menus"},
+  "Carte": {lb:"Kaart", de:"Speisekarte", en:"À la carte", pt:"Carta"},
   "Sobre et rassurant : présentation des services, prise de rendez-vous et contact.":
     {lb:"Nüchtern a berouegend: Presentatioun vun de Servicer, Rendez-vous a Kontakt.",
      de:"Schlicht und vertrauenswürdig: Leistungsübersicht, Terminbuchung und Kontakt.",

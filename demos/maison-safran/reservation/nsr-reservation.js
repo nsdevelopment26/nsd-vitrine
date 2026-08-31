@@ -1,6 +1,6 @@
 /* ============================================================================
    NS Development — Module de réservation en ligne
-   Moteur générique, identique chez tous les clients. Version 1.1
+   Moteur générique, identique chez tous les clients. Version 1.2
    ----------------------------------------------------------------------------
    Ce fichier ne contient AUCUNE information propre à un client : pas de nom,
    pas d'horaire, pas de prestation, pas de couleur. Tout cela vit dans
@@ -23,6 +23,11 @@
 
    Passer d'un mode à l'autre = changer un mot dans la config. Le jour où un
    prospect signe, sa maquette devient son site sans qu'on touche au code.
+
+   Calendrier (1.2) : une fois le rendez-vous confirmé, le visiteur l'ajoute à
+   son propre agenda en un clic (Google, Apple, Outlook, Microsoft 365, .ics).
+   Tout se fabrique dans la page : aucun service tiers n'est appelé. Voir la
+   section 5 bis.
 
    Multilingue (1.1) : le module parle la langue de la page (<html lang>) et
    suit l'évènement `ns:langue` émis par la bascule de langue du site. Son
@@ -47,6 +52,12 @@
 
     etablissement: {
       nom: '', adresse: '', telephone: '',
+
+      // Fuseau horaire dans lequel l'établissement lit ses horaires. Il ne
+      // sert qu'au calendrier du visiteur : « 14 h » doit rester 14 h chez
+      // lui, qu'il réserve depuis Luxembourg, Lisbonne ou son hôtel.
+      fuseau: 'Europe/Luxembourg',
+
       modeValidation: 'auto',
       pasMinutes: 30,
       delaiMiniHeures: 4,
@@ -105,6 +116,21 @@
 
     // Champs du formulaire à ne pas demander. Ex. ['note', 'premiere'].
     champsMasques: [],
+
+    // Le bouton « Ajouter à mon calendrier » de l'écran de confirmation.
+    //   actif          false le retire.
+    //   titre          titre de l'évènement. {prestation} et {etablissement}
+    //                  y sont remplacés. Vide = « Prestation — Établissement ».
+    //   rappelMinutes  rappel inscrit dans le fichier .ics (Apple, Outlook
+    //                  installé, Thunderbird…). 0 = aucun. Google et
+    //                  Outlook en ligne posent le rappel par défaut du
+    //                  visiteur et n'écoutent pas ce réglage : c'est leur
+    //                  limite, pas la nôtre.
+    calendrier: {
+      actif: true,
+      titre: '',
+      rappelMinutes: 120
+    },
 
     // Mode démonstration : bandeau d'avertissement et faux rendez-vous
     // préchargés pour que la grille ne soit pas vide devant un prospect.
@@ -168,6 +194,14 @@
       refCourt: 'réf.',
       nousContacter: 'nous contacter',
 
+      calAjouter: 'Ajouter à mon calendrier',
+      calAide: 'Choisissez votre calendrier, le rendez-vous s\'y inscrit tout seul.',
+      calGoogle: 'Google Agenda',
+      calApple: 'Apple — iPhone, iPad, Mac',
+      calOutlook: 'Outlook.com',
+      calOffice: 'Microsoft 365',
+      calAutre: 'Autre calendrier (.ics)',
+
       erreurs: {
         creneau_pris: 'Ce créneau vient d\'être réservé par quelqu\'un d\'autre. Merci d\'en choisir un autre.',
         trop_tard: 'Ce créneau est trop proche pour être réservé en ligne. Merci d\'appeler directement.',
@@ -228,6 +262,14 @@
       annuler: 'Annuléieren',
       refCourt: 'Réf.',
       nousContacter: 'eis kontaktéieren',
+
+      calAjouter: 'An mäi Kalenner setzen',
+      calAide: 'Wielt Äre Kalenner, de Rendez-vous schreift sech alleng an.',
+      calGoogle: 'Google Kalenner',
+      calApple: 'Apple — iPhone, iPad, Mac',
+      calOutlook: 'Outlook.com',
+      calOffice: 'Microsoft 365',
+      calAutre: 'Anere Kalenner (.ics)',
 
       erreurs: {
         creneau_pris: 'Dësen Termin ass grad vun engem aneren ergraff ginn. Wielt w.e.g. en aneren.',
@@ -555,6 +597,196 @@
   function messageErreur(code) { return L.erreurs[code] || L.erreurs.reessayer; }
 
   /* =========================================================================
+     5 bis. Le calendrier du visiteur
+     Le créneau est pris, mais il n'est encore noté nulle part : un rendez-vous
+     qu'on ne retrouve pas dans son téléphone est un rendez-vous oublié, et un
+     oubli coûte au professionnel un créneau vide qu'il ne peut plus revendre.
+     On met donc le rendez-vous dans SON agenda, en un clic.
+
+     Deux chemins, parce qu'aucun ne marche partout :
+       - Google, Outlook.com et Microsoft 365 s'ouvrent par une simple adresse
+         web, l'évènement arrive pré-rempli, le visiteur n'a qu'à enregistrer.
+       - Apple (iPhone, iPad, Mac) et tous les autres lisent le format .ics,
+         un fichier que l'on fabrique ici, dans le navigateur.
+
+     Rien ne sort du poste du visiteur : aucun service tiers n'est appelé, et
+     le lien de gestion du rendez-vous (qui porte un jeton) reste dans son
+     e-mail plutôt que dans un évènement qu'il pourrait partager.
+     ========================================================================= */
+
+  /* Décalage, en millisecondes, entre le fuseau demandé et UTC à cet instant.
+     Sans lui, un rendez-vous de 14 h atterrirait à 14 h dans le fuseau du
+     téléphone : juste pour le voisin, faux pour qui réserve en voyage. */
+  function decalageFuseau(ms, fuseau) {
+    try {
+      var f = new Intl.DateTimeFormat('en-US', {
+        timeZone: fuseau, hour12: false,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      var p = {};
+      f.formatToParts(new Date(ms)).forEach(function (x) { p[x.type] = x.value; });
+      var h = p.hour === '24' ? 0 : +p.hour;   // minuit s'écrit 24 chez certains
+      return Date.UTC(+p.year, +p.month - 1, +p.day, h, +p.minute, +p.second) - ms;
+    } catch (e) {
+      return NaN;   // navigateur trop ancien, ou fuseau inconnu de lui
+    }
+  }
+
+  /* Une date et une heure de pendule ('2026-09-21', '12:00') lues dans le
+     fuseau de l'établissement, rendues en instant réel. */
+  function instant(jour, heure, fuseau) {
+    var d = String(jour).split('-'), t = String(heure).split(':');
+    var brut = Date.UTC(+d[0], +d[1] - 1, +d[2], +t[0], +t[1], 0);
+    var off = decalageFuseau(brut, fuseau);
+    // Repli : le navigateur ne sait pas convertir, on prend son heure à lui.
+    if (isNaN(off)) return new Date(+d[0], +d[1] - 1, +d[2], +t[0], +t[1], 0);
+    // Deuxième passe : la première suffit sauf le week-end du changement
+    // d'heure, où l'écart se mesure du mauvais côté de la bascule.
+    off = decalageFuseau(brut - off, fuseau);
+    return new Date(brut - off);
+  }
+
+  function horodate(d) {
+    return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) + 'T' +
+           pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + 'Z';
+  }
+
+  /* Ce que les deux chemins ont à savoir du rendez-vous. `r` est la réponse
+     de la réservation, `code` le code de la prestation choisie. */
+  function evenement(cfg, r, code) {
+    var e = cfg.etablissement;
+    var fuseau = e.fuseau || 'Europe/Luxembourg';
+    var debut = instant(r.jour, r.debut, fuseau);
+    var fin = r.fin
+      ? instant(r.jour, r.fin, fuseau)
+      : new Date(debut.getTime() + (r.duree || 60) * 60000);
+
+    var titre = cfg.calendrier.titre
+      ? String(cfg.calendrier.titre)
+          .replace(/\{prestation\}/g, r.prestation || '')
+          .replace(/\{etablissement\}/g, e.nom || '')
+      : [r.prestation, e.nom].filter(Boolean).join(' — ');
+
+    // À domicile, l'adresse de l'établissement serait un contresens, et
+    // celle du visiteur, on ne l'a pas : on laisse le lieu vide.
+    var aDomicile = cfg.prestationsADomicile.indexOf(code) !== -1;
+
+    var lignes = [];
+    if (r.reference) lignes.push(L.recapReference + ' : ' + r.reference);
+    if (e.telephone) lignes.push(L.telephone + ' : ' + e.telephone);
+
+    return {
+      titre: titre,
+      debut: debut,
+      fin: fin,
+      lieu: aDomicile ? '' : (e.adresse || ''),
+      details: lignes.join('\n'),
+      reference: r.reference || '',
+      slug: cfg.slug || 'nsr'
+    };
+  }
+
+  /* --- le fichier .ics ---------------------------------------------------- */
+  function echapIcs(s) {
+    return String(s == null ? '' : s)
+      .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,')
+      .replace(/\r?\n/g, '\\n');
+  }
+
+  // Le format impose des lignes courtes : au-delà, on coupe et on reprend
+  // avec une espace en tête. Apple est le plus strict là-dessus.
+  function plie(ligne) {
+    if (ligne.length <= 72) return ligne;
+    var out = ligne.slice(0, 72), reste = ligne.slice(72);
+    while (reste.length) { out += '\r\n ' + reste.slice(0, 71); reste = reste.slice(71); }
+    return out;
+  }
+
+  function fichierIcs(ev, rappelMinutes) {
+    var l = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//NS Development//Module de reservation//FR',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      'UID:' + (ev.reference || horodate(ev.debut)) + '@' + ev.slug + '.nsr',
+      'DTSTAMP:' + horodate(new Date()),
+      'DTSTART:' + horodate(ev.debut),
+      'DTEND:' + horodate(ev.fin),
+      'SUMMARY:' + echapIcs(ev.titre),
+      'STATUS:CONFIRMED',
+      'TRANSP:OPAQUE'
+    ];
+    if (ev.lieu) l.push('LOCATION:' + echapIcs(ev.lieu));
+    if (ev.details) l.push('DESCRIPTION:' + echapIcs(ev.details));
+    if (rappelMinutes > 0) {
+      l.push('BEGIN:VALARM', 'ACTION:DISPLAY',
+             'DESCRIPTION:' + echapIcs(ev.titre),
+             'TRIGGER:-PT' + Math.round(rappelMinutes) + 'M', 'END:VALARM');
+    }
+    l.push('END:VEVENT', 'END:VCALENDAR');
+    return l.map(plie).join('\r\n') + '\r\n';
+  }
+
+  function telechargeIcs(texte, nom) {
+    var a = document.createElement('a');
+    // Navigateur sans téléchargement programmé : on ouvre le fichier, le
+    // système le remet à l'application calendrier.
+    if (!('download' in a) || typeof Blob === 'undefined') {
+      window.location.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(texte);
+      return;
+    }
+    var url = URL.createObjectURL(new Blob([texte], { type: 'text/calendar;charset=utf-8' }));
+    a.href = url;
+    a.download = nom;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    // Le clic ne doit surtout pas remonter : beaucoup de sites (les nôtres
+    // compris) écoutent les clics sur les liens au niveau du document pour
+    // enchaîner un fondu de page. Ce lien-là n'est pas une navigation, c'est
+    // un fichier. Un clic qui ne bouillonne pas ne réveille personne.
+    a.dispatchEvent(new MouseEvent('click', { bubbles: false, cancelable: true }));
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+  }
+
+  /* --- les calendriers qui s'ouvrent dans un onglet ------------------------ */
+  function urlCalendrier(cible, ev) {
+    var q = function (o) {
+      var t = [];
+      for (var k in o) if (o[k]) t.push(k + '=' + encodeURIComponent(o[k]));
+      return t.join('&');
+    };
+
+    if (cible === 'google') {
+      return 'https://calendar.google.com/calendar/render?' + q({
+        action: 'TEMPLATE',
+        text: ev.titre,
+        dates: horodate(ev.debut) + '/' + horodate(ev.fin),
+        details: ev.details,
+        location: ev.lieu
+      });
+    }
+
+    // Outlook.com et Microsoft 365 : même formulaire, deux domaines.
+    var base = cible === 'office'
+      ? 'https://outlook.office.com/calendar/0/deeplink/compose?'
+      : 'https://outlook.live.com/calendar/0/deeplink/compose?';
+    return base + q({
+      path: '/calendar/action/compose',
+      rru: 'addevent',
+      subject: ev.titre,
+      body: ev.details,
+      location: ev.lieu,
+      startdt: ev.debut.toISOString(),
+      enddt: ev.fin.toISOString(),
+      allday: 'false'
+    });
+  }
+
+  /* =========================================================================
      6. L'interface
      ========================================================================= */
   function Reservation(racine, cfg, adaptateur) {
@@ -646,6 +878,7 @@
             '<h3 data-done-titre></h3>' +
             '<p class="nsr__hint" data-done-aide></p>' +
             '<div class="nsr__recap" data-done-recap></div>' +
+            calendrierHtml() +
             '<p class="nsr__after" data-after></p>' +
             '<div class="nsr__actions nsr__actions--center">' +
               '<button type="button" class="nsr-btn nsr-btn--back" data-restart>' + txt(T.recommencer) + '</button>' +
@@ -656,6 +889,39 @@
       '</div>';
 
     function masque(nom) { return cfg.champsMasques.indexOf(nom) !== -1; }
+
+    /* Le bouton « Ajouter à mon calendrier » et son petit menu. Il reste
+       caché tant qu'il n'y a pas de rendez-vous confirmé à y mettre. */
+    function calendrierHtml() {
+      if (cfg.calendrier.actif === false) return '';
+      var choix = [
+        ['google',  L.calGoogle],
+        ['apple',   L.calApple],
+        ['outlook', L.calOutlook],
+        ['office',  L.calOffice],
+        ['ics',     L.calAutre]
+      ];
+      return '<div class="nsr__cal" data-cal hidden>' +
+        '<button type="button" class="nsr-btn nsr-btn--cal" data-cal-ouvre ' +
+          'aria-expanded="false" aria-haspopup="true">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>' +
+            '<path d="m9 15 2 2 4-4"/></svg>' +
+          txt(L.calAjouter) +
+        '</button>' +
+        '<div class="nsr__calmenu" data-cal-menu hidden role="menu">' +
+          '<p class="nsr__calaide">' + txt(L.calAide) + '</p>' +
+          choix.map(function (c) {
+            return '<button type="button" role="menuitem" class="nsr__calitem" ' +
+                   'data-cal-choix="' + c[0] + '">' + txt(c[1]) +
+                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+                     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+                     '<path d="m9 6 6 6-6 6"/></svg></button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }
 
     function champsHtml() {
       var h = '<div class="nsr__grid">' +
@@ -1000,14 +1266,75 @@
         ligne(L.recapHeure, r.debut) +
         ligne(L.recapAuNom, form.prenom.value.trim() + ' ' + form.nom.value.trim());
 
+      // Une demande encore en attente de validation n'a pas sa place dans un
+      // agenda : le visiteur y verrait un rendez-vous qu'il n'a pas encore.
+      montreCalendrier(enAttente ? null : evenement(cfg, r, etat.prestation && etat.prestation.code));
+
       var apres = $('[data-after]');
       apres.innerHTML = T.apresConfirmation || '';
       apres.hidden = !T.apresConfirmation;
     }
 
+    /* --- « Ajouter à mon calendrier » -------------------------------------- */
+    var calBloc  = $('[data-cal]');
+    var calMenu  = calBloc && $('[data-cal-menu]');
+    var calOuvre = calBloc && $('[data-cal-ouvre]');
+    var calEv    = null;
+
+    function montreCalendrier(ev) {
+      if (!calBloc) return;
+      calEv = ev;
+      calBloc.hidden = !ev;
+      fermeCalendrier();
+    }
+
+    function fermeCalendrier() {
+      if (!calMenu) return;
+      calMenu.hidden = true;
+      calOuvre.setAttribute('aria-expanded', 'false');
+    }
+
+    if (calBloc) {
+      calOuvre.addEventListener('click', function () {
+        var ouvert = calMenu.hidden;
+        calMenu.hidden = !ouvert;
+        calOuvre.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+        if (ouvert) {
+          var premier = calMenu.querySelector('.nsr__calitem');
+          if (premier) premier.focus();
+        }
+      });
+
+      calMenu.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-cal-choix]');
+        if (!b || !calEv) return;
+        var cible = b.dataset.calChoix;
+
+        if (cible === 'apple' || cible === 'ics') {
+          telechargeIcs(fichierIcs(calEv, cfg.calendrier.rappelMinutes),
+                        'rendez-vous-' + (calEv.reference || calEv.slug) + '.ics');
+        } else {
+          window.open(urlCalendrier(cible, calEv), '_blank', 'noopener');
+        }
+        fermeCalendrier();
+        calOuvre.focus();
+        document.dispatchEvent(new CustomEvent('nsr:calendrier', { detail: { cible: cible } }));
+      });
+
+      // Un menu ouvert se ferme comme partout ailleurs : Échap, ou un clic
+      // à côté. Sans ça il resterait ouvert derrière le doigt du visiteur.
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !calMenu.hidden) { fermeCalendrier(); calOuvre.focus(); }
+      });
+      document.addEventListener('click', function (e) {
+        if (!calMenu.hidden && !calBloc.contains(e.target)) fermeCalendrier();
+      });
+    }
+
     /* --- recommencer ------------------------------------------------------ */
     $('[data-restart]').addEventListener('click', function () {
       etat.prestation = null; etat.creneau = null; etat.resultat = null;
+      montreCalendrier(null);
       racine.querySelectorAll('.nsr__choice').forEach(function (x) { x.classList.remove('is-sel'); });
       $('[data-next1]').disabled = true;
       form.reset(); cacheAlerte(); va(1);
