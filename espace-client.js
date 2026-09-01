@@ -14,10 +14,10 @@
   /* ---------------------------------------------------------- */
 
   var CLIENT = {
-    prenom: "Amir",
-    nom: "Rahman",
+    prenom: "Julien",
+    nom: "Mercier",
     etablissement: "Maison Vaurenne",
-    metier: "Restaurant indien",
+    metier: "Restaurant gastronomique",
     ville: "Luxembourg-Ville",
     site: "maison-vaurenne.lu",
     depuis: "client depuis mars 2026",
@@ -64,10 +64,10 @@
   ];
 
   var MOTS_CLES = [
-    { mot: "restaurant indien luxembourg", position: 2, evolution: 3 },
-    { mot: "tandoori luxembourg", position: 1, evolution: 0 },
+    { mot: "restaurant gastronomique luxembourg", position: 2, evolution: 3 },
+    { mot: "menu dégustation luxembourg", position: 1, evolution: 0 },
     { mot: "restaurant luxembourg centre", position: 7, evolution: 4 },
-    { mot: "où manger indien luxembourg", position: 4, evolution: -1 }
+    { mot: "où bien manger luxembourg", position: 4, evolution: -1 }
   ];
 
   var FACTURES = [
