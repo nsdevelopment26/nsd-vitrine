@@ -216,28 +216,55 @@
       const x=Math.cos(p)*Math.sin(t), y=Math.sin(p), z=Math.cos(p)*Math.cos(t);
       return {x:cx+x*R,y:cy-y*R,z};
     }
-    /* Dessine les terres d'une face. Un point du mauvais côté est rabattu sur
-       le bord du globe : la découpe suit alors le limbe au lieu de couper à
-       la corde, et les continents se referment proprement sur le contour. */
+    // ramène un point sur le bord du globe, en gardant sa direction
+    function limbe(p){
+      const dx=p.x-cx, dy=p.y-cy, d=Math.sqrt(dx*dx+dy*dy)||1;
+      return {x:cx+dx/d*R, y:cy+dy/d*R};
+    }
+
+    /* Dessine les terres d'une face.
+       Un anneau à cheval sur le bord du globe est découpé en morceaux visibles,
+       chacun refermé par un arc qui longe le limbe. Rabattre simplement les
+       points cachés sur le bord ne suffit pas : l'Antarctique fait le tour
+       complet en longitude, et son anneau rabattu remplissait alors tout le
+       disque d'un aplat gris à chaque tour. */
     function terres(rot, avant, alpha, couleur){
       if(!TERRES) return;
       ctx.globalAlpha=alpha; ctx.fillStyle=couleur;
       for(let k=0;k<TERRES.length;k++){
-        const ring=TERRES[k], n=ring.length, pts=new Array(n);
+        const ring=TERRES[k], n=ring.length, P=new Array(n), V=new Array(n);
         let vus=0;
         for(let i=0;i<n;i++){
           const q=project(ring[i][1], ring[i][0], rot);
-          if(avant ? q.z>=0 : q.z<0){ vus++; pts[i]=q; }
-          else{
-            const dx=q.x-cx, dy=q.y-cy, d=Math.sqrt(dx*dx+dy*dy)||1;
-            pts[i]={x:cx+dx/d*R, y:cy+dy/d*R};
-          }
+          P[i]=q; V[i]= avant ? q.z>=0 : q.z<0;
+          if(V[i]) vus++;
         }
         if(vus<3) continue;                     // anneau entièrement de l'autre côté
-        ctx.beginPath();
-        ctx.moveTo(pts[0].x,pts[0].y);
-        for(let i=1;i<n;i++) ctx.lineTo(pts[i].x,pts[i].y);
-        ctx.closePath(); ctx.fill();
+        if(vus===n){                            // entièrement de notre côté
+          ctx.beginPath(); ctx.moveTo(P[0].x,P[0].y);
+          for(let i=1;i<n;i++) ctx.lineTo(P[i].x,P[i].y);
+          ctx.closePath(); ctx.fill();
+          continue;
+        }
+        let debut=-1;
+        for(let i=0;i<n;i++) if(V[i] && !V[(i-1+n)%n]){ debut=i; break; }
+        if(debut<0) continue;
+        let i=debut, pas=0;
+        while(pas<n){
+          if(!V[i]){ i=(i+1)%n; pas++; continue; }
+          const run=[limbe(P[(i-1+n)%n])];
+          while(V[i] && pas<n){ run.push(P[i]); i=(i+1)%n; pas++; }
+          run.push(limbe(P[i]));
+          if(run.length>3){
+            ctx.beginPath(); ctx.moveTo(run[0].x,run[0].y);
+            for(let j=1;j<run.length;j++) ctx.lineTo(run[j].x,run[j].y);
+            const a0=Math.atan2(run[0].y-cy, run[0].x-cx);
+            const a1=Math.atan2(run[run.length-1].y-cy, run[run.length-1].x-cx);
+            let d=a0-a1; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+            ctx.arc(cx,cy,R,a1,a0,d<0);        // on referme par le plus court arc
+            ctx.closePath(); ctx.fill();
+          }
+        }
       }
       ctx.globalAlpha=1;
     }
@@ -282,25 +309,31 @@
 
       // arcs depuis le Luxembourg
       const lu=project(LUX.lat,LUX.lon,rot);
+      /* Un arc ne se dessine que si ses DEUX extrémités sont de notre côté.
+         Sans ce test, quand le Luxembourg passe derrière le globe, ses douze
+         arcs continuaient d'être tracés depuis sa position miroir : un voile
+         gris qui balayait la sphère à chaque tour, et qui réapparaissait ville
+         par ville au fil de la rotation. */
+      const luVisible = lu.z > -0.05;
       cities.forEach((c,i)=>{
         const q=project(c.lat,c.lon,rot);
+        if(q.z>0){ ctx.globalAlpha=0.85; ctx.fillStyle=accd;
+          ctx.beginPath(); ctx.arc(q.x,q.y,1.6,0,7); ctx.fill(); }
+        if(!luVisible || q.z<=-0.05) return;
         const mid={x:(lu.x+q.x)/2,y:(lu.y+q.y)/2};
         const lift=(0.6+((lu.z+q.z)/2))*R*0.28;
         const cxp=mid.x,cyp=mid.y-lift;
-        const front=(lu.z+q.z)/2>-0.1;
-        ctx.globalAlpha=front?0.34:0.08;   // les continents sont le sujet, les arcs le décor
+        ctx.globalAlpha=0.34;   // les continents sont le sujet, les arcs le décor
         ctx.strokeStyle=accd; ctx.lineWidth=1;
         ctx.beginPath(); ctx.moveTo(lu.x,lu.y); ctx.quadraticCurveTo(cxp,cyp,q.x,q.y); ctx.stroke();
         // impulsion lumineuse qui court le long de l'arc
-        if(!reduce && front){
+        if(!reduce){
           const tt=((now*0.0004)+i*0.16)%1;
           const bx=(1-tt)*(1-tt)*lu.x+2*(1-tt)*tt*cxp+tt*tt*q.x;
           const by=(1-tt)*(1-tt)*lu.y+2*(1-tt)*tt*cyp+tt*tt*q.y;
           ctx.globalAlpha=0.9; ctx.fillStyle=acc;
           ctx.beginPath(); ctx.arc(bx,by,1.8,0,7); ctx.fill();
         }
-        if(q.z>0){ ctx.globalAlpha=0.85; ctx.fillStyle=accd;
-          ctx.beginPath(); ctx.arc(q.x,q.y,1.6,0,7); ctx.fill(); }
       });
       ctx.globalAlpha=1;
 

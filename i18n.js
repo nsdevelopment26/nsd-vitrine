@@ -1,6 +1,6 @@
 /* =============================================================
    NS Development — multilingue
-   Langues du Luxembourg : FR · LB (Lëtzebuergesch) · DE · EN · PT
+   Langues du Luxembourg : FR · LX (Lëtzebuergesch, code ISO 'lb') · DE · EN · PT
 
    Fonctionnement : le dictionnaire est indexé par le texte français.
    Le script parcourt les textes de la page et remplace ceux qu'il
@@ -16,7 +16,7 @@
 
 const NS_LANGS = [
   { code:'fr', label:'FR', nom:'Français' },
-  { code:'lb', label:'LB', nom:'Lëtzebuergesch' },
+  { code:'lb', label:'LX', nom:'Lëtzebuergesch' },   // code ISO 'lb', affiché LX au choix de Nelson
   { code:'de', label:'DE', nom:'Deutsch' },
   { code:'en', label:'EN', nom:'English' },
   { code:'pt', label:'PT', nom:'Português' }
