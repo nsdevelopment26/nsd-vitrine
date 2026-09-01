@@ -49,10 +49,10 @@
 
   // Couleurs alignées sur la palette claire du site (voir ns-clair.css, thème clair-b).
   var SOURCES = [
-    { nom: "Recherche Google", part: 58, couleur: "#2f6bff" },
-    { nom: "Google Maps", part: 21, couleur: "#7ea0ff" },
-    { nom: "Instagram", part: 12, couleur: "#0e9f6e" },
-    { nom: "Direct", part: 9, couleur: "#939cad" }
+    { nom: "Recherche Google", part: 58, couleur: "#f4f4f5" },
+    { nom: "Google Maps", part: 21, couleur: "#a8a8b0" },
+    { nom: "Instagram", part: 12, couleur: "#6b6b75" },
+    { nom: "Direct", part: 9, couleur: "#55555f" }
   ];
 
   var TOP_PAGES = [
@@ -292,18 +292,18 @@
       '<svg viewBox="0 0 ' + L + " " + h + '" preserveAspectRatio="none" class="cv" role="img" aria-label="Évolution des visiteurs">' +
         "<defs>" +
           '<linearGradient id="aire-' + id + '" x1="0" y1="0" x2="0" y2="1">' +
-            '<stop offset="0" stop-color="#2f6bff" stop-opacity=".26"/>' +
-            '<stop offset="1" stop-color="#2f6bff" stop-opacity="0"/>' +
+            '<stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>' +
+            '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>' +
           "</linearGradient>" +
           '<linearGradient id="trait-' + id + '" x1="0" y1="0" x2="1" y2="0">' +
-            '<stop offset="0" stop-color="#2f6bff"/><stop offset="1" stop-color="#1b4fd6"/>' +
+            '<stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#8a8a94"/>' +
           "</linearGradient>" +
         "</defs>" + grille +
         '<path d="' + aire + '" fill="url(#aire-' + id + ')" class="aire"/>' +
         '<path d="' + trace + '" fill="none" stroke="url(#trait-' + id + ')" stroke-width="2.6" ' +
           'stroke-linecap="round" vector-effect="non-scaling-stroke" pathLength="1" class="trait"/>' +
-        '<circle cx="' + dernier.x + '" cy="' + dernier.y + '" r="9" fill="#2f6bff" opacity=".20" class="pt"/>' +
-        '<circle cx="' + dernier.x + '" cy="' + dernier.y + '" r="4" fill="#2f6bff" stroke="#ffffff" stroke-width="2" class="pt"/>' +
+        '<circle cx="' + dernier.x + '" cy="' + dernier.y + '" r="9" fill="#ffffff" opacity=".20" class="pt"/>' +
+        '<circle cx="' + dernier.x + '" cy="' + dernier.y + '" r="4" fill="#ffffff" stroke="#0a0a0c" stroke-width="2" class="pt"/>' +
       "</svg>" +
       (labels ? '<div class="cv-labels">' + labels.map(function (l) { return "<span>" + l + "</span>"; }).join("") + "</div>" : "") +
     "</div>";

@@ -20,37 +20,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ns-motion.css">
 <script type="module" src="supabase-client.js?v=1"></script>
-<script src="espace-client.js?v=6" defer></script>
+<script src="espace-client.js?v=7" defer></script>
 <script src="ns-motion.js" defer></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  /* Palette : strictement celle du site (ns-clair.css, thème "clair-b").
-     Toute évolution de couleur se fait ici ET dans ns-clair.css, en miroir. */
+  /* Palette : celle du site, thème "mono" (index.html).
+     Toute évolution de couleur se fait ici ET dans index.html, en miroir.
+
+     Les couleurs de statut (payé, en retard, en cours) restent colorées :
+     un tableau de bord où tout est gris ne se lit plus. Elles sont juste
+     remontées en luminosité pour tenir sur fond noir. */
   :root{
-    --bg:#e7eaf1;--bg2:#f2f4f9;--card:#ffffff;--card2:#f7f9fc;--line:#dfe3ec;--line2:#cdd3df;
-    --ink:#0f1522;--soft:#565e6f;--muted:#939cad;
-    --acc:#2f6bff;--acc2:#2f6bff;--acc-deep:#1b4fd6;--glow:rgba(47,107,255,.10);
-    --acc-bg:rgba(47,107,255,.09);--acc-line:rgba(47,107,255,.24);
-    --ok:#0e9f6e;--ok-bg:rgba(14,159,110,.11);--ok-line:rgba(14,159,110,.30);
-    --warn:#b45309;--warn-bg:rgba(180,83,9,.10);--warn-line:rgba(180,83,9,.26);
-    --danger:#d92d3f;--danger-bg:rgba(217,45,63,.10);
-    --violet:#7c3aed;--violet-bg:rgba(124,58,237,.10);
-    /* Ombres douces et bleutées : sur fond clair, du noir dense salit les cartes. */
-    --sh-carte:0 6px 20px rgba(16,24,40,.05);
-    --sh-haute:0 20px 50px rgba(16,24,40,.10);
-    --sh-acc:0 10px 26px rgba(47,107,255,.20);
+    color-scheme:dark;
+    --bg:#08080a;--bg2:#0d0d10;--card:#111114;--card2:#17171b;--line:#242429;--line2:#35353d;
+    --ink:#f4f4f5;--soft:#a1a1aa;--muted:#6b6b75;
+    --acc:#d8d8de;--acc2:#ffffff;--acc-deep:#8a8a94;--glow:rgba(255,255,255,.12);
+    --acc-bg:rgba(255,255,255,.07);--acc-line:rgba(255,255,255,.20);
+    --btn-ink:#0a0a0c;
+    --ok:#35d29a;--ok-bg:rgba(53,210,154,.13);--ok-line:rgba(53,210,154,.34);
+    --warn:#f0b14a;--warn-bg:rgba(240,177,74,.13);--warn-line:rgba(240,177,74,.32);
+    --danger:#ff6b7a;--danger-bg:rgba(255,107,122,.13);
+    --violet:#b39aff;--violet-bg:rgba(179,154,255,.13);
+    /* Sur fond noir, l'ombre douce ne se voit pas : il faut du noir dense. */
+    --sh-carte:0 8px 24px rgba(0,0,0,.45);
+    --sh-haute:0 24px 60px rgba(0,0,0,.6);
+    --sh-acc:0 10px 26px rgba(255,255,255,.10);
     --sans:'Inter',system-ui,sans-serif;--disp:'Sora',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
     --r:18px;--tr:.35s cubic-bezier(.4,0,.2,1);
-    --ns-dur:.75s;--ns-ease:cubic-bezier(.2,.7,.2,1);--ns-g1:#0f1522;--ns-g2:#2f6bff;
+    --ns-dur:.75s;--ns-ease:cubic-bezier(.2,.7,.2,1);--ns-g1:#ffffff;--ns-g2:#9a9aa4;
     --rail:262px;
   }
   html{-webkit-text-size-adjust:100%}
   /* Même canevas que le site : dégradé doux, les cartes blanches s'en détachent. */
   body{color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
     background:
-      radial-gradient(1200px 520px at 50% -6%, #f4f6fb 0%, transparent 58%),
-      radial-gradient(900px 600px at 92% 8%, rgba(47,107,255,.05), transparent 60%),
-      linear-gradient(180deg, #edeff6 0%, #e4e7f0 46%, #e8eaf2 100%);
+      radial-gradient(1200px 520px at 50% -6%, #131318 0%, transparent 58%),
+      radial-gradient(900px 600px at 92% 8%, rgba(255,255,255,.035), transparent 60%),
+      linear-gradient(180deg, #0a0a0d 0%, #08080a 46%, #0b0b0e 100%);
     background-attachment:fixed}
   body.fige{overflow:hidden}
   a{color:inherit;text-decoration:none}
@@ -58,13 +64,13 @@
   h1,h2,h3{font-family:var(--disp);letter-spacing:-.02em;line-height:1.12}
   hr{border:none;height:1px;background:var(--line);margin:15px 0}
   .ic{flex:none}
-  ::selection{background:rgba(47,107,255,.14);color:var(--ink)}
+  ::selection{background:rgba(255,255,255,.10);color:var(--ink)}
   :focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
 
   /* Halo bleu qui respire. Sur fond clair il doit rester une nuance, pas un nuage :
      même retenue que les blobs "aurore" du site (opacité ~.06). */
   .halo{position:fixed;top:-260px;left:-160px;width:620px;height:620px;border-radius:50%;pointer-events:none;z-index:0;
-    background:radial-gradient(circle,rgba(47,107,255,.10) 0%,rgba(47,107,255,0) 68%);animation:respire 11s ease-in-out infinite}
+    background:radial-gradient(circle,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 68%);animation:respire 11s ease-in-out infinite}
   @keyframes respire{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.14);opacity:1}}
   @media(prefers-reduced-motion:reduce){.halo{animation:none}}
 
@@ -88,21 +94,21 @@
   .champ label{font-size:12.5px;font-weight:500;color:var(--soft)}
   .champ .box{display:flex;align-items:center;gap:11px;height:54px;padding:0 16px;border-radius:14px;background:var(--card);
     border:1px solid var(--line);transition:border-color var(--tr),background var(--tr),box-shadow var(--tr)}
-  .champ .box:focus-within{border-color:var(--acc);background:var(--card);box-shadow:0 8px 26px rgba(47,107,255,.16)}
+  .champ .box:focus-within{border-color:var(--acc);background:var(--card);box-shadow:0 8px 26px rgba(255,255,255,.12)}
   .champ .box svg{color:var(--muted)}
   .champ .box:focus-within svg{color:var(--acc2)}
   .champ input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-family:var(--sans);font-size:15px;min-width:0}
   .oubli{align-self:flex-end;font-size:12.5px;font-weight:500;color:var(--acc2)}
   .demo-note{display:inline-flex;align-items:center;gap:7px;padding:10px 15px;border-radius:999px;border:1px solid var(--line);
-    background:rgba(255,255,255,.62);font-size:11.5px;color:var(--muted)}
+    background:rgba(255,255,255,.05);font-size:11.5px;color:var(--muted)}
   .pied-co{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
   .lien-demo{font-size:13px;font-weight:500;color:var(--acc);transition:color var(--tr)}
   .lien-demo:hover{color:var(--acc-deep);text-decoration:underline}
   /* Bandeau du mode démonstration : doit rester visible en permanence,
      pour qu'on ne confonde jamais la démo avec un vrai compte client. */
   .bandeau-demo{position:fixed;top:0;left:0;right:0;z-index:80;padding:9px 16px;text-align:center;
-    background:var(--acc);color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.01em}
-  .bandeau-demo a{color:#fff;text-decoration:underline;font-weight:500;margin-left:4px}
+    background:var(--acc);color:var(--btn-ink);font-size:12.5px;font-weight:600;letter-spacing:.01em}
+  .bandeau-demo a{color:var(--btn-ink);text-decoration:underline;font-weight:500;margin-left:4px}
   body.avec-bandeau{padding-top:36px}
   body.avec-bandeau .rail{top:36px;height:calc(100dvh - 36px)}
   @media(max-width:900px){body.avec-bandeau .rail{top:36px;height:auto}}
@@ -110,21 +116,21 @@
   /* ============ BOUTONS ============ */
   .bt{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:var(--disp);font-weight:600;font-size:14px;
     height:52px;padding:0 24px;border-radius:14px;transition:transform var(--tr),box-shadow var(--tr),border-color var(--tr),color var(--tr);position:relative;overflow:hidden}
-  .bt-plein{background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:#fff;box-shadow:0 10px 30px var(--glow)}
+  .bt-plein{background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:var(--btn-ink);box-shadow:0 10px 30px var(--glow)}
   .bt-plein:hover{transform:translateY(-2px);box-shadow:0 16px 42px var(--glow)}
   .bt-vide{border:1px solid var(--line2);color:var(--ink)}
   .bt-vide:hover{border-color:var(--acc);color:var(--acc2);transform:translateY(-2px)}
   .bt.large{width:100%}
   .bt.charge{color:transparent;pointer-events:none}
-  .bt.charge::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.35);
-    border-top-color:#fff;animation:tourne .7s linear infinite}
+  .bt.charge::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid rgba(10,10,12,.35);
+    border-top-color:var(--btn-ink);animation:tourne .7s linear infinite}
   @keyframes tourne{to{transform:rotate(360deg)}}
 
   /* ============ CADRE DE L'APPLICATION ============ */
   #ecApp{position:relative;z-index:1;min-height:100dvh;display:grid;grid-template-columns:var(--rail) 1fr}
   #ecApp[hidden],#ecConnexion[hidden]{display:none}
   .rail{position:sticky;top:0;height:100dvh;display:flex;flex-direction:column;gap:26px;padding:26px 18px;
-    border-right:1px solid var(--line);background:rgba(255,255,255,.66);backdrop-filter:blur(14px)}
+    border-right:1px solid var(--line);background:rgba(13,13,16,.72);backdrop-filter:blur(14px)}
   .rail-marque{display:flex;align-items:center;gap:11px;padding:0 8px}
   .rail-marque .mono-ns{width:40px;height:40px}
   .rail-marque b{font-family:var(--disp);font-weight:700;font-size:14px}
@@ -133,7 +139,7 @@
   .onglet{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;font-size:14px;font-weight:500;color:var(--soft);
     transition:background var(--tr),color var(--tr),transform var(--tr);text-align:left;width:100%}
   .onglet:hover{background:var(--card);color:var(--ink);transform:translateX(2px)}
-  .onglet.actif{background:rgba(47,107,255,.14);border:1px solid rgba(47,107,255,.3);color:var(--acc2);font-weight:600}
+  .onglet.actif{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);color:var(--acc2);font-weight:600}
   .rail-bas{margin-top:auto;display:flex;flex-direction:column;gap:10px;font-size:12.5px}
   .rail-bas a,.rail-bas button{display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:12px;color:var(--muted);transition:color var(--tr),background var(--tr)}
   .rail-bas a:hover,.rail-bas button:hover{color:var(--acc2);background:var(--card)}
@@ -148,7 +154,7 @@
   .vue-tete h1{font-size:clamp(26px,4.4vw,33px);font-weight:800;margin-top:11px}
   .vue-tete .sous{color:var(--soft);font-size:13.5px;max-width:52ch;margin-top:8px}
   .avatar{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-weight:600;font-size:15px;
-    background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:#fff;box-shadow:0 10px 28px var(--glow)}
+    background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:var(--btn-ink);box-shadow:0 10px 28px var(--glow)}
   .sous{color:var(--soft);font-size:13px}
 
   /* ============ CARTES ============ */
@@ -156,7 +162,7 @@
     box-shadow:var(--sh-carte)}
   .carte.lueur{overflow:hidden}
   .carte.lueur::before{content:"";position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(135deg,rgba(47,107,255,.16),rgba(47,107,255,0) 60%)}
+    background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,0) 60%)}
   .carte>*{position:relative}
   .carte h3{font-size:15.5px;font-weight:600}
   .carte-tete{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
@@ -175,7 +181,7 @@
   @keyframes onde{0%{transform:scale(1);opacity:.55}100%{transform:scale(3.2);opacity:0}}
   @media(prefers-reduced-motion:reduce){.pulse::after{animation:none}}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;font-size:11.5px;font-weight:600;
-    color:var(--acc2);background:rgba(47,107,255,.12);border:1px solid rgba(47,107,255,.26)}
+    color:var(--acc2);background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.20)}
   .domaine{font-family:var(--disp);font-weight:700;font-size:clamp(21px,3.4vw,25px);letter-spacing:-.02em}
   .site-btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
   .site-btns .bt{height:46px;font-size:13.5px;flex:1;min-width:180px}
@@ -212,12 +218,12 @@
   .abo-tete.simple{justify-content:space-between}
   .pastille{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:var(--acc2);
     background:var(--card2);border:1px solid var(--line)}
-  .pastille.grande{width:42px;height:42px;border-radius:13px;background:rgba(47,107,255,.12);border-color:rgba(47,107,255,.26)}
+  .pastille.grande{width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.20)}
   .pastille.ok{color:var(--ok);background:var(--ok-bg);border-color:rgba(14,159,110,.28)}
   .pastille.warn,.pastille.encours{color:var(--warn);background:var(--warn-bg);border-color:rgba(180,83,9,.28)}
   .pastille.faite{color:var(--ok);background:var(--ok-bg);border-color:rgba(14,159,110,.28)}
-  .pastille.recue{color:var(--acc2);background:rgba(47,107,255,.12);border-color:rgba(47,107,255,.26)}
-  .pastille.acc{color:var(--acc2);background:rgba(47,107,255,.12);border-color:rgba(47,107,255,.26)}
+  .pastille.recue{color:var(--acc2);background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.20)}
+  .pastille.acc{color:var(--acc2);background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.20)}
   .pastille.violet{color:var(--violet);background:var(--violet-bg);border-color:rgba(124,58,237,.26)}
   .abo-prix{text-align:right}
   .abo-prix b{font-family:var(--disp);font-weight:800;font-size:21px;display:block}
@@ -249,7 +255,7 @@
   .segments{display:flex;gap:6px;padding:5px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
   .seg{flex:1;height:40px;border-radius:999px;font-size:13px;font-weight:500;color:var(--soft);transition:all var(--tr)}
   .seg:hover{color:var(--ink)}
-  .seg.actif{color:var(--acc2);font-weight:600;background:rgba(47,107,255,.15);border:1px solid rgba(47,107,255,.34)}
+  .seg.actif{color:var(--acc2);font-weight:600;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.28)}
 
   /* barres de sources */
   .barre{margin-bottom:15px}
@@ -288,7 +294,7 @@
   .tag{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:600}
   .tag.ok,.tag.faite{color:var(--ok);background:var(--ok-bg)}
   .tag.encours{color:var(--warn);background:var(--warn-bg)}
-  .tag.recue{color:var(--acc2);background:rgba(47,107,255,.14)}
+  .tag.recue{color:var(--acc2);background:rgba(255,255,255,.10)}
   .tag.grand{padding:7px 12px}
 
   /* résumé factures */
@@ -310,7 +316,7 @@
   .dem-detail{font-size:13.5px;color:var(--soft)}
   .reponse{display:flex;gap:10px;align-items:flex-start;padding-top:12px;border-top:1px solid var(--line)}
   .reponse .ns{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;
-    font-size:9.5px;color:var(--acc2);background:rgba(47,107,255,.14);border:1px solid rgba(47,107,255,.3)}
+    font-size:9.5px;color:var(--acc2);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24)}
   .reponse p{font-size:13px;color:var(--soft);font-style:italic}
   .frise{display:flex;align-items:center;gap:4px;margin-top:2px}
   .etape{display:flex;flex-direction:column;align-items:center;gap:5px}
@@ -338,7 +344,7 @@
   /* ============ MODALE ============ */
   #ecModale{position:fixed;inset:0;z-index:60;display:none}
   #ecModale.ouverte{display:block}
-  .voile{position:absolute;inset:0;background:rgba(15,21,34,.42);backdrop-filter:blur(4px);animation:fondu .22s ease both}
+  .voile{position:absolute;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);animation:fondu .22s ease both}
   @keyframes fondu{from{opacity:0}to{opacity:1}}
   .feuille{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(560px,100%);max-height:90dvh;overflow-y:auto;
     background:var(--card);border:1px solid var(--line2);border-radius:26px 26px 0 0;padding:14px 22px 30px;
@@ -349,7 +355,7 @@
   .mod-num{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--acc2);margin-bottom:6px}
   .mod-titre{font-family:var(--disp);font-weight:700;font-size:21px;letter-spacing:-.02em}
   .mod-montant{margin:18px 0;padding:18px;border-radius:16px;border:1px solid var(--line);
-    background:linear-gradient(135deg,rgba(47,107,255,.16),rgba(47,107,255,.02))}
+    background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.02))}
   .mod-montant b{display:block;font-family:var(--disp);font-weight:800;font-size:30px;letter-spacing:-.03em}
   .mod-lignes{list-style:none;display:flex;flex-direction:column}
   .mod-lignes li{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
@@ -366,7 +372,7 @@
   .types{display:flex;flex-wrap:wrap;gap:8px}
   .puce-type{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:12.5px;font-weight:500;color:var(--soft);transition:all var(--tr)}
   .puce-type:hover{color:var(--ink)}
-  .puce-type.actif{border-color:var(--acc);background:rgba(47,107,255,.13);color:var(--acc2);font-weight:600}
+  .puce-type.actif{border-color:var(--acc);background:rgba(255,255,255,.10);color:var(--acc2);font-weight:600}
 
   /* ============ MOBILE ============ */
   @media(max-width:900px){
@@ -380,11 +386,11 @@
     .rail-bas button svg{font-size:14px}
     main{padding:24px 18px 112px}
     .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:9px 4px calc(9px + env(safe-area-inset-bottom));
-      border-top:1px solid var(--line);background:rgba(255,255,255,.92);backdrop-filter:blur(18px)}
+      border-top:1px solid var(--line);background:rgba(10,10,13,.92);backdrop-filter:blur(18px)}
     .tabbar .onglet{flex:1;flex-direction:column;gap:5px;padding:6px 2px;border-radius:14px;font-size:10.5px;text-align:center}
     .tabbar .onglet:hover{transform:none}
     .tabbar .onglet.actif{background:none;border:none}
-    .tabbar .onglet.actif .rond{background:rgba(47,107,255,.16);border-color:rgba(47,107,255,.32)}
+    .tabbar .onglet.actif .rond{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26)}
     .rond{width:44px;height:28px;border-radius:999px;display:grid;place-items:center;border:1px solid transparent;transition:background var(--tr),border-color var(--tr)}
     .vue-tete .sous{max-width:100%}
     .feuille{width:100%}
@@ -393,7 +399,7 @@
     .rond{display:contents}
     /* sur grand écran, la modale se centre au lieu de remonter du bas */
     .feuille{top:50%;bottom:auto;transform:translate(-50%,-50%);border-radius:24px;padding:22px 26px 26px;max-height:86dvh;
-      animation:apparait .4s cubic-bezier(.16,1,.3,1) both;box-shadow:0 40px 120px rgba(16,24,40,.18)}
+      animation:apparait .4s cubic-bezier(.16,1,.3,1) both;box-shadow:0 40px 120px rgba(0,0,0,.6)}
     @keyframes apparait{from{transform:translate(-50%,calc(-50% + 26px));opacity:0}to{transform:translate(-50%,-50%);opacity:1}}
     .poignee{display:none}
   }
@@ -435,7 +441,7 @@
       </div>
     </div>
     <a class="oubli" href="index.html#contact">Mot de passe oublié ?</a>
-    <div id="ecErr" role="alert" style="display:none;font-size:13px;color:#d64545;background:rgba(214,69,69,.08);border:1px solid rgba(214,69,69,.28);border-radius:9px;padding:9px 12px"></div>
+    <div id="ecErr" role="alert" style="display:none;font-size:13px;color:var(--danger);background:var(--danger-bg);border:1px solid rgba(255,107,122,.30);border-radius:9px;padding:9px 12px"></div>
     <button type="submit" class="bt bt-plein large ns-shine" id="ecEntrer">
       Se connecter
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
