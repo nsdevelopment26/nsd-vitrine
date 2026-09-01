@@ -839,9 +839,21 @@
       var b = document.createElement("div");
       b.className = "bandeau-demo";
       b.innerHTML = "Mode démonstration · données fictives · " +
-        '<a href="espace-client.html">quitter la démo</a>';
+        '<a href="index.html#espace">revenir au site</a>';
       document.body.appendChild(b);
       document.body.classList.add("avec-bandeau");
+
+      /* En démo, personne n'est connecté : « Se déconnecter » renverrait le
+         visiteur sur un formulaire de login qu'il n'a jamais rempli, ce qui
+         ressemble à une impasse. On le remplace par une vraie sortie. */
+      var sortir = document.getElementById("ecSortir");
+      if (sortir) {
+        var lien = document.createElement("a");
+        lien.href = "index.html#espace";
+        lien.innerHTML = sortir.innerHTML.replace("Se déconnecter", "Quitter la démo");
+        sortir.replaceWith(lien);
+      }
+
       ouvrirEspaceClient();
     }
 
