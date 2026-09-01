@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="clair-b">
+<html lang="fr" data-theme="mono">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +29,7 @@
 <script src="ns-motion.js" defer></script>
 <script src="ns-fx.js?v=11" defer></script>
 <!-- Incrémenter ?v= à chaque modification du dictionnaire, sinon les navigateurs gardent l'ancienne version en cache -->
-<script src="i18n.js?v=5" defer></script>
+<script src="i18n.js?v=7" defer></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -52,6 +52,7 @@
      Aucun autre changement nécessaire, tout le site suit ces variables.
      ================================================================ */
   :root[data-theme="mono"]{
+    color-scheme:dark;
     --bg:#08080a;--bg2:#0d0d10;--card:#111114;--card2:#17171b;--line:#242429;--line2:#35353d;
     --ink:#f4f4f5;--soft:#a1a1aa;--muted:#6b6b75;
     /* L'accent devient un argent métallique : pas de couleur, mais de la matière */
@@ -124,8 +125,28 @@
   .hero-grid{position:absolute;inset:0;z-index:0;opacity:.5;
     background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
     background-size:64px 64px;mask-image:radial-gradient(90% 70% at 60% 20%,#000 25%,transparent 75%)}
-  .hero-in{position:relative;z-index:1;max-width:920px}
-  .hero h1{font-size:clamp(42px,7vw,82px);font-weight:800;margin:22px 0 26px;line-height:1.05}
+  .hero-in{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.86fr);gap:52px;align-items:center}
+  .hero-copy{max-width:660px;min-width:0}
+  .hero h1{font-size:clamp(40px,4.8vw,64px);font-weight:800;margin:22px 0 26px;line-height:1.05}
+
+  /* MUR DE DÉMOS — deux colonnes qui défilent en continu, en sens inverse.
+     Purement décoratif : aria-hidden + pointer-events:none, il ne doit jamais
+     intercepter un clic destiné aux boutons du hero. */
+  .hero-wall{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:16px;
+    height:min(74vh,600px);pointer-events:none;
+    -webkit-mask-image:linear-gradient(180deg,transparent,#000 13%,#000 87%,transparent);
+            mask-image:linear-gradient(180deg,transparent,#000 13%,#000 87%,transparent)}
+  .hw-col{overflow:hidden;min-width:0}
+  /* La piste contient la liste DEUX fois : à -50% elle est identique à 0%,
+     donc la boucle est invisible. Le décalage se fait en margin (pas en gap),
+     sinon le -50% ne tombe pas exactement sur une carte. */
+  .hw-track{display:flex;flex-direction:column;will-change:transform;animation:hwUp 52s linear infinite}
+  .hw-col-b .hw-track{animation-name:hwDown;animation-duration:64s}
+  .hw-card{margin-bottom:16px;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line2);background:var(--card);box-shadow:0 18px 44px rgba(0,0,0,.55)}
+  .hw-card img{width:100%;height:auto;display:block}
+  @keyframes hwUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+  @keyframes hwDown{from{transform:translateY(-50%)}to{transform:translateY(0)}}
   .hero h1 .hl-a{display:block}
   .hero h1 .fx-cycle{display:block;margin-top:.06em}
   /* le dégradé du titre est animé par le kit (.ns-gradient-text) */
@@ -134,6 +155,46 @@
   .hero-scroll{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:1;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:10px}
   .hero-scroll .ln{width:1px;height:44px;background:linear-gradient(var(--acc),transparent);animation:sp 2s ease infinite}
   @keyframes sp{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.15)}}
+
+  /* AVANT / APRÈS
+     Deux images empilées. Celle du dessus (« avant ») est rognée à la
+     position --pos par clip-path : c'est ce qui donne le volet coulissant.
+     Le curseur réel est un input range transparent posé sur le cadre :
+     il apporte gratuitement le clavier, le tactile et le glisser natif. */
+  #refonte{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .ba{max-width:1000px;margin:0 auto}
+  .ba-frame{--pos:50%;position:relative;aspect-ratio:1280/800;border-radius:16px;overflow:hidden;
+    border:1px solid var(--line2);box-shadow:0 30px 70px rgba(0,0,0,.55);background:var(--card)}
+  .ba-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .ba-avant{clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
+  .ba-tag{position:absolute;top:14px;z-index:3;font-family:var(--mono);font-size:10px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;padding:6px 11px;border-radius:20px;
+    background:rgba(8,8,10,.62);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);color:#fff}
+  .ba-tag-a{left:14px}
+  .ba-tag-b{right:14px}
+  .ba-line{position:absolute;top:0;bottom:0;left:var(--pos);z-index:4;width:2px;margin-left:-1px;
+    background:rgba(255,255,255,.9);box-shadow:0 0 18px rgba(0,0,0,.6);pointer-events:none}
+  .ba-grip{position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;
+    background:rgba(8,8,10,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.28);
+    box-shadow:0 8px 26px rgba(0,0,0,.5)}
+  /* les deux chevrons, dessinés en CSS pour éviter une image de plus */
+  .ba-grip::before,.ba-grip::after{content:"";position:absolute;top:50%;width:7px;height:7px;
+    border-top:2px solid #fff;border-right:2px solid #fff}
+  .ba-grip::before{left:12px;transform:translateY(-50%) rotate(-135deg)}
+  .ba-grip::after{right:12px;transform:translateY(-50%) rotate(45deg)}
+  /* le range couvre tout le cadre, invisible : c'est lui qui capte le geste */
+  .ba-range{position:absolute;inset:0;z-index:5;width:100%;height:100%;margin:0;padding:0;
+    -webkit-appearance:none;appearance:none;background:none;border:none;cursor:ew-resize;outline:none}
+  .ba-range::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:100%;cursor:ew-resize;background:none}
+  .ba-range::-moz-range-thumb{width:44px;height:100%;border:none;cursor:ew-resize;background:none}
+  .ba-range:focus-visible{outline:2px solid var(--acc2);outline-offset:3px;border-radius:16px}
+  .ba-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:1000px;margin:40px auto 0}
+  .ba-note h3{font-size:16px;margin-bottom:7px}
+  .ba-note p{color:var(--soft);font-size:14.5px;line-height:1.65}
+  @media(max-width:820px){
+    .ba-notes{grid-template-columns:1fr;gap:18px;margin-top:30px}
+    .ba-grip{width:38px;height:38px;margin:-19px 0 0 -19px}
+  }
 
   /* TRUST STRIP */
   .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg2)}
@@ -175,6 +236,15 @@
   a.work-img{display:block}
   .work-link{display:inline-block;margin-top:16px;font-family:var(--mono);font-size:13px;color:var(--acc2);letter-spacing:.03em;transition:color var(--tr)}
   .work-link:hover{color:var(--acc)}
+  /* Prix sur la maquette : même traitement typographique que la grille
+     tarifaire plus bas, pour que l'œil relie les deux sans effort. */
+  .work-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-top:16px}
+  .work-foot .work-link{margin-top:0}
+  .work-price{font-family:var(--disp);font-weight:800;font-size:19px;line-height:1.1;
+    white-space:nowrap;text-align:right}
+  .work-price small{display:block;font-family:var(--mono);font-size:9.5px;font-weight:500;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .works-note{text-align:center;max-width:640px;margin:32px auto 0;font-size:13.5px;color:var(--muted);line-height:1.7}
 
   /* METHODE */
   .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:st}
@@ -213,6 +283,19 @@
   .ptier i small{display:block;font-family:var(--mono);font-size:9.5px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-align:right}
 
   /* SIMULATEUR DE DEVIS */
+  /* Le simulateur est l'outil qui convertit le mieux : il ne doit pas
+     ressembler à une carte de plus. On lui donne sa propre scène, encadrée
+     et posée en retrait du fond, avec un halo qui l'isole du reste. */
+  .sim-scene{position:relative;margin-top:44px;padding:34px;border-radius:26px;
+    background:linear-gradient(170deg,var(--card2),var(--bg2) 60%);
+    border:1px solid var(--line2);box-shadow:0 40px 90px rgba(0,0,0,.5)}
+  .sim-scene::before{content:"";position:absolute;inset:-1px;border-radius:26px;pointer-events:none;
+    background:radial-gradient(70% 55% at 50% 0%,var(--glow),transparent 70%)}
+  .sim-scene > *{position:relative}
+  .sim-scene-head{text-align:center;margin-bottom:28px}
+  .sim-scene-head h3{font-size:clamp(22px,2.8vw,30px);margin-top:12px;letter-spacing:-.02em}
+  @media(max-width:640px){.sim-scene{padding:22px 16px;border-radius:20px}}
+
   .sim-grid{display:grid;grid-template-columns:1fr 400px;gap:26px;align-items:start}
   .sim-panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px}
   .sim-step{margin-bottom:30px}
@@ -268,6 +351,21 @@
   .tm .nm{font-family:var(--disp);font-weight:700;font-size:16px}
   .tm .rl{font-size:12.5px;color:var(--acc2);font-family:var(--mono);letter-spacing:.04em}
 
+  /* Les preuves : ce qui distingue une société déclarée d'un « cousin qui
+     fait des sites ». Chiffres vérifiables, pas d'argument de brochure.
+     La coche est dessinée en CSS, pas d'image ni de police d'icônes. */
+  .proofs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:30px}
+  .proof{position:relative;background:var(--card);border:1px solid var(--line);border-radius:13px;
+    padding:14px 16px 14px 44px;transition:border-color var(--tr),transform var(--tr)}
+  .proof:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .proof::before{content:"";position:absolute;left:17px;top:20px;width:11px;height:6px;
+    border-left:2px solid var(--acc2);border-bottom:2px solid var(--acc2);transform:rotate(-45deg)}
+  .proof-l{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);line-height:1.5}
+  .proof-v{display:block;font-family:var(--disp);font-weight:700;font-size:14px;margin-top:5px}
+  .about-cta{max-width:360px;width:100%;margin:0 auto;justify-content:center}
+  @media(max-width:560px){.proofs{grid-template-columns:1fr}}
+
   /* CONTACT */
   .contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
   .cinfo .cline{display:flex;gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
@@ -314,6 +412,28 @@
     .about-grid{gap:36px}
   }
   @media(max-width:560px){.steps{grid-template-columns:1fr}.cf-row{grid-template-columns:1fr}}
+
+  /* Sous 1020 px, le mur passe d'un damier vertical à une bande horizontale
+     placée sous les boutons : on garde la démonstration sans écraser le texte. */
+  @media(max-width:1020px){
+    .hero-in{grid-template-columns:1fr;gap:38px}
+    .hero-copy{max-width:none}
+    .hero h1{font-size:clamp(40px,7vw,64px)}
+    .hero-wall{grid-template-columns:1fr;height:auto;
+      -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+              mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+    .hw-col-b{display:none}
+    .hw-track{flex-direction:row;animation-name:hwLeft;animation-duration:40s}
+    .hw-card{margin-bottom:0;margin-right:14px;flex:0 0 216px}
+    .hero-scroll{display:none}
+    .hero{min-height:0}
+  }
+  @keyframes hwLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* Le mur ne doit pas gêner : pas d'animation si l'utilisateur la refuse */
+  @media(prefers-reduced-motion:reduce){
+    .hw-track{animation:none}
+  }
 </style>
 </head>
 <body class="fx-lock">
@@ -355,6 +475,7 @@
   <div class="fx-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="hero-bg"></div><div class="hero-grid" data-parallax="0.08"></div>
   <div class="wrap hero-in">
+    <div class="hero-copy">
     <span class="eyebrow" data-reveal="blur">Agence web · Luxembourg</span>
     <h1><span class="hl-a" data-split>Des sites web qui</span><span class="fx-cycle" data-cycle='["convertissent.","font vendre.","remplissent.","rapportent.","marquent."]'></span></h1>
     <p class="lead" data-reveal data-delay="820">NS Development crée des sites modernes, rapides et multilingues pour les commerçants, restaurants et indépendants du Luxembourg. Livrés vite, pensés pour vendre.</p>
@@ -363,6 +484,31 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>
       <a href="#demos" class="btn ghost">Voir des exemples</a>
+    </div>
+    </div>
+    <div class="hero-wall" aria-hidden="true">
+      <div class="hw-col hw-col-a"><div class="hw-track">
+        <div class="hw-card"><img src="assets/mur/maison-vaurenne.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/kine-weber.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/automobile.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/immobilier.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/fiduciaire-atlas.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/maison-vaurenne.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/kine-weber.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/automobile.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/immobilier.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/fiduciaire-atlas.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+      </div></div>
+      <div class="hw-col hw-col-b"><div class="hw-track">
+        <div class="hw-card"><img src="assets/mur/domaine-equestre.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/fitness.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/ecole-danse.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/restaurant.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/domaine-equestre.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/fitness.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/ecole-danse.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+        <div class="hw-card"><img src="assets/mur/restaurant.webp" width="560" height="350" alt="" decoding="async" fetchpriority="low"></div>
+      </div></div>
     </div>
   </div>
   <div class="hero-scroll"><span>Découvrir</span><div class="ln"></div></div>
@@ -431,7 +577,7 @@
           <h3>Kinésithérapie Weber</h3>
           <p>Doux et rassurant : cinq pages, prise de rendez-vous en ligne et agenda côté praticienne.</p>
           <div class="work-feats"><span>Rendez-vous en ligne</span><span>Agenda praticienne</span><span>Bilingue FR / LB</span></div>
-          <a href="demos/kinesitherapie-weber/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/kinesitherapie-weber/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>4 300 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -441,7 +587,7 @@
           <h3>Domaine de Valombre</h3>
           <p>Sombre et cinématique : grandes photographies, défilement fluide et mise en page de magazine.</p>
           <div class="work-feats"><span>Rendez-vous en ligne</span><span>Photo plein cadre</span><span>Galerie de chevaux</span></div>
-          <a href="demos/domaine-equestre/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/domaine-equestre/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>6 300 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -451,7 +597,7 @@
           <h3>Maison Volte</h3>
           <p>Clair et éditorial : photographies monochromes, planning de la semaine et réservation en un clic.</p>
           <div class="work-feats"><span>Planning des cours</span><span>Fiches professeurs</span><span>Galerie plein écran</span></div>
-          <a href="demos/ecole-danse/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/ecole-danse/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>4 000 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -461,7 +607,7 @@
           <h3>HORIZON</h3>
           <p>Raffiné et haut de gamme : annonces, estimation et capture de contacts.</p>
           <div class="work-feats"><span>Annonces</span><span>Estimation</span><span>Leads</span></div>
-          <a href="demos/vitrines/immobilier/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/vitrines/immobilier/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>6 000 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -471,7 +617,7 @@
           <h3>MOTORLINE</h3>
           <p>Technique et premium : catalogue de véhicules et prise de rendez-vous.</p>
           <div class="work-feats"><span>Catalogue</span><span>Prise de RDV</span><span>Services</span></div>
-          <a href="demos/vitrines/automobile/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/vitrines/automobile/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>6 000 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -481,7 +627,7 @@
           <h3>PULSE</h3>
           <p>Brut et énergique : programmes, planning des cours et essai gratuit.</p>
           <div class="work-feats"><span>Planning</span><span>Programmes</span><span>Essai gratuit</span></div>
-          <a href="demos/vitrines/fitness/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/vitrines/fitness/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>2 900 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -491,7 +637,7 @@
           <h3>Fiduciaire Atlas</h3>
           <p>Sobre et rassurant : présentation des services, prise de rendez-vous et contact.</p>
           <div class="work-feats"><span>Services</span><span>Rendez-vous</span><span>Multilingue</span></div>
-          <a href="demos/fiduciaire-atlas/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/fiduciaire-atlas/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>3 400 €</span></div>
         </div>
       </article>
       <article class="work fx-spot">
@@ -501,9 +647,41 @@
           <h3>Maison Vaurenne</h3>
           <p>Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.</p>
           <div class="work-feats"><span>Menus</span><span>Carte</span><span>Réservation en ligne</span></div>
-          <a href="demos/maison-vaurenne/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a>
+          <div class="work-foot"><a href="demos/maison-vaurenne/index.html" target="_blank" rel="noopener" class="work-link">Voir la démo →</a><span class="work-price"><small>à partir de</small>6 300 €</span></div>
         </div>
       </article>
+    </div>
+    <p class="works-note" data-reveal="blur" data-delay="120">Montants hors TVA, hors maintenance, donnés pour situer. Chaque site est chiffré sur ce que vous demandez vraiment, et le devis est gratuit.</p>
+  </div>
+</section>
+
+<!-- AVANT / APRÈS -->
+<section class="sec" id="refonte">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-reveal="blur">Refonte</span>
+      <h2 data-reveal data-delay="120">Votre site a dix ans ? Ça se voit.</h2>
+      <p data-reveal="blur" data-delay="240">Attrapez le curseur et faites-le glisser. À gauche, un site de restaurant comme il en existe encore beaucoup au Luxembourg. À droite, la même adresse une fois refaite. C'est une mise en situation, pas un client réel.</p>
+    </div>
+
+    <div class="ba" data-reveal="scale" data-delay="140">
+      <div class="ba-frame" id="baFrame">
+        <img class="ba-img" src="assets/avant-apres/apres.webp" width="1280" height="800" decoding="async"
+             alt="Le même restaurant après refonte : site sombre et éditorial, réservation en ligne">
+        <img class="ba-img ba-avant" src="assets/avant-apres/avant.webp" width="1280" height="800" decoding="async"
+             alt="Site de restaurant daté : mise en page en tableau, photos compressées, réservation par téléphone">
+        <span class="ba-tag ba-tag-a">Avant</span>
+        <span class="ba-tag ba-tag-b">Après</span>
+        <span class="ba-line" aria-hidden="true"><i class="ba-grip"></i></span>
+        <input class="ba-range" id="baRange" type="range" min="0" max="100" value="50" step="0.1"
+               aria-label="Glisser pour comparer le site avant et après refonte">
+      </div>
+    </div>
+
+    <div class="ba-notes" data-stagger="90">
+      <div class="ba-note"><h3>Lisible sur téléphone</h3><p>Un site conçu à cette époque n'était pas prévu pour un écran de poche. C'est pourtant là que la plupart des gens vous découvrent aujourd'hui.</p></div>
+      <div class="ba-note"><h3>Réservation en ligne</h3><p>Une table se réserve en trois clics, à toute heure. Plus de téléphone qui sonne en plein coup de feu pour une question d'horaire.</p></div>
+      <div class="ba-note"><h3>Trouvable sur Google</h3><p>Structure, vitesse et fiche Google Maps reliée au site. Vous apparaissez quand quelqu'un cherche un restaurant à côté de chez lui.</p></div>
     </div>
   </div>
 </section>
@@ -610,7 +788,12 @@
     </div>
 
     <div id="simulateur" style="scroll-margin-top:90px"></div>
-    <div class="sim-grid" data-reveal="blur" data-delay="200">
+    <div class="sim-scene" data-reveal="scale" data-delay="160">
+    <div class="sim-scene-head">
+      <span class="eyebrow" data-reveal="blur">Simulateur</span>
+      <h3 data-reveal data-delay="100">Estimez votre budget en un clic</h3>
+    </div>
+    <div class="sim-grid">
       <!-- Choix : un seul geste, le type de site -->
       <div class="sim-panel">
         <div class="sim-step" style="margin-bottom:0">
@@ -636,6 +819,7 @@
         <p class="sim-legal">Une estimation pour vous donner un ordre d'idée, pas un devis. Le prix exact dépend de votre projet : on l'établit ensemble, gratuitement, lors d'un échange rapide.</p>
       </aside>
     </div>
+    </div>
   </div>
 </section>
 
@@ -646,15 +830,26 @@
       <div>
         <span class="eyebrow" data-reveal="blur">Qui sommes-nous</span>
         <h2 data-reveal data-delay="120" style="font-size:clamp(28px,4.4vw,44px);margin:14px 0 20px">Une agence web luxembourgeoise, à taille humaine</h2>
-        <p data-reveal="blur" data-delay="240">NS Development accompagne les commerçants luxembourgeois pour réussir en ligne. On parle votre langue, on connaît votre marché, et on va droit au but.</p>
-        <p data-reveal="blur" data-delay="240">Pas d'intermédiaire, pas de jargon : un contact direct, un travail soigné et un site qui vous ramène de vrais clients.</p>
+        <p data-reveal="blur" data-delay="200">NS Development est une société luxembourgeoise, déclarée et autorisée à exercer. Pas une plateforme installée à l'autre bout du monde, pas d'intermédiaire : vous avez un interlocuteur, il connaît votre dossier, et il décroche.</p>
+        <p data-reveal="blur" data-delay="260">On travaille pour des commerçants, des restaurants et des indépendants d'ici. Des gens qui n'ont ni le temps ni l'envie d'apprendre le vocabulaire du web, et qui veulent surtout que le téléphone sonne et que les tables se remplissent.</p>
+        <p data-reveal="blur" data-delay="320">Une fois le site en ligne, vous ne nous perdez pas de vue. Factures, statistiques et demandes de modification se suivent depuis votre espace client, sur le site comme sur votre téléphone.</p>
+
+        <div class="proofs" data-stagger="90">
+          <div class="proof"><span class="proof-l">Société luxembourgeoise</span><span class="proof-v">SARL-S &middot; RCS B310037</span></div>
+          <div class="proof"><span class="proof-l">Autorisation d'établissement</span><span class="proof-v">n&deg; 10196211</span></div>
+          <div class="proof"><span class="proof-l">Serveurs au Luxembourg</span><span class="proof-v">À Contern, pas ailleurs</span></div>
+          <div class="proof"><span class="proof-l">Les langues de vos clients</span><span class="proof-v">FR &middot; LB &middot; DE &middot; EN &middot; PT</span></div>
+        </div>
       </div>
       <div class="team" data-reveal="blur" data-delay="200">
         <div class="tm3d" id="samCard">
           <div class="tm3d-card">
             <div class="tm3d-photo">
               <span class="tm3d-dot">Disponible</span>
-              <img src="assets/sam.jpg?v=1" alt="Samir Dinis Da Rosa — votre contact chez NS Development">
+              <picture>
+                <source srcset="assets/sam.webp?v=2" type="image/webp">
+                <img src="assets/sam.jpg?v=2" width="1000" height="1250" alt="Samir Dinis Da Rosa — votre contact chez NS Development">
+              </picture>
               <span class="tm3d-shine"></span>
             </div>
             <div class="tm3d-name">
@@ -663,6 +858,9 @@
             </div>
           </div>
         </div>
+        <a href="#contact" class="btn ghost about-cta">Parler à Sam
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
       </div>
     </div>
   </div>
@@ -678,7 +876,7 @@
     </div>
     <div class="contact-grid">
       <div class="cinfo" data-reveal="left">
-        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">nsdevelopment26@gmail.com</div></div></div>
+        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">info@nsdevelopment.lu</div></div></div>
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="ci-l">Zone</div><div class="ci-v">Luxembourg & alentours</div></div></div>
         <div class="cline" style="border-bottom:none"><div class="ci-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="ci-l">Réponse</div><div class="ci-v">Sous 24 h ouvrées</div></div></div>
       </div>
@@ -720,7 +918,7 @@
       </div>
       <div class="foot-col">
         <h4>Contact</h4>
-        <a href="mailto:nsdevelopment26@gmail.com">nsdevelopment26@gmail.com</a>
+        <a href="mailto:info@nsdevelopment.lu">info@nsdevelopment.lu</a>
         <a href="#contact">Devis gratuit</a>
         <span style="display:block;font-size:13.5px;color:var(--muted);padding:5px 0">Luxembourg</span>
       </div>
@@ -792,9 +990,46 @@
     if(window.nsRetranslate) window.nsRetranslate();
   }
 
+  /* Le montant roule d'une fourchette à l'autre au lieu de sauter :
+     c'est ce qui donne l'impression que le simulateur calcule vraiment.
+     On garde les dernières valeurs affichées pour partir de là. */
+  let simAff = null, simRAF = 0, simFilet = 0;
+  const simReduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function simEcrire(min, max){
+    document.getElementById('simTot').textContent = eur(Math.round(min))+' – '+eur(Math.round(max))+' €';
+  }
+
+  function simAnimer(min, max){
+    const duree = 520;
+    // Pose la valeur cible et coupe tout ce qui tourne encore.
+    const finir = () => {
+      cancelAnimationFrame(simRAF); clearTimeout(simFilet);
+      simAff = {min, max}; simEcrire(min, max);
+    };
+    // Onglet en arrière-plan : requestAnimationFrame est suspendu, on écrit direct.
+    if(simReduit || document.hidden || !simAff){ finir(); return; }
+    const de = simAff, t0 = performance.now();
+    cancelAnimationFrame(simRAF); clearTimeout(simFilet);
+    (function pas(t){
+      const k = Math.min(1, (t - t0) / duree);
+      const e = 1 - Math.pow(1 - k, 3);          // sortie douce
+      const m = de.min + (min - de.min) * e, M = de.max + (max - de.max) * e;
+      simEcrire(m, M);
+      // on suit la position réelle : un clic pendant l'animation repart d'ici,
+      // sans le petit saut qu'on aurait en repartant de la fourchette précédente
+      simAff = {min:m, max:M};
+      if(k < 1) simRAF = requestAnimationFrame(pas); else finir();
+    })(t0);
+    /* Filet : si l'animation ne démarre pas (onglet masqué juste après le clic,
+       rAF suspendu), le montant resterait sur l'ANCIENNE valeur, donc faux.
+       Ce minuteur garantit qu'on finit toujours sur la bonne. */
+    simFilet = setTimeout(finir, duree + 140);
+  }
+
   function simCalc(){
     const t = NS_TYPES.find(x=>x.id===simType);
-    document.getElementById('simTot').textContent = eur(t.min)+' – '+eur(t.max)+' €';
+    simAnimer(t.min, t.max);
     document.getElementById('simDetail').innerHTML =
       '<div class="sim-line" style="border:none;padding-top:0"><span>'+t.desc+'</span></div>';
 
@@ -815,37 +1050,24 @@
 
   simRender(); simCalc();
 
-  /* -----------------------------------------------------------------
-     TEST DE PALETTE — À SUPPRIMER AVANT LA MISE EN LIGNE
-     Petit bouton flottant pour comparer la palette bleue et la palette
-     monochrome. Une fois le choix fait : supprimer ce bloc, et si c'est
-     le monochrome qui est retenu, écrire <html lang="fr" data-theme="mono">.
-     ----------------------------------------------------------------- */
+
+  /* ---------- AVANT / APRÈS ----------
+     Le range reste la source de vérité (clavier, tactile, glisser natif).
+     À la souris on suit simplement le survol : c'est plus agréable que
+     d'obliger le visiteur à attraper la poignée. */
   (function(){
-    /* override de thème de test retiré pour la version finale */
-    const box = document.createElement('div');
-    box.style.cssText = 'position:fixed;left:18px;bottom:18px;z-index:9998;display:flex;gap:2px;padding:3px;'
-      + 'border-radius:10px;background:var(--card);border:1px solid var(--line2);box-shadow:0 8px 24px rgba(0,0,0,.45)';
-    box.innerHTML = '<button type="button" data-t="bleu">Bleu</button><button type="button" data-t="mono">Mono</button>';
-    box.querySelectorAll('button').forEach(b=>{
-      b.style.cssText = 'font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;'
-        + 'border:none;border-radius:7px;padding:7px 11px;cursor:pointer;background:none;color:var(--muted)';
-      b.addEventListener('click', ()=>{
-        const mono = b.dataset.t === 'mono';
-        document.documentElement.dataset.theme = mono ? 'mono' : '';
-        localStorage.setItem('ns-theme', mono ? 'mono' : 'bleu');
-        marque();
-      });
+    const frame = document.getElementById('baFrame');
+    const range = document.getElementById('baRange');
+    if(!frame || !range) return;
+    const pose = v => frame.style.setProperty('--pos', v + '%');
+    pose(range.value);
+    range.addEventListener('input', () => pose(range.value));
+    frame.addEventListener('pointermove', e => {
+      if(e.pointerType !== 'mouse') return;
+      const r = frame.getBoundingClientRect();
+      const v = Math.min(100, Math.max(0, (e.clientX - r.left) / r.width * 100));
+      range.value = v; pose(v);
     });
-    function marque(){
-      const actif = document.documentElement.dataset.theme === 'mono' ? 'mono' : 'bleu';
-      box.querySelectorAll('button').forEach(b=>{
-        const on = b.dataset.t === actif;
-        b.style.background = on ? 'var(--glow)' : 'none';
-        b.style.color = on ? 'var(--ink)' : 'var(--muted)';
-      });
-    }
-    /* bouton de test Bleu/Mono retiré pour la version finale */
   })();
 
   // Traduit si i18n.js est chargé, sinon renvoie le français
@@ -857,14 +1079,14 @@
     if(FORMSPREE.indexOf('VOTRE_ID')!==-1){
       const s=encodeURIComponent('Demande de devis — '+f.type.value+' — '+f.nom.value);
       const b=encodeURIComponent('Nom : '+f.nom.value+'\nEmail : '+f.email.value+'\nTéléphone : '+(f.tel.value||'—')+'\nType de projet : '+f.type.value+'\n\nMessage :\n'+f.message.value+'\n');
-      window.location.href='mailto:nsdevelopment26@gmail.com?subject='+s+'&body='+b;
+      window.location.href='mailto:info@nsdevelopment.lu?subject='+s+'&body='+b;
       ok.textContent=T("✓ Merci ! Votre messagerie va s'ouvrir avec votre demande pré-remplie. Envoyez-la et on vous répond sous 24 h.");
       ok.style.display='block';
       return false;
     }
     fetch(FORMSPREE,{method:'POST',body:new FormData(f),headers:{'Accept':'application/json'}})
       .then(r=>{ if(!r.ok) throw new Error(); f.reset(); ok.textContent="✓ Merci ! Votre demande a bien été envoyée, on vous répond sous 24 h ouvrées."; ok.style.display='block'; })
-      .catch(()=>{ ok.textContent=T("Une erreur est survenue. Écrivez-nous directement à nsdevelopment26@gmail.com"); ok.style.display='block'; });
+      .catch(()=>{ ok.textContent=T("Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu"); ok.style.display='block'; });
     return false;
   }
 </script>

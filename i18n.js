@@ -190,6 +190,18 @@ const NS_I18N = {
      pt:"Sóbrio e tranquilizador: apresentação dos serviços, marcação e contacto."},
   "Rendez-vous": {lb:"Rendez-vous", de:"Termine", en:"Appointments", pt:"Marcações"},
 
+  /* ---------- Avant / après ---------- */
+  "Refonte":             {lb:"Nei gemaach",     de:"Relaunch",     en:"Redesign",     pt:"Remodelação"},
+  "Votre site a dix ans ? Ça se voit.": {lb:"Ass Är Säit zéng Joer al? Dat gesäit een.", de:"Ist Ihre Website zehn Jahre alt? Man sieht es.", en:"Is your site ten years old? It shows.", pt:"O seu site tem dez anos? Nota-se."},
+  "Attrapez le curseur et faites-le glisser. À gauche, un site de restaurant comme il en existe encore beaucoup au Luxembourg. À droite, la même adresse une fois refaite. C'est une mise en situation, pas un client réel.": {lb:"Huelt de Curseur a zitt en. Lénks eng Restaurant-Säit, wéi et der zu Lëtzebuerg nach vill ginn. Riets déiselwecht Adress, nei gemaach. Dat ass e Beispill, kee richtege Client.", de:"Greifen Sie den Regler und ziehen Sie ihn. Links eine Restaurant-Website, wie es sie in Luxemburg noch viele gibt. Rechts dieselbe Adresse nach dem Relaunch. Ein Beispiel, kein echter Kunde.", en:"Grab the handle and slide it. On the left, a restaurant site of the kind still common in Luxembourg. On the right, the same address once rebuilt. This is a demonstration, not a real client.", pt:"Agarre o cursor e arraste-o. À esquerda, um site de restaurante como ainda existem muitos no Luxemburgo. À direita, o mesmo endereço depois de refeito. É uma demonstração, não um cliente real."},
+  "Avant":               {lb:"Virdrun",         de:"Vorher",       en:"Before",       pt:"Antes"},
+  "Après":               {lb:"Duerno",          de:"Nachher",      en:"After",        pt:"Depois"},
+  "Lisible sur téléphone": {lb:"Liesbar um Handy", de:"Lesbar auf dem Handy", en:"Readable on a phone", pt:"Legível no telemóvel"},
+  "Un site conçu à cette époque n'était pas prévu pour un écran de poche. C'est pourtant là que la plupart des gens vous découvrent aujourd'hui.": {lb:"Eng Säit aus där Zäit war net fir e klengen Ecran geduecht. Genau do entdecken d'Leit Iech awer haut.", de:"Eine Website aus dieser Zeit war nicht für einen kleinen Bildschirm gedacht. Genau dort entdecken die meisten Sie aber heute.", en:"A site built back then was never meant for a pocket screen. Yet that is where most people find you today.", pt:"Um site dessa época não foi pensado para um ecrã de bolso. No entanto, é aí que a maioria das pessoas o descobre hoje."},
+  "Une table se réserve en trois clics, à toute heure. Plus de téléphone qui sonne en plein coup de feu pour une question d'horaire.": {lb:"En Dësch gëtt an dräi Klicks reservéiert, zu all Auerzäit. Kee Telefon méi, deen an der gréisster Häscht wéinst enger Fro iwwer d'Ouverturen klengelt.", de:"Ein Tisch ist in drei Klicks reserviert, rund um die Uhr. Kein Telefon mehr, das mitten im Ansturm wegen einer Öffnungszeit klingelt.", en:"A table is booked in three clicks, at any hour. No more phone ringing mid-service over a question about opening times.", pt:"Uma mesa reserva-se em três cliques, a qualquer hora. Sem telefone a tocar em plena azáfama por causa de um horário."},
+  "Trouvable sur Google": {lb:"Op Google ze fannen", de:"Auf Google auffindbar", en:"Found on Google", pt:"Encontrável no Google"},
+  "Structure, vitesse et fiche Google Maps reliée au site. Vous apparaissez quand quelqu'un cherche un restaurant à côté de chez lui.": {lb:"Struktur, Vitesse an eng Google-Maps-Fiche, déi mat der Säit verbonnen ass. Dir erschéngt, wann een e Restaurant an der Noperschaft sicht.", de:"Struktur, Geschwindigkeit und ein mit der Website verknüpfter Google-Maps-Eintrag. Sie erscheinen, wenn jemand ein Restaurant in der Nähe sucht.", en:"Structure, speed and a Google Maps listing linked to the site. You show up when someone looks for a restaurant nearby.", pt:"Estrutura, velocidade e ficha Google Maps ligada ao site. Aparece quando alguém procura um restaurante perto de si."},
+
   /* ---------- Méthode ---------- */
   "Notre méthode": {lb:"Eis Method", de:"Unser Vorgehen", en:"Our method", pt:"O nosso método"},
   "De l'idée au site en ligne, en 4 étapes": {lb:"Vun der Iddi bis zur Säit online, a 4 Etappen", de:"Von der Idee zur Website in 4 Schritten", en:"From idea to live site in 4 steps", pt:"Da ideia ao site online, em 4 etapas"},
@@ -368,6 +380,17 @@ const NS_I18N = {
      pt:"Sem intermediários, sem jargão: um contacto direto, um trabalho cuidado e um site que lhe traz clientes reais."},
   "Votre contact — conseil & suivi": {lb:"Äre Kontakt — Berodung & Suivi", de:"Ihr Ansprechpartner — Beratung & Betreuung", en:"Your contact — advice & follow-up", pt:"O seu contacto — aconselhamento e acompanhamento"},
 
+  /* ---------- À propos : version renforcée ---------- */
+  "NS Development est une société luxembourgeoise, déclarée et autorisée à exercer. Pas une plateforme installée à l'autre bout du monde, pas d'intermédiaire : vous avez un interlocuteur, il connaît votre dossier, et il décroche.": {lb:"NS Development ass eng lëtzebuergesch Gesellschaft, ugemellt a mat enger Etablissementserlaabnis. Keng Plattform um anere Bout vun der Welt, keen Tëschemann: Dir hutt een Uspriechpartner, hie kennt Ären Dossier, an hien hieft of.", de:"NS Development ist eine luxemburgische Gesellschaft, angemeldet und mit Niederlassungsgenehmigung. Keine Plattform am anderen Ende der Welt, kein Zwischenhändler: Sie haben einen Ansprechpartner, er kennt Ihre Akte, und er geht ans Telefon.", en:"NS Development is a Luxembourg company, registered and licensed to trade. Not a platform on the other side of the world, and no middleman: you get one contact, he knows your file, and he picks up the phone.", pt:"A NS Development é uma sociedade luxemburguesa, registada e autorizada a exercer. Não é uma plataforma do outro lado do mundo nem um intermediário: tem um interlocutor, ele conhece o seu processo e atende."},
+  "On travaille pour des commerçants, des restaurants et des indépendants d'ici. Des gens qui n'ont ni le temps ni l'envie d'apprendre le vocabulaire du web, et qui veulent surtout que le téléphone sonne et que les tables se remplissent.": {lb:"Mir schaffe fir Händler, Restauranten a Selbststänneger vun hei. Leit, déi weder d'Zäit nach d'Loscht hunn, de Web-Vokabulär ze léieren, a virun allem wëllen, datt den Telefon klengelt an d'Dëscher voll ginn.", de:"Wir arbeiten für Händler, Restaurants und Selbstständige von hier. Menschen, die weder Zeit noch Lust haben, das Web-Vokabular zu lernen, und vor allem wollen, dass das Telefon klingelt und die Tische voll werden.", en:"We work for local shopkeepers, restaurants and independents. People who have neither the time nor the appetite to learn web jargon, and who mainly want the phone to ring and the tables to fill up.", pt:"Trabalhamos para comerciantes, restaurantes e independentes daqui. Pessoas que não têm tempo nem vontade de aprender o vocabulário da web, e que querem sobretudo que o telefone toque e que as mesas se encham."},
+  "Une fois le site en ligne, vous ne nous perdez pas de vue. Factures, statistiques et demandes de modification se suivent depuis votre espace client, sur le site comme sur votre téléphone.": {lb:"Wann d'Säit eemol online ass, verléiert Dir eis net aus den Aen. Rechnungen, Statistiken an Ännerungsufroe verfollegt Dir an Ärem Client-Beräich, op der Säit wéi um Handy.", de:"Sobald die Website online ist, verlieren Sie uns nicht aus den Augen. Rechnungen, Statistiken und Änderungswünsche verfolgen Sie in Ihrem Kundenbereich, auf der Website wie auf dem Handy.", en:"Once the site is live, you do not lose sight of us. Invoices, statistics and change requests are all tracked from your client area, on the site and on your phone.", pt:"Depois de o site estar online, não nos perde de vista. Faturas, estatísticas e pedidos de alteração seguem-se a partir da sua área de cliente, no site e no telemóvel."},
+  "Société luxembourgeoise": {lb:"Lëtzebuerger Gesellschaft", de:"Luxemburgische Gesellschaft", en:"Luxembourg company", pt:"Sociedade luxemburguesa"},
+  "Autorisation d'établissement": {lb:"Etablissementserlaabnis", de:"Niederlassungsgenehmigung", en:"Trading licence", pt:"Licença de estabelecimento"},
+  "Serveurs au Luxembourg": {lb:"Server zu Lëtzebuerg", de:"Server in Luxemburg", en:"Servers in Luxembourg", pt:"Servidores no Luxemburgo"},
+  "À Contern, pas ailleurs": {lb:"Zu Contern, soss néierens", de:"In Contern, sonst nirgends", en:"In Contern, nowhere else", pt:"Em Contern, e não noutro sítio"},
+  "Les langues de vos clients": {lb:"D'Sprooche vun Äre Clienten", de:"Die Sprachen Ihrer Kunden", en:"Your customers' languages", pt:"As línguas dos seus clientes"},
+  "Parler à Sam":        {lb:"Mam Sam schwätzen", de:"Mit Sam sprechen", en:"Talk to Sam",   pt:"Falar com o Sam"},
+
   /* ---------- Contact ---------- */
   "Parlons de votre projet": {lb:"Loosst eis iwwer Äre Projet schwätzen", de:"Sprechen wir über Ihr Projekt", en:"Let's talk about your project", pt:"Vamos falar do seu projeto"},
   "Un devis gratuit, sans engagement, sous 24 h. Dites-nous ce dont vous avez besoin.":
@@ -395,11 +418,11 @@ const NS_I18N = {
      de:"✓ Danke! Ihr E-Mail-Programm öffnet sich mit der vorausgefüllten Anfrage. Senden Sie sie ab, wir antworten innerhalb von 24 Stunden.",
      en:"✓ Thank you! Your mail app will open with your request pre-filled. Send it and we'll reply within 24 hours.",
      pt:"✓ Obrigado! O seu email vai abrir com o pedido pré-preenchido. Envie-o e respondemos em 24 h."},
-  "Une erreur est survenue. Écrivez-nous directement à nsdevelopment26@gmail.com":
-    {lb:"Et ass e Feeler geschitt. Schreift eis direkt op nsdevelopment26@gmail.com",
-     de:"Ein Fehler ist aufgetreten. Schreiben Sie uns direkt an nsdevelopment26@gmail.com",
-     en:"Something went wrong. Write to us directly at nsdevelopment26@gmail.com",
-     pt:"Ocorreu um erro. Escreva-nos diretamente para nsdevelopment26@gmail.com"},
+  "Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu":
+    {lb:"Et ass e Feeler geschitt. Schreift eis direkt op info@nsdevelopment.lu",
+     de:"Ein Fehler ist aufgetreten. Schreiben Sie uns direkt an info@nsdevelopment.lu",
+     en:"Something went wrong. Write to us directly at info@nsdevelopment.lu",
+     pt:"Ocorreu um erro. Escreva-nos diretamente para info@nsdevelopment.lu"},
 
   /* ---------- Footer ---------- */
   "Création de sites web modernes pour les commerçants, restaurants et indépendants du Luxembourg.":

@@ -616,7 +616,7 @@
     '<article class="carte" data-reveal>' +
       "<p>Votre interlocuteur chez NS Development répond du lundi au vendredi, de 9h à 18h.</p>" +
       '<div class="contacts">' +
-        '<a class="contact" href="mailto:nsdevelopment26@gmail.com">' + ico("enveloppe", 17) + "nsdevelopment26@gmail.com</a>" +
+        '<a class="contact" href="mailto:info@nsdevelopment.lu">' + ico("enveloppe", 17) + "info@nsdevelopment.lu</a>" +
         '<a class="contact" href="index.html#contact">' + ico("demandes", 17) + "Écrire à NS Development</a>" +
       "</div>" +
     "</article>" +
