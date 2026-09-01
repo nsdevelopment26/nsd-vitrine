@@ -81,11 +81,11 @@ const NS_I18N = {
      de:"Wir optimieren Ihre Website für Google und Google Maps: Sie erscheinen, wenn jemand „in meiner Nähe“ sucht.",
      en:"We optimise your site for Google and Google Maps, so you show up when a customer searches “near me”.",
      pt:"Otimizamos o seu site para o Google e o Google Maps: aparece quando um cliente procura “perto de mim”."},
-  "FR, DE, EN, PT : votre site parle à toutes les communautés du Luxembourg. Un vrai atout que peu d'agences maîtrisent.":
-    {lb:"FR, DE, EN, PT: Är Säit schwätzt mat alle Communautéiten zu Lëtzebuerg. E richtegen Atout deen wéineg Agencen beherrschen.",
-     de:"FR, DE, EN, PT: Ihre Website spricht alle Gemeinschaften Luxemburgs an. Ein echter Vorteil, den wenige Agenturen beherrschen.",
-     en:"FR, DE, EN, PT: your site speaks to every community in Luxembourg. A real advantage few agencies master.",
-     pt:"FR, DE, EN, PT: o seu site fala a todas as comunidades do Luxemburgo. Uma vantagem real que poucas agências dominam."},
+  "FR, LX, DE, EN, PT : votre site parle à toutes les communautés du Luxembourg. Un vrai atout que peu d'agences maîtrisent.":
+    {lb:"FR, LX, DE, EN, PT: Är Säit schwätzt mat alle Communautéiten zu Lëtzebuerg. E richtegen Atout deen wéineg Agencen beherrschen.",
+     de:"FR, LX, DE, EN, PT: Ihre Website spricht alle Gemeinschaften Luxemburgs an. Ein echter Vorteil, den wenige Agenturen beherrschen.",
+     en:"FR, LX, DE, EN, PT: your site speaks to every community in Luxembourg. A real advantage few agencies master.",
+     pt:"FR, LX, DE, EN, PT: o seu site fala a todas as comunidades do Luxemburgo. Uma vantagem real que poucas agências dominam."},
   "Maintenance & hébergement": {lb:"Ënnerhalt & Hosting", de:"Wartung & Hosting", en:"Maintenance & hosting", pt:"Manutenção e alojamento"},
   "Votre site reste en ligne, à jour et sécurisé. On s'occupe de l'hébergement, des sauvegardes et des modifications.":
     {lb:"Är Säit bleift online, aktuell a séchert. Mir këmmeren eis ëm den Hosting, d'Backupen an d'Ännerungen.",
