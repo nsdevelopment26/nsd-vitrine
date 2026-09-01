@@ -29,7 +29,7 @@
 <script src="ns-motion.js" defer></script>
 <script src="ns-fx.js?v=11" defer></script>
 <!-- Incrémenter ?v= à chaque modification du dictionnaire, sinon les navigateurs gardent l'ancienne version en cache -->
-<script src="i18n.js?v=7" defer></script>
+<script src="i18n.js?v=8" defer></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{
@@ -366,6 +366,30 @@
   .about-cta{max-width:360px;width:100%;margin:0 auto;justify-content:center}
   @media(max-width:560px){.proofs{grid-template-columns:1fr}}
 
+  /* ESPACE CLIENT — la section qui explique à quoi sert l'abonnement.
+     L'aperçu déborde volontairement à droite : on montre un vrai écran,
+     pas une vignette centrée qui ferait « illustration ». */
+  #espace{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
+  .ec-grid{display:grid;grid-template-columns:1fr .95fr;gap:56px;align-items:center}
+  .ec-grid > div:first-child{max-width:560px;min-width:0}
+  .ec-grid p{color:var(--soft);font-size:15.5px}
+  .ec-points{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px;margin:28px 0 30px}
+  .ec-point h3{font-size:15px;margin-bottom:6px}
+  .ec-point p{font-size:14px;line-height:1.6}
+  .ec-cta{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+  .ec-note{font-size:12.5px;color:var(--muted);line-height:1.6;max-width:42ch}
+  .ec-vue{position:relative;min-width:0}
+  .ec-vue::before{content:"";position:absolute;inset:-14%;z-index:0;border-radius:40px;
+    background:radial-gradient(60% 55% at 50% 40%,var(--glow),transparent 72%);filter:blur(40px)}
+  .ec-vue img{position:relative;width:126%;max-width:none;border-radius:16px;
+    border:1px solid var(--line2);box-shadow:0 40px 90px rgba(0,0,0,.62)}
+  @media(max-width:980px){
+    .ec-grid{grid-template-columns:1fr;gap:36px}
+    .ec-grid > div:first-child{max-width:none}
+    .ec-vue img{width:100%}
+  }
+  @media(max-width:560px){.ec-points{grid-template-columns:1fr;gap:18px}}
+
   /* CONTACT */
   .contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
   .cinfo .cline{display:flex;gap:15px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
@@ -699,6 +723,38 @@
       <div class="step"><div class="num">02</div><h3>Design sur-mesure</h3><p>On conçoit une maquette moderne à votre image, que vous validez avant tout développement.</p></div>
       <div class="step"><div class="num">03</div><h3>Développement rapide</h3><p>Votre site est construit, optimisé et testé en quelques jours. Vous suivez l'avancement à chaque étape.</p></div>
       <div class="step"><div class="num">04</div><h3>Mise en ligne & suivi</h3><p>On publie, on référence, et on maintient votre site à jour grâce à la maintenance.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ESPACE CLIENT -->
+<section class="sec" id="espace">
+  <div class="wrap">
+    <div class="ec-grid">
+      <div>
+        <span class="eyebrow" data-reveal="blur">Espace client</span>
+        <h2 data-reveal data-delay="120" style="font-size:clamp(28px,4.4vw,44px);margin:14px 0 20px">Vous voyez ce que vous payez</h2>
+        <p data-reveal="blur" data-delay="200">La plupart des agences livrent un site puis disparaissent, et vous ne savez plus ce que devient votre abonnement. Chez nous, chaque client reçoit un espace personnel. Vous y entrez quand vous voulez, depuis un ordinateur ou votre téléphone.</p>
+
+        <div class="ec-points" data-stagger="90">
+          <div class="ec-point"><h3>Vos chiffres</h3><p>Combien de personnes vous trouvent, d'où elles viennent, combien appellent ou demandent l'itinéraire.</p></div>
+          <div class="ec-point"><h3>Vos factures</h3><p>L'historique complet, téléchargeable, et la prochaine échéance. Aucune surprise sur le montant.</p></div>
+          <div class="ec-point"><h3>Vos demandes</h3><p>Une modification à faire ? Vous l'écrivez ici et vous suivez son avancement, sans relancer personne.</p></div>
+          <div class="ec-point"><h3>Vos documents</h3><p>Contrat, devis, nom de domaine, accès Google. Tout est rangé au même endroit et reste à vous.</p></div>
+        </div>
+
+        <div class="ec-cta" data-reveal data-delay="160">
+          <a href="espace-client.html?demo=1" class="btn primary">Essayer l'espace client
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <span class="ec-note">Démonstration libre, aucun compte à créer. Les données affichées sont fictives.</span>
+        </div>
+      </div>
+
+      <div class="ec-vue" data-reveal="scale" data-delay="180">
+        <img src="assets/espace-client-apercu.webp" width="1200" height="768" loading="lazy" decoding="async"
+             alt="Aperçu de l'espace client : visiteurs, pages vues, appels reçus et courbe de fréquentation">
+      </div>
     </div>
   </div>
 </section>
