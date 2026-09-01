@@ -203,9 +203,12 @@
       {lat:41.90,lon:12.50},{lat:40.42,lon:-3.70},{lat:47.37,lon:8.54},{lat:52.37,lon:4.90},
       {lat:38.72,lon:-9.14},{lat:45.46,lon:9.19},{lat:59.33,lon:18.06},{lat:48.21,lon:16.37}
     ];
-    // grille de points sur la sphère (aspect « planète de données »)
+    // Contours des terres émergées (assets/terres.js, Natural Earth, domaine public).
+    // Si le fichier n'est pas là, on retombe sur une grille de points : le globe
+    // tourne quand même, il est juste moins beau.
+    const TERRES = window.NS_TERRES || null;
     const dotsG=[];
-    for(let la=-80;la<=80;la+=8) for(let lo=-180;lo<180;lo+=8) dotsG.push({lat:la,lon:lo});
+    if(!TERRES){ for(let la=-80;la<=80;la+=8) for(let lo=-180;lo<180;lo+=8) dotsG.push({lat:la,lon:lo}); }
 
     const RAD=Math.PI/180;
     function project(lat,lon,rot){
@@ -213,6 +216,32 @@
       const x=Math.cos(p)*Math.sin(t), y=Math.sin(p), z=Math.cos(p)*Math.cos(t);
       return {x:cx+x*R,y:cy-y*R,z};
     }
+    /* Dessine les terres d'une face. Un point du mauvais côté est rabattu sur
+       le bord du globe : la découpe suit alors le limbe au lieu de couper à
+       la corde, et les continents se referment proprement sur le contour. */
+    function terres(rot, avant, alpha, couleur){
+      if(!TERRES) return;
+      ctx.globalAlpha=alpha; ctx.fillStyle=couleur;
+      for(let k=0;k<TERRES.length;k++){
+        const ring=TERRES[k], n=ring.length, pts=new Array(n);
+        let vus=0;
+        for(let i=0;i<n;i++){
+          const q=project(ring[i][1], ring[i][0], rot);
+          if(avant ? q.z>=0 : q.z<0){ vus++; pts[i]=q; }
+          else{
+            const dx=q.x-cx, dy=q.y-cy, d=Math.sqrt(dx*dx+dy*dy)||1;
+            pts[i]={x:cx+dx/d*R, y:cy+dy/d*R};
+          }
+        }
+        if(vus<3) continue;                     // anneau entièrement de l'autre côté
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x,pts[0].y);
+        for(let i=1;i<n;i++) ctx.lineTo(pts[i].x,pts[i].y);
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.globalAlpha=1;
+    }
+
     let rot=0,last=performance.now();
     // Visible = le canvas croise la fenêtre. Test direct, fiable en toute situation.
     const visible=()=>{ const r=cv.getBoundingClientRect(); return r.bottom>0 && r.top<innerHeight; };
@@ -231,16 +260,25 @@
       g.addColorStop(0,col('--glow')); g.addColorStop(1,'transparent');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,R*1.35,0,7); ctx.fill();
 
-      // points de la grille
       const ink=col('--soft'), acc=col('--acc2'), accd=col('--acc');
-      dotsG.forEach(d=>{
-        const q=project(d.lat,d.lon,rot);
-        if(q.z<0) return;
-        const a=0.15+q.z*0.5;
-        ctx.globalAlpha=a; ctx.fillStyle=ink;
-        ctx.beginPath(); ctx.arc(q.x,q.y,0.9+q.z*0.9,0,7); ctx.fill();
-      });
-      ctx.globalAlpha=1;
+
+      if(TERRES){
+        /* La sphère reste vide : c'est ce qui permet de voir à travers.
+           On pose d'abord la face cachée, très en retrait, puis le contour
+           du globe, puis la face tournée vers nous. */
+        terres(rot, false, 0.19, ink);
+        ctx.globalAlpha=0.5; ctx.strokeStyle=col('--line2'); ctx.lineWidth=1;
+        ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.stroke(); ctx.globalAlpha=1;
+        terres(rot, true, 0.82, ink);
+      } else {
+        dotsG.forEach(d=>{
+          const q=project(d.lat,d.lon,rot);
+          if(q.z<0) return;
+          ctx.globalAlpha=0.15+q.z*0.5; ctx.fillStyle=ink;
+          ctx.beginPath(); ctx.arc(q.x,q.y,0.9+q.z*0.9,0,7); ctx.fill();
+        });
+        ctx.globalAlpha=1;
+      }
 
       // arcs depuis le Luxembourg
       const lu=project(LUX.lat,LUX.lon,rot);
@@ -250,7 +288,7 @@
         const lift=(0.6+((lu.z+q.z)/2))*R*0.28;
         const cxp=mid.x,cyp=mid.y-lift;
         const front=(lu.z+q.z)/2>-0.1;
-        ctx.globalAlpha=front?0.5:0.12;
+        ctx.globalAlpha=front?0.34:0.08;   // les continents sont le sujet, les arcs le décor
         ctx.strokeStyle=accd; ctx.lineWidth=1;
         ctx.beginPath(); ctx.moveTo(lu.x,lu.y); ctx.quadraticCurveTo(cxp,cyp,q.x,q.y); ctx.stroke();
         // impulsion lumineuse qui court le long de l'arc
