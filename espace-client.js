@@ -863,7 +863,24 @@
       try {
         var res = await sb.from("profiles").select("role").eq("id", session.user.id).single();
         if (res.data && res.data.role === "admin") {
-          window.location.replace("espace-client-admin.html");
+          /* Le tableau de bord d'administration est volontairement exclu de la
+             vitrine publique (voir publier-vitrine.command). Sans cette
+             vérification, un admin connecté qui ouvre l'espace client depuis
+             la vitrine est redirigé vers une page absente : 404 en pleine
+             démonstration, et seulement pour lui, ce qui le rend difficile
+             à reproduire. */
+          var dispo = false;
+          try { dispo = (await fetch("espace-client-admin.html", { method: "HEAD" })).ok; }
+          catch (e2) { dispo = false; }
+          if (dispo) {
+            window.location.replace("espace-client-admin.html");
+            return;
+          }
+          var err = document.getElementById("ecErr");
+          if (err) {
+            err.textContent = "Compte administrateur. Le tableau de bord d'administration n'est pas publié à cette adresse : ouvrez-le depuis le poste de travail.";
+            err.style.display = "block";
+          }
           return;
         }
       } catch (e) { /* pas de profil : traité comme client */ }
