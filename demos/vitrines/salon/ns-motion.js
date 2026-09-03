@@ -112,19 +112,14 @@
     var suffix = el.getAttribute("data-suffix") || "";
     var prefix = el.getAttribute("data-prefix") || "";
     if (isNaN(target)) return;
-    // Mise en forme identique à celle de l'animation : sans ça, un visiteur qui
-    // réduit les animations lisait « 24900 € » là où les autres voient « 24 900 € ».
-    function format(v) {
-      return prefix + (dec ? (v / Math.pow(10, dec)).toFixed(dec) : Math.round(v).toLocaleString("fr")) + suffix;
-    }
-    if (REDUCED) { el.textContent = format(target); return; }
+    if (REDUCED) { el.textContent = prefix + target + suffix; return; }
     var dur = parseInt(el.getAttribute("data-duration") || 1500, 10);
     var t0 = performance.now();
     (function step(now) {
       var p = Math.min(1, (now - t0) / dur);
       var eased = 1 - Math.pow(1 - p, 3);
       var v = target * eased;
-      el.textContent = format(v);
+      el.textContent = prefix + (dec ? (v / Math.pow(10, dec)).toFixed(dec) : Math.round(v).toLocaleString("fr")) + suffix;
       if (p < 1) requestAnimationFrame(step);
     })(t0);
   }

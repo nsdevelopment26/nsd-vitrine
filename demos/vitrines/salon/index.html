@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg</title>
+<meta name="description" content="Salon de coiffure, barbier, institut de beauté et toilettage à Luxembourg. Prenez rendez-vous en ligne en trente secondes, sept jours sur sept.">
+<link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/salon/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_LU">
+<meta property="og:site_name" content="Maison Lonvière">
+<meta property="og:title" content="Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg">
+<meta property="og:description" content="Prenez rendez-vous en ligne en trente secondes. Coiffure, barbier, beauté et toilettage sous un même toit.">
+<meta property="og:image" content="og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg">
+<meta name="twitter:description" content="Prenez rendez-vous en ligne en trente secondes. Coiffure, barbier, beauté et toilettage sous un même toit.">
+<meta name="twitter:image" content="og.svg">
+<meta name="theme-color" content="#2a1d28">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<script src="ns-motion.js" defer></script>
+
+<style>
+:root{
+  --paper:#f6f1ea;
+  --paper-2:#efe6da;
+  --ink:#2a1d28;
+  --ink-soft:#6b5a66;
+  --rose:#c4614c;
+  --rose-d:#a94b38;
+  --sauge:#7f9179;
+  --line:#e0d3c3;
+  --shadow:0 24px 60px -28px rgba(42,29,40,.38);
+  --ns-progress-color:#c4614c;
+  --ns-g1:#c4614c; --ns-g2:#7f9179;
+  --wrap:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{width:min(var(--wrap),calc(100% - 44px));margin-inline:auto}
+h1,h2,h3,.disp{font-family:"Bodoni Moda",Georgia,serif;font-weight:600;line-height:1.06;letter-spacing:-.012em;margin:0}
+h1{font-size:clamp(3rem,7.6vw,5.6rem)}
+h2{font-size:clamp(2.1rem,4.2vw,3.35rem)}
+h3{font-size:1.28rem;line-height:1.25}
+p{margin:0 0 1em}
+h2+p{margin-top:1.15rem}
+.eyebrow{
+  font-family:Manrope;font-size:.71rem;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--rose);margin-bottom:.9rem;
+}
+.muted{color:var(--ink-soft)}
+:focus-visible{outline:3px solid var(--rose);outline-offset:3px;border-radius:2px}
+
+/* ---------- boutons : angle droit, bordure épaisse ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  font-family:Manrope;font-weight:700;font-size:.93rem;letter-spacing:.02em;
+  padding:1.02rem 1.7rem;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
+  text-decoration:none;cursor:pointer;border-radius:0;
+  transition:background .28s,color .28s,transform .28s,border-color .28s;
+}
+.btn:hover{background:var(--rose);border-color:var(--rose);transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.block{width:100%}
+.arrow-btn{
+  width:56px;height:56px;border-radius:50%;border:2px solid var(--ink);
+  background:transparent;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;
+  font-size:1.15rem;cursor:pointer;text-decoration:none;flex:none;
+  transition:background .28s,color .28s,transform .28s;
+}
+.arrow-btn:hover{background:var(--ink);color:var(--paper);transform:rotate(-45deg)}
+.tel-link{
+  font-weight:700;text-decoration:none;border-bottom:2px solid var(--rose);
+  padding-bottom:2px;white-space:nowrap;
+}
+.tel-link:hover{color:var(--rose)}
+
+/* ---------- navigation ---------- */
+nav{
+  position:fixed;inset:0 0 auto 0;z-index:70;
+  padding:1.15rem 0;transition:background .35s,box-shadow .35s,padding .35s;
+  pointer-events:none;                 /* le ruban transparent n'avale pas les clics */
+}
+nav .nav-in>*{pointer-events:auto}     /* mais logo, liens et burger restent cliquables */
+nav.ns-solid{pointer-events:auto}      /* opaque = vraie surface, elle bloque normalement */
+nav.ns-solid{background:rgba(246,241,234,.93);backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 var(--line);padding:.72rem 0}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:1.4rem}
+.logo{font-family:"Bodoni Moda",serif;font-weight:700;font-size:1.32rem;letter-spacing:.01em;text-decoration:none}
+.logo em{font-style:italic;color:var(--rose)}
+.nav-links{display:flex;gap:1.9rem;align-items:center}
+.nav-links a{font-size:.9rem;font-weight:600;text-decoration:none}
+.nav-cta{padding:.72rem 1.25rem;font-size:.85rem}
+.burger{display:none;width:46px;height:46px;border:2px solid var(--ink);background:transparent;
+  cursor:pointer;flex-direction:column;gap:5px;align-items:center;justify-content:center}
+.burger span{width:20px;height:2px;background:var(--ink);display:block}
+
+/* panneau mobile : display:none quand fermé, donc totalement inerte */
+#mobile-menu{
+  display:none;position:fixed;inset:0;z-index:69;background:var(--paper);
+  padding:6.5rem 26px 2rem;
+}
+#mobile-menu.open{display:block}
+#mobile-menu a{display:block;font-family:"Bodoni Moda",serif;font-size:2rem;
+  padding:.55rem 0;text-decoration:none;border-bottom:1px solid var(--line)}
+
+/* ---------- hero split asymétrique ---------- */
+.hero{padding:9.5rem 0 5rem;position:relative;overflow:hidden}
+.hero::before{
+  content:"";position:absolute;top:-16%;right:-14%;width:52vw;height:52vw;max-width:620px;max-height:620px;
+  background:radial-gradient(circle at 35% 35%,rgba(196,97,76,.17),transparent 66%);
+  border-radius:50%;pointer-events:none;
+}
+.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:3.6rem;align-items:center;position:relative}
+.hero-grid>*{min-width:0}
+.hero h1{margin:.5rem 0 1.1rem}
+.hero h1 em{font-style:italic;color:var(--rose)}
+.hero .lede{font-size:1.1rem;max-width:33ch;color:var(--ink-soft)}
+.hero-secondary{display:flex;align-items:center;gap:1.1rem;margin-top:1.6rem;font-size:.95rem}
+
+/* carte de réservation */
+.book{
+  background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
+  padding:1.7rem 1.6rem 1.55rem;margin-top:2.1rem;max-width:min(440px,100%);
+}
+.book h2{font-family:Manrope;font-size:.75rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:1.1rem}
+.book-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.field{display:flex;flex-direction:column;gap:.32rem;min-width:0}
+.field label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}
+.field select,.field input{
+  font-family:Manrope;font-size:.94rem;color:var(--ink);
+  padding:.72rem .7rem;border:1.5px solid var(--line);background:var(--paper);border-radius:0;
+  width:100%;min-width:0;                /* sinon le select impose la largeur de son option la plus longue */
+}
+.field select:focus,.field input:focus{border-color:var(--rose);outline:none}
+.book .btn{margin-top:.55rem}
+.book-note{font-size:.79rem;color:var(--ink-soft);margin:.8rem 0 0;text-align:center}
+.book-done{
+  display:none;margin-top:.9rem;padding:.85rem .9rem;background:rgba(127,145,121,.16);
+  border-left:3px solid var(--sauge);font-size:.89rem;
+}
+.book-done.on{display:block}
+
+/* composition visuelle du hero */
+.hero-art{position:relative;min-height:520px}
+.frame{
+  position:absolute;border:1px solid var(--line);overflow:hidden;
+  background:var(--paper-2);box-shadow:var(--shadow);
+}
+.frame span{
+  position:absolute;bottom:0;left:0;right:0;padding:.6rem .8rem;
+  font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:#fff;background:linear-gradient(transparent,rgba(42,29,40,.72));
+}
+.f-1{top:0;right:4%;width:63%;height:70%;
+  background:linear-gradient(150deg,#3c2b39 0%,#7e4c50 46%,#c4614c 100%)}
+.f-2{bottom:0;left:0;width:52%;height:46%;
+  background:linear-gradient(140deg,#dfd0be 0%,#b9a58f 55%,#7f9179 100%)}
+.badge{
+  position:absolute;top:62%;right:0;background:var(--paper);border:2px solid var(--ink);
+  padding:.85rem 1.05rem;box-shadow:var(--shadow);
+}
+.badge b{display:block;font-family:"Bodoni Moda",serif;font-size:1.5rem;line-height:1.2;margin-bottom:.15rem}
+.badge i{font-style:normal;font-size:.71rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
+
+/* ---------- bandeau défilant ---------- */
+.band{background:var(--ink);color:var(--paper);padding:1.15rem 0;margin-top:2.5rem}
+.band .ns-marquee__track>span{
+  font-family:"Bodoni Moda",serif;font-size:1.5rem;padding:0 1.6rem;white-space:nowrap;
+}
+.band em{font-style:italic;color:var(--rose)}
+
+/* ---------- sections ---------- */
+section{padding:6.2rem 0}
+.sec-head{max-width:640px;margin-bottom:3rem}
+.sec-head p{color:var(--ink-soft);margin-top:1.15rem}
+
+/* prestations : onglets */
+.tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2.4rem}
+.tab{
+  font-family:Manrope;font-weight:700;font-size:.88rem;padding:.72rem 1.25rem;
+  border:2px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;border-radius:0;
+  transition:all .25s;
+}
+.tab:hover{border-color:var(--ink);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.panel{display:none}
+.panel.on{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:2.6rem 3.4rem}
+.price-list{border-top:2px solid var(--ink);padding-top:1.1rem}
+.price-list h3{margin-bottom:.9rem}
+.price-row{
+  display:flex;align-items:baseline;gap:.8rem;padding:.72rem 0;border-bottom:1px solid var(--line);
+}
+.price-row .n{font-weight:600}
+.price-row .d{display:block;font-size:.84rem;color:var(--ink-soft);font-weight:400}
+.price-row .dots{flex:1;border-bottom:1px dotted rgba(42,29,40,.28);transform:translateY(-4px)}
+.price-row .p{font-family:"Bodoni Moda",serif;font-size:1.15rem;font-weight:600;white-space:nowrap}
+
+/* ---------- comparateur avant / après ---------- */
+.compare-sec{background:var(--paper-2)}
+.compare{
+  position:relative;max-width:900px;margin:0 auto;aspect-ratio:16/10;
+  overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);
+  touch-action:none;cursor:ew-resize;user-select:none;
+}
+.cmp-layer{position:absolute;inset:0;display:flex;align-items:flex-end;padding:1.4rem}
+.cmp-after{background:linear-gradient(155deg,#402c3d 0%,#8c4f50 50%,#c4614c 100%)}
+.cmp-before{background:linear-gradient(155deg,#8d8a86 0%,#a9a49c 55%,#c3bcb2 100%);
+  clip-path:inset(0 50% 0 0)}
+.cmp-tag{
+  font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--paper);color:var(--ink);padding:.42rem .8rem;
+}
+.cmp-after .cmp-tag{margin-left:auto}
+.cmp-handle{
+  position:absolute;top:0;bottom:0;left:50%;width:3px;background:var(--paper);
+  transform:translateX(-50%);pointer-events:none;
+}
+.cmp-knob{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:56px;height:56px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;
+  box-shadow:var(--shadow);pointer-events:none;
+}
+.compare-hint{text-align:center;font-size:.85rem;color:var(--ink-soft);margin-top:1.1rem}
+
+/* ---------- équipe ---------- */
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem}
+.member{background:#fff;border:1px solid var(--line);overflow:hidden;transition:transform .35s,box-shadow .35s}
+.member:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.member .por{aspect-ratio:3/4;position:relative}
+.m-1{background:linear-gradient(160deg,#4a3446,#9a5a56)}
+.m-2{background:linear-gradient(160deg,#7f9179,#c9bda9)}
+.m-3{background:linear-gradient(160deg,#8c5a4c,#dcc9b4)}
+.member .por span{
+  position:absolute;left:0;right:0;bottom:0;padding:.55rem .85rem;color:#fff;
+  font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  background:linear-gradient(transparent,rgba(42,29,40,.65));
+}
+.m-body{padding:1.25rem 1.3rem 1.45rem}
+.m-body .role{font-size:.75rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--rose);margin-bottom:.4rem}
+.m-body p{font-size:.9rem;color:var(--ink-soft);margin:.5rem 0 1rem}
+.m-body a{font-size:.86rem;font-weight:700;text-decoration:none;border-bottom:2px solid var(--rose);padding-bottom:2px}
+
+/* ---------- preuve ---------- */
+.proof{background:var(--ink);color:var(--paper)}
+.proof .eyebrow{color:#e8a08d}
+.proof-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:4rem;align-items:center}
+.proof p{color:#d4c6cf}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem 1.6rem}
+.stat b{display:block;font-family:"Bodoni Moda",serif;font-size:clamp(2.6rem,5vw,3.6rem);line-height:1.12;color:var(--paper)}
+.stat i{font-style:normal;display:block;margin-top:.45rem;font-size:.78rem;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:#b6a2b0}
+
+/* ---------- infos & accès ---------- */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.4rem}
+.hours{border-top:2px solid var(--ink);padding-top:1.1rem}
+.hours div{display:flex;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.hours div b{font-weight:600}
+.hours .closed{color:var(--ink-soft)}
+.contact-block{margin-top:2rem;display:flex;flex-direction:column;gap:.55rem;font-size:1rem}
+.contact-block a{text-decoration:none;font-weight:600}
+.contact-block a:hover{color:var(--rose)}
+.map{
+  border:1px solid var(--line);background:
+    repeating-linear-gradient(0deg,transparent 0 38px,rgba(42,29,40,.07) 38px 39px),
+    repeating-linear-gradient(90deg,transparent 0 38px,rgba(42,29,40,.07) 38px 39px),
+    var(--paper-2);
+  min-height:340px;position:relative;display:flex;align-items:center;justify-content:center;
+}
+.pin{width:20px;height:20px;border-radius:50% 50% 50% 0;background:var(--rose);transform:rotate(-45deg);
+  box-shadow:0 0 0 8px rgba(196,97,76,.2)}
+.map figcaption{position:absolute;bottom:0;left:0;right:0;padding:.7rem .9rem;background:var(--paper);
+  border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-soft)}
+
+/* ---------- CTA final ---------- */
+.final{background:var(--rose);color:#fff;text-align:center}
+.final h2{max-width:15ch;margin:0 auto 1.4rem}
+.final p{max-width:46ch;margin:0 auto 2rem;color:rgba(255,255,255,.9)}
+.final .btn{background:#fff;border-color:#fff;color:var(--rose)}
+.final .btn:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.final .tel-link{color:#fff;border-color:rgba(255,255,255,.6)}
+
+/* ---------- footer ---------- */
+footer{background:var(--ink);color:#cbbcc6;padding:3.4rem 0 2.6rem;font-size:.9rem}
+.foot-in{display:flex;flex-wrap:wrap;gap:1.4rem;justify-content:space-between;align-items:center}
+footer a{color:#cbbcc6}
+.sig{font-size:.83rem;color:#9c8b98}
+.sig b{color:var(--paper)}
+
+/* ---------- responsive ---------- */
+@media(max-width:960px){
+  .hero-grid,.proof-grid,.info-grid{grid-template-columns:1fr;gap:2.6rem}
+  .hero-art{min-height:400px;order:-1}
+  .book{max-width:none}
+  .nav-links{display:none}
+  .burger{display:flex}
+  .hero{padding-top:7.2rem}
+  section{padding:4.4rem 0}
+}
+@media(max-width:520px){
+  body{font-size:16px}
+  .wrap{width:calc(100% - 32px)}
+  .book-row{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  .compare{aspect-ratio:4/5}
+  .hero-art{min-height:330px}
+  .badge{top:auto;bottom:8%}
+}
+</style>
+</head>
+<body>
+
+<div class="ns-progress"></div>
+
+<nav data-nav-solid aria-label="Navigation principale">
+  <div class="wrap nav-in">
+    <a class="logo" href="#accueil">Maison <em>Lonvière</em></a>
+    <div class="nav-links">
+      <a class="ns-link" href="#prestations">Prestations</a>
+      <a class="ns-link" href="#resultats">Avant / après</a>
+      <a class="ns-link" href="#equipe">L'équipe</a>
+      <a class="ns-link" href="#acces">Horaires &amp; accès</a>
+      <a class="btn nav-cta" href="#accueil">Prendre rendez-vous</a>
+    </div>
+    <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div id="mobile-menu" aria-hidden="true">
+  <div class="wrap">
+    <a href="#prestations">Prestations</a>
+    <a href="#resultats">Avant / après</a>
+    <a href="#equipe">L'équipe</a>
+    <a href="#acces">Horaires &amp; accès</a>
+    <a href="#accueil">Prendre rendez-vous</a>
+  </div>
+</div>
+
+<!-- ============ HERO : split asymétrique + carte de réservation ============ -->
+<header class="hero" id="accueil">
+  <div class="wrap hero-grid">
+
+    <div>
+      <div class="eyebrow" data-reveal="blur">Coiffure · Barbier · Beauté · Toilettage</div>
+      <h1><span data-split>Votre place</span><br><em data-reveal="blur" data-delay="460">est réservée.</em></h1>
+      <p class="lede" data-reveal data-delay="820">
+        Quatre univers sous un même toit, au cœur de Luxembourg. Et un rendez-vous
+        qui se prend en trente secondes, même à minuit.
+      </p>
+
+      <form class="book" id="book" data-reveal="up" data-delay="980" novalidate>
+        <h2>Réserver en ligne</h2>
+        <div class="field" style="margin-bottom:.75rem">
+          <label for="b-presta">Prestation</label>
+          <select id="b-presta" name="prestation">
+            <option>Coupe femme &amp; brushing</option>
+            <option>Coupe homme</option>
+            <option>Barbe &amp; rasage traditionnel</option>
+            <option>Coloration</option>
+            <option>Soin du visage</option>
+            <option>Beauté des mains</option>
+            <option>Toilettage chien ou chat</option>
+          </select>
+        </div>
+        <div class="book-row">
+          <div class="field">
+            <label for="b-date">Date</label>
+            <input type="date" id="b-date" name="date">
+          </div>
+          <div class="field">
+            <label for="b-heure">Heure</label>
+            <select id="b-heure" name="heure">
+              <option>09:00</option><option>10:30</option><option>12:00</option>
+              <option>14:00</option><option>15:30</option><option>17:00</option><option>18:30</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn block ns-shine">Voir les disponibilités</button>
+        <p class="book-note">Confirmation immédiate par SMS. Annulation libre jusqu'à 24 h avant.</p>
+        <div class="book-done" id="book-done" role="status"></div>
+      </form>
+
+      <div class="hero-secondary" data-reveal data-delay="1120">
+        <a class="arrow-btn" href="#prestations" aria-label="Voir les prestations">↓</a>
+        <span class="muted">Ou par téléphone au <a class="tel-link" href="tel:+352000000">+352 00 00 00</a></span>
+      </div>
+    </div>
+
+    <div class="hero-art" data-reveal="right" data-delay="240">
+      <figure class="frame f-1" data-parallax="0.06">
+        <span>Votre photo de salon ici</span>
+      </figure>
+      <figure class="frame f-2" data-parallax="0.1">
+        <span>Votre espace beauté ici</span>
+      </figure>
+      <div class="badge" data-reveal="scale" data-delay="900">
+        <b>7j/7</b><i>Réservable en ligne</i>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<div class="band">
+  <div class="ns-marquee">
+    <div class="ns-marquee__track">
+      <span>Coupe &amp; couleur</span><span><em>·</em></span>
+      <span>Barbier</span><span><em>·</em></span>
+      <span>Soin du visage</span><span><em>·</em></span>
+      <span>Beauté des mains</span><span><em>·</em></span>
+      <span>Toilettage</span><span><em>·</em></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRESTATIONS & TARIFS ============ -->
+<section id="prestations">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" data-reveal>Prestations &amp; tarifs</div>
+      <h2 data-split>Tout est affiché, rien n'est caché.</h2>
+      <p data-reveal data-delay="140">
+        Nos tarifs sont visibles avant même de pousser la porte. C'est plus simple pour vous,
+        et ça nous évite de répondre trente fois par jour à la même question au téléphone.
+      </p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Univers de prestations" data-stagger="80">
+      <button class="tab" role="tab" id="t-coiffure" aria-controls="p-coiffure" aria-selected="true">Coiffure</button>
+      <button class="tab" role="tab" id="t-barbier"  aria-controls="p-barbier"  aria-selected="false">Barbier</button>
+      <button class="tab" role="tab" id="t-beaute"   aria-controls="p-beaute"   aria-selected="false">Institut</button>
+      <button class="tab" role="tab" id="t-animaux"  aria-controls="p-animaux"  aria-selected="false">Toilettage</button>
+    </div>
+
+    <div class="panel on" id="p-coiffure" role="tabpanel" aria-labelledby="t-coiffure">
+      <div class="price-list">
+        <h3>Coupe &amp; coiffage</h3>
+        <div class="price-row"><span class="n">Coupe femme &amp; brushing<span class="d">Diagnostic, shampoing, coupe, coiffage</span></span><span class="dots"></span><span class="p">52 €</span></div>
+        <div class="price-row"><span class="n">Coupe enfant<span class="d">Jusqu'à 12 ans</span></span><span class="dots"></span><span class="p">24 €</span></div>
+        <div class="price-row"><span class="n">Brushing seul<span class="d">Selon la longueur</span></span><span class="dots"></span><span class="p">dès 28 €</span></div>
+        <div class="price-row"><span class="n">Coiffure de mariée<span class="d">Essai inclus</span></span><span class="dots"></span><span class="p">sur devis</span></div>
+      </div>
+      <div class="price-list">
+        <h3>Couleur &amp; soin</h3>
+        <div class="price-row"><span class="n">Coloration racines<span class="d">Sans ammoniaque</span></span><span class="dots"></span><span class="p">58 €</span></div>
+        <div class="price-row"><span class="n">Balayage<span class="d">Éclaircissement progressif</span></span><span class="dots"></span><span class="p">dès 95 €</span></div>
+        <div class="price-row"><span class="n">Soin profond<span class="d">Cheveux abîmés ou colorés</span></span><span class="dots"></span><span class="p">32 €</span></div>
+        <div class="price-row"><span class="n">Lissage<span class="d">Résultat 3 à 5 mois</span></span><span class="dots"></span><span class="p">dès 140 €</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-barbier" role="tabpanel" aria-labelledby="t-barbier" hidden>
+      <div class="price-list">
+        <h3>Coupe homme</h3>
+        <div class="price-row"><span class="n">Coupe classique<span class="d">Shampoing et coiffage inclus</span></span><span class="dots"></span><span class="p">32 €</span></div>
+        <div class="price-row"><span class="n">Dégradé américain<span class="d">Finition à la tondeuse et au rasoir</span></span><span class="dots"></span><span class="p">38 €</span></div>
+        <div class="price-row"><span class="n">Coupe &amp; barbe<span class="d">La formule complète</span></span><span class="dots"></span><span class="p">52 €</span></div>
+      </div>
+      <div class="price-list">
+        <h3>Barbe &amp; rasage</h3>
+        <div class="price-row"><span class="n">Taille de barbe<span class="d">Contours au rasoir</span></span><span class="dots"></span><span class="p">24 €</span></div>
+        <div class="price-row"><span class="n">Rasage traditionnel<span class="d">Serviette chaude, coupe-chou</span></span><span class="dots"></span><span class="p">34 €</span></div>
+        <div class="price-row"><span class="n">Soin du cuir chevelu<span class="d">Massage et lotion</span></span><span class="dots"></span><span class="p">18 €</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-beaute" role="tabpanel" aria-labelledby="t-beaute" hidden>
+      <div class="price-list">
+        <h3>Visage</h3>
+        <div class="price-row"><span class="n">Soin éclat<span class="d">45 minutes</span></span><span class="dots"></span><span class="p">65 €</span></div>
+        <div class="price-row"><span class="n">Soin anti-âge<span class="d">75 minutes</span></span><span class="dots"></span><span class="p">95 €</span></div>
+        <div class="price-row"><span class="n">Épilation sourcils<span class="d">Restructuration</span></span><span class="dots"></span><span class="p">16 €</span></div>
+      </div>
+      <div class="price-list">
+        <h3>Mains &amp; pieds</h3>
+        <div class="price-row"><span class="n">Manucure<span class="d">Pose de vernis incluse</span></span><span class="dots"></span><span class="p">38 €</span></div>
+        <div class="price-row"><span class="n">Pose gel<span class="d">Tenue 3 semaines</span></span><span class="dots"></span><span class="p">55 €</span></div>
+        <div class="price-row"><span class="n">Pédicure de soin<span class="d">Gommage et massage</span></span><span class="dots"></span><span class="p">48 €</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-animaux" role="tabpanel" aria-labelledby="t-animaux" hidden>
+      <div class="price-list">
+        <h3>Chien</h3>
+        <div class="price-row"><span class="n">Petite race<span class="d">Bain, séchage, coupe</span></span><span class="dots"></span><span class="p">45 €</span></div>
+        <div class="price-row"><span class="n">Race moyenne<span class="d">Bain, séchage, coupe</span></span><span class="dots"></span><span class="p">62 €</span></div>
+        <div class="price-row"><span class="n">Grande race<span class="d">Sur rendez-vous uniquement</span></span><span class="dots"></span><span class="p">dès 78 €</span></div>
+      </div>
+      <div class="price-list">
+        <h3>Chat &amp; soins</h3>
+        <div class="price-row"><span class="n">Toilettage chat<span class="d">Sans contention forcée</span></span><span class="dots"></span><span class="p">52 €</span></div>
+        <div class="price-row"><span class="n">Démêlage<span class="d">Facturé au temps passé</span></span><span class="dots"></span><span class="p">dès 20 €</span></div>
+        <div class="price-row"><span class="n">Coupe des griffes<span class="d">Sans rendez-vous</span></span><span class="dots"></span><span class="p">12 €</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AVANT / APRÈS ============ -->
+<section id="resultats" class="compare-sec">
+  <div class="wrap">
+    <div class="sec-head" style="max-width:660px">
+      <div class="eyebrow" data-reveal>Avant / après</div>
+      <h2 data-split>Le résultat parle mieux que nous.</h2>
+      <p data-reveal data-delay="140">
+        Faites glisser le curseur. Sur un vrai site, chaque transformation de votre salon
+        s'affiche ici, et c'est ce que vos futurs clients regardent en premier.
+      </p>
+    </div>
+
+    <div class="compare" id="compare" role="slider" tabindex="0"
+         aria-label="Comparateur avant après" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <div class="cmp-layer cmp-after"><span class="cmp-tag">Après</span></div>
+      <div class="cmp-layer cmp-before" id="cmp-before"><span class="cmp-tag">Avant</span></div>
+      <div class="cmp-handle" id="cmp-handle"><span class="cmp-knob">⇔</span></div>
+    </div>
+    <p class="compare-hint">Glissez avec le doigt ou la souris, ou utilisez les flèches du clavier.</p>
+  </div>
+</section>
+
+<!-- ============ ÉQUIPE ============ -->
+<section id="equipe">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" data-reveal>L'équipe</div>
+      <h2 data-split>On choisit sa personne, pas juste un créneau.</h2>
+      <p data-reveal data-delay="140">
+        Chacun a sa spécialité et son agenda. Vous réservez directement avec celle ou celui
+        que vous connaissez.
+      </p>
+    </div>
+
+    <div class="team" data-stagger="120">
+      <article class="member">
+        <div class="por m-1"><span>Votre photo ici</span></div>
+        <div class="m-body">
+          <div class="role">Coloriste</div>
+          <h3>Camille</h3>
+          <p>Balayages et couleurs végétales. Quinze ans de métier, dont six à Paris.</p>
+          <a href="#accueil">Réserver avec Camille</a>
+        </div>
+      </article>
+      <article class="member">
+        <div class="por m-2"><span>Votre photo ici</span></div>
+        <div class="m-body">
+          <div class="role">Barbier</div>
+          <h3>Nuno</h3>
+          <p>Dégradés nets et rasage au coupe-chou. Le samedi, réservez tôt.</p>
+          <a href="#accueil">Réserver avec Nuno</a>
+        </div>
+      </article>
+      <article class="member">
+        <div class="por m-3"><span>Votre photo ici</span></div>
+        <div class="m-body">
+          <div class="role">Esthéticienne</div>
+          <h3>Léa</h3>
+          <p>Soins du visage et onglerie. Formée aux protocoles anti-âge.</p>
+          <a href="#accueil">Réserver avec Léa</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PREUVE ============ -->
+<section class="proof">
+  <div class="wrap proof-grid">
+    <div>
+      <div class="eyebrow" data-reveal>La maison</div>
+      <h2 data-split>Un salon de quartier, tenu comme une maison.</h2>
+      <p data-reveal data-delay="160">
+        Maison Lonvière a ouvert avec une idée simple : un client qui repart content revient,
+        et il en amène un autre. Pas de vente forcée, pas de produit poussé au comptoir.
+      </p>
+      <p data-reveal data-delay="240">
+        Nous travaillons sur rendez-vous pour que personne n'attende, et nous gardons chaque
+        semaine des créneaux libres pour les imprévus.
+      </p>
+    </div>
+    <div class="stats" data-stagger="140">
+      <div class="stat"><b data-count="14" data-suffix=" ans">0</b><i>Au même endroit</i></div>
+      <div class="stat"><b data-count="4800" data-suffix="+">0</b><i>Rendez-vous par an</i></div>
+      <div class="stat"><b>4,9</b><i>Note moyenne Google</i></div>
+      <div class="stat"><b data-count="7" data-suffix="j/7">0</b><i>Réservation en ligne</i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HORAIRES & ACCÈS ============ -->
+<section id="acces">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" data-reveal>Horaires &amp; accès</div>
+      <h2 data-split>Nous trouver, nous joindre.</h2>
+    </div>
+    <div class="info-grid">
+      <div data-reveal="left">
+        <div class="hours">
+          <div><b>Lundi</b><span class="closed">Fermé</span></div>
+          <div><b>Mardi – Vendredi</b><span>09:00 – 19:00</span></div>
+          <div><b>Samedi</b><span>08:30 – 17:00</span></div>
+          <div><b>Dimanche</b><span class="closed">Fermé</span></div>
+        </div>
+        <div class="contact-block">
+          <span class="muted">Adresse à compléter par le client</span>
+          <a href="tel:+352000000">+352 00 00 00</a>
+          <a href="mailto:contact@maison-lonviere.lu">contact@maison-lonviere.lu</a>
+        </div>
+        <p style="margin-top:1.6rem"><a class="btn ghost" href="#accueil">Prendre rendez-vous</a></p>
+      </div>
+      <figure class="map" data-reveal="right" data-delay="120" style="margin:0">
+        <div class="pin" aria-hidden="true"></div>
+        <figcaption>Emplacement du salon. Sur un site publié, cette zone accueille la carte interactive.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="final">
+  <div class="wrap">
+    <h2 data-split>Réservez pendant que vous y pensez.</h2>
+    <p data-reveal data-delay="200">
+      Vingt secondes maintenant, et votre créneau est bloqué. Pas d'attente, pas de rappel à passer.
+    </p>
+    <p data-reveal data-delay="300">
+      <a class="btn ns-shine" href="#accueil">Choisir mon créneau</a>
+    </p>
+    <p data-reveal data-delay="380" style="margin-top:1.4rem;font-size:.95rem">
+      Ou appelez-nous au <a class="tel-link" href="tel:+352000000">+352 00 00 00</a>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div>
+      <div class="logo" style="color:var(--paper);display:block;margin-bottom:.3rem">Maison <em>Lonvière</em></div>
+      <div class="sig">Salon de coiffure, barbier, institut &amp; toilettage · Luxembourg</div>
+    </div>
+    <div class="sig">
+      Démonstration · Réalisé par <b>NS Development</b>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---- menu mobile : totalement inerte une fois fermé (display:none) ---- */
+  var burger = document.getElementById('burger');
+  var menu   = document.getElementById('mobile-menu');
+  function setMenu(open){
+    menu.classList.toggle('open', open);
+    menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  burger.addEventListener('click', function(){ setMenu(!menu.classList.contains('open')); });
+  menu.addEventListener('click', function(e){ if(e.target.tagName === 'A') setMenu(false); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setMenu(false); });
+
+  /* ---- onglets prestations ---- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function selectTab(tab){
+    tabs.forEach(function(t){
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      var on = (t === tab);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      panel.classList.toggle('on', on);
+      if(on){ panel.removeAttribute('hidden'); } else { panel.setAttribute('hidden',''); }
+    });
+    if(window.NSMotion && NSMotion.refresh) NSMotion.refresh();
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ selectTab(t); });
+    t.addEventListener('keydown', function(e){
+      var i = tabs.indexOf(t);
+      if(e.key === 'ArrowRight'){ e.preventDefault(); tabs[(i+1)%tabs.length].focus(); selectTab(tabs[(i+1)%tabs.length]); }
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); tabs[(i-1+tabs.length)%tabs.length].focus(); selectTab(tabs[(i-1+tabs.length)%tabs.length]); }
+    });
+  });
+
+  /* ---- comparateur avant / après, souris + doigt + clavier ---- */
+  var cmp    = document.getElementById('compare');
+  var before = document.getElementById('cmp-before');
+  var handle = document.getElementById('cmp-handle');
+  var dragging = false;
+
+  function setPos(pct){
+    pct = Math.max(0, Math.min(100, pct));
+    before.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+    handle.style.left = pct + '%';
+    cmp.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  function fromEvent(e){
+    var r = cmp.getBoundingClientRect();
+    var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    setPos(x / r.width * 100);
+  }
+  cmp.addEventListener('pointerdown', function(e){
+    dragging = true; cmp.setPointerCapture(e.pointerId); fromEvent(e);
+  });
+  cmp.addEventListener('pointermove', function(e){ if(dragging) fromEvent(e); });
+  cmp.addEventListener('pointerup',    function(){ dragging = false; });
+  cmp.addEventListener('pointercancel',function(){ dragging = false; });
+  cmp.addEventListener('keydown', function(e){
+    var now = parseFloat(cmp.getAttribute('aria-valuenow')) || 50;
+    if(e.key === 'ArrowRight'){ e.preventDefault(); setPos(now + 4); }
+    if(e.key === 'ArrowLeft'){  e.preventDefault(); setPos(now - 4); }
+  });
+  setPos(50);
+
+  /* ---- formulaire de réservation (démonstration, sans envoi) ---- */
+  var form = document.getElementById('book');
+  var done = document.getElementById('book-done');
+  var dateInput = document.getElementById('b-date');
+  var d = new Date(); d.setDate(d.getDate() + 1);
+  dateInput.value = d.toISOString().slice(0,10);
+  dateInput.min = new Date().toISOString().slice(0,10);
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var presta = document.getElementById('b-presta').value;
+    var heure  = document.getElementById('b-heure').value;
+    var jour   = dateInput.value ? new Date(dateInput.value + 'T00:00:00')
+                   .toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}) : 'la date choisie';
+    done.textContent = 'Créneau disponible : ' + presta + ', ' + jour + ' à ' + heure +
+                       '. Sur un site en ligne, la confirmation partirait par SMS immédiatement.';
+    done.classList.add('on');
+  });
+})();
+</script>
+</body>
+</html>

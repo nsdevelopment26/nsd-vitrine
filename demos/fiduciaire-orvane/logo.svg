@@ -1,0 +1,6 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fiduciaire Orvane">
+  <!-- Monogramme O : un anneau posé sur un filet de grand livre -->
+  <circle cx="32" cy="28" r="16" fill="none" stroke="#1E5140" stroke-width="3.2"/>
+  <path d="M8 55 H56" fill="none" stroke="#1E5140" stroke-width="3.2" stroke-linecap="square"/>
+  <rect x="8" y="49.5" width="7" height="3.2" fill="#1E5140"/>
+</svg>
