@@ -1,5 +1,5 @@
 /* ============================================================================
-   Kinésithérapie Weber — traductions
+   Kinésithérapie Kelmen — traductions
    ----------------------------------------------------------------------------
    Le français est écrit en clair dans les pages HTML : c'est la langue de
    référence. Ce fichier ne contient que les autres langues.
@@ -31,7 +31,7 @@ window.NS_TRADUCTIONS = {
       'nav.soins': "Behandlungen",
       'nav.cabinet': "De Cabinet",
       'nav.rdv': "Rendez-vous",
-      'nav.nora': "Nora Weber",
+      'nav.nora': "Nora Kelmen",
       'nav.cta': "Termin huelen",
       'nav.menu': "Menü opmaachen",
       'nav.langue': "Sprooch wielen",
@@ -45,7 +45,7 @@ window.NS_TRADUCTIONS = {
       'jour.dimanche': "Sonndeg",
       'jour.ferme': "Zou",
 
-      'pied.intro': "Cabinet fir Kinesitherapie vun der Nora Weber, zu Junglinster, Kanton Gréivemaacher. Orthopedesch Rehabilitatioun, Sport, lymphatesch Drainage, Atmung.",
+      'pied.intro': "Cabinet fir Kinesitherapie vun der Nora Kelmen, zu Junglinster, Kanton Gréivemaacher. Orthopedesch Rehabilitatioun, Sport, lymphatesch Drainage, Atmung.",
       'pied.cabinet': "De Cabinet",
       'pied.infos': "Praktesch Infoen",
       'pied.contact': "Kontakt",
@@ -61,13 +61,13 @@ window.NS_TRADUCTIONS = {
       /* ---------------------------------------------------------------
          Page d'accueil
          --------------------------------------------------------------- */
-      'acc.titre': "Kinesitherapie Weber — Kinesitherapeutin · Junglinster, Lëtzebuerg",
-      'acc.meta': "Cabinet fir Kinesitherapie vun der Nora Weber zu Junglinster. Orthopedesch Rehabilitatioun, Sportkinesitherapie, lymphatesch Drainage, Atmungstherapie. Rendez-vous online, 24 Stonnen op 24.",
+      'acc.titre': "Kinesitherapie Kelmen — Kinesitherapeutin · Junglinster, Lëtzebuerg",
+      'acc.meta': "Cabinet fir Kinesitherapie vun der Nora Kelmen zu Junglinster. Orthopedesch Rehabilitatioun, Sportkinesitherapie, lymphatesch Drainage, Atmungstherapie. Rendez-vous online, 24 Stonnen op 24.",
 
       'acc.sur': "Junglinster · Groussherzogtum Lëtzebuerg",
       'acc.h1a': "Erëmfannen",
       'acc.h1b': "déi richteg Beweegung, ouni Péng.",
-      'acc.chapeau': "Cabinet fir Kinesitherapie vun der <strong class='hl'>Nora Weber</strong>. Eng eenzeg Therapeutin, ee Patient op eemol, a wierklech Zäit fir ze verstoen, wou d'Péng hierkënnt, ier se behandelt gëtt.",
+      'acc.chapeau': "Cabinet fir Kinesitherapie vun der <strong class='hl'>Nora Kelmen</strong>. Eng eenzeg Therapeutin, ee Patient op eemol, a wierklech Zäit fir ze verstoen, wou d'Péng hierkënnt, ier se behandelt gëtt.",
       'acc.cta1': "En Termin reservéieren",
       'acc.meta1': "Spezialisatiounsberäicher",
       'acc.meta2': "Sproochen am Cabinet",
@@ -81,7 +81,7 @@ window.NS_TRADUCTIONS = {
       'acc.alt.exercice': "Gefouert therapeutesch Übung am Cabinet",
       'acc.alt.bilan': "Ënnersuchung vun der Schëllerbeweeglechkeet, Patientin vun hanne gesinn",
       'acc.alt.seance': "Rehabilitatiounsséance op der Tabelle an engem hellen Cabinet",
-      'acc.alt.facade': "Steefassad vum Cabinet fir Kinesitherapie Weber zu Junglinster",
+      'acc.alt.facade': "Steefassad vum Cabinet fir Kinesitherapie Kelmen zu Junglinster",
 
       'acc.bande1': "Méi–Fre 8–18.30 Auer · Sa 9–12 Auer",
       'acc.bande2': "Parking virum Cabinet, ebenerdegen Zougang",
@@ -130,7 +130,7 @@ window.NS_TRADUCTIONS = {
       'acc.s4.cta': "Praktesch Infoen an Uweisung",
 
       'acc.citation': "« Mäi Beruff ass net, eng Péng fir eng Stonn verschwanne ze loossen. Et ass, Iech e Kierper zréckzeginn, virun deem Dir keng Angscht méi hutt. »" +
-        "<span class='quote__sig'>Nora Weber</span>",
+        "<span class='quote__sig'>Nora Kelmen</span>",
       'acc.citation.lien': "Hire Wee an hir Expertise",
 
       'acc.cta.oeil': "Eng Péng, déi net fortgeet&nbsp;?",
@@ -142,8 +142,8 @@ window.NS_TRADUCTIONS = {
       /* ---------------------------------------------------------------
          Page « Les soins »
          --------------------------------------------------------------- */
-      'soins.titre': "D'Behandlungen — Kinesitherapie Weber · Junglinster, Lëtzebuerg",
-      'soins.meta': "Orthopedesch an traumatologesch Rehabilitatioun, Sportkinesitherapie, manuell lymphatesch Drainage no enger Kriibsoperatioun, Atmungsrehabilitatioun. Cabinet Weber zu Junglinster.",
+      'soins.titre': "D'Behandlungen — Kinesitherapie Kelmen · Junglinster, Lëtzebuerg",
+      'soins.meta': "Orthopedesch an traumatologesch Rehabilitatioun, Sportkinesitherapie, manuell lymphatesch Drainage no enger Kriibsoperatioun, Atmungsrehabilitatioun. Cabinet Kelmen zu Junglinster.",
 
       'soins.oeil': "D'Behandlungen",
       'soins.h1': "Wat mir zesumme behandele kënnen",
@@ -225,15 +225,15 @@ window.NS_TRADUCTIONS = {
       /* ---------------------------------------------------------------
          Page « Le cabinet »
          --------------------------------------------------------------- */
-      'cab.titre': "De Cabinet — Kinesitherapie Weber · 21 rue de la Gare, Junglinster",
-      'cab.meta': "Cabinet fir Kinesitherapie Weber, 21 rue de la Gare, L-6117 Junglinster . Ëffnungszäiten, Uweisung, Parking, éischte Besuch, Kontakt an Telefon.",
+      'cab.titre': "De Cabinet — Kinesitherapie Kelmen · 21 rue de la Gare, Junglinster",
+      'cab.meta': "Cabinet fir Kinesitherapie Kelmen, 21 rue de la Gare, L-6117 Junglinster . Ëffnungszäiten, Uweisung, Parking, éischte Besuch, Kontakt an Telefon.",
 
       'cab.oeil': "Praktesch Infoen",
       'cab.h1a': "Wëllkomm",
       'cab.h1b': "am Cabinet zu Junglinster.",
       'cab.chapeau': "E Steenhaus aus der Regioun, ewech vum Kaméidi, um Agank vum Duerf. Ee parkt virdrun, ee geet ebenerdeg eran, an ee fänkt op d'Zäit un.",
       'cab.itineraire': "Uweisung",
-      'cab.alt.facade': "Steefassad vum Cabinet Kinesitherapie Weber, mat wäisse Fënsteren an donkele Lueden",
+      'cab.alt.facade': "Steefassad vum Cabinet Kinesitherapie Kelmen, mat wäisse Fënsteren an donkele Lueden",
 
       'cab.h.oeil': "Ëffnungszäiten",
       'cab.h.titre': "Wéini ech consultéieren",
@@ -246,7 +246,7 @@ window.NS_TRADUCTIONS = {
       'cab.c.tel': "Telefon vum Cabinet",
       'cab.c.mobile': "Handy",
       'cab.c.mail': "E-Mail",
-      'cab.c.mail.v': "contact@kine-weber.lu",
+      'cab.c.mail.v': "contact@kine-kelmen.example",
       'cab.c.parking': "Parking",
       'cab.c.parking.v': "Gratis Plazen virum Cabinet, ouni Zäitbegrenzung",
       'cab.c.acces': "Zougänglechkeet",
@@ -278,15 +278,15 @@ window.NS_TRADUCTIONS = {
       'cab.cta.b1': "Fräi Terminer kucken",
 
       /* ---------------------------------------------------------------
-         Page « Nora Weber »
+         Page « Nora Kelmen »
          --------------------------------------------------------------- */
-      'bio.titre': "Nora Weber, Kinesitherapeutin — Wee an Expertise · Junglinster",
-      'bio.meta': "Nora Weber, diploméiert Kinesitherapeutin zu Junglinster: Wee, Spezialisatiounen an Orthopedie, Sport, lymphatescher Drainage an Atmungsrehabilitatioun.",
+      'bio.titre': "Nora Kelmen, Kinesitherapeutin — Wee an Expertise · Junglinster",
+      'bio.meta': "Nora Kelmen, diploméiert Kinesitherapeutin zu Junglinster: Wee, Spezialisatiounen an Orthopedie, Sport, lymphatescher Drainage an Atmungsrehabilitatioun.",
 
       'bio.oeil': "D'Therapeutin",
-      'bio.h1b': "Weber, Kinesitherapeutin.",
+      'bio.h1b': "Kelmen, Kinesitherapeutin.",
       'bio.chapeau': "Si huet hire Cabinet an hirem Duerf opgemaach, zu Junglinster, an net an der Stad. E bewosste Choix: mat de Leit vun hei schaffen, si iwwer laang Zäit begleeden, an dohinner fuere kënnen, wou een net méi selwer kënnt.",
-      'bio.alt.portrait': "Portrait vun der Nora Weber, Kinesitherapeutin, an hirem Cabinet",
+      'bio.alt.portrait': "Portrait vun der Nora Kelmen, Kinesitherapeutin, an hirem Cabinet",
       'bio.alt.mains': "Grëff vun der manueller Therapie an enger Séance",
       'bio.meta1': "unerkannt Spezialisatiounen",
       'bio.meta2': "Member vun der Lëtzebuerger<br>Associatioun vun de Kinéen",
@@ -341,7 +341,7 @@ window.NS_TRADUCTIONS = {
       'bio.pr3.texte': "Wann et keng Kinesitherapie ass, seet si et a schéckt weider un déi richteg Persoun. Ouni et ze verzéien.",
 
       'bio.citation': "« Ee behandelt keng Schëller. Ee behandelt een, deen un der Schëller wéi huet. »" +
-        "<span class='quote__sig'>Nora Weber</span>",
+        "<span class='quote__sig'>Nora Kelmen</span>",
 
       'bio.cta.oeil': "Sech kennen léieren",
       'bio.cta.titre': "Deen éischte Rendez-vous dauert 45 Minutten",
@@ -350,12 +350,12 @@ window.NS_TRADUCTIONS = {
       /* ---------------------------------------------------------------
          Page « Prendre rendez-vous »
          --------------------------------------------------------------- */
-      'rdv.titre': "Rendez-vous huelen — Kinesitherapie Weber · Junglinster",
-      'rdv.meta': "Reservéiert Är Kinesitherapie-Séance online, 24 Stonnen op 24, bei der Nora Weber zu Junglinster. Agenda live: schonn ergraffe Terminer verschwanne sofort.",
+      'rdv.titre': "Rendez-vous huelen — Kinesitherapie Kelmen · Junglinster",
+      'rdv.meta': "Reservéiert Är Kinesitherapie-Séance online, 24 Stonnen op 24, bei der Nora Kelmen zu Junglinster. Agenda live: schonn ergraffe Terminer verschwanne sofort.",
 
       'rdv.oeil': "Online-Reservatioun",
       'rdv.h1': "Den Agenda vum Cabinet, 24 Stonnen op 24 op",
-      'rdv.chapeau': "Wat Dir hei gesitt, ass den eigentleche Planning vun der Nora Weber. Soubal en Termin reservéiert ass, verschwënnt en fir déi nächst Patienten.",
+      'rdv.chapeau': "Wat Dir hei gesitt, ass den eigentleche Planning vun der Nora Kelmen. Soubal en Termin reservéiert ass, verschwënnt en fir déi nächst Patienten.",
       'rdv.chapeau.a': "Et bleiwen",
       'rdv.chapeau.b': "fräi Terminer",
       'rdv.chapeau.c': "op déi nächst siwen Deeg.",

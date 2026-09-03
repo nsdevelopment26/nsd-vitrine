@@ -19,7 +19,7 @@
     etablissement: "Maison Vaurenne",
     metier: "Restaurant gastronomique",
     ville: "Luxembourg-Ville",
-    site: "maison-vaurenne.lu",
+    site: "maison-vaurenne.example",
     depuis: "client depuis mars 2026",
     formule: "Vitrine",
     formulePrix: 150,          // forfait trimestriel de la catégorie (colonne clients.maintenance_trimestre)
@@ -164,7 +164,7 @@
     { id: "doc2", titre: "Devis site vitrine Standard", meta: "PDF · 2 pages · accepté le 28 février 2026", type: "devis" },
     { id: "doc3", titre: "Conditions générales de service", meta: "PDF · 3 pages · version du 1er janvier 2026", type: "contrat" },
     { id: "doc4", titre: "Accès Google Business Profile", meta: "Fiche gérée par NS Development · accès partagé", type: "acces" },
-    { id: "doc5", titre: "Nom de domaine maison-vaurenne.lu", meta: "Enregistré au nom de Maison Vaurenne Sàrl · expire le 3 mars 2027", type: "acces" },
+    { id: "doc5", titre: "Nom de domaine maison-vaurenne.example", meta: "Enregistré au nom de Maison Vaurenne Sàrl · expire le 3 mars 2027", type: "acces" },
     { id: "doc6", titre: "Rapport SEO — juin 2026", meta: "PDF · 6 pages · publié le 3 juillet 2026", type: "rapport" }
   ];
 

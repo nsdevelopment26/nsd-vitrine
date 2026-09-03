@@ -1,5 +1,5 @@
 /* ============================================================================
-   Kinésithérapie Weber — configuration de la réservation en ligne
+   Kinésithérapie Kelmen — configuration de la réservation en ligne
    ----------------------------------------------------------------------------
    Seul fichier propre à ce site. Le moteur (nsr-reservation.js) et le style
    de base (nsr-reservation.css) sont ceux de sites-web/modules/reservation/,
@@ -8,7 +8,7 @@
    État actuel : MAQUETTE DE PROSPECTION (backend 'local').
    Les rendez-vous pris ici restent dans le navigateur du visiteur.
 
-   Le jour où Nora Weber signe :
+   Le jour où Nora Kelmen signe :
      1. exécuter backend/installer-un-client.sql (déjà rempli à son nom)
      2. ici, passer backend à 'supabase' et renseigner le bloc supabase
    Rien d'autre à changer. Les prestations et les horaires seront alors lus
@@ -17,14 +17,14 @@
 window.NSR_CONFIG = {
 
   backend: 'local',
-  slug: 'kine-weber',
+  slug: 'kine-kelmen',
   prefixeReference: 'KS',
 
   // À remplir au passage en production.
   supabase: { url: '', cle: '' },
 
   etablissement: {
-    nom: 'Kinésithérapie Weber',
+    nom: 'Kinésithérapie Kelmen',
     adresse: '21, rue de la Gare — L-6117 Junglinster',
     telephone: '+352 27 00 00 00',
     modeValidation: 'auto',
@@ -139,7 +139,7 @@ window.NSR_CONFIG = {
   // Agenda préchargé pour la démonstration : une grille vide ne montre rien.
   demo: true,
   demoRendezVous: [
-    { dans: 1, debut: '09:00', prestation: 'seance',   nom: 'M. Weber' },
+    { dans: 1, debut: '09:00', prestation: 'seance',   nom: 'M. Kelmen' },
     { dans: 1, debut: '10:30', prestation: 'bilan',    nom: 'Mme Klein' },
     { dans: 1, debut: '14:00', prestation: 'sport',    nom: 'M. Reuter' },
     { dans: 2, debut: '08:30', prestation: 'seance',   nom: 'Mme Hoffmann' },
