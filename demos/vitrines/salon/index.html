@@ -12,11 +12,11 @@
 <meta property="og:site_name" content="Maison Lonvière">
 <meta property="og:title" content="Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg">
 <meta property="og:description" content="Prenez rendez-vous en ligne en trente secondes. Coiffure, barbier, beauté et toilettage sous un même toit.">
-<meta property="og:image" content="og.svg">
+<meta property="og:image" content="photos/salon-interieur.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg">
 <meta name="twitter:description" content="Prenez rendez-vous en ligne en trente secondes. Coiffure, barbier, beauté et toilettage sous un même toit.">
-<meta name="twitter:image" content="og.svg">
+<meta name="twitter:image" content="photos/salon-interieur.jpg">
 <meta name="theme-color" content="#2a1d28">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,17 +160,11 @@ nav.ns-solid{background:rgba(246,241,234,.93);backdrop-filter:blur(14px);
 .hero-art{position:relative;min-height:520px}
 .frame{
   position:absolute;border:1px solid var(--line);overflow:hidden;
-  background:var(--paper-2);box-shadow:var(--shadow);
+  background:var(--paper-2);box-shadow:var(--shadow);margin:0;
 }
-.frame span{
-  position:absolute;bottom:0;left:0;right:0;padding:.6rem .8rem;
-  font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  color:#fff;background:linear-gradient(transparent,rgba(42,29,40,.72));
-}
-.f-1{top:0;right:4%;width:63%;height:70%;
-  background:linear-gradient(150deg,#3c2b39 0%,#7e4c50 46%,#c4614c 100%)}
-.f-2{bottom:0;left:0;width:52%;height:46%;
-  background:linear-gradient(140deg,#dfd0be 0%,#b9a58f 55%,#7f9179 100%)}
+.frame img{width:100%;height:100%;object-fit:cover}
+.f-1{top:0;right:4%;width:63%;height:70%}
+.f-2{bottom:0;left:0;width:52%;height:46%}
 .badge{
   position:absolute;top:62%;right:0;background:var(--paper);border:2px solid var(--ink);
   padding:.85rem 1.05rem;box-shadow:var(--shadow);
@@ -219,8 +213,8 @@ section{padding:6.2rem 0}
   touch-action:none;cursor:ew-resize;user-select:none;
 }
 .cmp-layer{position:absolute;inset:0;display:flex;align-items:flex-end;padding:1.4rem}
-.cmp-after{background:linear-gradient(155deg,#402c3d 0%,#8c4f50 50%,#c4614c 100%)}
-.cmp-before{background:linear-gradient(155deg,#8d8a86 0%,#a9a49c 55%,#c3bcb2 100%);
+.cmp-after{background:url("photos/apres.jpg") center/cover no-repeat var(--paper-2)}
+.cmp-before{background:url("photos/avant.jpg") center/cover no-repeat var(--paper-2);
   clip-path:inset(0 50% 0 0)}
 .cmp-tag{
   font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
@@ -243,15 +237,8 @@ section{padding:6.2rem 0}
 .team{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem}
 .member{background:#fff;border:1px solid var(--line);overflow:hidden;transition:transform .35s,box-shadow .35s}
 .member:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
-.member .por{aspect-ratio:3/4;position:relative}
-.m-1{background:linear-gradient(160deg,#4a3446,#9a5a56)}
-.m-2{background:linear-gradient(160deg,#7f9179,#c9bda9)}
-.m-3{background:linear-gradient(160deg,#8c5a4c,#dcc9b4)}
-.member .por span{
-  position:absolute;left:0;right:0;bottom:0;padding:.55rem .85rem;color:#fff;
-  font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-  background:linear-gradient(transparent,rgba(42,29,40,.65));
-}
+.member .por{aspect-ratio:3/4;position:relative;background:var(--paper-2)}
+.member .por img{width:100%;height:100%;object-fit:cover}
 .m-body{padding:1.25rem 1.3rem 1.45rem}
 .m-body .role{font-size:.75rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--rose);margin-bottom:.4rem}
 .m-body p{font-size:.9rem;color:var(--ink-soft);margin:.5rem 0 1rem}
@@ -406,10 +393,12 @@ footer a{color:#cbbcc6}
 
     <div class="hero-art" data-reveal="right" data-delay="240">
       <figure class="frame f-1" data-parallax="0.06">
-        <span>Votre photo de salon ici</span>
+        <img src="photos/salon-interieur.jpg" width="1200" height="800"
+             alt="Le salon Maison Lonvière : postes de coiffage et bacs de lavage">
       </figure>
       <figure class="frame f-2" data-parallax="0.1">
-        <span>Votre espace beauté ici</span>
+        <img src="photos/salon-equipe.jpg" width="900" height="600"
+             alt="L'équipe de Maison Lonvière au travail devant les miroirs">
       </figure>
       <div class="badge" data-reveal="scale" data-delay="900">
         <b>7j/7</b><i>Réservable en ligne</i>
@@ -521,8 +510,8 @@ footer a{color:#cbbcc6}
       <div class="eyebrow" data-reveal>Avant / après</div>
       <h2 data-split>Le résultat parle mieux que nous.</h2>
       <p data-reveal data-delay="140">
-        Faites glisser le curseur. Sur un vrai site, chaque transformation de votre salon
-        s'affiche ici, et c'est ce que vos futurs clients regardent en premier.
+        Faites glisser le curseur. Sur votre site, ce sont vos propres transformations qui
+        s'affichent ici, et c'est ce que vos futurs clients regardent en premier.
       </p>
     </div>
 
@@ -550,7 +539,8 @@ footer a{color:#cbbcc6}
 
     <div class="team" data-stagger="120">
       <article class="member">
-        <div class="por m-1"><span>Votre photo ici</span></div>
+        <div class="por"><img src="photos/equipe-coloriste.jpg" width="700" height="933"
+             loading="lazy" alt="Camille, coloriste, au brushing sur une cliente"></div>
         <div class="m-body">
           <div class="role">Coloriste</div>
           <h3>Camille</h3>
@@ -559,7 +549,8 @@ footer a{color:#cbbcc6}
         </div>
       </article>
       <article class="member">
-        <div class="por m-2"><span>Votre photo ici</span></div>
+        <div class="por"><img src="photos/equipe-barbier.jpg" width="700" height="933"
+             loading="lazy" alt="Nuno, barbier, taille une barbe aux ciseaux"></div>
         <div class="m-body">
           <div class="role">Barbier</div>
           <h3>Nuno</h3>
@@ -568,7 +559,8 @@ footer a{color:#cbbcc6}
         </div>
       </article>
       <article class="member">
-        <div class="por m-3"><span>Votre photo ici</span></div>
+        <div class="por"><img src="photos/equipe-esthetique.jpg" width="700" height="933"
+             loading="lazy" alt="Léa, esthéticienne, applique un soin du visage au pinceau"></div>
         <div class="m-body">
           <div class="role">Esthéticienne</div>
           <h3>Léa</h3>

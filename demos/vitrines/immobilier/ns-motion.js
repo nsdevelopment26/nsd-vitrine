@@ -105,21 +105,33 @@
   /* --------------------------------------------------------
      3. COMPTEUR ANIMÉ
         <span data-count="250" data-suffix="+" data-decimal="1">
+        data-nogroup : pas d'espace des milliers (années, numéros)
      -------------------------------------------------------- */
   function countUp(el) {
     var target = parseFloat(el.getAttribute("data-count"));
     var dec = parseInt(el.getAttribute("data-decimal") || 0, 10);
     var suffix = el.getAttribute("data-suffix") || "";
     var prefix = el.getAttribute("data-prefix") || "";
+    // Une année ne prend pas d'espace des milliers : « depuis 1837 », pas
+    // « depuis 1 837 ». Même chose pour un numéro ou un code.
+    var groupe = !el.hasAttribute("data-nogroup");
     if (isNaN(target)) return;
-    if (REDUCED) { el.textContent = prefix + target + suffix; return; }
+    // Mise en forme identique à celle de l'animation : sans ça, un visiteur qui
+    // réduit les animations lisait « 24900 € » là où les autres voient « 24 900 € ».
+    function format(v) {
+      var n = Math.round(v);
+      return prefix
+        + (dec ? (v / Math.pow(10, dec)).toFixed(dec) : (groupe ? n.toLocaleString("fr") : String(n)))
+        + suffix;
+    }
+    if (REDUCED) { el.textContent = format(target); return; }
     var dur = parseInt(el.getAttribute("data-duration") || 1500, 10);
     var t0 = performance.now();
     (function step(now) {
       var p = Math.min(1, (now - t0) / dur);
       var eased = 1 - Math.pow(1 - p, 3);
       var v = target * eased;
-      el.textContent = prefix + (dec ? (v / Math.pow(10, dec)).toFixed(dec) : Math.round(v).toLocaleString("fr")) + suffix;
+      el.textContent = format(v);
       if (p < 1) requestAnimationFrame(step);
     })(t0);
   }
