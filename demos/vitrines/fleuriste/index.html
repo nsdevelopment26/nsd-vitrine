@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atelier Verveine — Fleuriste · Luxembourg</title>
+<meta name="description" content="Fleuriste à Luxembourg-Ville. Bouquets de saison composés le matin même, livraison en ville dans les 90 minutes, mariages, deuil et abonnements pour bureaux.">
+<link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/fleuriste/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_LU">
+<meta property="og:site_name" content="Atelier Verveine">
+<meta property="og:title" content="Atelier Verveine — Fleuriste · Luxembourg">
+<meta property="og:description" content="Bouquets de saison composés le matin même. Livraison en ville dans les 90 minutes.">
+<meta property="og:image" content="photos/hero-tulipes.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Atelier Verveine — Fleuriste · Luxembourg">
+<meta name="twitter:description" content="Bouquets de saison composés le matin même. Livraison en ville dans les 90 minutes.">
+<meta name="twitter:image" content="photos/hero-tulipes.jpg">
+<meta name="theme-color" content="#0f1f19">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<script src="ns-motion.js" defer></script>
+
+<style>
+:root{
+  /* atelier floral, le soir : vert profond, framboise, safran */
+  --nuit:#0f1f19;
+  --nuit2:#142a22;
+  --carte:#18332a;
+  --line:#27473a;
+  --line2:#33604e;
+  --creme:#f5efe2;
+  --creme2:#b9c9bd;
+  --framboise:#ea5a86;
+  --framboise-d:#d33e6d;
+  --safran:#eab54f;
+  --disp:'Instrument Serif',Georgia,serif;
+  --sans:'Outfit',system-ui,-apple-system,"Segoe UI",sans-serif;
+  --tr:.45s cubic-bezier(.2,.7,.2,1);
+  --ns-dur:.85s;--ns-ease:cubic-bezier(.2,.7,.2,1);
+  --ns-progress-color:#ea5a86;
+  --ns-g1:#ea5a86;--ns-g2:#eab54f;
+  --wrap:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--nuit);color:var(--creme);
+  font-family:var(--sans);font-weight:300;font-size:17px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(var(--wrap),calc(100% - 44px));margin-inline:auto}
+h1,h2,h3,.disp{font-family:var(--disp);font-weight:400;line-height:1.03;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(3.1rem,8.4vw,6.4rem)}
+h2{font-size:clamp(2.2rem,4.6vw,3.7rem)}
+h3{font-size:1.5rem;line-height:1.15}
+em{font-style:italic;color:var(--framboise)}
+p{margin:0 0 1em}
+:focus-visible{outline:2px solid var(--safran);outline-offset:4px;border-radius:6px}
+
+.eyebrow{
+  font-family:var(--sans);font-size:.72rem;font-weight:500;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--safran);
+  display:flex;align-items:center;gap:.7rem;
+}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--safran);opacity:.7;flex:none}
+.muted{color:var(--creme2)}
+.tel-link{border-bottom:1px solid var(--line2);padding-bottom:2px;transition:var(--tr)}
+.tel-link:hover{border-color:var(--framboise);color:var(--framboise)}
+
+/* ---------- boutons : pilule pleine + bouton rond à flèche ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:.7rem;
+  font-family:var(--sans);font-weight:500;font-size:.95rem;letter-spacing:.01em;
+  padding:1rem 1.9rem;border-radius:999px;border:1px solid transparent;
+  background:var(--framboise);color:#20101a;
+  transition:var(--tr);cursor:pointer;
+}
+.btn:hover{background:var(--framboise-d);color:#fff;transform:translateY(-2px)}
+.btn.ghost{background:transparent;border-color:var(--line2);color:var(--creme)}
+.btn.ghost:hover{background:var(--creme);border-color:var(--creme);color:var(--nuit);transform:translateY(-2px)}
+.round{
+  width:56px;height:56px;border-radius:50%;flex:none;
+  display:inline-grid;place-items:center;
+  border:1px solid var(--line2);color:var(--creme);background:rgba(255,255,255,.04);
+  transition:var(--tr);
+}
+.round:hover{background:var(--framboise);border-color:var(--framboise);color:#20101a}
+
+/* ---------- navigation ---------- */
+nav{
+  position:fixed;inset:0 0 auto 0;z-index:60;height:82px;
+  display:flex;align-items:center;transition:var(--tr);
+}
+nav.ns-solid{
+  height:68px;background:rgba(15,31,25,.92);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:1.4rem;width:100%}
+.logo{font-family:var(--disp);font-size:1.55rem;letter-spacing:-.01em;display:flex;align-items:center;gap:.55rem}
+.logo .mark{
+  width:26px;height:26px;flex:none;border-radius:50% 50% 50% 0;
+  background:linear-gradient(140deg,var(--framboise),var(--safran));
+  transform:rotate(-12deg);
+}
+.nav-links{display:flex;align-items:center;gap:2rem;font-size:.93rem;font-weight:400}
+.nav-links a{color:var(--creme2);transition:var(--tr)}
+.nav-links a:hover{color:var(--creme)}
+.nav-cta{padding:.7rem 1.4rem;font-size:.88rem}
+.burger{display:none;background:none;border:0;color:var(--creme);padding:.5rem;cursor:pointer;position:relative;z-index:61}
+.burger .i-close{display:none}
+.burger[aria-expanded="true"] .i-open{display:none}
+.burger[aria-expanded="true"] .i-close{display:block}
+.mob{
+  position:fixed;inset:0;z-index:59;background:var(--nuit);
+  display:flex;flex-direction:column;justify-content:center;gap:1.2rem;padding:0 8vw;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s ease,visibility .35s;
+}
+.mob.open{opacity:1;visibility:visible;pointer-events:auto}
+.mob a{font-family:var(--disp);font-size:2.2rem;color:var(--creme)}
+
+/* ---------- hero plein écran ---------- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden}
+.hero-media{position:absolute;inset:0;z-index:0}
+.hero-media img{
+  width:100%;height:100%;object-fit:cover;transform:scale(1.06);
+  filter:brightness(.74) saturate(1.16) contrast(1.04);
+}
+.hero-media::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(to top,var(--nuit) 2%,rgba(15,31,25,.9) 28%,rgba(15,31,25,.5) 70%,rgba(15,31,25,.8) 100%),
+    linear-gradient(to right,rgba(15,31,25,.9) 0%,rgba(15,31,25,.6) 38%,rgba(15,31,25,.08) 100%);
+}
+.hero-in{position:relative;z-index:2;padding:9rem 0 2.4rem}
+.hero h1{margin:1.1rem 0 1.3rem;max-width:15ch;text-shadow:0 2px 34px rgba(15,31,25,.6)}
+.hero .lede{font-size:1.16rem;max-width:41ch;color:#e6ebe2;text-shadow:0 1px 20px rgba(15,31,25,.75)}
+.hero-act{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-top:2.1rem}
+.hero-act .aside{font-size:.95rem;color:var(--creme2)}
+
+/* rail arrivage du jour */
+.rail{
+  margin-top:3.4rem;border-top:1px solid rgba(245,239,226,.16);
+  padding-top:1.1rem;display:flex;align-items:center;gap:1.1rem;
+  flex-wrap:wrap;font-size:.9rem;color:var(--creme2);
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--safran);flex:none;position:relative}
+.dot::after{
+  content:"";position:absolute;inset:-5px;border-radius:50%;
+  border:1px solid var(--safran);opacity:.55;animation:pulse 2.6s ease-out infinite;
+}
+@keyframes pulse{0%{transform:scale(.6);opacity:.7}70%{transform:scale(1.5);opacity:0}100%{opacity:0}}
+.rail b{color:var(--creme);font-weight:500}
+.rail .sep{color:var(--line2)}
+
+/* ---------- bandeau défilant ---------- */
+.band{background:var(--nuit2);border-block:1px solid var(--line);padding:.95rem 0}
+.band .ns-marquee__track span{
+  font-size:.82rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--creme2);padding:0 1.4rem;font-weight:400;
+}
+.band .ns-marquee__track i{color:var(--framboise);font-style:normal}
+
+/* ---------- sections ---------- */
+section{padding:6.4rem 0}
+.sec-head{max-width:62ch;margin-bottom:3.4rem}
+.sec-head h2{margin:1rem 0 .9rem}
+.sec-head p{color:var(--creme2);max-width:52ch;margin:0}
+.sec-head.row{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;max-width:none}
+
+/* ---------- bouquets ---------- */
+.bouquets{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.bq{display:block;transition:var(--tr)}
+.bq-ph{
+  position:relative;overflow:hidden;
+  border-radius:190px 190px 14px 14px;
+  border:1px solid var(--line);background:var(--carte);
+  aspect-ratio:4/5;
+}
+.bq-ph img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.bq:hover .bq-ph img{transform:scale(1.07)}
+.bq-tag{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:14px;
+  background:rgba(15,31,25,.86);backdrop-filter:blur(8px);
+  border:1px solid rgba(245,239,226,.2);border-radius:999px;
+  padding:.4rem 1rem;font-size:.78rem;letter-spacing:.06em;color:var(--creme);
+  opacity:0;transition:var(--tr);
+}
+.bq:hover .bq-tag{opacity:1;bottom:22px}
+.bq-in{padding:1.25rem .3rem 0;display:flex;justify-content:space-between;gap:1rem;align-items:baseline}
+.bq-in h3{font-size:1.42rem}
+.bq-in .price{font-family:var(--sans);font-weight:500;font-size:.95rem;color:var(--safran);white-space:nowrap}
+.bq p{margin:.45rem .3rem 0;font-size:.93rem;color:var(--creme2);line-height:1.55}
+
+.after-grid{
+  margin-top:2.8rem;display:flex;align-items:center;justify-content:space-between;
+  gap:1.5rem;flex-wrap:wrap;padding-top:1.8rem;border-top:1px solid var(--line);
+  color:var(--creme2);font-size:.95rem;
+}
+
+/* ---------- occasions ---------- */
+.occ{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem}
+.occ-card{
+  position:relative;overflow:hidden;border-radius:16px;
+  border:1px solid var(--line);aspect-ratio:3/4;display:flex;align-items:flex-end;
+  transition:var(--tr);
+}
+.occ-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.62) saturate(1.12) contrast(1.06);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.occ-card::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(15,31,25,.97) 4%,rgba(15,31,25,.86) 30%,rgba(15,31,25,.42) 62%,rgba(15,31,25,.18) 100%);
+}
+.occ-card:hover{border-color:var(--line2);transform:translateY(-6px)}
+.occ-card:hover img{transform:scale(1.06)}
+.occ-in{position:relative;z-index:2;padding:1.5rem 1.4rem}
+.occ-in h3{font-size:1.34rem;margin-bottom:.4rem}
+.occ-in p{margin:0;font-size:.9rem;color:#d3ddd2;line-height:1.5}
+
+/* ---------- l'atelier ---------- */
+.at-grid{display:grid;grid-template-columns:1fr 1.02fr;gap:4rem;align-items:center}
+.at-grid>*{min-width:0}
+.at-art{position:relative;min-height:520px}
+.at-art figure{margin:0;position:absolute;overflow:hidden;border:1px solid var(--line)}
+.at-art .a1{width:70%;left:0;top:0;border-radius:170px 170px 12px 12px;aspect-ratio:3/4}
+.at-art .a2{width:52%;right:0;bottom:0;border-radius:12px;aspect-ratio:3/2;box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.at-art figure img{width:100%;height:100%;object-fit:cover}
+.at-badge{
+  position:absolute;left:2%;bottom:8%;z-index:3;
+  background:var(--safran);color:#231a08;border-radius:999px;
+  padding:.75rem 1.25rem;font-size:.85rem;font-weight:500;line-height:1.25;
+}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:2.6rem;padding-top:2rem;border-top:1px solid var(--line)}
+.stat b{display:block;font-family:var(--disp);font-size:2.5rem;line-height:1;color:var(--creme)}
+.stat i{display:block;font-style:normal;font-size:.85rem;color:var(--creme2);margin-top:.45rem;line-height:1.4}
+
+/* ---------- CTA livraison ---------- */
+.final{position:relative;overflow:hidden;text-align:center;padding:7.5rem 0}
+.final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.8) saturate(1.05);z-index:0}
+.final::after{content:"";position:absolute;inset:0;background:rgba(15,31,25,.9);z-index:1}
+.final .wrap{position:relative;z-index:2}
+.final h2{max-width:18ch;margin:1.1rem auto 1.1rem}
+.final .eyebrow{justify-content:center}
+.final p{color:var(--creme2);max-width:48ch;margin:0 auto 2rem}
+
+/* ---------- infos ---------- */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.6rem;align-items:start}
+.hours{border-top:1px solid var(--line)}
+.hours div{
+  display:flex;justify-content:space-between;gap:1rem;
+  padding:.95rem 0;border-bottom:1px solid var(--line);font-size:.97rem;
+}
+.hours b{font-weight:500}
+.hours .closed{color:var(--framboise)}
+.hours .now{color:var(--safran)}
+.contact-block{display:flex;flex-direction:column;gap:.55rem;margin-top:2rem;font-size:1rem}
+.contact-block a{border-bottom:1px solid var(--line2);align-self:flex-start;padding-bottom:2px;transition:var(--tr)}
+.contact-block a:hover{border-color:var(--framboise);color:var(--framboise)}
+.map{
+  margin:0;border-radius:16px;border:1px solid var(--line);overflow:hidden;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 46px,rgba(245,239,226,.05) 46px 47px),
+    repeating-linear-gradient(0deg,transparent 0 46px,rgba(245,239,226,.05) 46px 47px),
+    radial-gradient(120% 100% at 30% 20%,#1b3a2e,#122419);
+  min-height:340px;position:relative;display:flex;align-items:flex-end;
+}
+.map .pin{
+  position:absolute;left:44%;top:42%;width:16px;height:16px;border-radius:50% 50% 50% 0;
+  background:var(--framboise);transform:rotate(-45deg);
+}
+.map .pin::after{
+  content:"";position:absolute;inset:-12px;border-radius:50%;
+  border:1px solid var(--framboise);opacity:.45;animation:pulse 2.8s ease-out infinite;
+}
+.map figcaption{
+  position:relative;padding:1rem 1.2rem;font-size:.83rem;color:var(--creme2);
+  background:linear-gradient(to top,rgba(15,31,25,.9),transparent);width:100%;
+}
+
+/* ---------- footer ---------- */
+footer{background:var(--nuit2);border-top:1px solid var(--line);padding:3.2rem 0 2.6rem;font-size:.9rem}
+.foot-in{display:flex;justify-content:space-between;gap:1.6rem;flex-wrap:wrap;color:var(--creme2)}
+footer b{color:var(--creme);font-weight:500}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .bouquets{grid-template-columns:repeat(2,1fr)}
+  .occ{grid-template-columns:repeat(2,1fr)}
+  .at-grid,.info-grid{grid-template-columns:1fr;gap:2.8rem}
+  .at-art{min-height:420px;order:-1}
+}
+@media (max-width:760px){
+  body{font-size:16px}
+  .nav-links{display:none}
+  .burger{display:block}
+  nav .nav-cta{display:none}
+  section{padding:4.6rem 0}
+  .hero-in{padding-top:7.5rem}
+  .hero .lede{font-size:1.05rem}
+  .sec-head.row{flex-direction:column;align-items:flex-start}
+  .stats{grid-template-columns:1fr 1fr}
+  .at-art{min-height:340px}
+  .rail{font-size:.85rem;gap:.7rem}
+}
+@media (max-width:520px){
+  .bouquets{grid-template-columns:1fr;gap:2.4rem}
+  .occ{grid-template-columns:1fr}
+  .occ-card{aspect-ratio:16/10}
+  .bq-ph{border-radius:200px 200px 14px 14px}
+}
+</style>
+</head>
+<body>
+
+<div class="ns-progress"></div>
+
+<nav data-nav-solid aria-label="Navigation principale">
+  <div class="wrap nav-in">
+    <a class="logo" href="#accueil"><span class="mark" aria-hidden="true"></span>Atelier <em>Verveine</em></a>
+    <div class="nav-links">
+      <a class="ns-link" href="#bouquets">Bouquets</a>
+      <a class="ns-link" href="#occasions">Occasions</a>
+      <a class="ns-link" href="#atelier">L'atelier</a>
+      <a class="ns-link" href="#infos">Infos &amp; accès</a>
+    </div>
+    <a class="btn nav-cta ns-shine" href="#commander">Commander</a>
+    <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mob">
+      <svg class="i-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+      <svg class="i-close" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="mob" id="mob">
+  <a href="#bouquets">Bouquets</a>
+  <a href="#occasions">Occasions</a>
+  <a href="#atelier">L'atelier</a>
+  <a href="#infos">Infos &amp; accès</a>
+  <a href="#commander" style="color:var(--framboise)">Commander</a>
+</div>
+
+<!-- ============ HERO PLEIN ÉCRAN ============ -->
+<header class="hero" id="accueil">
+  <div class="hero-media" aria-hidden="true">
+    <img src="photos/hero-tulipes.jpg" width="1600" height="900" alt="" fetchpriority="high">
+  </div>
+
+  <div class="wrap hero-in">
+    <div class="eyebrow" data-reveal="blur">Fleuriste · Luxembourg-Ville</div>
+
+    <h1><span data-split>Le bouquet juste,</span><br><em data-reveal="blur" data-delay="520">composé ce matin.</em></h1>
+
+    <p class="lede" data-reveal data-delay="880">
+      Nous achetons chaque semaine au cadran de Hollande et nous composons à la main,
+      dans la boutique. Commandé avant 15 h, votre bouquet est chez la personne
+      dans les quatre-vingt-dix minutes.
+    </p>
+
+    <div class="hero-act" data-reveal="up" data-delay="1000">
+      <a class="btn ns-shine" href="#commander" data-magnetic data-strength="0.3">
+        Commander un bouquet
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+      </a>
+      <span class="aside">ou par téléphone au <a class="tel-link" href="tel:+352000000">+352 00 00 00</a></span>
+    </div>
+
+    <div class="rail" data-reveal data-delay="1160">
+      <span class="dot" aria-hidden="true"></span>
+      <b>Arrivage de ce matin</b>
+      <span class="sep">/</span>
+      <span>Renoncules · Pivoines · Anémones · Eucalyptus cinerea · Tulipes perroquet</span>
+    </div>
+  </div>
+</header>
+
+<div class="band">
+  <div class="ns-marquee" style="--ns-marquee-speed:46s" aria-hidden="true">
+    <div class="ns-marquee__track">
+      <span>Bouquets du jour <i>✽</i></span><span>Livraison Luxembourg-Ville <i>✽</i></span>
+      <span>Mariages &amp; cérémonies <i>✽</i></span><span>Deuil &amp; hommage <i>✽</i></span>
+      <span>Abonnement bureaux <i>✽</i></span><span>Plantes d'intérieur <i>✽</i></span>
+      <span>Bouquets du jour <i>✽</i></span><span>Livraison Luxembourg-Ville <i>✽</i></span>
+      <span>Mariages &amp; cérémonies <i>✽</i></span><span>Deuil &amp; hommage <i>✽</i></span>
+      <span>Abonnement bureaux <i>✽</i></span><span>Plantes d'intérieur <i>✽</i></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BOUQUETS ============ -->
+<section id="bouquets">
+  <div class="wrap">
+    <div class="sec-head row">
+      <div>
+        <div class="eyebrow" data-reveal>Nos bouquets</div>
+        <h2 data-split>Six façons de faire plaisir.</h2>
+        <p data-reveal data-delay="200">
+          Les fleurs changent avec la saison, les compositions aussi. Ce que vous voyez ici,
+          c'est ce qui est en seau dans la boutique cette semaine.
+        </p>
+      </div>
+      <a class="btn ghost" href="#commander" data-reveal="right" data-delay="300">Composer sur mesure</a>
+    </div>
+
+    <div class="bouquets" data-stagger="120">
+      <a class="bq" href="#commander">
+        <div class="bq-ph">
+          <img src="photos/bouquet-champetre.jpg" width="620" height="775" loading="lazy" alt="Bouquet champêtre de tulipes, iris et fleurs des champs dans un vase de verre">
+          <span class="bq-tag">Le plus commandé</span>
+        </div>
+        <div class="bq-in"><h3>Le Verveine</h3><span class="price">dès 32 €</span></div>
+        <p>Notre bouquet signature. Fleurs de saison, cueillette du jour, jamais deux fois le même.</p>
+      </a>
+
+      <a class="bq" href="#commander">
+        <div class="bq-ph">
+          <img src="photos/bouquet-poudre.jpg" width="620" height="775" loading="lazy" alt="Composition de roses anciennes poudrées et d'eucalyptus dans une coupe en laiton">
+          <span class="bq-tag">Roses anciennes</span>
+        </div>
+        <div class="bq-in"><h3>Poudré</h3><span class="price">48 €</span></div>
+        <p>Roses anciennes, eucalyptus et gypsophile, montés en coupe. Pour dire merci comme il faut.</p>
+      </a>
+
+      <a class="bq" href="#commander">
+        <div class="bq-ph">
+          <img src="photos/bouquet-dahlia.jpg" width="620" height="775" loading="lazy" alt="Composition d'automne à plat, dahlias abricot et zinnias sur une pierre sombre">
+          <span class="bq-tag">Édition d'automne</span>
+        </div>
+        <div class="bq-in"><h3>Dahlia</h3><span class="price">42 €</span></div>
+        <p>Dahlias, zinnias et graminées. Une composition graphique, tenue par du raphia.</p>
+      </a>
+
+      <a class="bq" href="#commander">
+        <div class="bq-ph">
+          <img src="photos/bouquet-roses.jpg" width="620" height="775" loading="lazy" alt="Bouquet rond de vingt-quatre roses rouges">
+          <span class="bq-tag">24 tiges</span>
+        </div>
+        <div class="bq-in"><h3>Rouge profond</h3><span class="price">65 €</span></div>
+        <p>Vingt-quatre roses rouges, tiges longues, feuillage nettoyé une à une. Le classique assumé.</p>
+      </a>
+
+      <a class="bq" href="#commander">
+        <div class="bq-ph">
+          <img src="photos/bouquet-tulipes.jpg" width="620" height="775" loading="lazy" alt="Brassée de tulipes roses, jaunes et blanches">
+          <span class="bq-tag">Arrivage du mardi</span>
+        </div>
+        <div class="bq-in"><h3>Brassée de tulipes</h3><span class="price">28 €</span></div>
+        <p>Trente tulipes du cadran, encore fermées, pour qu'elles s'ouvrent chez vous.</p>
+      </a>
+
+      <a class="bq" href="#commander">
+        <div class="bq-ph">
+          <img src="photos/bouquet-seches.jpg" width="620" height="775" loading="lazy" alt="Bouquet de fleurs séchées, immortelles et chardons, sur fond sombre">
+          <span class="bq-tag">Tient un an</span>
+        </div>
+        <div class="bq-in"><h3>Séché</h3><span class="price">36 €</span></div>
+        <p>Immortelles, chardons et lin séchés à l'atelier. Aucun entretien, et il tient une année.</p>
+      </a>
+    </div>
+
+    <div class="after-grid" data-reveal>
+      <span>Livraison Luxembourg-Ville <b style="color:var(--creme);font-weight:500">6 €</b> · offerte dès 60 € d'achat · retrait en boutique gratuit</span>
+      <a class="tel-link" href="#commander">Voir comment commander →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OCCASIONS ============ -->
+<section id="occasions" style="background:var(--nuit2);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" data-reveal>Occasions</div>
+      <h2><span data-split>Il y a des jours</span><br><span data-split data-delay="160">qui demandent des fleurs.</span></h2>
+      <p data-reveal data-delay="200">
+        Un mariage, un départ, un adieu, un lundi matin au bureau. On s'occupe du reste,
+        du devis jusqu'à la mise en place.
+      </p>
+    </div>
+
+    <div class="occ" data-stagger="110">
+      <article class="occ-card">
+        <img src="photos/mariage.jpg" width="900" height="600" loading="lazy" alt="Bouquet de mariée en roses blanches et lilas posé dans l'herbe">
+        <div class="occ-in">
+          <h3>Mariage</h3>
+          <p>Bouquet de mariée, boutonnières, décor de salle et de cérémonie. Essai floral offert.</p>
+        </div>
+      </article>
+
+      <article class="occ-card">
+        <img src="photos/deuil.jpg" width="900" height="600" loading="lazy" alt="Composition de fleurs blanches dans un vase clair, pour un hommage">
+        <div class="occ-in">
+          <h3>Deuil &amp; hommage</h3>
+          <p>Coussins, gerbes et raquettes préparés dans la journée, livrés directement au lieu.</p>
+        </div>
+      </article>
+
+      <article class="occ-card">
+        <img src="photos/abonnement.jpg" width="900" height="600" loading="lazy" alt="Vase de fleurs fraîches sur une table en bois, à côté d'une tasse de café">
+        <div class="occ-in">
+          <h3>Abonnement</h3>
+          <p>Bureaux, cabinets et restaurants : des fleurs fraîches chaque semaine, sans y penser.</p>
+        </div>
+      </article>
+
+      <article class="occ-card">
+        <img src="photos/atelier.jpg" width="900" height="600" loading="lazy" alt="Ciseaux de fleuriste et fleurs fraîches posés sur un établi en bois">
+        <div class="occ-in">
+          <h3>Ateliers</h3>
+          <p>Deux heures, six personnes, votre bouquet dans les mains à la fin. Sur réservation.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ L'ATELIER ============ -->
+<section id="atelier">
+  <div class="wrap at-grid">
+    <div>
+      <div class="eyebrow" data-reveal>L'atelier</div>
+      <h2 style="margin:1rem 0 1.3rem"><span data-split>Fleuriste,</span><br><em data-reveal="blur" data-delay="380">pas revendeur.</em></h2>
+      <p data-reveal data-delay="200" class="muted">
+        Trois fois par semaine, nous achetons nous-mêmes au cadran, puis nous remontons
+        les fleurs à la boutique le matin même. Rien ne dort dans une chambre froide
+        pendant dix jours avant d'arriver chez vous.
+      </p>
+      <p data-reveal data-delay="280" class="muted">
+        Tout est composé sur place, à la main, devant vous si vous voulez attendre.
+        Et si une fleur ne tient pas la semaine, on la remplace, sans discuter.
+      </p>
+
+      <div class="stats" data-stagger="140">
+        <div class="stat"><b data-count="16" data-suffix=" ans">0</b><i>Au même coin de rue</i></div>
+        <div class="stat"><b data-count="3" data-suffix="×">0</b><i>Arrivages par semaine</i></div>
+        <div class="stat"><b data-count="90" data-suffix=" min">0</b><i>Livraison en ville</i></div>
+      </div>
+    </div>
+
+    <div class="at-art" data-reveal="right" data-delay="180">
+      <figure class="a1" data-parallax="0.06">
+        <img src="photos/marche-seaux.jpg" width="900" height="600" loading="lazy" alt="Seaux de zinc remplis de jonquilles et de fleurs coupées à l'atelier">
+      </figure>
+      <figure class="a2" data-parallax="0.11">
+        <img src="photos/boutique.jpg" width="900" height="600" loading="lazy" alt="Devanture de la boutique, plantes et bouquets présentés sur le trottoir">
+      </figure>
+      <div class="at-badge" data-reveal="scale" data-delay="800">Ouvert le dimanche matin</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMMANDER ============ -->
+<section class="final" id="commander">
+  <img src="photos/ceremonie.jpg" width="900" height="600" loading="lazy" alt="">
+  <div class="wrap">
+    <div class="eyebrow" data-reveal>Commander</div>
+    <h2><span data-split>Avant 15 h,</span><br><span data-split data-delay="160">livré aujourd'hui.</span></h2>
+    <p data-reveal data-delay="200">
+      Un appel, le nom du destinataire, l'adresse et le mot à écrire sur la carte.
+      Nous composons, nous livrons, nous vous envoyons la photo du bouquet déposé.
+    </p>
+    <p data-reveal data-delay="280">
+      <a class="btn ns-shine" href="tel:+352000000">Appeler l'atelier · +352 00 00 00</a>
+    </p>
+    <p data-reveal data-delay="360" style="font-size:.93rem;margin-top:1.4rem">
+      Ou par e-mail : <a class="tel-link" href="mailto:bonjour@atelier-verveine.example">bonjour@atelier-verveine.example</a>
+    </p>
+  </div>
+</section>
+
+<!-- ============ INFOS & ACCÈS ============ -->
+<section id="infos">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" data-reveal>Infos &amp; accès</div>
+      <h2 data-split>Passez nous voir.</h2>
+    </div>
+
+    <div class="info-grid">
+      <div data-reveal="left">
+        <div class="hours" id="hours">
+          <div data-day="1"><b>Lundi</b><span>10:00 – 18:30</span></div>
+          <div data-day="2"><b>Mardi</b><span>08:30 – 18:30</span></div>
+          <div data-day="3"><b>Mercredi</b><span>08:30 – 18:30</span></div>
+          <div data-day="4"><b>Jeudi</b><span>08:30 – 18:30</span></div>
+          <div data-day="5"><b>Vendredi</b><span>08:30 – 19:00</span></div>
+          <div data-day="6"><b>Samedi</b><span>08:30 – 18:00</span></div>
+          <div data-day="0"><b>Dimanche</b><span>09:00 – 13:00</span></div>
+        </div>
+
+        <div class="contact-block">
+          <span class="muted">Adresse à compléter par le client</span>
+          <a href="tel:+352000000">+352 00 00 00</a>
+          <a href="mailto:bonjour@atelier-verveine.example">bonjour@atelier-verveine.example</a>
+        </div>
+
+        <p style="margin-top:1.8rem"><a class="btn ghost" href="#bouquets">Voir les bouquets</a></p>
+      </div>
+
+      <figure class="map" data-reveal="right" data-delay="120">
+        <div class="pin" aria-hidden="true"></div>
+        <figcaption>Emplacement de la boutique. Sur un site publié, cette zone accueille la carte interactive.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <div>
+      <div class="logo" style="margin-bottom:.35rem"><span class="mark" aria-hidden="true"></span>Atelier <em>Verveine</em></div>
+      <div>Fleuriste · Bouquets, mariages, deuil et abonnements · Luxembourg</div>
+    </div>
+    <div>Démonstration · Réalisé par <b>NS Development</b></div>
+  </div>
+</footer>
+
+<script>
+/* menu mobile */
+(function(){
+  var b = document.getElementById('burger'), m = document.getElementById('mob');
+  function close(){ m.classList.remove('open'); b.setAttribute('aria-expanded','false'); b.setAttribute('aria-label','Ouvrir le menu'); }
+  b.addEventListener('click', function(){
+    var open = m.classList.toggle('open');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    b.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+  });
+  m.addEventListener('click', function(e){ if (e.target.tagName === 'A') close(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+})();
+
+/* jour courant mis en avant dans les horaires */
+(function(){
+  var d = new Date().getDay();
+  var row = document.querySelector('#hours [data-day="' + d + '"]');
+  if (row){ row.querySelector('span').classList.add('now'); row.querySelector('b').textContent += " · aujourd'hui"; }
+})();
+</script>
+
+</body>
+</html>
