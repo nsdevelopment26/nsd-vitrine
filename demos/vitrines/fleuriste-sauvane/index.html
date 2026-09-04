@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sauvane — Artisan fleuriste · Luxembourg</title>
+<meta name="description" content="Artisan fleuriste à Luxembourg. Bouquets de saison, plantes et compositions sur mesure. Commande en ligne, retrait en deux heures ou livraison le lendemain.">
+<link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/fleuriste-sauvane/">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_LU">
+<meta property="og:site_name" content="Sauvane">
+<meta property="og:title" content="Sauvane — Artisan fleuriste · Luxembourg">
+<meta property="og:description" content="Bouquets de saison et compositions sur mesure. Commandez en ligne, retirez en deux heures.">
+<meta property="og:image" content="photos/fl-boutique.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sauvane — Artisan fleuriste · Luxembourg">
+<meta name="twitter:description" content="Bouquets de saison et compositions sur mesure. Commandez en ligne, retirez en deux heures.">
+<meta name="twitter:image" content="photos/fl-boutique.jpg">
+<meta name="theme-color" content="#12261f">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<script src="ns-motion.js" defer></script>
+
+<style>
+:root{
+  --nuit:#12261f;
+  --nuit-2:#1b3429;
+  --blanc:#ffffff;
+  --gris:#f2f4f2;
+  --soufre:#e6d04a;
+  --soufre-d:#cbb534;
+  --texte-clair:#c2cec7;
+  --line:#dfe4e0;
+  --ns-progress-color:#e6d04a;
+  --wrap:1200px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--blanc);color:var(--nuit);
+  font-family:Archivo,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{width:min(var(--wrap),calc(100% - 44px));margin-inline:auto}
+h1,h2,h3{font-family:Syne,system-ui,sans-serif;font-weight:800;line-height:1;margin:0;letter-spacing:-.02em}
+h1{font-size:clamp(2.9rem,8vw,6.2rem);text-transform:uppercase}
+h2{font-size:clamp(1.9rem,4vw,3.1rem);text-transform:uppercase}
+h3{font-size:1rem;font-weight:700;line-height:1.25;letter-spacing:-.005em}
+p{margin:0 0 1em}
+h2+p{margin-top:1.1rem}
+.eti{font-family:Archivo;font-size:.68rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--soufre-d)}
+:focus-visible{outline:3px solid var(--soufre);outline-offset:3px}
+
+/* boutons : contour fin, majuscules espacees, remplissage au survol */
+.b{
+  display:inline-flex;align-items:center;gap:.7rem;cursor:pointer;text-decoration:none;
+  font-family:Archivo;font-weight:700;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:1rem 1.9rem;border:1px solid currentColor;background:transparent;color:inherit;border-radius:0;
+  transition:background .3s,color .3s,letter-spacing .3s;
+}
+.b:hover{background:var(--soufre);border-color:var(--soufre);color:var(--nuit);letter-spacing:.22em}
+.b.plein{background:var(--nuit);border-color:var(--nuit);color:var(--blanc)}
+.b.plein:hover{background:var(--soufre);border-color:var(--soufre);color:var(--nuit)}
+.b.large{width:100%;justify-content:center}
+
+/* ---------- nav : superposee, claire, sans fond ---------- */
+.nav{position:absolute;top:0;left:0;right:0;z-index:40;padding:1.6rem 0;color:var(--blanc)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:1.2rem}
+.marque{font-family:Syne,sans-serif;font-weight:800;font-size:1.25rem;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none}
+.liens{display:flex;gap:1.9rem}
+.liens a{font-size:.74rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;opacity:.85}
+.liens a:hover{opacity:1;color:var(--soufre)}
+.outils{display:flex;align-items:center;gap:.7rem}
+.pan-b{display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;background:transparent;
+  border:1px solid rgba(255,255,255,.5);color:var(--blanc);padding:.55rem 1rem;
+  font-family:Archivo;font-weight:700;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase}
+.pan-b:hover{background:var(--soufre);border-color:var(--soufre);color:var(--nuit)}
+.pan-n{min-width:19px;height:19px;background:var(--soufre);color:var(--nuit);font-size:.68rem;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;padding:0 5px;border-radius:999px}
+.brg{display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,.5);background:transparent;
+  cursor:pointer;flex-direction:column;gap:5px;align-items:center;justify-content:center}
+.brg span{width:17px;height:1.5px;background:var(--blanc);display:block}
+#mob{display:none;position:fixed;inset:0;z-index:59;background:var(--nuit);padding:5.5rem 26px 2rem}
+#mob.open{display:block}
+#mob a{display:block;font-family:Syne,sans-serif;font-weight:800;font-size:2rem;text-transform:uppercase;
+  color:var(--blanc);padding:.5rem 0;text-decoration:none;border-bottom:1px solid var(--nuit-2)}
+
+/* ---------- HERO PLEIN ÉCRAN : photo pleine page, titre en bas ---------- */
+.hero{position:relative;min-height:min(100svh,860px);display:flex;align-items:flex-end;overflow:hidden;background:var(--nuit)}
+.hero-img{position:absolute;inset:0}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+.hero-img::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(18,38,31,.62) 0%,rgba(18,38,31,.22) 38%,rgba(18,38,31,.9) 100%);
+}
+.hero-txt{position:relative;z-index:2;color:var(--blanc);padding:0 0 4.2rem}
+.hero h1{max-width:13ch}
+.hero h1 em{font-style:normal;color:var(--soufre)}
+.hero-bas{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-top:2rem}
+.hero-bas p{max-width:38ch;color:var(--texte-clair);margin:0}
+.hero .b{color:var(--blanc)}
+.defiler{position:absolute;right:0;bottom:4.6rem;z-index:2;writing-mode:vertical-rl;
+  font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+
+/* ---------- bandeau ---------- */
+.serv{background:var(--nuit);color:var(--texte-clair);padding:1.5rem 0;font-size:.8rem;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.serv-in{display:flex;justify-content:space-between;gap:1.6rem;flex-wrap:wrap}
+.serv b{color:var(--soufre);font-weight:700}
+
+section{padding:6rem 0}
+.tete{margin-bottom:2.8rem;max-width:640px}
+.tete p{color:#5c6b63;margin-top:1rem}
+
+/* ---------- boutique : vignettes hautes, texte en surimpression ---------- */
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.1rem}
+.fl{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--gris)}
+.fl img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.fl:hover img{transform:scale(1.06)}
+.fl-bas{
+  position:absolute;left:0;right:0;bottom:0;padding:1.5rem 1.1rem 1.05rem;color:var(--blanc);
+  background:linear-gradient(transparent,rgba(18,38,31,.9));
+  display:flex;align-items:flex-end;justify-content:space-between;gap:.7rem;
+}
+.fl-cat{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--soufre);display:block;margin-bottom:.2rem}
+.fl-nom{font-family:Syne,sans-serif;font-weight:700;font-size:1rem;line-height:1.15}
+.fl-prix{font-family:Syne,sans-serif;font-weight:700;font-size:.98rem;white-space:nowrap}
+.fl-add{
+  position:absolute;top:.8rem;right:.8rem;width:38px;height:38px;border:1px solid rgba(255,255,255,.7);
+  background:rgba(18,38,31,.42);color:#fff;font-size:1.1rem;line-height:1;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
+  transition:background .25s,border-color .25s,color .25s,transform .25s;
+}
+.fl-add:hover,.fl-add.ok{background:var(--soufre);border-color:var(--soufre);color:var(--nuit)}
+.fl-add.ok{transform:scale(1.12)}
+
+/* ---------- sur mesure : bloc nuit pleine largeur ---------- */
+.sm{background:var(--nuit);color:var(--blanc)}
+.sm h2{color:var(--blanc)}
+.sm p{color:var(--texte-clair)}
+.sm-in{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.sm-in>*{min-width:0}
+.sm-photo{aspect-ratio:4/3;overflow:hidden}
+.sm-photo img{width:100%;height:100%;object-fit:cover}
+.sm ul{list-style:none;padding:0;margin:1.6rem 0 2rem;display:grid;gap:0}
+.sm li{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:baseline;
+  padding:.85rem 0;border-top:1px solid rgba(255,255,255,.16);font-size:.95rem}
+.sm li:last-child{border-bottom:1px solid rgba(255,255,255,.16)}
+.sm li b{font-family:Syne,sans-serif;font-weight:700;color:var(--soufre);
+  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.sm .b{color:var(--blanc)}
+
+/* ---------- chiffres : ligne, pas grille de cartes ---------- */
+.ch-ligne{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.ch b{display:block;font-family:Syne,sans-serif;font-weight:800;font-size:clamp(2.2rem,4.4vw,3.3rem);line-height:1}
+.ch i{font-style:normal;display:block;margin-top:.4rem;font-size:.66rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:#5c6b63}
+
+/* ---------- acces ---------- */
+.acc{display:grid;grid-template-columns:1fr 1fr;gap:3.4rem}
+.acc>*{min-width:0}
+.hor div{display:flex;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px solid var(--line);font-size:.94rem}
+.hor div b{font-weight:600}
+.gris{color:#5c6b63}
+.coord{margin-top:1.7rem;display:flex;flex-direction:column;gap:.45rem}
+.coord a{text-decoration:none;font-weight:600}
+.coord a:hover{color:var(--soufre-d)}
+.plan{background:var(--gris);min-height:320px;position:relative;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line)}
+.pin{width:16px;height:16px;background:var(--soufre);border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+  box-shadow:0 0 0 8px rgba(230,208,74,.28)}
+.plan figcaption{position:absolute;bottom:0;left:0;right:0;padding:.65rem .85rem;background:var(--blanc);
+  border-top:1px solid var(--line);font-size:.8rem;color:#5c6b63}
+
+footer{background:var(--nuit);color:var(--texte-clair);padding:3rem 0 2.4rem;font-size:.86rem}
+.f-in{display:flex;flex-wrap:wrap;gap:1.2rem;justify-content:space-between;align-items:center}
+footer b{color:var(--blanc)}
+
+/* ---------- panier ---------- */
+#fond{display:none;position:fixed;inset:0;z-index:88;background:rgba(18,38,31,.6)}
+#fond.open{display:block}
+#pan{display:none;position:fixed;top:0;right:0;bottom:0;width:min(410px,100%);z-index:89;
+  background:var(--blanc);flex-direction:column}
+#pan.open{display:flex}
+.pt{display:flex;align-items:center;justify-content:space-between;padding:1.35rem 1.4rem;
+  background:var(--nuit);color:var(--blanc)}
+.pt h2{font-size:1.05rem;letter-spacing:.14em}
+.x{width:34px;height:34px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;cursor:pointer}
+.x:hover{background:var(--soufre);color:var(--nuit);border-color:var(--soufre)}
+.corps{flex:1;overflow-y:auto;padding:1.1rem 1.4rem}
+.vide{color:#5c6b63;font-size:.93rem;text-align:center;padding:2.4rem 0}
+.lg{display:grid;grid-template-columns:52px 1fr auto;gap:.8rem;align-items:center;padding:.75rem 0;border-bottom:1px solid var(--line)}
+.lg img{width:52px;height:52px;object-fit:cover}
+.lg .ln{font-family:Syne,sans-serif;font-weight:700;font-size:.88rem;line-height:1.2}
+.lg .lp{font-size:.79rem;color:#5c6b63}
+.q{display:inline-flex;align-items:center;gap:.3rem}
+.q button{width:26px;height:26px;border:1px solid var(--line);background:transparent;cursor:pointer;color:var(--nuit)}
+.q button:hover{background:var(--nuit);color:var(--blanc);border-color:var(--nuit)}
+.q span{min-width:18px;text-align:center;font-weight:700;font-size:.87rem}
+.pp{border-top:1px solid var(--line);padding:1.1rem 1.4rem 1.4rem}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.8rem}
+.mode button{font-family:Archivo;font-weight:700;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.6rem .4rem;cursor:pointer;border:1px solid var(--line);background:transparent;color:#5c6b63}
+.mode button[aria-pressed="true"]{background:var(--nuit);border-color:var(--nuit);color:var(--blanc)}
+.cre{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.9rem}
+.cre label{font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#5c6b63}
+.cre select{font-family:Archivo;font-size:.9rem;padding:.6rem .65rem;border:1px solid var(--line);
+  background:var(--blanc);color:var(--nuit);border-radius:0;width:100%;min-width:0}
+.tot{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.9rem}
+.tot .tv{font-family:Syne,sans-serif;font-weight:800;font-size:1.5rem}
+.ok{display:none;margin-top:.8rem;padding:.8rem .85rem;background:var(--gris);
+  border-left:3px solid var(--soufre);font-size:.86rem}
+.ok.on{display:block}
+
+@media(max-width:960px){
+  .liens{display:none}
+  .brg{display:flex}
+  .defiler{display:none}
+  .sm-in,.acc{grid-template-columns:1fr;gap:2.4rem}
+  .ch-ligne{grid-template-columns:1fr 1fr;gap:1.6rem}
+  section{padding:4.2rem 0}
+  .serv-in{gap:.8rem;font-size:.72rem}
+}
+@media(max-width:520px){
+  body{font-size:16px}
+  .wrap{width:calc(100% - 32px)}
+  .grille{grid-template-columns:1fr 1fr;gap:.7rem}
+  .ch-ligne{grid-template-columns:1fr}
+  .pan-b .lab{display:none}
+  .hero-txt{padding-bottom:3rem}
+}
+</style>
+</head>
+<body>
+
+<div class="ns-progress"></div>
+
+<div class="nav">
+  <div class="wrap nav-in">
+    <a class="marque" href="#haut">Sauvane</a>
+    <div class="liens">
+      <a href="#boutique">Boutique</a>
+      <a href="#surmesure">Sur mesure</a>
+      <a href="#acces">Nous trouver</a>
+    </div>
+    <div class="outils">
+      <button class="pan-b" id="ouvrir"><span class="lab">Panier</span><span class="pan-n" id="cpt" aria-live="polite">0</span></button>
+      <button class="brg" id="brg" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mob"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="mob" aria-hidden="true">
+  <div class="wrap"><a href="#boutique">Boutique</a><a href="#surmesure">Sur mesure</a><a href="#acces">Nous trouver</a></div>
+</div>
+
+<!-- ====== HERO PLEIN ÉCRAN ====== -->
+<header class="hero" id="haut">
+  <div class="hero-img">
+    <img src="photos/fl-boutique.jpg" width="1200" height="800" alt="La boutique Sauvane, seaux de fleurs coupées">
+  </div>
+  <div class="wrap hero-txt">
+    <div class="eti" data-reveal="blur" style="margin-bottom:1.1rem">Artisan fleuriste · Luxembourg</div>
+    <h1><span data-split>Cueillies ce</span> <em data-reveal="blur" data-delay="500">matin</em></h1>
+    <div class="hero-bas">
+      <p data-reveal data-delay="760">
+        Ce qui est en boutique aujourd'hui est en ligne aujourd'hui. Vous commandez,
+        nous préparons, vous passez prendre. Deux heures suffisent.
+      </p>
+      <a class="b" href="#boutique" data-reveal data-delay="880">Voir la boutique</a>
+    </div>
+  </div>
+  <div class="defiler">Faire défiler</div>
+</header>
+
+<div class="serv">
+  <div class="wrap serv-in" data-stagger="110">
+    <span>Retrait en <b>2 heures</b></span>
+    <span>Livraison <b>le lendemain</b>, Grand-Duché</span>
+    <span>Producteurs de la <b>Grande Région</b></span>
+    <span>Paiement <b>en ligne</b></span>
+  </div>
+</div>
+
+<!-- ====== BOUTIQUE ====== -->
+<section id="boutique">
+  <div class="wrap">
+    <div class="tete">
+      <div class="eti" data-reveal>La boutique</div>
+      <h2 data-split style="margin-top:.9rem">Ce qu'il reste, en vrai</h2>
+      <p data-reveal data-delay="120">
+        Pas de catalogue figé. La sélection change avec la saison et avec ce qui est arrivé
+        au petit matin. Ce que vous voyez, on l'a.
+      </p>
+    </div>
+    <div class="grille" id="grille" data-stagger="80"></div>
+  </div>
+</section>
+
+<!-- ====== SUR MESURE ====== -->
+<section class="sm" id="surmesure">
+  <div class="wrap sm-in">
+    <figure class="sm-photo" data-reveal="left" style="margin:0">
+      <img src="photos/fl-surmesure.jpg" width="1000" height="666" loading="lazy"
+           alt="Bouquet de mariée en roses pâles et eucalyptus">
+    </figure>
+    <div>
+      <div class="eti" data-reveal>Sur mesure</div>
+      <h2 data-split style="margin-top:.9rem">Les jours qui comptent</h2>
+      <p data-reveal data-delay="120">
+        Un mariage, un deuil, un événement. On en parle de vive voix, on vous envoie une
+        proposition chiffrée, et vous validez en ligne quand vous êtes prêt.
+      </p>
+      <ul data-stagger="90">
+        <li><b>Mariage</b><span>Bouquet de mariée, boutonnières, décor de table et d'église.</span></li>
+        <li><b>Deuil</b><span>Coussins, raquettes et couronnes, livrés au funérarium.</span></li>
+        <li><b>Entreprise</b><span>Abonnement hebdomadaire pour l'accueil et les salles.</span></li>
+      </ul>
+      <a class="b" href="#acces" data-reveal>Demander un devis</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====== LA MAISON ====== -->
+<section>
+  <div class="wrap">
+    <div class="tete">
+      <div class="eti" data-reveal>La maison</div>
+      <h2 data-split style="margin-top:.9rem">Vingt-deux ans rue du Marché</h2>
+      <p data-reveal data-delay="120">
+        Sauvane travaille avec des producteurs de la Grande Région. La commande en ligne ne
+        remplace personne : elle libère du temps au comptoir pour ceux qui sont devant nous.
+      </p>
+    </div>
+    <div class="ch-ligne" data-stagger="120">
+      <div class="ch"><b data-count="22" data-suffix=" ans">0</b><i>Rue du Marché</i></div>
+      <div class="ch"><b data-count="3200" data-suffix="+">0</b><i>Commandes par an</i></div>
+      <div class="ch"><b>4,8</b><i>Note moyenne Google</i></div>
+      <div class="ch"><b data-count="2" data-suffix=" h">0</b><i>Prêt au retrait</i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== ACCÈS ====== -->
+<section id="acces" style="background:var(--gris)">
+  <div class="wrap">
+    <div class="tete">
+      <div class="eti" data-reveal>Nous trouver</div>
+      <h2 data-split style="margin-top:.9rem">Horaires &amp; accès</h2>
+    </div>
+    <div class="acc">
+      <div data-reveal="left">
+        <div class="hor">
+          <div><b>Lundi</b><span class="gris">Fermé</span></div>
+          <div><b>Mardi – Vendredi</b><span>08:30 – 18:30</span></div>
+          <div><b>Samedi</b><span>08:00 – 17:00</span></div>
+          <div><b>Dimanche</b><span>09:00 – 12:30</span></div>
+        </div>
+        <div class="coord">
+          <span class="gris">Adresse à compléter par le client</span>
+          <a href="tel:+352000000">+352 00 00 00</a>
+          <a href="mailto:contact@sauvane.lu">contact@sauvane.lu</a>
+        </div>
+        <p style="margin-top:1.7rem"><a class="b plein" href="#boutique">Commander en ligne</a></p>
+      </div>
+      <figure class="plan" data-reveal="right" data-delay="120" style="margin:0">
+        <div class="pin" aria-hidden="true"></div>
+        <figcaption>Emplacement de la boutique. Sur un site publié, cette zone accueille la carte interactive.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap f-in">
+    <div>
+      <div class="marque" style="color:var(--blanc);display:block;margin-bottom:.3rem">Sauvane</div>
+      <div>Artisan fleuriste · Luxembourg</div>
+    </div>
+    <div>Démonstration · Réalisé par <b>NS Development</b></div>
+  </div>
+</footer>
+
+<div id="fond"></div>
+<aside id="pan" role="dialog" aria-modal="true" aria-labelledby="ptit" aria-hidden="true">
+  <div class="pt"><h2 id="ptit">Votre panier</h2><button class="x" id="fermer" aria-label="Fermer">✕</button></div>
+  <div class="corps" id="corps"></div>
+  <div class="pp">
+    <div class="mode" role="group" aria-label="Mode de réception">
+      <button id="m-ret" aria-pressed="true">Retrait boutique</button>
+      <button id="m-liv" aria-pressed="false">Livraison +5 €</button>
+    </div>
+    <div class="cre">
+      <label for="cre">Créneau souhaité</label>
+      <select id="cre">
+        <option>Aujourd'hui, 14h - 16h</option>
+        <option>Aujourd'hui, 16h - 18h</option>
+        <option>Demain matin, 9h - 12h</option>
+        <option>Demain après-midi, 14h - 18h</option>
+      </select>
+    </div>
+    <div class="tot"><span class="gris">Total</span><span class="tv" id="tot">0,00 €</span></div>
+    <button class="b plein large" id="valider">Valider ma commande</button>
+    <div class="ok" id="ok" role="status"></div>
+  </div>
+</aside>
+
+<script>
+(function(){
+  "use strict";
+
+  var PRODUITS = [
+    {id:"f1", nom:"Bouquet du jour",         cat:"Bouquets", prix:29, img:"photos/fl-1.jpg"},
+    {id:"f2", nom:"Brassée champêtre",       cat:"Bouquets", prix:38, img:"photos/fl-2.jpg"},
+    {id:"f3", nom:"Roses de saison, par 12", cat:"Roses",    prix:42, img:"photos/fl-3.jpg"},
+    {id:"f4", nom:"Brassée de tulipes",      cat:"Saison",   prix:26, img:"photos/fl-4.jpg"},
+    {id:"f5", nom:"Monstera en pot",         cat:"Plantes",  prix:45, img:"photos/fl-5.jpg"}
+  ];
+
+  var euro=function(n){ return n.toFixed(2).replace(".",",")+" €"; };
+  var txt=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+  var trouver=function(id){ for(var i=0;i<PRODUITS.length;i++){ if(PRODUITS[i].id===id) return PRODUITS[i]; } return null; };
+
+  document.getElementById("grille").innerHTML = PRODUITS.map(function(p){
+    return '<article class="fl">' +
+      '<img src="' + p.img + '" width="600" height="600" loading="lazy" alt="' + p.nom + '">' +
+      '<button class="fl-add" data-id="' + p.id + '" aria-label="Ajouter ' + p.nom + ' au panier">+</button>' +
+      '<div class="fl-bas"><div><span class="fl-cat">' + p.cat + '</span>' +
+      '<span class="fl-nom">' + p.nom + '</span></div>' +
+      '<span class="fl-prix">' + euro(p.prix) + '</span></div></article>';
+  }).join("");
+
+  var panier=[], livraison=false;
+  function cpt(){ return panier.reduce(function(n,l){ return n+l.qte; },0); }
+  function total(){
+    var s=panier.reduce(function(a,l){ var p=trouver(l.id); return a+(p?p.prix*l.qte:0); },0);
+    return s + (livraison && panier.length ? 5 : 0);
+  }
+  function maj(){
+    txt("cpt",cpt()); txt("tot",euro(total()));
+    var c=document.getElementById("corps");
+    if(!panier.length){ c.innerHTML='<p class="vide">Votre panier est vide.<br>Choisissez dans la boutique.</p>'; return; }
+    c.innerHTML=panier.map(function(l){
+      var p=trouver(l.id);
+      return '<div class="lg"><img src="'+p.img+'" alt="">' +
+        '<div><div class="ln">'+p.nom+'</div><div class="lp">'+euro(p.prix)+'</div></div>' +
+        '<div class="q"><button data-moins="'+p.id+'" aria-label="Retirer">−</button><span>'+l.qte+
+        '</span><button data-plus="'+p.id+'" aria-label="Ajouter">+</button></div></div>';
+    }).join("");
+  }
+  function ajouter(id){
+    var l=panier.filter(function(x){ return x.id===id; })[0];
+    if(l) l.qte++; else panier.push({id:id,qte:1});
+    maj();
+  }
+  function qte(id,d){
+    var l=panier.filter(function(x){ return x.id===id; })[0];
+    if(!l) return;
+    l.qte+=d;
+    if(l.qte<=0) panier=panier.filter(function(x){ return x.id!==id; });
+    maj();
+  }
+
+  function ouvrir(){
+    document.getElementById("fond").classList.add("open");
+    var p=document.getElementById("pan"); p.classList.add("open"); p.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden"; document.getElementById("fermer").focus();
+  }
+  function fermer(){
+    document.getElementById("fond").classList.remove("open");
+    var p=document.getElementById("pan"); p.classList.remove("open"); p.setAttribute("aria-hidden","true");
+    document.body.style.overflow=""; document.getElementById("ok").classList.remove("on");
+    document.getElementById("ouvrir").focus();
+  }
+
+  var brg=document.getElementById("brg"), mob=document.getElementById("mob");
+  function setMob(o){
+    mob.classList.toggle("open",o); mob.setAttribute("aria-hidden",o?"false":"true");
+    brg.setAttribute("aria-expanded",o?"true":"false");
+    brg.setAttribute("aria-label",o?"Fermer le menu":"Ouvrir le menu");
+    document.body.style.overflow=o?"hidden":"";
+  }
+
+  document.addEventListener("click",function(e){
+    var a=e.target.closest(".fl-add");
+    if(a){ ajouter(a.getAttribute("data-id")); a.classList.add("ok");
+           setTimeout(function(){ a.classList.remove("ok"); },260); return; }
+    var m=e.target.closest("[data-moins]"); if(m){ qte(m.getAttribute("data-moins"),-1); return; }
+    var p=e.target.closest("[data-plus]");  if(p){ qte(p.getAttribute("data-plus"),1);  return; }
+  });
+  document.getElementById("ouvrir").addEventListener("click",ouvrir);
+  document.getElementById("fermer").addEventListener("click",fermer);
+  document.getElementById("fond").addEventListener("click",fermer);
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"){ fermer(); setMob(false); } });
+  brg.addEventListener("click",function(){ setMob(!mob.classList.contains("open")); });
+  mob.addEventListener("click",function(e){ if(e.target.tagName==="A") setMob(false); });
+
+  document.getElementById("m-ret").addEventListener("click",function(){
+    livraison=false; this.setAttribute("aria-pressed","true");
+    document.getElementById("m-liv").setAttribute("aria-pressed","false"); maj();
+  });
+  document.getElementById("m-liv").addEventListener("click",function(){
+    livraison=true; this.setAttribute("aria-pressed","true");
+    document.getElementById("m-ret").setAttribute("aria-pressed","false"); maj();
+  });
+  document.getElementById("valider").addEventListener("click",function(){
+    var ok=document.getElementById("ok");
+    if(!panier.length){ ok.textContent="Votre panier est vide : ajoutez un article avant de valider."; ok.classList.add("on"); return; }
+    ok.textContent="Commande enregistrée : "+cpt()+" article(s), "+euro(total())+". "+
+      (livraison?"Livraison":"Retrait en boutique")+", "+document.getElementById("cre").value.toLowerCase()+
+      ". Sur un site en ligne, le paiement et la confirmation suivraient ici.";
+    ok.classList.add("on"); panier=[]; maj();
+  });
+
+  maj();
+})();
+</script>
+</body>
+</html>
