@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
+<script src="recherche.js" defer></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--paper:#f4f1e9;--paper2:#ede8db;--ink:#1c2536;--navy:#22314f;--navy-d:#1a2540;--gold:#a4823a;--gold-l:#c19a4a;--soft:#6b7180;--line:#e0dac9;
@@ -57,7 +58,7 @@
   .prop .img{aspect-ratio:4/3;background:linear-gradient(150deg,#e6e0d0,#d8d0bc);position:relative;overflow:hidden}
   .prop .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s var(--ns-ease)}
   .prop:hover .img img{transform:scale(1.05)}
-  .prop .tag{position:absolute;top:16px;left:16px;background:var(--paper);color:var(--navy);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 13px;font-weight:500}
+  .prop .tag{position:absolute;z-index:2;top:16px;left:16px;background:var(--paper);color:var(--navy);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 13px;font-weight:500}
   .prop .body{padding:24px 4px 0}
   .prop .loc{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
   .prop h3{font-size:26px;font-weight:500;margin-bottom:14px}
@@ -98,7 +99,70 @@
   .sv::before{content:"";position:absolute;left:0;top:0;width:2px;height:0;background:var(--gold);transition:height .55s var(--ns-ease)}
   .sv:hover::before{height:100%}
 
-  @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.props{grid-template-columns:1fr}.sv-grid{grid-template-columns:1fr 1fr}}
+
+  /* ---------- Moteur de recherche ---------- */
+  section[id]{scroll-margin-top:96px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .f-lab{display:block;white-space:nowrap;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:7px}
+  .fld{appearance:none;-webkit-appearance:none;background:transparent;border:0;font-family:var(--sans);font-size:15px;font-weight:400;color:var(--ink);width:100%;cursor:pointer;outline-offset:5px;text-overflow:ellipsis}
+  select.fld{padding-right:22px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a4823a' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right center}
+
+  .finder{margin:42px 0 22px;max-width:1000px;background:#fbf8f1;border:1px solid var(--line);box-shadow:0 34px 70px -46px rgba(28,37,54,.75);display:grid;grid-template-columns:repeat(4,1fr) auto}
+  .finder .f{padding:18px 20px;border-right:1px solid var(--line);min-width:0}
+  .finder .go{border:0;background:var(--navy);color:var(--paper);font-family:var(--sans);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;padding:0 38px;cursor:pointer;transition:var(--tr)}
+  .finder .go:hover{background:var(--gold)}
+  .hero-alt{font-size:14.5px;color:var(--soft)}
+  .hero-alt a{color:var(--navy)}
+
+  .tools{border:1px solid var(--line);background:var(--paper2);padding:24px 26px;margin-bottom:32px}
+  .tools-top{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .seg{display:inline-flex;border:1px solid var(--navy)}
+  .seg button{background:transparent;border:0;padding:12px 30px;font-family:var(--sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--navy);cursor:pointer;transition:var(--tr)}
+  .seg button.on{background:var(--navy);color:var(--paper)}
+  .seg button:not(.on):hover{background:rgba(34,49,79,.08)}
+  .qbox{flex:1 1 280px;display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--line);padding:11px 16px}
+  .qbox input{flex:1;min-width:0;border:0;background:transparent;font-family:var(--sans);font-size:15px;color:var(--ink);outline:none}
+  .tools-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:16px}
+  .tools-grid .f{background:var(--paper);border:1px solid var(--line);padding:12px 15px}
+
+  .res{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+  .res-l{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .count{font-family:var(--serif);font-size:20px;color:var(--soft);line-height:1}
+  .count b{color:var(--navy);font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;margin-right:5px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:9px;background:var(--navy);color:var(--paper);font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:8px 13px;border:0;cursor:pointer;transition:var(--tr)}
+  .chip:hover{background:var(--gold)}
+  .chip span[aria-hidden]{opacity:.55;font-size:10px}
+  .sort{display:flex;align-items:center;gap:12px}
+  .sort .f-lab{margin:0}
+  .sort .fld{width:auto}
+
+  .prop .dsc{font-size:14px;color:var(--soft);font-weight:300;margin:-4px 0 16px}
+  .prop .price{display:flex;align-items:baseline;gap:7px}
+  .prop .price .ref{margin-left:auto}
+  .prop .price .pm{font-family:var(--sans);font-size:14px;color:var(--soft)}
+  .prop .price .ref{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:400}
+  .prop .tag.new{left:auto;right:16px;background:var(--gold);color:var(--paper)}
+  .prop:hover .tag.new{background:var(--navy)}
+
+  #resultats .prop{display:flex;flex-direction:column}
+  #resultats .prop .body{flex:1;display:flex;flex-direction:column}
+  #resultats .prop .specs{margin-top:auto}
+  #resultats .prop{opacity:0;translate:0 26px;animation:card-in .6s var(--ns-ease) forwards;animation-delay:calc(var(--i,0)*65ms)}
+  @keyframes card-in{to{opacity:1;translate:none}}
+
+  .empty{grid-column:1/-1;text-align:center;padding:72px 30px;border:1px dashed var(--line);background:var(--paper2)}
+  .empty h3{font-size:28px;font-weight:500;margin:14px 0 10px}
+  .empty p{color:var(--soft);max-width:460px;margin:0 auto 26px}
+
+  @media(prefers-reduced-motion:reduce){#resultats .prop{opacity:1;translate:none;animation:none}}
+  @media(max-width:1040px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.props{grid-template-columns:1fr}.sv-grid{grid-template-columns:1fr 1fr}
+    .finder{grid-template-columns:1fr}.finder .f{border-right:0;border-bottom:1px solid var(--line)}.finder .go{padding:18px}
+    .seg{width:100%}.seg button{flex:1;padding:12px 8px;letter-spacing:.1em}
+    .tools{padding:20px 18px}.tools-grid{grid-template-columns:1fr 1fr}
+    .res{align-items:flex-start}}
+  @media(max-width:520px){.tools-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -112,20 +176,54 @@
   <span class="eyebrow" data-reveal="blur">Agence immobilière · Luxembourg</span>
   <h1><span data-split data-delay="120">L'adresse de vos</span><br><em class="ns-gradient-text" data-reveal="blur" data-delay="620">plus beaux</em> <span data-split data-delay="780">projets.</span></h1>
   <p data-reveal="blur" data-delay="1020">Achat, vente, location et estimation. Un accompagnement discret et exigeant, pour des biens à la hauteur de vos attentes.</p>
-  <div class="hero-cta" data-reveal data-delay="1160"><a href="#biens" class="btn fill ns-shine">Découvrir nos biens</a><a href="#estimation" class="btn line">Estimer mon bien</a></div>
+  <form class="finder" id="finder" autocomplete="off" data-reveal data-delay="1140">
+    <div class="f"><label class="f-lab" for="f-t">Je souhaite</label><select class="fld" id="f-t"><option value="vente">Acheter</option><option value="location">Louer</option></select></div>
+    <div class="f"><label class="f-lab" for="f-loc">Localité</label><select class="fld" id="f-loc"></select></div>
+    <div class="f"><label class="f-lab" for="f-type">Type de bien</label><select class="fld" id="f-type"></select></div>
+    <div class="f"><label class="f-lab" for="f-budget">Budget max</label><select class="fld" id="f-budget"></select></div>
+    <button class="go ns-shine" type="submit">Rechercher</button>
+  </form>
+  <p class="hero-alt" data-reveal data-delay="1240">Vous vendez plutôt ? <a href="#estimation" class="ns-link">Faites estimer votre bien, gratuitement</a></p>
   <div class="hero-rule" data-stagger="140" data-delay="1300">
     <div><b><span data-count="15" data-duration="1600">0</span> ans</b>au service du Luxembourg</div><div><b><span data-count="200" data-suffix="+" data-duration="1600">0</span></b>biens vendus</div><div><b>Sur-mesure</b>un conseiller dédié</div>
   </div>
 </div></header>
 
 <section id="biens"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow" data-reveal="blur">Une sélection</span><h2 data-split>Nos biens à la vente</h2><p data-reveal="blur" data-delay="260">Des adresses choisies, présentées avec le soin qu'elles méritent.</p></div>
-  <div class="props" data-stagger="150">
-    <div class="prop"><div class="img"><span class="tag">À vendre</span><img src="photos/bien-2.jpg" alt="Salon lumineux de la maison de maître à Belair" loading="lazy"></div><div class="body"><div class="loc">Belair, Luxembourg</div><h3>Maison de maître</h3><div class="specs"><div><b>240</b> m²</div><div><b>5</b> chambres</div><div><b>Jardin</b></div></div><div class="price">1 490 000 €</div></div></div>
-    <div class="prop"><div class="img"><span class="tag">À vendre</span><img src="photos/bien-1.jpg" alt="Penthouse avec terrasse au Kirchberg, vue extérieure" loading="lazy"></div><div class="body"><div class="loc">Kirchberg, Luxembourg</div><h3>Penthouse lumineux</h3><div class="specs"><div><b>135</b> m²</div><div><b>3</b> chambres</div><div><b>Terrasse</b></div></div><div class="price">980 000 €</div></div></div>
-    <div class="prop"><div class="img"><span class="tag">À louer</span><img src="photos/bien-3.jpg" alt="Cuisine et coin repas de l'appartement d'angle à Limpertsberg" loading="lazy"></div><div class="body"><div class="loc">Limpertsberg, Luxembourg</div><h3>Appartement d'angle</h3><div class="specs"><div><b>78</b> m²</div><div><b>2</b> chambres</div><div><b>Balcon</b></div></div><div class="price">2 400 €<span style="font-size:14px;color:var(--soft)"> /mois</span></div></div></div>
+  <div class="sec-head"><span class="eyebrow" data-reveal="blur">Nos biens</span><h2 data-split>Trouvez votre prochaine adresse</h2><p data-reveal="blur" data-delay="260">Affinez votre recherche : la sélection se met à jour à chaque critère.</p></div>
+
+  <div class="tools" data-reveal>
+    <div class="tools-top">
+      <div class="seg" role="group" aria-label="Type de transaction">
+        <button type="button" data-t="vente" class="on" aria-pressed="true">Acheter</button>
+        <button type="button" data-t="location" aria-pressed="false">Louer</button>
+      </div>
+      <div class="qbox">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="#a4823a" stroke-width="1.5"/><path d="M10.6 10.6 15 15" stroke="#a4823a" stroke-width="1.5"/></svg>
+        <label class="sr" for="t-q">Rechercher un bien</label>
+        <input id="t-q" type="search" placeholder="Quartier, type de bien, mot-cl&eacute;, r&eacute;f&eacute;rence...">
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="f"><label class="f-lab" for="t-loc">Localit&eacute;</label><select class="fld" id="t-loc"></select></div>
+      <div class="f"><label class="f-lab" for="t-type">Type de bien</label><select class="fld" id="t-type"></select></div>
+      <div class="f"><label class="f-lab" for="t-ch">Chambres</label><select class="fld" id="t-ch"><option value="0">Indiff&eacute;rent</option><option value="1">1 et plus</option><option value="2">2 et plus</option><option value="3">3 et plus</option><option value="4">4 et plus</option><option value="5">5 et plus</option></select></div>
+      <div class="f"><label class="f-lab" for="t-m2">Surface minimum</label><select class="fld" id="t-m2"><option value="0">Indiff&eacute;rent</option><option value="50">50 m&sup2;</option><option value="80">80 m&sup2;</option><option value="100">100 m&sup2;</option><option value="150">150 m&sup2;</option><option value="200">200 m&sup2;</option></select></div>
+      <div class="f"><label class="f-lab" for="t-budget">Budget max</label><select class="fld" id="t-budget"></select></div>
+    </div>
   </div>
-  <div style="text-align:center;margin-top:52px" data-reveal="blur"><a href="#contact" class="btn line">Voir tous les biens</a></div>
+
+  <div class="res">
+    <div class="res-l">
+      <div class="count" id="compte"></div>
+      <div class="chips" id="puces"></div>
+    </div>
+    <div class="sort"><label class="f-lab" for="t-sort">Trier par</label><select class="fld" id="t-sort"><option value="new">Nouveaut&eacute;s</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix d&eacute;croissant</option><option value="surface">Surface</option></select></div>
+  </div>
+
+  <div class="props" id="resultats"></div>
+
+  <div style="text-align:center;margin-top:52px" data-reveal="blur"><a href="#estimation" class="btn line">Un bien pr&eacute;cis en t&ecirc;te ? Parlons-en</a></div>
 </div></section>
 
 <section id="services" class="services"><div class="wrap">
