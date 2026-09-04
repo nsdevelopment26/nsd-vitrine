@@ -121,6 +121,20 @@ section{padding:6rem 0}
 
 /* ---------- boutique : vignettes hautes, texte en surimpression ---------- */
 .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.1rem}
+.gr-outils{margin-bottom:1.6rem}
+.gr-q{display:flex;align-items:center;gap:.7rem;border:1px solid var(--line);padding:.75rem 1rem;background:var(--blanc)}
+.gr-q input{flex:1;min-width:0;border:0;background:transparent;outline:none;font:inherit;font-size:1rem;color:var(--nuit)}
+.gr-chips{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-top:.7rem}
+.gr-chip{font:inherit;font-size:.84rem;font-weight:600;padding:.45rem .95rem;border:1px solid var(--line);background:var(--blanc);color:var(--nuit);cursor:pointer;border-radius:999px;transition:.25s}
+.gr-chip:hover{border-color:var(--nuit)}
+.gr-chip.on{background:var(--nuit);border-color:var(--nuit);color:var(--blanc)}
+.gr-compte{font-size:.85rem;color:#6d7d74;margin-left:auto}
+#grille .fl{animation:gr-in .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*50ms)}
+@keyframes gr-in{from{opacity:0;translate:0 14px}to{opacity:1;translate:none}}
+@media(prefers-reduced-motion:reduce){#grille .fl{animation:none}}
+.gr-vide{grid-column:1/-1;text-align:center;padding:3rem 1.5rem;border:1px dashed var(--line)}
+.gr-vide b{font-size:1.35rem;display:block;margin-bottom:.5rem}
+.gr-vide p{color:#6d7d74;margin-bottom:1.2rem}
 .fl{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--gris)}
 .fl img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
 .fl:hover img{transform:scale(1.06)}
@@ -300,7 +314,19 @@ footer b{color:var(--blanc)}
         au petit matin. Ce que vous voyez, on l'a.
       </p>
     </div>
-    <div class="grille" id="grille" data-stagger="80"></div>
+    <div class="gr-outils" data-reveal>
+      <div class="gr-q">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="currentColor" stroke-width="1.6"/><path d="M10.6 10.6 15 15" stroke="currentColor" stroke-width="1.6"/></svg>
+        <label for="gr-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher dans la boutique</label>
+        <input id="gr-q" type="search" placeholder="Une fleur, une plante, une envie...">
+      </div>
+      <div class="gr-chips" id="gr-cats" role="group" aria-label="Rayon"></div>
+      <div class="gr-chips">
+        <button type="button" class="gr-chip" data-k="petit" aria-pressed="false">Moins de 35 &euro;</button>
+        <span class="gr-compte" id="gr-compte"></span>
+      </div>
+    </div>
+    <div class="grille" id="grille"></div>
   </div>
 </section>
 
@@ -417,25 +443,89 @@ footer b{color:var(--blanc)}
   "use strict";
 
   var PRODUITS = [
-    {id:"f1", nom:"Bouquet du jour",         cat:"Bouquets", prix:29, img:"photos/fl-1.jpg"},
-    {id:"f2", nom:"Brassée champêtre",       cat:"Bouquets", prix:38, img:"photos/fl-2.jpg"},
-    {id:"f3", nom:"Roses de saison, par 12", cat:"Roses",    prix:42, img:"photos/fl-3.jpg"},
-    {id:"f4", nom:"Brassée de tulipes",      cat:"Saison",   prix:26, img:"photos/fl-4.jpg"},
-    {id:"f5", nom:"Monstera en pot",         cat:"Plantes",  prix:45, img:"photos/fl-5.jpg"}
+    {id:"f1",  nom:"Bouquet du jour",         cat:"Bouquets", prix:29, img:"photos/fl-1.jpg"},
+    {id:"f2",  nom:"Brassée champêtre",       cat:"Bouquets", prix:38, img:"photos/fl-2.jpg"},
+    {id:"f6",  nom:"Brassée de saison",       cat:"Bouquets", prix:44, img:"photos/fl-6.jpg"},
+    {id:"f12", nom:"Bouquet du samedi",       cat:"Bouquets", prix:34, img:"photos/fl-12.jpg"},
+    {id:"f3",  nom:"Roses de saison, par 12", cat:"Roses",    prix:42, img:"photos/fl-3.jpg"},
+    {id:"f7",  nom:"Roses et pivoines",       cat:"Roses",    prix:52, img:"photos/fl-7.jpg"},
+    {id:"f4",  nom:"Brassée de tulipes",      cat:"Saison",   prix:26, img:"photos/fl-4.jpg"},
+    {id:"f8",  nom:"Tulipes jaunes",          cat:"Saison",   prix:24, img:"photos/fl-8.jpg"},
+    {id:"f9",  nom:"Bouquet séché",           cat:"Séchés",   prix:32, img:"photos/fl-9.jpg"},
+    {id:"f5",  nom:"Monstera en pot",         cat:"Plantes",  prix:45, img:"photos/fl-5.jpg"},
+    {id:"f10", nom:"Trio de plantes vertes",  cat:"Plantes",  prix:58, img:"photos/fl-10.jpg"},
+    {id:"f11", nom:"Zamioculcas en pot",      cat:"Plantes",  prix:39, img:"photos/fl-11.jpg"}
   ];
 
   var euro=function(n){ return n.toFixed(2).replace(".",",")+" €"; };
   var txt=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
   var trouver=function(id){ for(var i=0;i<PRODUITS.length;i++){ if(PRODUITS[i].id===id) return PRODUITS[i]; } return null; };
 
-  document.getElementById("grille").innerHTML = PRODUITS.map(function(p){
-    return '<article class="fl">' +
-      '<img src="' + p.img + '" width="600" height="600" loading="lazy" alt="' + p.nom + '">' +
-      '<button class="fl-add" data-id="' + p.id + '" aria-label="Ajouter ' + p.nom + ' au panier">+</button>' +
-      '<div class="fl-bas"><div><span class="fl-cat">' + p.cat + '</span>' +
-      '<span class="fl-nom">' + p.nom + '</span></div>' +
-      '<span class="fl-prix">' + euro(p.prix) + '</span></div></article>';
+  /* la boutique, avec sa recherche et ses filtres */
+  var filtre = { q:"", cat:"", petit:false };
+  var CATS = PRODUITS.map(function(p){ return p.cat; })
+                     .filter(function(c,i,a){ return a.indexOf(c) === i; });
+
+  document.getElementById("gr-cats").innerHTML = CATS.map(function(c){
+    return '<button type="button" class="gr-chip" data-cat="' + c + '" aria-pressed="false">' + c + '</button>';
   }).join("");
+
+  function retenus(){
+    var q = filtre.q.trim().toLowerCase();
+    return PRODUITS.filter(function(p){
+      if(filtre.cat && p.cat !== filtre.cat) return false;
+      if(filtre.petit && p.prix >= 35) return false;
+      if(q && (p.nom + " " + p.cat).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  function boutique(){
+    var lot = retenus();
+    document.getElementById("grille").innerHTML = lot.length ? lot.map(function(p, i){
+      return '<article class="fl" style="--i:' + i + '">' +
+        '<img src="' + p.img + '" width="600" height="600" loading="lazy" alt="' + p.nom + '">' +
+        '<button class="fl-add" data-id="' + p.id + '" aria-label="Ajouter ' + p.nom + ' au panier">+</button>' +
+        '<div class="fl-bas"><div><span class="fl-cat">' + p.cat + '</span>' +
+        '<span class="fl-nom">' + p.nom + '</span></div>' +
+        '<span class="fl-prix">' + euro(p.prix) + '</span></div></article>';
+    }).join("") : '<div class="gr-vide"><b>Rien sous ce filtre.</b>' +
+      '<p>La sélection change tous les matins. Dites-nous ce que vous cherchez, on compose sur mesure.</p>' +
+      '<button type="button" class="btn" data-reset>Revoir toute la boutique</button></div>';
+
+    document.getElementById("gr-compte").textContent =
+      lot.length + (lot.length > 1 ? " pièces" : " pièce") + " sur " + PRODUITS.length;
+
+    Array.prototype.forEach.call(document.querySelectorAll(".gr-chip"), function(b){
+      var on = b.hasAttribute("data-cat") ? (b.getAttribute("data-cat") === filtre.cat)
+                                          : !!filtre[b.getAttribute("data-k")];
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+  boutique();
+
+  document.addEventListener("click", function(e){
+    var b = e.target.closest(".gr-chip, [data-reset]");
+    if(!b) return;
+    if(b.hasAttribute("data-reset")){
+      filtre = { q:"", cat:"", petit:false };
+      document.getElementById("gr-q").value = "";
+    } else if(b.hasAttribute("data-cat")){
+      var c = b.getAttribute("data-cat");
+      filtre.cat = (filtre.cat === c) ? "" : c;
+    } else {
+      filtre.petit = !filtre.petit;
+    }
+    boutique();
+  });
+
+  var minuteur;
+  document.getElementById("gr-q").addEventListener("input", function(){
+    var v = this.value;
+    clearTimeout(minuteur);
+    minuteur = setTimeout(function(){ filtre.q = v; boutique(); }, 180);
+  });
 
   var panier=[], livraison=false;
   function cpt(){ return panier.reduce(function(n,l){ return n+l.qte; },0); }

@@ -24,6 +24,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
+<script src="bouquets.js" defer></script>
 
 <style>
 :root{
@@ -177,6 +178,24 @@ section{padding:6.4rem 0}
 
 /* ---------- bouquets ---------- */
 .bouquets{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+/* bouquets : recherche et filtres */
+.bq-outils{margin-bottom:2.4rem}
+.bq-q{display:flex;align-items:center;gap:.7rem;border:1px solid var(--line2);background:var(--carte);padding:.8rem 1.1rem;border-radius:2px}
+.bq-q input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-family:var(--sans);font-size:1rem;color:var(--creme)}
+.bq-q input::placeholder{color:var(--creme2)}
+.bq-chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.85rem;align-items:center}
+.bq-lab{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--safran);margin-right:.35rem}
+.bq-chip{font-family:var(--sans);font-size:.84rem;padding:.45rem .95rem;border:1px solid var(--line2);background:transparent;color:var(--creme2);cursor:pointer;border-radius:999px;transition:var(--tr)}
+.bq-chip:hover{color:var(--creme);border-color:var(--creme2)}
+.bq-chip.on{background:var(--framboise);border-color:var(--framboise);color:#fff}
+.bq-compte{font-family:var(--disp);font-size:1.05rem;color:var(--creme2);margin-top:1rem}
+#bq-liste .bq{animation:bq-in .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*60ms)}
+@keyframes bq-in{from{opacity:0;translate:0 16px}to{opacity:1;translate:none}}
+@media(prefers-reduced-motion:reduce){#bq-liste .bq{animation:none}}
+.bq-vide{grid-column:1/-1;text-align:center;padding:3.5rem 1.5rem;border:1px dashed var(--line2)}
+.bq-vide b{font-family:var(--disp);font-size:1.7rem;display:block;margin-bottom:.6rem;color:var(--creme)}
+.bq-vide p{color:var(--creme2);max-width:34rem;margin:0 auto 1.5rem}
+.bq-vide .btn{margin:0 .3rem}
 .bq{display:block;transition:var(--tr)}
 .bq-ph{
   position:relative;overflow:hidden;
@@ -398,7 +417,7 @@ footer b{color:var(--creme);font-weight:500}
     <div class="sec-head row">
       <div>
         <div class="eyebrow" data-reveal>Nos bouquets</div>
-        <h2 data-split>Six façons de faire plaisir.</h2>
+        <h2 data-split>Il y a toujours un bouquet qui va.</h2>
         <p data-reveal data-delay="200">
           Les fleurs changent avec la saison, les compositions aussi. Ce que vous voyez ici,
           c'est ce qui est en seau dans la boutique cette semaine.
@@ -407,66 +426,23 @@ footer b{color:var(--creme);font-weight:500}
       <a class="btn ghost" href="#commander" data-reveal="right" data-delay="300">Composer sur mesure</a>
     </div>
 
-    <div class="bouquets" data-stagger="120">
-      <a class="bq" href="#commander">
-        <div class="bq-ph">
-          <img src="photos/bouquet-champetre.jpg" width="620" height="775" loading="lazy" alt="Bouquet champêtre de tulipes, iris et fleurs des champs dans un vase de verre">
-          <span class="bq-tag">Le plus commandé</span>
-        </div>
-        <div class="bq-in"><h3>Le Verveine</h3><span class="price">dès 32 €</span></div>
-        <p>Notre bouquet signature. Fleurs de saison, cueillette du jour, jamais deux fois le même.</p>
-      </a>
-
-      <a class="bq" href="#commander">
-        <div class="bq-ph">
-          <img src="photos/bouquet-poudre.jpg" width="620" height="775" loading="lazy" alt="Composition de roses anciennes poudrées et d'eucalyptus dans une coupe en laiton">
-          <span class="bq-tag">Roses anciennes</span>
-        </div>
-        <div class="bq-in"><h3>Poudré</h3><span class="price">48 €</span></div>
-        <p>Roses anciennes, eucalyptus et gypsophile, montés en coupe. Pour dire merci comme il faut.</p>
-      </a>
-
-      <a class="bq" href="#commander">
-        <div class="bq-ph">
-          <img src="photos/bouquet-dahlia.jpg" width="620" height="775" loading="lazy" alt="Composition d'automne à plat, dahlias abricot et zinnias sur une pierre sombre">
-          <span class="bq-tag">Édition d'automne</span>
-        </div>
-        <div class="bq-in"><h3>Dahlia</h3><span class="price">42 €</span></div>
-        <p>Dahlias, zinnias et graminées. Une composition graphique, tenue par du raphia.</p>
-      </a>
-
-      <a class="bq" href="#commander">
-        <div class="bq-ph">
-          <img src="photos/bouquet-roses.jpg" width="620" height="775" loading="lazy" alt="Bouquet rond de vingt-quatre roses rouges">
-          <span class="bq-tag">24 tiges</span>
-        </div>
-        <div class="bq-in"><h3>Rouge profond</h3><span class="price">65 €</span></div>
-        <p>Vingt-quatre roses rouges, tiges longues, feuillage nettoyé une à une. Le classique assumé.</p>
-      </a>
-
-      <a class="bq" href="#commander">
-        <div class="bq-ph">
-          <img src="photos/bouquet-tulipes.jpg" width="620" height="775" loading="lazy" alt="Brassée de tulipes roses, jaunes et blanches">
-          <span class="bq-tag">Arrivage du mardi</span>
-        </div>
-        <div class="bq-in"><h3>Brassée de tulipes</h3><span class="price">28 €</span></div>
-        <p>Trente tulipes du cadran, encore fermées, pour qu'elles s'ouvrent chez vous.</p>
-      </a>
-
-      <a class="bq" href="#commander">
-        <div class="bq-ph">
-          <img src="photos/bouquet-seches.jpg" width="620" height="775" loading="lazy" alt="Bouquet de fleurs séchées, immortelles et chardons, sur fond sombre">
-          <span class="bq-tag">Tient un an</span>
-        </div>
-        <div class="bq-in"><h3>Séché</h3><span class="price">36 €</span></div>
-        <p>Immortelles, chardons et lin séchés à l'atelier. Aucun entretien, et il tient une année.</p>
-      </a>
+    <div class="bq-outils" data-reveal>
+      <div class="bq-q">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="#eab54f" stroke-width="1.6"/><path d="M10.6 10.6 15 15" stroke="#eab54f" stroke-width="1.6"/></svg>
+        <label for="bq-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher un bouquet</label>
+        <input id="bq-q" type="search" placeholder="Une fleur, une couleur, une occasion...">
+      </div>
+      <div class="bq-chips"><span class="bq-lab">Pour</span><span id="bq-occ" style="display:contents"></span></div>
+      <div class="bq-chips"><span class="bq-lab">Couleur</span><span id="bq-col" style="display:contents"></span></div>
+      <div class="bq-chips"><span class="bq-lab">Budget</span>
+        <button type="button" class="bq-chip" data-k="bud" data-v="-35" aria-pressed="false">Moins de 35 &euro;</button>
+        <button type="button" class="bq-chip" data-k="bud" data-v="35-50" aria-pressed="false">35 &agrave; 50 &euro;</button>
+        <button type="button" class="bq-chip" data-k="bud" data-v="50+" aria-pressed="false">Plus de 50 &euro;</button>
+      </div>
+      <div class="bq-compte" id="bq-compte"></div>
     </div>
 
-    <div class="after-grid" data-reveal>
-      <span>Livraison Luxembourg-Ville <b style="color:var(--creme);font-weight:500">6 €</b> · offerte dès 60 € d'achat · retrait en boutique gratuit</span>
-      <a class="tel-link" href="#commander">Voir comment commander →</a>
-    </div>
+    <div class="bouquets" id="bq-liste"></div>
   </div>
 </section>
 

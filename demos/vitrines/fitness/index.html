@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
+<script src="planning.js" defer></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--bg:#0a0a0c;--bg2:#111114;--card:#16161b;--line:#26262e;--ink:#f4f4f2;--grey:#8b8b95;--volt:#c8fa3c;--volt-d:#a6d61f;
@@ -109,7 +110,38 @@
   .slot:hover{padding-left:32px}
   .stat .n{font-variant-numeric:tabular-nums}
 
-  @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.progs{grid-template-columns:1fr}.stats-in{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.slot{grid-template-columns:80px 1fr;gap:12px}.slot .tag{display:none}}
+
+  /* ---------- Planning : recherche et filtres ---------- */
+  .pl-outils{max-width:860px;margin:48px auto 0}
+  .pl-q{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--card);padding:13px 18px}
+  .pl-q input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--ink);font-family:var(--sans);font-size:15px}
+  .pl-q input::placeholder{color:#63636e}
+  .pl-jours{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+  .pl-jour{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);color:var(--grey);font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:12px 6px;cursor:pointer;transition:var(--tr)}
+  .pl-jour:hover{color:var(--ink);border-color:#3a3a44}
+  .pl-jour.on{background:var(--volt);border-color:var(--volt);color:#0a0a0c}
+  .pl-jour .sm{display:none}
+  .pl-jour:last-child{flex:1.6}
+  .pl-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;align-items:center}
+  .pl-chip{background:none;border:1px solid var(--line);color:var(--grey);font-family:var(--sans);font-size:12.5px;padding:8px 14px;cursor:pointer;transition:var(--tr)}
+  .pl-chip:hover{border-color:#3a3a44;color:var(--ink)}
+  .pl-chip.on{border-color:var(--volt);color:var(--volt);background:rgba(200,250,60,.07)}
+  .pl-sep{width:1px;align-self:stretch;background:var(--line);margin:2px 5px}
+  .pl-compte{font-family:var(--disp);font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--grey);margin-top:18px}
+  .pl-compte b{color:var(--volt)}
+  .slot .t .jr{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-right:8px;vertical-align:middle}
+  .slot .tag.complet{color:#63636e;border-color:var(--line)}
+  #pl-liste .slot{animation:pl-in .4s var(--ns-ease) both;animation-delay:calc(var(--i,0)*45ms)}
+  @keyframes pl-in{from{opacity:0;translate:0 12px}to{opacity:1;translate:none}}
+  .pl-vide{border:1px dashed var(--line);padding:56px 24px;text-align:center}
+  .pl-vide b{font-family:var(--disp);font-size:26px;letter-spacing:.02em}
+  .pl-vide p{color:var(--grey);margin:10px auto 22px;max-width:380px;font-size:14.5px}
+  .pl-reset{background:none;border:1px solid var(--volt);color:var(--volt);font-family:var(--sans);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:12px 24px;cursor:pointer;transition:var(--tr)}
+  .pl-reset:hover{background:var(--volt);color:#0a0a0c}
+  @media(prefers-reduced-motion:reduce){#pl-liste .slot{animation:none}}
+  @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.progs{grid-template-columns:1fr}.stats-in{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.slot{grid-template-columns:80px 1fr;gap:12px}.slot .tag{display:none}
+    .pl-jour .lg{display:none}.pl-jour .sm{display:inline}.pl-jour{padding:12px 4px;font-size:11px}.pl-jour:last-child{flex:1}
+    .slot .t{font-size:22px}}
 </style>
 </head>
 <body>
@@ -169,12 +201,30 @@
 
 <section id="planning"><div class="wrap">
   <div class="sec-head"><span class="kick" data-reveal="left">Cette semaine</span><h2 data-split="chars" data-delay="90">Le planning</h2></div>
-  <div class="planning" data-stagger="90">
-    <div class="slot"><div class="t">07:00</div><div class="c">Cross-training<small>45 min · tous niveaux</small></div><div class="tag">Places dispo</div></div>
-    <div class="slot"><div class="t">12:15</div><div class="c">HIIT express<small>30 min · pause déj</small></div><div class="tag">Places dispo</div></div>
-    <div class="slot"><div class="t">18:30</div><div class="c">Force & muscu<small>60 min · intermédiaire</small></div><div class="tag">Complet</div></div>
-    <div class="slot"><div class="t">19:45</div><div class="c">Cardio boxing<small>50 min · défoulement</small></div><div class="tag">Places dispo</div></div>
+
+  <div class="pl-outils" data-reveal>
+    <div class="pl-q">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="#c8fa3c" stroke-width="1.6"/><path d="M10.6 10.6 15 15" stroke="#c8fa3c" stroke-width="1.6"/></svg>
+      <label for="pl-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher un cours ou un coach</label>
+      <input id="pl-q" type="search" placeholder="Un cours, un coach, un niveau...">
+    </div>
+    <div class="pl-jours" id="pl-jours" role="group" aria-label="Jour de la semaine"></div>
+    <div class="pl-chips" id="pl-types" role="group" aria-label="Type de cours"></div>
+    <div class="pl-chips">
+      <button type="button" class="pl-chip" data-k="moment" data-v="matin" aria-pressed="false">Matin</button>
+      <button type="button" class="pl-chip" data-k="moment" data-v="midi" aria-pressed="false">Midi</button>
+      <button type="button" class="pl-chip" data-k="moment" data-v="soir" aria-pressed="false">Soir</button>
+      <span class="pl-sep" aria-hidden="true"></span>
+      <button type="button" class="pl-chip" data-k="niv" data-v="Tous niveaux" aria-pressed="false">Tous niveaux</button>
+      <button type="button" class="pl-chip" data-k="niv" data-v="Interm&eacute;diaire" aria-pressed="false">Interm&eacute;diaire</button>
+      <button type="button" class="pl-chip" data-k="niv" data-v="Avanc&eacute;" aria-pressed="false">Avanc&eacute;</button>
+      <span class="pl-sep" aria-hidden="true"></span>
+      <button type="button" class="pl-chip" data-k="dispo" data-v="1" aria-pressed="false">Places libres seulement</button>
+    </div>
+    <div class="pl-compte" id="pl-compte"></div>
   </div>
+
+  <div class="planning" id="pl-liste"></div>
 </div></section>
 
 <section id="essai" class="cta">

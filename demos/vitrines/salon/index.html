@@ -24,6 +24,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
+<script src="prestations.js" defer></script>
 
 <style>
 :root{
@@ -204,6 +205,25 @@ section{padding:6.2rem 0}
 .price-row .d{display:block;font-size:.84rem;color:var(--ink-soft);font-weight:400}
 .price-row .dots{flex:1;border-bottom:1px dotted rgba(42,29,40,.28);transform:translateY(-4px)}
 .price-row .p{font-family:"Bodoni Moda",serif;font-size:1.15rem;font-weight:600;white-space:nowrap}
+
+/* prestations : recherche et filtres */
+.pr-outils{margin-bottom:2rem}
+.pr-q{display:flex;align-items:center;gap:.7rem;border:2px solid var(--line);padding:.8rem 1.1rem;background:transparent}
+.pr-q:focus-within{border-color:var(--ink)}
+.pr-q input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-family:Manrope,system-ui,sans-serif;font-size:.95rem;color:var(--ink)}
+.pr-q input::placeholder{color:var(--ink-soft)}
+.pr-buds{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
+.pr-bud{font-family:Manrope,system-ui,sans-serif;font-size:.82rem;font-weight:600;padding:.5rem 1rem;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;transition:all .25s}
+.pr-bud:hover{border-color:var(--ink);color:var(--ink)}
+.pr-bud.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.pr-compte{font-size:.85rem;color:var(--ink-soft);margin-top:.9rem}
+#pr-liste{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:2.6rem 3.4rem}
+#pr-liste .price-row{animation:pr-in .4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes pr-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:none}}
+@media(prefers-reduced-motion:reduce){#pr-liste .price-row{animation:none}}
+.pr-vide{grid-column:1/-1;text-align:center;padding:3.5rem 1.5rem;border:1px dashed var(--line)}
+.pr-vide b{font-family:"Bodoni Moda",serif;font-size:1.5rem;display:block;margin-bottom:.6rem}
+.pr-vide p{color:var(--ink-soft);max-width:34rem;margin:0 auto 1.4rem}
 
 /* ---------- comparateur avant / après ---------- */
 .compare-sec{background:var(--paper-2)}
@@ -432,74 +452,29 @@ footer a{color:#cbbcc6}
       </p>
     </div>
 
+    <div class="pr-outils" data-reveal>
+      <div class="pr-q">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="currentColor" stroke-width="1.5"/><path d="M10.6 10.6 15 15" stroke="currentColor" stroke-width="1.5"/></svg>
+        <label for="pr-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher une prestation</label>
+        <input id="pr-q" type="search" placeholder="Une prestation, un soin, un tarif...">
+      </div>
+      <div class="pr-buds">
+        <button type="button" class="pr-bud" data-bud="-30" aria-pressed="false">Moins de 30 &euro;</button>
+        <button type="button" class="pr-bud" data-bud="30-60" aria-pressed="false">30 &agrave; 60 &euro;</button>
+        <button type="button" class="pr-bud" data-bud="60+" aria-pressed="false">Plus de 60 &euro;</button>
+        <button type="button" class="pr-bud" data-bud="devis" aria-pressed="false">Sur devis</button>
+      </div>
+      <div class="pr-compte" id="pr-compte"></div>
+    </div>
+
     <div class="tabs" role="tablist" aria-label="Univers de prestations" data-stagger="80">
-      <button class="tab" role="tab" id="t-coiffure" aria-controls="p-coiffure" aria-selected="true">Coiffure</button>
-      <button class="tab" role="tab" id="t-barbier"  aria-controls="p-barbier"  aria-selected="false">Barbier</button>
-      <button class="tab" role="tab" id="t-beaute"   aria-controls="p-beaute"   aria-selected="false">Institut</button>
-      <button class="tab" role="tab" id="t-animaux"  aria-controls="p-animaux"  aria-selected="false">Toilettage</button>
+      <button class="tab" role="tab" data-u="Coiffure" aria-selected="true">Coiffure</button>
+      <button class="tab" role="tab" data-u="Barbier" aria-selected="false">Barbier</button>
+      <button class="tab" role="tab" data-u="Institut" aria-selected="false">Institut</button>
+      <button class="tab" role="tab" data-u="Toilettage" aria-selected="false">Toilettage</button>
     </div>
 
-    <div class="panel on" id="p-coiffure" role="tabpanel" aria-labelledby="t-coiffure">
-      <div class="price-list">
-        <h3>Coupe &amp; coiffage</h3>
-        <div class="price-row"><span class="n">Coupe femme &amp; brushing<span class="d">Diagnostic, shampoing, coupe, coiffage</span></span><span class="dots"></span><span class="p">52 €</span></div>
-        <div class="price-row"><span class="n">Coupe enfant<span class="d">Jusqu'à 12 ans</span></span><span class="dots"></span><span class="p">24 €</span></div>
-        <div class="price-row"><span class="n">Brushing seul<span class="d">Selon la longueur</span></span><span class="dots"></span><span class="p">dès 28 €</span></div>
-        <div class="price-row"><span class="n">Coiffure de mariée<span class="d">Essai inclus</span></span><span class="dots"></span><span class="p">sur devis</span></div>
-      </div>
-      <div class="price-list">
-        <h3>Couleur &amp; soin</h3>
-        <div class="price-row"><span class="n">Coloration racines<span class="d">Sans ammoniaque</span></span><span class="dots"></span><span class="p">58 €</span></div>
-        <div class="price-row"><span class="n">Balayage<span class="d">Éclaircissement progressif</span></span><span class="dots"></span><span class="p">dès 95 €</span></div>
-        <div class="price-row"><span class="n">Soin profond<span class="d">Cheveux abîmés ou colorés</span></span><span class="dots"></span><span class="p">32 €</span></div>
-        <div class="price-row"><span class="n">Lissage<span class="d">Résultat 3 à 5 mois</span></span><span class="dots"></span><span class="p">dès 140 €</span></div>
-      </div>
-    </div>
-
-    <div class="panel" id="p-barbier" role="tabpanel" aria-labelledby="t-barbier" hidden>
-      <div class="price-list">
-        <h3>Coupe homme</h3>
-        <div class="price-row"><span class="n">Coupe classique<span class="d">Shampoing et coiffage inclus</span></span><span class="dots"></span><span class="p">32 €</span></div>
-        <div class="price-row"><span class="n">Dégradé américain<span class="d">Finition à la tondeuse et au rasoir</span></span><span class="dots"></span><span class="p">38 €</span></div>
-        <div class="price-row"><span class="n">Coupe &amp; barbe<span class="d">La formule complète</span></span><span class="dots"></span><span class="p">52 €</span></div>
-      </div>
-      <div class="price-list">
-        <h3>Barbe &amp; rasage</h3>
-        <div class="price-row"><span class="n">Taille de barbe<span class="d">Contours au rasoir</span></span><span class="dots"></span><span class="p">24 €</span></div>
-        <div class="price-row"><span class="n">Rasage traditionnel<span class="d">Serviette chaude, coupe-chou</span></span><span class="dots"></span><span class="p">34 €</span></div>
-        <div class="price-row"><span class="n">Soin du cuir chevelu<span class="d">Massage et lotion</span></span><span class="dots"></span><span class="p">18 €</span></div>
-      </div>
-    </div>
-
-    <div class="panel" id="p-beaute" role="tabpanel" aria-labelledby="t-beaute" hidden>
-      <div class="price-list">
-        <h3>Visage</h3>
-        <div class="price-row"><span class="n">Soin éclat<span class="d">45 minutes</span></span><span class="dots"></span><span class="p">65 €</span></div>
-        <div class="price-row"><span class="n">Soin anti-âge<span class="d">75 minutes</span></span><span class="dots"></span><span class="p">95 €</span></div>
-        <div class="price-row"><span class="n">Épilation sourcils<span class="d">Restructuration</span></span><span class="dots"></span><span class="p">16 €</span></div>
-      </div>
-      <div class="price-list">
-        <h3>Mains &amp; pieds</h3>
-        <div class="price-row"><span class="n">Manucure<span class="d">Pose de vernis incluse</span></span><span class="dots"></span><span class="p">38 €</span></div>
-        <div class="price-row"><span class="n">Pose gel<span class="d">Tenue 3 semaines</span></span><span class="dots"></span><span class="p">55 €</span></div>
-        <div class="price-row"><span class="n">Pédicure de soin<span class="d">Gommage et massage</span></span><span class="dots"></span><span class="p">48 €</span></div>
-      </div>
-    </div>
-
-    <div class="panel" id="p-animaux" role="tabpanel" aria-labelledby="t-animaux" hidden>
-      <div class="price-list">
-        <h3>Chien</h3>
-        <div class="price-row"><span class="n">Petite race<span class="d">Bain, séchage, coupe</span></span><span class="dots"></span><span class="p">45 €</span></div>
-        <div class="price-row"><span class="n">Race moyenne<span class="d">Bain, séchage, coupe</span></span><span class="dots"></span><span class="p">62 €</span></div>
-        <div class="price-row"><span class="n">Grande race<span class="d">Sur rendez-vous uniquement</span></span><span class="dots"></span><span class="p">dès 78 €</span></div>
-      </div>
-      <div class="price-list">
-        <h3>Chat &amp; soins</h3>
-        <div class="price-row"><span class="n">Toilettage chat<span class="d">Sans contention forcée</span></span><span class="dots"></span><span class="p">52 €</span></div>
-        <div class="price-row"><span class="n">Démêlage<span class="d">Facturé au temps passé</span></span><span class="dots"></span><span class="p">dès 20 €</span></div>
-        <div class="price-row"><span class="n">Coupe des griffes<span class="d">Sans rendez-vous</span></span><span class="dots"></span><span class="p">12 €</span></div>
-      </div>
-    </div>
+    <div id="pr-liste"></div>
   </div>
 </section>
 
@@ -673,25 +648,7 @@ footer a{color:#cbbcc6}
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setMenu(false); });
 
   /* ---- onglets prestations ---- */
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
-  function selectTab(tab){
-    tabs.forEach(function(t){
-      var panel = document.getElementById(t.getAttribute('aria-controls'));
-      var on = (t === tab);
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-      panel.classList.toggle('on', on);
-      if(on){ panel.removeAttribute('hidden'); } else { panel.setAttribute('hidden',''); }
-    });
-    if(window.NSMotion && NSMotion.refresh) NSMotion.refresh();
-  }
-  tabs.forEach(function(t){
-    t.addEventListener('click', function(){ selectTab(t); });
-    t.addEventListener('keydown', function(e){
-      var i = tabs.indexOf(t);
-      if(e.key === 'ArrowRight'){ e.preventDefault(); tabs[(i+1)%tabs.length].focus(); selectTab(tabs[(i+1)%tabs.length]); }
-      if(e.key === 'ArrowLeft'){ e.preventDefault(); tabs[(i-1+tabs.length)%tabs.length].focus(); selectTab(tabs[(i-1+tabs.length)%tabs.length]); }
-    });
-  });
+  /* pilotés par prestations.js */
 
   /* ---- comparateur avant / après, souris + doigt + clavier ---- */
   var cmp    = document.getElementById('compare');
