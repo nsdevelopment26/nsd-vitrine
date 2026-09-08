@@ -26,6 +26,10 @@
     // Couleur du texte posé SUR l'accent. À passer en sombre quand l'accent du
     // client est clair, sinon le blanc par défaut devient illisible.
     encre:    s?.dataset.encre || '#ffffff',
+    // Couleur d'un curseur dessiné, appliqué uniquement au chat. Utile sur un
+    // site qui masque le curseur natif ou dont le curseur clair devient
+    // invisible sur le panneau blanc. Vide = curseur du système.
+    curseur:  s?.dataset.curseur || '',
     endpoint: s?.dataset.endpoint || '',
     fiche:    s?.dataset.fiche || '',
     bienvenue: s?.dataset.bienvenue || 'Bonjour ! Une question sur nos horaires, notre carte ou pour réserver ?',
@@ -124,7 +128,22 @@
 
   // ---- construction ---------------------------------------------------------
   const style = document.createElement('style');
-  style.textContent = `:root{--nsdc-accent:${CFG.accent};--nsdc-encre:${CFG.encre}}` + css;
+  // Flèche dessinée à la couleur demandée, avec un liseré blanc pour rester
+  // lisible sur un fond sombre. Le point actif est la pointe, en (5,2).
+  const fleche = c => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">`
+      + `<path d="M5 2l14 11-6 1 3.5 6.5-2.6 1.4L10.4 15 5 19z" fill="${c}" stroke="#fff" `
+      + `stroke-width="1.3" stroke-linejoin="round"/></svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}") 5 2, default`;
+  };
+  // On vise les zones non cliquables seulement : les boutons et le champ de
+  // saisie gardent la main et le curseur texte, sinon on perd l'indication
+  // « c'est cliquable » en échange d'une couleur.
+  const curseurCss = CFG.curseur
+    ? `.nsdc-panneau,.nsdc-fil,.nsdc-msg,.nsdc-tete,.nsdc-tete *,.nsdc-puces,.nsdc-bas,.nsdc-pied`
+      + `{cursor:${fleche(CFG.curseur)}!important}`
+    : '';
+  style.textContent = `:root{--nsdc-accent:${CFG.accent};--nsdc-encre:${CFG.encre}}` + css + curseurCss;
   document.head.appendChild(style);
 
   const racine = document.createElement('div');
