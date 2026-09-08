@@ -254,7 +254,8 @@
     } catch (err) {
       console.error('[nsd-chat]', err);
       attente.remove();
-      ajoute(`Désolé, je n'arrive pas à répondre pour le moment. Vous pouvez nous joindre au ${fiche?.telephone || 'téléphone'}.`, 'bot');
+      ajoute(err.messageVisiteur
+        || `Désolé, je n'arrive pas à répondre pour le moment. Vous pouvez nous joindre au ${fiche?.telephone || 'téléphone'}.`, 'bot');
     } finally {
       occupe = false; envoi.disabled = false;
       if (window.innerWidth > 520) champ.focus();
@@ -268,6 +269,16 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ site: CFG.site, messages: historique }),
     });
+    // 429 : plafond atteint. Ce n'est pas une panne, et le visiteur mérite
+    // une phrase qui lui dit quoi faire plutôt qu'un message d'erreur.
+    if (rep.status === 429) {
+      const info = await rep.json().catch(() => ({}));
+      const suite = fiche?.telephone && fiche.telephone !== 'à compléter'
+        ? ` Vous pouvez nous joindre au ${fiche.telephone}.` : '';
+      const e = new Error('plafond');
+      e.messageVisiteur = (info.error || 'Trop de messages pour aujourd\'hui.') + suite;
+      throw e;
+    }
     if (!rep.ok || !rep.body) throw new Error('HTTP ' + rep.status);
 
     attente.remove();
