@@ -1,0 +1,67 @@
+{
+  "nom": "MOTORLINE",
+  "activite": "garage et vente automobile",
+  "commune": "Luxembourg",
+  "telephone": "+352 00 00 00",
+  "horaires_texte": "Du lundi au vendredi de 8h à 18h, et le samedi de 9h à 13h.",
+  "services_texte": "Occasions sélectionnées et garanties 12 mois, entretien toutes marques, et reprise de votre ancienne voiture. Sans blabla et sans mauvaise surprise.",
+  "prix_texte": "Notre sélection se filtre par budget : jusqu'à 15 000 €, de 15 000 à 25 000 €, de 25 000 à 35 000 €, et plus de 35 000 €.",
+  "essai_texte": "L'essai se fait sur rendez-vous, du lundi au samedi. Appelez-nous pour caler un créneau.",
+  "contact_texte": "Appelez-nous au +352 00 00 00 pour un essai ou une reprise.",
+  "suggestions": [
+    "Vous êtes ouverts le samedi ?",
+    "Je peux essayer une voiture ?",
+    "Vous reprenez mon ancienne ?"
+  ],
+  "demo_regles": [
+    {
+      "mots": [
+        "essai",
+        "essayer",
+        "conduire",
+        "tester"
+      ],
+      "cle": "essai_texte"
+    },
+    {
+      "mots": [
+        "horaire",
+        "ouvert",
+        "ferme",
+        "samedi",
+        "quand"
+      ],
+      "cle": "horaires_texte"
+    },
+    {
+      "mots": [
+        "prix",
+        "tarif",
+        "cout",
+        "combien",
+        "budget"
+      ],
+      "cle": "prix_texte"
+    },
+    {
+      "mots": [
+        "entretien",
+        "revision",
+        "reprise",
+        "garantie",
+        "service",
+        "faites"
+      ],
+      "cle": "services_texte"
+    },
+    {
+      "mots": [
+        "contact",
+        "appeler",
+        "telephone",
+        "joindre"
+      ],
+      "cle": "contact_texte"
+    }
+  ]
+}

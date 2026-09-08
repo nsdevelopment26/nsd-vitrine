@@ -255,5 +255,14 @@
   /* Animations : NS Motion Kit (ns-motion.css + ns-motion.js) */
   document.querySelector('.hamb').addEventListener('click',()=>{const l=document.querySelector('.nav-links');const open=l.style.display==='flex';l.style.cssText=open?'':'display:flex;position:fixed;top:88px;left:0;right:0;background:var(--paper);flex-direction:column;padding:24px 30px;border-bottom:1px solid var(--line);gap:20px'});
 </script>
+
+<!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
+<script src="nsd-chat.js" defer
+        data-site="immobilier"
+        data-nom="HORIZON Immobilier"
+        data-accent="#a4823a"
+        data-encre="#101014"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour ! Une question sur une estimation, une vente ou une location ?"></script>
 </body>
 </html>

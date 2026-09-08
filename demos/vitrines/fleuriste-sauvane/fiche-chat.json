@@ -1,0 +1,77 @@
+{
+  "nom": "Sauvane",
+  "activite": "artisan fleuriste",
+  "commune": "Luxembourg",
+  "telephone": "+352 00 00 00",
+  "horaires_texte": "Du mardi au vendredi de 8h30 à 18h30, le samedi de 8h à 17h, et le dimanche matin de 9h à 12h30. Fermé le lundi.",
+  "services_texte": "Bouquets du jour, compositions, et les grandes occasions : mariage, deuil, événement. Vingt-deux ans rue du Marché.",
+  "prix_texte": "Les bouquets démarrent sous les 35 €. La livraison est à 5 € en supplément.",
+  "commande_texte": "Vous pouvez composer votre commande en ligne depuis cette page : choisissez, ajustez la quantité, et vous voyez le total en direct.",
+  "contact_texte": "Pour un mariage, un deuil ou un événement, on en parle de vive voix : appelez-nous au +352 00 00 00.",
+  "suggestions": [
+    "Vous êtes ouverts dimanche ?",
+    "Vous livrez ?",
+    "Vous faites les mariages ?"
+  ],
+  "demo_regles": [
+    {
+      "mots": [
+        "command",
+        "livr",
+        "panier",
+        "acheter"
+      ],
+      "cle": "commande_texte"
+    },
+    {
+      "mots": [
+        "horaire",
+        "ouvert",
+        "ferme",
+        "lundi",
+        "dimanche",
+        "quand"
+      ],
+      "cle": "horaires_texte"
+    },
+    {
+      "mots": [
+        "prix",
+        "tarif",
+        "cout",
+        "combien",
+        "budget"
+      ],
+      "cle": "prix_texte"
+    },
+    {
+      "mots": [
+        "mariage",
+        "deuil",
+        "evenement",
+        "enterrement",
+        "ceremonie"
+      ],
+      "cle": "contact_texte"
+    },
+    {
+      "mots": [
+        "bouquet",
+        "fleur",
+        "service",
+        "faites",
+        "propos"
+      ],
+      "cle": "services_texte"
+    },
+    {
+      "mots": [
+        "contact",
+        "appeler",
+        "telephone",
+        "joindre"
+      ],
+      "cle": "contact_texte"
+    }
+  ]
+}

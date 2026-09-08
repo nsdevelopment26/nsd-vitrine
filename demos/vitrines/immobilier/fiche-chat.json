@@ -1,0 +1,59 @@
+{
+  "nom": "HORIZON Immobilier",
+  "activite": "agence immobilière",
+  "commune": "Luxembourg",
+  "telephone": "+352 00 00 00",
+  "services_texte": "Achat, vente, location et estimation. De la première visite à la signature, un interlocuteur unique.",
+  "estimation_texte": "L'estimation de votre bien est gratuite et sans engagement : sa valeur réelle, de façon précise et confidentielle, par un conseiller de l'agence.",
+  "location_texte": "Côté location : gestion locative sereine, sélection des locataires et suivi complet.",
+  "contact_texte": "Appelez-nous au +352 00 00 00, ou demandez votre estimation gratuite depuis cette page.",
+  "suggestions": [
+    "L'estimation est vraiment gratuite ?",
+    "Vous gérez les locations ?",
+    "Comment se passe une vente ?"
+  ],
+  "demo_regles": [
+    {
+      "mots": [
+        "estim",
+        "valeur",
+        "vendre",
+        "vente"
+      ],
+      "cle": "estimation_texte"
+    },
+    {
+      "mots": [
+        "location",
+        "louer",
+        "locataire",
+        "gestion"
+      ],
+      "cle": "location_texte"
+    },
+    {
+      "mots": [
+        "service",
+        "achat",
+        "acheter",
+        "propos",
+        "faites",
+        "accompagn"
+      ],
+      "cle": "services_texte"
+    },
+    {
+      "mots": [
+        "prix",
+        "tarif",
+        "commission",
+        "honoraire",
+        "contact",
+        "appeler",
+        "telephone",
+        "horaire"
+      ],
+      "cle": "contact_texte"
+    }
+  ]
+}

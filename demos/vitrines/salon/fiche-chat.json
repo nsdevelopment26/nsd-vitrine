@@ -1,0 +1,71 @@
+{
+  "nom": "Maison Lonvière",
+  "activite": "salon de coiffure, barbier, institut et toilettage",
+  "commune": "Luxembourg",
+  "telephone": "+352 00 00 00",
+  "horaires_texte": "Nous sommes ouverts du mardi au vendredi de 9h à 19h, et le samedi de 8h30 à 17h. Fermé le dimanche et le lundi.",
+  "services_texte": "Quatre univers sous le même toit : coiffure, barbier, institut de beauté et toilettage. Côté barbier, dégradés nets et rasage au coupe-chou.",
+  "prix_texte": "Nos prestations se répartissent en trois gammes : moins de 30 €, de 30 à 60 €, et plus de 60 € selon la prestation et la longueur.",
+  "reservation_texte": "La réservation se fait en ligne, directement depuis le bouton « Prendre rendez-vous » de cette page. Le samedi, réservez tôt : c'est le jour qui part le plus vite.",
+  "contact_texte": "Vous pouvez nous appeler au +352 00 00 00, ou réserver en ligne depuis cette page.",
+  "suggestions": [
+    "Vous êtes ouverts le lundi ?",
+    "Combien coûte une coupe ?",
+    "Comment prendre rendez-vous ?"
+  ],
+  "demo_regles": [
+    {
+      "mots": [
+        "reserv",
+        "rendez",
+        "rdv",
+        "prendre"
+      ],
+      "cle": "reservation_texte"
+    },
+    {
+      "mots": [
+        "horaire",
+        "ouvert",
+        "ferme",
+        "lundi",
+        "dimanche",
+        "samedi",
+        "quand"
+      ],
+      "cle": "horaires_texte"
+    },
+    {
+      "mots": [
+        "prix",
+        "tarif",
+        "cout",
+        "combien",
+        "coupe",
+        "budget"
+      ],
+      "cle": "prix_texte"
+    },
+    {
+      "mots": [
+        "barbier",
+        "coiffure",
+        "institut",
+        "toilettage",
+        "service",
+        "prestation",
+        "faites"
+      ],
+      "cle": "services_texte"
+    },
+    {
+      "mots": [
+        "contact",
+        "appeler",
+        "telephone",
+        "joindre"
+      ],
+      "cle": "contact_texte"
+    }
+  ]
+}

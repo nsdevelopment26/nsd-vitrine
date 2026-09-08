@@ -229,5 +229,14 @@
   /* Animations : NS Motion Kit (ns-motion.css + ns-motion.js) */
   document.querySelector('.hamb').addEventListener('click',()=>{const l=document.querySelector('.nav-links');l.style.display=l.style.display==='flex'?'':'flex';l.style.cssText+=';position:fixed;top:82px;left:0;right:0;background:var(--cream);flex-direction:column;padding:20px 28px;border-bottom:1px solid var(--line)'});
 </script>
+
+<!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
+<script src="nsd-chat.js" defer
+        data-site="restaurant"
+        data-nom="Le Petit Comptoir"
+        data-accent="#bd9a4e"
+        data-encre="#101014"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour ! Une question sur la carte, nos horaires ou pour réserver une table ?"></script>
 </body>
 </html>

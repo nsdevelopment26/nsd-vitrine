@@ -1,0 +1,68 @@
+{
+  "nom": "Le Petit Comptoir",
+  "activite": "bistro de saison",
+  "commune": "Luxembourg",
+  "adresse": "Rue du Marché, Luxembourg",
+  "telephone": "+352 00 00 00",
+  "services_texte": "Une cuisine française de marché, des produits frais du jour, et une ambiance de quartier. Chaque matin, le chef compose la carte selon le marché.",
+  "carte_texte": "La carte change chaque jour, selon ce que le chef trouve au marché le matin. Des assiettes généreuses et des saveurs franches.",
+  "reservation_texte": "Vous pouvez réserver votre table directement depuis cette page, en quelques secondes.",
+  "contact_texte": "Pour réserver, le plus simple est le formulaire de cette page, ou le +352 00 00 00.",
+  "suggestions": [
+    "Comment réserver une table ?",
+    "C'est quoi la carte du jour ?",
+    "Où êtes-vous exactement ?"
+  ],
+  "demo_regles": [
+    {
+      "mots": [
+        "reserv",
+        "table",
+        "book"
+      ],
+      "cle": "reservation_texte"
+    },
+    {
+      "mots": [
+        "carte",
+        "menu",
+        "plat",
+        "manger",
+        "midi",
+        "chef"
+      ],
+      "cle": "carte_texte"
+    },
+    {
+      "mots": [
+        "ou etes",
+        "adresse",
+        "venir",
+        "trouver",
+        "situe"
+      ],
+      "cle": "adresse_texte"
+    },
+    {
+      "mots": [
+        "service",
+        "cuisine",
+        "propos",
+        "ambiance"
+      ],
+      "cle": "services_texte"
+    },
+    {
+      "mots": [
+        "contact",
+        "appeler",
+        "telephone",
+        "joindre",
+        "horaire",
+        "ouvert"
+      ],
+      "cle": "contact_texte"
+    }
+  ],
+  "adresse_texte": "Nous sommes rue du Marché, à Luxembourg, en plein centre."
+}
