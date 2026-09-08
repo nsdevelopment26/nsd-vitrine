@@ -1201,5 +1201,16 @@
     return false;
   }
 </script>
+
+<!-- Assistant de site NS Development.
+     Mode démo : répond depuis fiche-chat.json, sans IA et sans clé.
+     Pour passer en IA, ajouter data-endpoint (voir sites-web/chat-nsd/README.md). -->
+<script src="nsd-chat.js" defer
+        data-site="ns-development"
+        data-nom="NS Development"
+        data-accent="#f4f4f5"
+        data-encre="#0e1116"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour ! Une question sur nos sites, nos tarifs ou les délais ?"></script>
 </body>
 </html>

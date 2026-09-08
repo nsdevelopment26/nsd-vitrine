@@ -1,0 +1,107 @@
+{
+  "nom": "NS Development",
+  "activite": "agence luxembourgeoise de création de sites web",
+  "commune": "Luxembourg",
+  "adresse": "Luxembourg",
+  "acces": "Nous nous déplaçons chez nos clients dans tout le pays.",
+  "telephone": "à compléter",
+  "email": "info@nsdevelopment.lu",
+  "contact_texte": "Le plus simple est de remplir le formulaire de contact en bas de cette page. On répond dans la journée.",
+  "clientele": "Commerçants, restaurants, salons, artisans et indépendants du Luxembourg.",
+  "offres_texte": "Nos formules démarrent à 1 350 € pour un site une page (Essentiel), 2 625 € pour une vitrine complète de 4 à 5 pages, et 3 750 € pour un site professionnel ou une boutique en ligne. Un devis ferme est établi après un premier échange, selon ce dont vous avez besoin.",
+  "prix_texte": "L'entretien du site est de 150 € par trimestre pour les formules Essentiel et Vitrine : hébergement au Luxembourg, nom de domaine, boîte mail, sécurité, sauvegardes et petites modifications comprises. Le paiement du site se fait en deux fois.",
+  "maintenance_texte": "La maintenance est indissociable de la mise en ligne : elle garantit que le site reste en ligne, sécurisé et à jour sans que vous ayez à vous en occuper. Engagement de 12 mois, puis trimestre par trimestre.",
+  "delais_texte": "Un site est généralement en ligne en quelques jours une fois les contenus réunis, pas en plusieurs mois.",
+  "difference_texte": "Nous sommes une société luxembourgeoise, avec un interlocuteur direct qui se déplace. Le site est clé en main : vous ne touchez à rien, vous validez.",
+  "langues": [
+    "français",
+    "portugais",
+    "luxembourgeois",
+    "anglais"
+  ],
+  "suggestions": [
+    "Combien coûte un site ?",
+    "En combien de temps c'est en ligne ?",
+    "Vous travaillez avec des restaurants ?"
+  ],
+  "a_ne_pas_dire": "Ne jamais annoncer un prix ferme ni un délai précis pour un projet donné : cela se fait après un échange. Ne pas donner de numéro de téléphone, il n'est pas encore publié.",
+  "demo_regles": [
+    {
+      "mots": [
+        "maintenance",
+        "entretien",
+        "abonnement",
+        "apres",
+        "suivi"
+      ],
+      "cle": "maintenance_texte"
+    },
+    {
+      "mots": [
+        "delai",
+        "temps",
+        "rapide",
+        "quand",
+        "combien de temps",
+        "livr"
+      ],
+      "cle": "delais_texte"
+    },
+    {
+      "mots": [
+        "prix",
+        "tarif",
+        "cout",
+        "combien",
+        "budget",
+        "devis"
+      ],
+      "cle": "offres_texte"
+    },
+    {
+      "mots": [
+        "pourquoi",
+        "difference",
+        "concurrent",
+        "vous plutot",
+        "avantage"
+      ],
+      "cle": "difference_texte"
+    },
+    {
+      "mots": [
+        "restaurant",
+        "salon",
+        "coiffeur",
+        "commerce",
+        "artisan",
+        "independant",
+        "client",
+        "qui"
+      ],
+      "cle": "clientele"
+    },
+    {
+      "mots": [
+        "contact",
+        "joindre",
+        "appeler",
+        "telephone",
+        "mail",
+        "email",
+        "rendez-vous",
+        "rdv"
+      ],
+      "cle": "contact_texte"
+    },
+    {
+      "mots": [
+        "ou etes",
+        "adresse",
+        "luxembourg",
+        "deplac"
+      ],
+      "cle": "acces"
+    }
+  ]
+}
