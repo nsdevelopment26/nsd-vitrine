@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOTORLINE PRO — Voitures, utilitaires &amp; poids lourds · Luxembourg</title>
+<meta name="description" content="MOTORLINE PRO, vente et atelier au Luxembourg : voitures de société, utilitaires et poids lourds. Tracteurs routiers, porteurs, fourgons, et plus de 60 prestations d'atelier VL et PL.">
+<meta property="og:title" content="MOTORLINE PRO — Voitures, utilitaires &amp; poids lourds · Luxembourg">
+<meta property="og:description" content="De la citadine de société au 44 tonnes, vendus et entretenus dans le même atelier. Immobilisation annoncée, véhicule de remplacement prévu.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="photos/hero-flotte.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@110..125,600..800&family=Manrope:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<script src="ns-motion.js" defer></script>
+<style>
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    /* showroom la nuit : graphite profond, chrome, champagne.
+       Rien à voir avec le béton clair de la version précédente, ni avec
+       le vert citron du fitness ou l'or antique sur crème de l'immobilier. */
+    --nuit:#07080b;--nuit2:#0b0d12;--carte:#11141b;--carte2:#171b24;
+    --line:#1e222c;--line2:#2b323f;--line3:#3b4453;
+    --blanc:#f1f3f7;--gris:#939bab;--gris2:#646c7c;
+    --or:#d7a557;--or-l:#f2d19a;--or-d:#b0812f;
+    --disp:'Archivo',system-ui,sans-serif;--sans:'Manrope',system-ui,sans-serif;
+    --tr:.42s cubic-bezier(.2,.7,.2,1);
+    --ns-dur:.9s;--ns-ease:cubic-bezier(.16,.8,.2,1);--ns-progress-color:#d7a557;
+    --ns-g1:#d7a557;--ns-g2:#f2d19a}
+  html{scroll-behavior:smooth}
+  body{background:var(--nuit);color:var(--blanc);font-family:var(--sans);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block;height:auto}
+  h1,h2,h3{font-family:var(--disp);font-weight:700;font-stretch:118%;line-height:1.02;letter-spacing:-.015em;text-transform:uppercase}
+  ::selection{background:var(--or);color:#0a0a0a}
+  :focus-visible{outline:2px solid var(--or);outline-offset:3px;border-radius:4px}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+
+  /* ---- petits éléments partagés ---- */
+  .kick{display:inline-flex;align-items:center;gap:10px;font-size:11.5px;font-weight:700;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--or)}
+  .kick::before{content:"";width:26px;height:1px;background:linear-gradient(90deg,transparent,var(--or))}
+  .lede{color:var(--gris);font-size:16.5px;max-width:480px}
+
+  /* boutons : rectangle à coins coupés, filet d'or. Ni pilule, ni angle droit plein. */
+  .btn{position:relative;display:inline-flex;align-items:center;gap:12px;font-family:var(--sans);font-weight:700;
+    font-size:14px;letter-spacing:.05em;text-transform:uppercase;padding:17px 30px;cursor:pointer;border:none;
+    transition:var(--tr);white-space:nowrap;
+    clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+  .btn.or{background:linear-gradient(120deg,var(--or),var(--or-l));color:#1a1204}
+  .btn.or:hover{filter:brightness(1.12);transform:translateY(-2px)}
+  .btn.clair{background:var(--blanc);color:#0a0c10}
+  .btn.clair:hover{background:#fff;transform:translateY(-2px)}
+  .btn.fil{background:rgba(255,255,255,.035);color:var(--blanc);box-shadow:inset 0 0 0 1px var(--line3)}
+  .btn.fil:hover{background:rgba(215,165,87,.1);box-shadow:inset 0 0 0 1px var(--or);color:var(--or-l)}
+  .btn .ar{transition:transform var(--tr)}
+  .btn:hover .ar{transform:translateX(5px)}
+  .tel-lien{font-size:14.5px;font-weight:600;color:var(--gris);transition:var(--tr);white-space:nowrap}
+  .tel-lien:hover{color:var(--or-l)}
+
+  /* ---- navigation ---- */
+  nav{position:fixed;top:0;left:0;right:0;z-index:70;transition:var(--tr);
+    border-bottom:1px solid transparent}
+  .nav-in{max-width:1400px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  nav.ns-solid{background:rgba(7,8,11,.86);backdrop-filter:blur(18px);border-bottom-color:var(--line)}
+  nav.ns-solid .nav-in{padding:12px 28px}
+  .logo{display:flex;align-items:center;gap:12px;font-family:var(--disp);font-weight:800;font-stretch:120%;
+    font-size:19px;letter-spacing:.16em;text-transform:uppercase}
+  .logo svg{width:26px;height:26px;flex:none}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);white-space:nowrap}
+  .nav-links a:hover{color:var(--blanc)}
+  .nav-fin{display:flex;align-items:center;gap:20px}
+  .hamb{display:none;background:none;border:1px solid var(--line3);color:var(--blanc);width:44px;height:44px;
+    cursor:pointer;font-size:16px}
+  .mob{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:69;background:rgba(7,8,11,.98);
+    flex-direction:column;justify-content:center;gap:4px;padding:80px 28px 40px}
+  .mob a{font-family:var(--disp);font-weight:700;font-stretch:115%;font-size:26px;text-transform:uppercase;
+    padding:12px 0;border-bottom:1px solid var(--line)}
+  .mob a:last-child{border:none;color:var(--or);margin-top:18px}
+
+  /* ---- HERO plein écran ---- */
+  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+  .hero-img{position:absolute;inset:0;z-index:0}
+  .hero-img img{width:100%;height:100%;object-fit:cover;transform:scale(1.12);animation:derive 26s ease-in-out infinite alternate}
+  @keyframes derive{to{transform:scale(1.02) translate3d(-1.5%,0,0)}}
+  .hero-img::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(7,8,11,.86) 0%,rgba(7,8,11,.28) 34%,rgba(7,8,11,.72) 74%,var(--nuit) 100%),
+               radial-gradient(120% 80% at 78% 40%,transparent 30%,rgba(7,8,11,.55) 100%)}
+  .hero-in{position:relative;z-index:2;padding:120px 0 34px}
+  .hero h1{font-size:clamp(38px,5.7vw,86px);margin:18px 0 0}
+  .hero h1>span{display:block}
+  .hero h1 em{font-style:normal;color:var(--or);display:inline-block}
+  .hero .lede{margin-top:22px;font-size:16.5px;max-width:500px}
+  .hero-cta{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:34px}
+  .scroll-ind{position:absolute;right:28px;bottom:40px;z-index:2;display:flex;align-items:center;gap:12px;
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gris2);writing-mode:vertical-rl}
+  .scroll-ind::after{content:"";width:1px;height:64px;background:linear-gradient(180deg,var(--line3),transparent);
+    animation:descend 2.4s ease-in-out infinite}
+  @keyframes descend{0%,100%{opacity:.3}50%{opacity:1}}
+
+  /* rail « à la une » en bas du hero */
+  .rail{position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.09);margin-top:30px;
+    background:linear-gradient(180deg,rgba(7,8,11,.3),rgba(7,8,11,.75));backdrop-filter:blur(6px)}
+  .rail-in{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+  .rail-c{display:flex;align-items:center;gap:16px;padding:18px 22px;border-left:1px solid rgba(255,255,255,.08);
+    transition:var(--tr);cursor:pointer;text-align:left;background:none;border-top:none;border-right:none;border-bottom:none;
+    font-family:var(--sans);color:inherit;width:100%}
+  .rail-c:first-child{border-left:none}
+  .rail-c:hover{background:rgba(215,165,87,.08)}
+  .rail-c img{width:82px;height:56px;object-fit:cover;flex:none;filter:saturate(.85)}
+  .rail-c b{display:block;font-size:14px;font-weight:700;letter-spacing:.01em}
+  .rail-c span{display:block;font-size:12.5px;color:var(--gris2);margin-top:2px}
+  .rail-c i{margin-left:auto;font-style:normal;font-family:var(--disp);font-weight:700;font-size:17px;color:var(--or);
+    font-variant-numeric:tabular-nums}
+
+  /* ---- bandeau défilant ---- */
+  .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--nuit2);padding:15px 0}
+  .strip span{font-family:var(--disp);font-weight:600;font-stretch:112%;font-size:14px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--gris2);padding:0 22px}
+  .strip span b{color:var(--blanc);font-weight:700}
+  .strip span i{color:var(--or);font-style:normal;padding-left:22px}
+
+  section{padding:110px 0;position:relative}
+  .tete{display:flex;justify-content:space-between;align-items:flex-end;gap:36px;flex-wrap:wrap;margin-bottom:44px}
+  .tete h2{font-size:clamp(30px,4.6vw,58px);margin-top:16px}
+  .tete .lede{font-size:15.5px}
+
+  /* ---- catalogue : barre de recherche ---- */
+  .cherche{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:1px;background:var(--line);
+    border:1px solid var(--line);margin-bottom:28px}
+  .ch{background:var(--carte);padding:14px 18px;display:flex;flex-direction:column;gap:3px;transition:var(--tr);min-width:0}
+  .ch:hover{background:var(--carte2)}
+  .ch label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris2);font-weight:700}
+  .ch select{border:none;background:none;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--blanc);
+    cursor:pointer;padding:0;width:100%;appearance:none;text-overflow:ellipsis}
+  .ch select:focus{outline:none}
+  .ch select option{background:var(--carte);color:var(--blanc)}
+  .cherche .btn{clip-path:none;padding:0 34px}
+
+  .barre{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+  .segs{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--line);background:var(--carte)}
+  .seg{background:none;border:none;border-right:1px solid var(--line);padding:11px 20px;font-family:var(--sans);
+    font-size:12.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gris);cursor:pointer;transition:var(--tr)}
+  .seg:last-child{border-right:none}
+  .seg:hover{color:var(--blanc);background:var(--carte2)}
+  .seg.on{background:var(--or);color:#1a1204}
+  .tri{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--gris2);font-weight:700}
+  .tri select{border:1px solid var(--line);background:var(--carte);padding:10px 14px;font-family:var(--sans);
+    font-size:13px;font-weight:600;color:var(--blanc);cursor:pointer;text-transform:none;letter-spacing:0}
+  .tri select:focus{outline:none;border-color:var(--or)}
+  .compte{font-size:13px;color:var(--gris2);margin-bottom:26px;letter-spacing:.04em}
+  .compte b{color:var(--or);font-weight:700}
+
+  /* ---- cartes véhicules ---- */
+  .grille{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .auto{position:relative;background:var(--carte);border:1px solid var(--line);overflow:hidden;
+    transition:transform .5s var(--ns-ease),border-color var(--tr),box-shadow .5s var(--ns-ease)}
+  .auto::after{content:"";position:absolute;left:0;right:0;top:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--or),transparent);opacity:0;transition:opacity var(--tr)}
+  .auto:hover{transform:translateY(-8px);border-color:var(--line2);box-shadow:0 40px 70px -40px #000}
+  .auto:hover::after{opacity:1}
+  .auto .ph{position:relative;aspect-ratio:3/2;overflow:hidden;background:var(--nuit2)}
+  .auto .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ns-ease)}
+  .auto:hover .ph img{transform:scale(1.07)}
+  .auto .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(7,8,11,.7))}
+  .badge{position:absolute;top:0;left:0;z-index:2;background:var(--or);color:#1a1204;font-size:10.5px;font-weight:800;
+    letter-spacing:.16em;text-transform:uppercase;padding:7px 14px}
+  .badge.sombre{background:rgba(7,8,11,.82);color:var(--or-l);box-shadow:inset 0 0 0 1px rgba(215,165,87,.35)}
+  .auto .an{position:absolute;bottom:12px;right:14px;z-index:2;font-family:var(--disp);font-weight:700;font-size:13px;
+    letter-spacing:.16em;color:rgba(255,255,255,.8)}
+  .auto .in{padding:20px 22px 22px}
+  .auto h3{font-size:17.5px;letter-spacing:.01em;line-height:1.18}
+  .auto .sous{font-size:12.5px;color:var(--gris2);margin-top:6px;letter-spacing:.05em;text-transform:uppercase}
+  .auto .specs{display:flex;gap:16px;margin:16px 0 18px;padding:14px 0;border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line)}
+  .auto .specs div{flex:1;min-width:0}
+  .auto .specs dt{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris2);font-weight:700}
+  .auto .specs dd{font-size:14px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .auto .bas{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}
+  .auto .prix{font-family:var(--disp);font-weight:700;font-size:25px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .auto .mens{display:block;font-family:var(--sans);font-size:11.5px;font-weight:600;color:var(--gris2);
+    letter-spacing:.04em;text-transform:none;margin-top:2px}
+  .auto .voir{background:none;border:1px solid var(--line2);color:var(--gris);width:44px;height:44px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:var(--tr);flex:none}
+  .auto:hover .voir{border-color:var(--or);color:var(--or)}
+  .auto.hide{display:none}
+  .vide{grid-column:1/-1;border:1px dashed var(--line2);padding:52px 32px;text-align:center;background:var(--carte)}
+  .vide h3{font-size:22px}
+  .vide p{color:var(--gris);margin:12px auto 22px;max-width:420px;font-size:15px}
+  .vide[hidden]{display:none}
+
+  /* ---- fiche véhicule ---- */
+  .fiche{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:24px}
+  .fiche[hidden]{display:none}
+  .fiche-fond{position:absolute;inset:0;background:rgba(3,4,6,.82);backdrop-filter:blur(8px);animation:f-in .3s ease}
+  .fiche-in{position:relative;z-index:1;width:min(1080px,100%);max-height:90vh;overflow:auto;background:var(--nuit2);
+    border:1px solid var(--line2);display:grid;grid-template-columns:1.05fr 1fr;animation:f-up .45s var(--ns-ease)}
+  @keyframes f-in{from{opacity:0}}
+  @keyframes f-up{from{opacity:0;transform:translateY(26px)}}
+  .fiche-x{position:absolute;top:0;right:0;z-index:3;width:48px;height:48px;border:none;background:var(--or);
+    color:#1a1204;font-size:17px;cursor:pointer;transition:var(--tr)}
+  .fiche-x:hover{background:var(--blanc)}
+  .fiche-ph{position:relative;background:var(--nuit);min-height:260px}
+  .fiche-ph img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+  .fiche-txt{padding:34px 36px 36px}
+  .fiche-txt h3{font-size:27px;margin:14px 0 0;line-height:1.12}
+  .fiche-prix{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-top:16px;padding-bottom:18px;
+    border-bottom:1px solid var(--line)}
+  .fiche-prix b{font-family:var(--disp);font-weight:700;font-size:34px;color:var(--or);font-variant-numeric:tabular-nums}
+  .fiche-prix span{font-size:13px;color:var(--gris2);padding-bottom:7px}
+  .fiche-note{font-size:14.5px;color:var(--gris);margin-top:18px;padding-left:16px;border-left:2px solid var(--or)}
+  .fiche-grille{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;margin-top:22px}
+  .fiche-grille div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .fiche-grille dt{color:var(--gris2)}
+  .fiche-grille dd{font-weight:700;text-align:right}
+  .fiche-equip{display:flex;gap:7px;flex-wrap:wrap;margin-top:22px}
+  .fiche-equip b{background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line);padding:6px 13px;
+    font-size:12px;font-weight:600;color:var(--gris)}
+  .fiche-fin{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:26px}
+
+  /* ---- l'atelier : l'espace le plus dense de la page ---- */
+  .atelier{background:var(--nuit2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .onglets{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--line);background:var(--carte);margin-bottom:2px}
+  .ong{flex:1;min-width:150px;background:none;border:none;border-right:1px solid var(--line);padding:16px 14px;
+    font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--gris);cursor:pointer;transition:var(--tr);text-align:left;position:relative}
+  .ong:last-child{border-right:none}
+  .ong small{display:block;font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--gris2);margin-top:3px}
+  .ong:hover{background:var(--carte2);color:var(--blanc)}
+  .ong.on{background:var(--carte2);color:var(--or-l)}
+  .ong.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--or)}
+  .panneau{display:none;border:1px solid var(--line);border-top:none;background:var(--carte);padding:26px 26px 28px}
+  .panneau.on{display:block}
+  .panneau-tete{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-start;
+    padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+  .panneau-tete h3{font-size:21px}
+  .panneau-tete p{font-size:14px;color:var(--gris);max-width:560px;margin-top:8px}
+  .panneau-tete img{width:230px;aspect-ratio:3/2;object-fit:cover;flex:none;filter:saturate(.8)}
+  .prestas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .presta{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.022);border:1px solid var(--line);
+    padding:13px 15px;cursor:pointer;transition:var(--tr);text-align:left;font-family:var(--sans);color:inherit;width:100%}
+  .presta:hover{border-color:var(--line3);background:rgba(255,255,255,.05)}
+  .presta.on{border-color:var(--or);background:rgba(215,165,87,.1)}
+  .presta .coche{width:19px;height:19px;flex:none;border:1px solid var(--line3);display:flex;align-items:center;
+    justify-content:center;transition:var(--tr);font-size:11px;color:transparent}
+  .presta.on .coche{background:var(--or);border-color:var(--or);color:#1a1204}
+  .presta .nom{flex:1;min-width:0;font-size:13.5px;font-weight:600;line-height:1.35}
+  .presta .nom em{display:block;font-style:normal;font-size:11.5px;font-weight:500;color:var(--gris2);margin-top:2px}
+  .presta .de{font-size:12.5px;font-weight:700;color:var(--gris);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .presta.on .de{color:var(--or-l)}
+
+  /* le panier de devis, collé en bas quand il y a une sélection */
+  .panier{position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(11,13,18,.96);backdrop-filter:blur(16px);
+    border-top:1px solid var(--or);transform:translateY(102%);transition:transform .45s var(--ns-ease)}
+  .panier.on{transform:none;visibility:visible}
+  .panier:not(.on){visibility:hidden}
+  .panier-in{max-width:1280px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .panier .n{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+  .panier .n b{color:var(--or)}
+  .panier .est{font-size:13px;color:var(--gris);font-variant-numeric:tabular-nums}
+  .panier .est b{color:var(--blanc);font-weight:700}
+  .panier .vider{background:none;border:none;color:var(--gris2);font-family:var(--sans);font-size:12.5px;
+    text-decoration:underline;cursor:pointer;transition:var(--tr)}
+  .panier .vider:hover{color:var(--blanc)}
+  .panier .btn{margin-left:auto}
+
+  /* recap du devis */
+  .recap{position:fixed;inset:0;z-index:96;display:flex;align-items:center;justify-content:center;padding:24px}
+  .recap[hidden]{display:none}
+  .recap-in{position:relative;z-index:1;width:min(620px,100%);max-height:86vh;overflow:auto;background:var(--nuit2);
+    border:1px solid var(--line2);padding:34px 36px 36px;animation:f-up .4s var(--ns-ease)}
+  .recap-in h3{font-size:25px}
+  .recap-in>p{color:var(--gris);font-size:14.5px;margin-top:10px}
+  .recap-liste{list-style:none;margin:22px 0 0}
+  .recap-liste li{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .recap-liste li span{color:var(--gris)}
+  .recap-liste li b{white-space:nowrap;font-variant-numeric:tabular-nums}
+  .recap-total{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-top:18px;
+    padding-top:16px;border-top:1px solid var(--line2)}
+  .recap-total span{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris2);font-weight:700}
+  .recap-total b{font-family:var(--disp);font-weight:700;font-size:26px;color:var(--or);font-variant-numeric:tabular-nums}
+  .recap-note{font-size:12.5px;color:var(--gris2);margin-top:14px;line-height:1.55}
+
+  /* ---- le garage : preuve ---- */
+  .garage{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+  .garage-ph{position:relative}
+  .garage-ph img{width:100%;aspect-ratio:16/11;object-fit:cover}
+  .garage-ph::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+  .chiffres{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:34px}
+  .chf{background:var(--nuit2);padding:22px 22px 20px;transition:var(--tr)}
+  .chf:hover{background:var(--carte2)}
+  .chf b{font-family:var(--disp);font-weight:700;font-size:34px;display:block;color:var(--or);
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .chf span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris2);font-weight:600}
+  .engage{list-style:none;margin-top:30px;display:flex;flex-direction:column;gap:14px}
+  .engage li{display:flex;gap:14px;align-items:flex-start;font-size:15px;color:var(--gris)}
+  .engage li b{color:var(--blanc);font-weight:700}
+  .engage svg{width:18px;height:18px;flex:none;margin-top:4px;stroke:var(--or);fill:none;stroke-width:2.4;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---- garantie : 3 colonnes chiffrées ---- */
+  .gar3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .g3{background:var(--nuit2);padding:34px 30px 32px;transition:var(--tr);position:relative;overflow:hidden}
+  .g3:hover{background:var(--carte)}
+  .g3 .num{font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--or);display:block}
+  .g3 h3{font-size:21px;margin:16px 0 10px}
+  .g3 p{font-size:14.5px;color:var(--gris)}
+
+  /* ---- avis ---- */
+  .avis{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .av{background:var(--carte);border:1px solid var(--line);padding:30px 28px 26px;transition:var(--tr)}
+  .av:hover{transform:translateY(-6px);border-color:var(--line2)}
+  .av .et{color:var(--or);font-size:14px;letter-spacing:.22em;margin-bottom:16px}
+  .av p{font-size:15px;line-height:1.68;color:var(--blanc)}
+  .av .qui{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+  .av .ini{width:38px;height:38px;flex:none;background:rgba(215,165,87,.14);color:var(--or-l);display:flex;
+    align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.08em}
+  .av .qui b{display:block;font-size:14px;font-weight:700}
+  .av .qui span{display:block;font-size:12px;color:var(--gris2)}
+
+  /* ---- fin : bloc plein écran sombre ---- */
+  .fin{position:relative;overflow:hidden;border-top:1px solid var(--line)}
+  .fin-img{position:absolute;inset:0}
+  .fin-img img{width:100%;height:100%;object-fit:cover;opacity:.55}
+  .fin-img::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,var(--nuit),rgba(7,8,11,.55) 45%,var(--nuit))}
+  .fin-in{position:relative;z-index:2;text-align:center;max-width:780px;margin:0 auto;padding:120px 0}
+  .fin h2{font-size:clamp(36px,6.4vw,82px)}
+  .fin h2 em{font-style:normal;color:var(--or)}
+  .fin p{color:var(--gris);font-size:17px;margin:22px auto 34px;max-width:460px}
+  .fin .num{display:inline-block;font-family:var(--disp);font-weight:700;font-size:clamp(26px,4.4vw,42px);
+    letter-spacing:.04em;margin-top:30px;transition:var(--tr)}
+  .fin .num:hover{color:var(--or)}
+  .fin .heures{font-size:13.5px;color:var(--gris2);margin-top:12px}
+
+  /* ---- infos & pied ---- */
+  .infos{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .inf{background:var(--nuit2);padding:24px 24px 22px}
+  .inf b{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);display:block;margin-bottom:10px}
+  .inf p{font-size:14.5px;color:var(--gris);line-height:1.6}
+  .inf p a:hover{color:var(--blanc)}
+  footer{border-top:1px solid var(--line);padding:44px 0 40px}
+  .pied{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
+  .pied .c{font-size:12.5px;color:var(--gris2);letter-spacing:.06em}
+  .mention{margin-top:26px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--gris2);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;line-height:1.6}
+  .mention b{color:var(--blanc)}
+
+  @media(max-width:1080px){
+    .grille,.avis,.prestas{grid-template-columns:1fr 1fr}
+    .infos{grid-template-columns:1fr 1fr}
+    .garage{grid-template-columns:1fr;gap:40px}
+    .cherche{grid-template-columns:1fr 1fr}
+    .cherche .btn{grid-column:1/-1;padding:16px}
+    .gar3{grid-template-columns:1fr}
+    .fiche-in{grid-template-columns:1fr}
+    .fiche-ph{min-height:240px;aspect-ratio:3/2}
+    .panneau-tete img{width:100%;max-width:320px}
+  }
+  @media(max-width:1120px){
+    .nav-links,.nav-fin .tel-lien,.nav-fin .btn{display:none}
+    .hamb{display:block}
+  }
+  @media(max-width:760px){
+    .wrap{padding:0 20px}
+    section{padding:74px 0}
+    .hero{min-height:94svh}
+    /* sur mobile le texte passe DEVANT la voiture : sans un fond plus dense,
+       la phrase devient illisible sur les reflets clairs de la carrosserie. */
+    .hero-img::after{background:linear-gradient(180deg,rgba(7,8,11,.9) 0%,rgba(7,8,11,.55) 26%,rgba(7,8,11,.88) 62%,var(--nuit) 100%)}
+    .hero-in{padding:104px 0 28px}
+    .hero .lede{font-size:15.5px}
+    .rail-in{grid-template-columns:1fr}
+    .rail-c{border-left:none;border-top:1px solid rgba(255,255,255,.08)}
+    .rail-c:first-child{border-top:none}
+    .grille,.avis,.prestas,.infos{grid-template-columns:1fr}
+    .chiffres{grid-template-columns:1fr 1fr}
+    .onglets{flex-direction:column}
+    .ong{border-right:none;border-bottom:1px solid var(--line);min-width:0}
+    .ong.on::after{display:none}
+    .panneau{border-top:1px solid var(--line)}
+    .scroll-ind{display:none}
+    .fiche{padding:0}
+    .fiche-in{max-height:100vh;width:100%;border:none}
+    .fiche-grille{grid-template-columns:1fr}
+    .fiche-txt{padding:26px 22px 32px}
+    .panier-in{padding:11px 20px 13px;gap:8px 14px}
+    .panier .n{width:100%;font-size:13.5px}
+    .panier .est{order:2}
+    .panier .vider{order:3;margin-left:auto}
+    .panier .btn{order:4;margin-left:0;width:100%;justify-content:center;padding:15px 24px}
+    .fin-in{padding:80px 0}
+  }
+
+  /* ======================================================================
+     Spécifique MOTORLINE PRO
+     ====================================================================== */
+  :root{--rouge:#e2503f;--rouge-l:#ff7a68}
+  .logo .pro{font-size:.62em;letter-spacing:.2em;color:#0d1015;background:var(--or);
+    padding:4px 8px 3px;margin-left:2px;font-weight:800}
+
+  /* le sélecteur d'univers : c'est lui qui structure toute la page catalogue */
+  .univers{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);margin-bottom:26px}
+  .un{position:relative;background:var(--nuit2);border:none;padding:24px 24px 22px;cursor:pointer;
+    text-align:left;font-family:var(--sans);color:var(--gris);transition:var(--tr);overflow:hidden}
+  .un::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--or);
+    transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ns-ease)}
+  .un:hover{background:var(--carte);color:var(--blanc)}
+  .un.on{background:var(--carte2);color:var(--blanc)}
+  .un.on::after{transform:scaleX(1)}
+  .un[data-u="pl"].on::after,.un[data-u="utilitaire"].on::after{background:var(--rouge)}
+  .un .ic{display:block;height:30px;margin-bottom:16px}
+  .un .ic svg{height:30px;width:auto;stroke:currentColor;fill:none;stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+  .un.on .ic svg{opacity:1;stroke:var(--or)}
+  .un[data-u="pl"].on .ic svg,.un[data-u="utilitaire"].on .ic svg{stroke:var(--rouge-l)}
+  .un h3{font-size:18px;color:inherit}
+  .un p{font-size:13.5px;color:var(--gris2);margin-top:7px;line-height:1.5}
+  .un .nb{position:absolute;top:22px;right:24px;font-family:var(--disp);font-weight:700;font-size:13px;
+    letter-spacing:.1em;color:var(--gris2)}
+  .un.on .nb{color:var(--or)}
+  .un[data-u="pl"].on .nb,.un[data-u="utilitaire"].on .nb{color:var(--rouge-l)}
+
+  /* une carte de poids lourd porte le rouge, pas l'or : on distingue d'un
+     coup d'œil un utilitaire d'une voiture dans une grille mélangée */
+  .auto[data-univ="pl"] .badge,.auto[data-univ="utilitaire"] .badge{background:var(--rouge);color:#fff}
+  .auto[data-univ="pl"]::after,.auto[data-univ="utilitaire"]::after{
+    background:linear-gradient(90deg,transparent,var(--rouge),transparent)}
+  .auto .ht{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--gris2);margin-left:6px}
+  .ong.pl.on{color:var(--rouge-l)}
+  .ong.pl.on::after{background:var(--rouge)}
+  .presta.on{border-color:var(--or);background:rgba(215,165,87,.1)}
+  .panneau.pl .presta.on{border-color:var(--rouge);background:rgba(226,80,63,.12)}
+  .panneau.pl .presta.on .coche{background:var(--rouge);border-color:var(--rouge);color:#fff}
+  .panneau.pl .presta.on .de{color:var(--rouge-l)}
+
+  /* le bandeau « contrat de flotte » */
+  .quai{position:relative;margin-top:34px;overflow:hidden;border:1px solid var(--line)}
+  .quai img{width:100%;aspect-ratio:21/8;object-fit:cover}
+  .quai::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(100deg,var(--nuit) 8%,rgba(7,8,11,.86) 46%,rgba(7,8,11,.25) 100%)}
+  .quai-txt{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;
+    gap:14px;padding:0 clamp(24px,5vw,58px);max-width:620px}
+  .quai-txt h3{font-size:clamp(22px,2.8vw,32px)}
+  .quai-txt p{font-size:15px;color:var(--gris);max-width:440px}
+  .quai-txt .btn{align-self:flex-start;margin-top:6px}
+
+  @media(max-width:1080px){
+    .univers{grid-template-columns:1fr}
+    .un .nb{top:20px}
+  }
+  @media(max-width:760px){
+    .quai img{aspect-ratio:3/4}
+    .quai-txt{padding:26px 22px}
+    .quai::after{background:linear-gradient(180deg,rgba(7,8,11,.5) 0%,rgba(7,8,11,.92) 55%,var(--nuit) 100%)}
+    .quai-txt{justify-content:flex-end}
+  }
+</style>
+</head>
+<body>
+<div class="ns-progress"></div>
+
+<nav data-nav-solid><div class="nav-in">
+  <a href="#haut" class="logo" aria-label="MOTORLINE PRO, accueil">
+    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M4 26V6l12 13L28 6v20" stroke="#d7a557" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M4 26h24" stroke="#f1f3f7" stroke-width="2.4"/>
+    </svg>MOTORLINE <b class="pro">PRO</b></a>
+  <div class="nav-links">
+    <a href="#parc" class="ns-link">Le parc</a>
+    <a href="#atelier" class="ns-link">L'atelier</a>
+    <a href="#flotte" class="ns-link">Gestion de flotte</a>
+    <a href="#garage" class="ns-link">L'entreprise</a>
+  </div>
+  <div class="nav-fin">
+    <a href="tel:+35200000000" class="tel-lien">+352 00 00 00</a>
+    <a href="#contact" class="btn or" style="padding:13px 22px;font-size:12.5px">Demander un devis</a>
+    <button class="hamb" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+  </div>
+</div></nav>
+<div class="mob" id="mob">
+  <a href="#parc">Le parc</a><a href="#atelier">L'atelier</a><a href="#flotte">Gestion de flotte</a>
+  <a href="#garage">L'entreprise</a><a href="tel:+35200000000">Appeler le +352 00 00 00</a>
+</div>
+
+<header class="hero" id="haut">
+  <div class="hero-img">
+    <img src="photos/hero-flotte.jpg" alt="Trois tracteurs routiers alignés, phares allumés, au petit matin" width="2000" height="1125" fetchpriority="high">
+  </div>
+  <div class="hero-in"><div class="wrap">
+    <span class="kick" data-reveal="left">Voitures · Utilitaires · Poids lourds · Luxembourg</span>
+    <h1>
+      <span data-split>Votre parc roule.</span>
+      <span><span data-split data-delay="260">Nous, on le</span> <em data-reveal="blur" data-delay="520">tient</em></span>
+      <span data-split data-delay="640">debout.</span>
+    </h1>
+    <p class="lede" data-reveal data-delay="760">Vente et entretien de la citadine de société au 44 tonnes, dans le même atelier. Immobilisation annoncée à l'heure près, véhicule de remplacement prévu d'avance, et un seul interlocuteur pour toute la flotte.</p>
+    <div class="hero-cta" data-reveal data-delay="880">
+      <a href="#parc" class="btn or" data-magnetic data-strength="0.34">Voir le parc disponible <span class="ar">→</span></a>
+      <a href="tel:+35200000000" class="tel-lien">ou appelez le +352 00 00 00</a>
+    </div>
+  </div></div>
+  <span class="scroll-ind" aria-hidden="true">Défiler</span>
+  <div class="rail" data-reveal data-delay="1000"><div class="rail-in" id="rail"></div></div>
+</header>
+
+<div class="strip ns-marquee" style="--ns-marquee-speed:52s" aria-hidden="true"><div class="ns-marquee__track">
+  <span><b>Atelier VL &amp; PL</b><i>◆</i></span><span>Tachygraphe agréé<i>◆</i></span><span><b>Dépannage 7j/7</b><i>◆</i></span><span>Contrôle technique déposé<i>◆</i></span><span><b>Véhicule de remplacement</b><i>◆</i></span><span>Leasing &amp; location longue durée<i>◆</i></span><span><b>Carte carburant</b><i>◆</i></span><span>Reprise de flotte<i>◆</i></span>
+  <span><b>Atelier VL &amp; PL</b><i>◆</i></span><span>Tachygraphe agréé<i>◆</i></span><span><b>Dépannage 7j/7</b><i>◆</i></span><span>Contrôle technique déposé<i>◆</i></span><span><b>Véhicule de remplacement</b><i>◆</i></span><span>Leasing &amp; location longue durée<i>◆</i></span><span><b>Carte carburant</b><i>◆</i></span><span>Reprise de flotte<i>◆</i></span>
+</div></div>
+
+<section id="parc"><div class="wrap">
+  <div class="tete">
+    <div data-reveal="left"><span class="kick">Le parc disponible</span><h2>Trois univers,<br>un seul atelier</h2></div>
+    <p class="lede" data-reveal="right">Une voiture de fonction, un fourgon de chantier et un tracteur routier n'ont ni le même acheteur ni les mêmes questions. On a donc séparé les trois, sans les séparer d'atelier.</p>
+  </div>
+
+  <div class="univers" data-stagger="110" id="univers" role="group" aria-label="Choisir un univers">
+<!-- UNIVERS:DEBUT -->
+    <button type="button" class="un on" data-u="voiture" aria-pressed="true"><span class="nb">6 en stock</span><span class="ic"><svg viewBox="0 0 56 26"><path d="M3 19h50M7 19v3M49 19v3"/><path d="M5 19v-5l5-8h30l8 8h3a2 2 0 0 1 2 2v3"/><path d="M22 6v8M10 14h36"/><circle cx="16" cy="19" r="3.4"/><circle cx="42" cy="19" r="3.4"/></svg></span><h3>Voitures de société</h3><p>Berlines, breaks et SUV de fonction, TVA récupérable et carte carburant possible.</p></button>
+    <button type="button" class="un" data-u="utilitaire" aria-pressed="false"><span class="nb">4 en stock</span><span class="ic"><svg viewBox="0 0 56 26"><path d="M3 20h50"/><path d="M5 20V6h28v14"/><path d="M33 20V9h8l8 7v4"/><path d="M33 9h8l8 7h-16z"/><circle cx="16" cy="20" r="3.4"/><circle cx="43" cy="20" r="3.4"/></svg></span><h3>Utilitaires</h3><p>Du fourgonnette de ville au grand volume avec hayon, prêts à être marqués à vos couleurs.</p></button>
+    <button type="button" class="un" data-u="pl" aria-pressed="false"><span class="nb">6 en stock</span><span class="ic"><svg viewBox="0 0 56 26"><path d="M2 20h52"/><path d="M3 20V4h30v16"/><path d="M33 20V8h9l9 8v4"/><path d="M33 8h9l9 8h-18z"/><circle cx="13" cy="20" r="3.4"/><circle cx="38" cy="20" r="3.4"/><circle cx="47" cy="20" r="3.4"/></svg></span><h3>Poids lourds</h3><p>Tracteurs, porteurs, bennes et grues. Historique d'entretien et heures moteur vérifiés.</p></button>
+<!-- UNIVERS:FIN -->
+  </div>
+
+  <form class="cherche" id="cherche" autocomplete="off" data-reveal>
+    <div class="ch"><label for="f-seg">Type</label>
+      <select id="f-seg"><option value="">Tous</option></select></div>
+    <div class="ch"><label for="f-carb">Énergie</label>
+      <select id="f-carb"><option value="">Toutes</option><option value="essence">Essence</option><option value="diesel">Diesel</option><option value="hybride">Hybride</option><option value="electrique">Électrique</option></select></div>
+    <div class="ch"><label for="f-boite">Boîte</label>
+      <select id="f-boite"><option value="">Toutes</option><option value="Automatique">Automatique</option><option value="Automatisée">Automatisée</option><option value="Manuelle">Manuelle</option></select></div>
+    <div class="ch"><label for="f-bud">Budget</label>
+      <select id="f-bud"><option value="">Peu importe</option><option value="0-25000">Jusqu'à 25 000 €</option><option value="25000-45000">25 000 – 45 000 €</option><option value="45000-70000">45 000 – 70 000 €</option><option value="70000-9999999">Plus de 70 000 €</option></select></div>
+    <button type="submit" class="btn or">Rechercher</button>
+  </form>
+
+  <div class="barre" data-reveal>
+    <div class="segs" id="segs" role="group" aria-label="Filtrer par type"></div>
+    <label class="tri">Trier
+      <select id="tri">
+        <option value="recent">Année, la plus récente</option>
+        <option value="prix-asc">Prix, du moins élevé</option>
+        <option value="prix-desc">Prix, du plus élevé</option>
+        <option value="km">Kilométrage, le plus bas</option>
+      </select>
+    </label>
+  </div>
+  <p class="compte" id="compte" aria-live="polite"></p>
+
+  <div class="grille" data-stagger="70" id="grille">
+<!-- CATALOGUE:DEBUT -->
+    <article class="auto" id="v1" data-univ="voiture" data-seg="berline" data-carb="hybride"
+      data-boite="Automatique" data-prix="54900" data-km="28400" data-an="2023"
+      data-fiche='{"titre": "Berline de direction hybride", "photo": "photos/berline-direction.jpg", "alt": "Berline de direction noire sur un chemin couvert de feuilles", "an": 2023, "km": 28400, "prix": 54900, "ht": false, "ch": 252, "carb": "Hybride rechargeable", "boite": "Automatique", "coul": "Noir minuit", "places": 5, "conso": "1,9 L/100 km", "co2": "44 g/km", "mains": "1re main", "note": "Hybride rechargeable, environ 80 km en électrique au quotidien. Avantage en nature réduit et TVA partiellement récupérable selon l&#39;usage professionnel.", "equip": "Sièges chauffants · Conduite semi-autonome · Câble mode 3 · Attelage · Affichage tête haute · Jantes 19\"", "mens": 830, "financement": "soit 830 €/mois sur 60 mois"}'>
+      <div class="ph"><span class="badge">Première main</span><img src="photos/berline-direction.jpg" alt="Berline de direction noire sur un chemin couvert de feuilles" loading="lazy" width="1200" height="800"><span class="an">2023</span></div>
+      <div class="in">
+        <h3>Berline de direction hybride</h3>
+        <div class="sous">Hybride rechargeable · Automatique · 5 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>28 400 km</dd></div>
+          <div><dt>Puissance</dt><dd>252 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2023</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">54 900 €<span class="mens">soit 830 €/mois sur 60 mois</span></div>
+          <button type="button" class="voir" data-voir="v1" aria-label="Voir la fiche : Berline de direction hybride">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="v2" data-univ="voiture" data-seg="break" data-carb="diesel"
+      data-boite="Automatique" data-prix="29900" data-km="96000" data-an="2021"
+      data-fiche='{"titre": "Break de fonction 4×4", "photo": "photos/break-premium.jpg", "alt": "Break gris argent garé le long d&#39;un bâtiment", "an": 2021, "km": 96000, "prix": 29900, "ht": false, "ch": 286, "carb": "Diesel", "boite": "Automatique", "coul": "Argent nardo", "places": 5, "conso": "6,8 L/100 km", "co2": "178 g/km", "mains": "1re main", "note": "Le kilométrage est celui d&#39;un vrai véhicule de fonction, et l&#39;historique le prouve : entretien tous les 20 000 km sans exception, distribution faite à 90 000.", "equip": "Transmission intégrale · Coffre 550 L · Attelage 2 t · Suspension pneumatique · Sièges chauffants · Régulateur adaptatif", "mens": 450, "financement": "soit 450 €/mois sur 60 mois"}'>
+      <div class="ph"><img src="photos/break-premium.jpg" alt="Break gris argent garé le long d'un bâtiment" loading="lazy" width="1200" height="800"><span class="an">2021</span></div>
+      <div class="in">
+        <h3>Break de fonction 4×4</h3>
+        <div class="sous">Diesel · Automatique · 5 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>96 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>286 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2021</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">29 900 €<span class="mens">soit 450 €/mois sur 60 mois</span></div>
+          <button type="button" class="voir" data-voir="v2" aria-label="Voir la fiche : Break de fonction 4×4">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="v3" data-univ="voiture" data-seg="berline" data-carb="electrique"
+      data-boite="Automatique" data-prix="33900" data-km="48000" data-an="2022"
+      data-fiche='{"titre": "Berline électrique grande autonomie", "photo": "photos/electrique.jpg", "alt": "Berline électrique noire sur un parking humide", "an": 2022, "km": 48000, "prix": 33900, "ht": false, "ch": 408, "carb": "Électrique", "boite": "Automatique", "coul": "Noir uni", "places": 5, "conso": "18,9 kWh/100 km", "co2": "0 g/km", "mains": "1re main", "note": "Santé de batterie mesurée à 93 %, rapport remis avec la voiture. Sur une flotte, c&#39;est le seul chiffre qui prédit la valeur de revente dans trois ans.", "equip": "Batterie contrôlée 93 % · Recharge rapide 150 kW · Pompe à chaleur · Câble mode 3 · Conduite assistée · Jantes 19\"", "mens": 510, "financement": "soit 510 €/mois sur 60 mois"}'>
+      <div class="ph"><span class="badge">Batterie contrôlée</span><img src="photos/electrique.jpg" alt="Berline électrique noire sur un parking humide" loading="lazy" width="1200" height="800"><span class="an">2022</span></div>
+      <div class="in">
+        <h3>Berline électrique grande autonomie</h3>
+        <div class="sous">Électrique · Automatique · 5 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>48 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>408 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2022</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">33 900 €<span class="mens">soit 510 €/mois sur 60 mois</span></div>
+          <button type="button" class="voir" data-voir="v3" aria-label="Voir la fiche : Berline électrique grande autonomie">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="v4" data-univ="voiture" data-seg="berline" data-carb="diesel"
+      data-boite="Automatique" data-prix="24900" data-km="84000" data-an="2021"
+      data-fiche='{"titre": "Berline compacte diesel", "photo": "photos/berline-noire.jpg", "alt": "Berline noire de face, portes ouvertes, dans un garage", "an": 2021, "km": 84000, "prix": 24900, "ht": false, "ch": 190, "carb": "Diesel", "boite": "Automatique", "coul": "Noir saphir", "places": 5, "conso": "5,4 L/100 km", "co2": "142 g/km", "mains": "2 mains", "note": "La voiture de commercial qui fait 40 000 km par an sans broncher. Filtre à particules contrôlé, injecteurs testés au banc, pas de colmatage.", "equip": "Régulateur adaptatif · Caméra de recul · Sièges chauffants · Apple CarPlay · Jantes 18\" · Pack froid", "mens": 380, "financement": "soit 380 €/mois sur 60 mois"}'>
+      <div class="ph"><img src="photos/berline-noire.jpg" alt="Berline noire de face, portes ouvertes, dans un garage" loading="lazy" width="1200" height="800"><span class="an">2021</span></div>
+      <div class="in">
+        <h3>Berline compacte diesel</h3>
+        <div class="sous">Diesel · Automatique · 5 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>84 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>190 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2021</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">24 900 €<span class="mens">soit 380 €/mois sur 60 mois</span></div>
+          <button type="button" class="voir" data-voir="v4" aria-label="Voir la fiche : Berline compacte diesel">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="v5" data-univ="voiture" data-seg="suv" data-carb="essence"
+      data-boite="Automatique" data-prix="62000" data-km="44800" data-an="2022"
+      data-fiche='{"titre": "Grand SUV 7 places", "photo": "photos/suv-7places.jpg", "alt": "Grand SUV bleu vu de profil en ville", "an": 2022, "km": 44800, "prix": 62000, "ht": false, "ch": 426, "carb": "Essence", "boite": "Automatique", "coul": "Bleu nuit métallisé", "places": 7, "conso": "13,4 L/100 km", "co2": "304 g/km", "mains": "1re main", "note": "Sept vraies places et un coffre utilisable derrière la troisième rangée. Le véhicule de direction qui sert aussi à déplacer une équipe.", "equip": "7 vraies places · Hayon mains libres · Écrans arrière · Suspension pneumatique · Attelage 3,5 t · Caméra 360°", "mens": 930, "financement": "soit 930 €/mois sur 60 mois"}'>
+      <div class="ph"><img src="photos/suv-7places.jpg" alt="Grand SUV bleu vu de profil en ville" loading="lazy" width="1200" height="800"><span class="an">2022</span></div>
+      <div class="in">
+        <h3>Grand SUV 7 places</h3>
+        <div class="sous">Essence · Automatique · 7 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>44 800 km</dd></div>
+          <div><dt>Puissance</dt><dd>426 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2022</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">62 000 €<span class="mens">soit 930 €/mois sur 60 mois</span></div>
+          <button type="button" class="voir" data-voir="v5" aria-label="Voir la fiche : Grand SUV 7 places">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="v6" data-univ="voiture" data-seg="suv" data-carb="essence"
+      data-boite="Automatique" data-prix="78500" data-km="39500" data-an="2022"
+      data-fiche='{"titre": "SUV coupé de direction", "photo": "photos/suv-coupe.jpg", "alt": "SUV coupé noir vu de l&#39;arrière dans un showroom", "an": 2022, "km": 39500, "prix": 78500, "ht": false, "ch": 612, "carb": "Essence", "boite": "Automatique", "coul": "Noir magnétite", "places": 5, "conso": "12,8 L/100 km", "co2": "291 g/km", "mains": "1re main", "note": "Configuration rare, quatre pneus neufs posés avant la mise en vente. Le véhicule de dirigeant qui tient aussi la route chargé et par mauvais temps.", "equip": "Pack nuit · Transmission intégrale · Toit panoramique · Attelage électrique · Sièges baquets · Jantes 22\"", "mens": 1180, "financement": "soit 1 180 €/mois sur 60 mois"}'>
+      <div class="ph"><span class="badge">Arrivage</span><img src="photos/suv-coupe.jpg" alt="SUV coupé noir vu de l'arrière dans un showroom" loading="lazy" width="1200" height="800"><span class="an">2022</span></div>
+      <div class="in">
+        <h3>SUV coupé de direction</h3>
+        <div class="sous">Essence · Automatique · 5 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>39 500 km</dd></div>
+          <div><dt>Puissance</dt><dd>612 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2022</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">78 500 €<span class="mens">soit 1 180 €/mois sur 60 mois</span></div>
+          <button type="button" class="voir" data-voir="v6" aria-label="Voir la fiche : SUV coupé de direction">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="u1" data-univ="utilitaire" data-seg="fourgon" data-carb="diesel"
+      data-boite="Manuelle" data-prix="21900" data-km="98000" data-an="2021"
+      data-fiche='{"titre": "Fourgon tôlé L2H2", "photo": "photos/fourgon-tole.jpg", "alt": "Fourgon blanc garé face à un paysage de montagne", "an": 2021, "km": 98000, "prix": 21900, "ht": true, "ch": 150, "carb": "Diesel", "boite": "Manuelle", "coul": "Blanc banquise", "places": 3, "conso": "7,6 L/100 km", "co2": "199 g/km", "mains": "1re main", "note": "6 m³ utiles, plancher bois et parois protégées d&#39;origine. Embrayage remplacé à 92 000 km, facture jointe au dossier.", "equip": "6 m³ utiles · Plancher bois · Cloison pleine · Attelage · Climatisation · Radars de recul", "mens": 460, "financement": "soit 460 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><img src="photos/fourgon-tole.jpg" alt="Fourgon blanc garé face à un paysage de montagne" loading="lazy" width="1200" height="800"><span class="an">2021</span></div>
+      <div class="in">
+        <h3>Fourgon tôlé L2H2</h3>
+        <div class="sous">Diesel · Manuelle · 3 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>98 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>150 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2021</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">21 900 € <span class="ht">HT</span><span class="mens">soit 460 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="u1" aria-label="Voir la fiche : Fourgon tôlé L2H2">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="u2" data-univ="utilitaire" data-seg="cabine" data-carb="diesel"
+      data-boite="Automatique" data-prix="26500" data-km="64000" data-an="2022"
+      data-fiche='{"titre": "Fourgon vitré 6 places", "photo": "photos/fourgon-vitre.jpg", "alt": "Fourgon vitré blanc garé dans un pré", "an": 2022, "km": 64000, "prix": 26500, "ht": true, "ch": 180, "carb": "Diesel", "boite": "Automatique", "coul": "Blanc glacier", "places": 6, "conso": "7,2 L/100 km", "co2": "188 g/km", "mains": "1re main", "note": "Le compromis des équipes de chantier : six places à l&#39;aller, 3,5 m³ de matériel derrière la cloison. Banquette rabattable sans outil.", "equip": "6 places · Banquette rabattable · Cloison vitrée · 3,5 m³ utiles · Attelage · Caméra de recul", "mens": 550, "financement": "soit 550 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><span class="badge">Cabine approfondie</span><img src="photos/fourgon-vitre.jpg" alt="Fourgon vitré blanc garé dans un pré" loading="lazy" width="1200" height="800"><span class="an">2022</span></div>
+      <div class="in">
+        <h3>Fourgon vitré 6 places</h3>
+        <div class="sous">Diesel · Automatique · 6 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>64 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>180 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2022</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">26 500 € <span class="ht">HT</span><span class="mens">soit 550 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="u2" aria-label="Voir la fiche : Fourgon vitré 6 places">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="u3" data-univ="utilitaire" data-seg="fourgonnette" data-carb="electrique"
+      data-boite="Automatique" data-prix="19900" data-km="31000" data-an="2023"
+      data-fiche='{"titre": "Fourgonnette de ville électrique", "photo": "photos/fourgonnette.jpg", "alt": "Fourgonnette blanche sur un chemin forestier", "an": 2023, "km": 31000, "prix": 19900, "ht": true, "ch": 136, "carb": "Électrique", "boite": "Automatique", "coul": "Blanc", "places": 3, "conso": "20,4 kWh/100 km", "co2": "0 g/km", "mains": "1re main", "note": "275 km d&#39;autonomie réelle en tournée urbaine, recharge complète la nuit sur une prise renforcée. Batterie contrôlée à 96 %.", "equip": "Batterie contrôlée 96 % · 3,3 m³ utiles · Recharge rapide 100 kW · Cloison pleine · Régulateur · Caméra de recul", "mens": 420, "financement": "soit 420 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><span class="badge">Zéro émission</span><img src="photos/fourgonnette.jpg" alt="Fourgonnette blanche sur un chemin forestier" loading="lazy" width="1200" height="800"><span class="an">2023</span></div>
+      <div class="in">
+        <h3>Fourgonnette de ville électrique</h3>
+        <div class="sous">Électrique · Automatique · 3 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>31 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>136 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2023</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">19 900 € <span class="ht">HT</span><span class="mens">soit 420 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="u3" aria-label="Voir la fiche : Fourgonnette de ville électrique">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="u4" data-univ="utilitaire" data-seg="fourgon" data-carb="diesel"
+      data-boite="Manuelle" data-prix="24900" data-km="142000" data-an="2020"
+      data-fiche='{"titre": "Grand fourgon avec hayon élévateur", "photo": "photos/fourgon-hayon.jpg", "alt": "Grand fourgon blanc portes arrière ouvertes, hayon déplié", "an": 2020, "km": 142000, "prix": 24900, "ht": true, "ch": 165, "carb": "Diesel", "boite": "Manuelle", "coul": "Blanc", "places": 3, "conso": "9,1 L/100 km", "co2": "238 g/km", "mains": "2 mains", "note": "Hayon 750 kg révisé et contrôlé dans notre atelier, avec le procès-verbal de vérification générale périodique à jour. C&#39;est ce document qui fait défaut sur la plupart des occasions.", "equip": "Hayon 750 kg · VGP à jour · 13 m³ utiles · Plancher anti-dérapant · Anneaux d&#39;arrimage · Marchepied", "mens": 520, "financement": "soit 520 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><img src="photos/fourgon-hayon.jpg" alt="Grand fourgon blanc portes arrière ouvertes, hayon déplié" loading="lazy" width="1200" height="800"><span class="an">2020</span></div>
+      <div class="in">
+        <h3>Grand fourgon avec hayon élévateur</h3>
+        <div class="sous">Diesel · Manuelle · 3 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>142 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>165 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2020</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">24 900 € <span class="ht">HT</span><span class="mens">soit 520 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="u4" aria-label="Voir la fiche : Grand fourgon avec hayon élévateur">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="p1" data-univ="pl" data-seg="tracteur" data-carb="diesel"
+      data-boite="Automatisée" data-prix="44500" data-km="610000" data-an="2019"
+      data-fiche='{"titre": "Tracteur routier 4×2", "photo": "photos/tracteur-rouge.jpg", "alt": "Tracteur routier rouge stationné devant un dépôt", "an": 2019, "km": 610000, "prix": 44500, "ht": true, "ch": 460, "carb": "Diesel", "boite": "Automatisée", "coul": "Rouge", "places": 2, "conso": "29 L/100 km", "co2": "Euro VI", "mains": "1re main", "note": "610 000 km, ce qui est peu pour un porteur de cette génération. Boîte automatisée révisée, embrayage contrôlé à 60 % restants, carnet constructeur complet.", "equip": "Cabine lit · Boîte automatisée · Régulateur de vitesse · Frigo cabine · Ralentisseur · Euro VI", "mens": 930, "financement": "soit 930 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><img src="photos/tracteur-rouge.jpg" alt="Tracteur routier rouge stationné devant un dépôt" loading="lazy" width="1200" height="800"><span class="an">2019</span></div>
+      <div class="in">
+        <h3>Tracteur routier 4×2</h3>
+        <div class="sous">Diesel · Automatisée · 2 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>610 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>460 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2019</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">44 500 € <span class="ht">HT</span><span class="mens">soit 930 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="p1" aria-label="Voir la fiche : Tracteur routier 4×2">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="p2" data-univ="pl" data-seg="tracteur" data-carb="diesel"
+      data-boite="Automatisée" data-prix="58900" data-km="480000" data-an="2020"
+      data-fiche='{"titre": "Tracteur routier 6×2 grand routier", "photo": "photos/tracteur-bleu.jpg", "alt": "Tracteur routier bleu sur une route de montagne", "an": 2020, "km": 480000, "prix": 58900, "ht": true, "ch": 500, "carb": "Diesel", "boite": "Automatisée", "coul": "Bleu", "places": 2, "conso": "27 L/100 km", "co2": "Euro VI", "mains": "1re main", "note": "Cabine grand volume, deux couchettes et essieu suiveur relevable. Pensé pour l&#39;international, il consomme moins que la plupart des 4×2 de la même puissance.", "equip": "Cabine grand volume · 2 couchettes · Essieu relevable · Ralentisseur · Prédictif GPS · Euro VI", "mens": 1230, "financement": "soit 1 230 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><span class="badge">Grand routier</span><img src="photos/tracteur-bleu.jpg" alt="Tracteur routier bleu sur une route de montagne" loading="lazy" width="1200" height="800"><span class="an">2020</span></div>
+      <div class="in">
+        <h3>Tracteur routier 6×2 grand routier</h3>
+        <div class="sous">Diesel · Automatisée · 2 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>480 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>500 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2020</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">58 900 € <span class="ht">HT</span><span class="mens">soit 1 230 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="p2" aria-label="Voir la fiche : Tracteur routier 6×2 grand routier">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="p3" data-univ="pl" data-seg="ensemble" data-carb="diesel"
+      data-boite="Automatisée" data-prix="62000" data-km="720000" data-an="2018"
+      data-fiche='{"titre": "Ensemble routier porte-engins", "photo": "photos/ensemble-routier.jpg", "alt": "Ensemble routier avec remorque porte-engins dans un champ", "an": 2018, "km": 720000, "prix": 62000, "ht": true, "ch": 480, "carb": "Diesel", "boite": "Automatisée", "coul": "Blanc", "places": 2, "conso": "31 L/100 km", "co2": "Euro VI", "mains": "2 mains", "note": "Tracteur et remorque surbaissée vendus ensemble, avec rampes et treuil. Plateau contrôlé, freinage de la remorque refait l&#39;an dernier.", "equip": "Remorque surbaissée comprise · Rampes hydrauliques · Treuil · Freinage remorque refait · Euro VI · Ralentisseur", "mens": 1300, "financement": "soit 1 300 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><span class="badge">Vendu ensemble</span><img src="photos/ensemble-routier.jpg" alt="Ensemble routier avec remorque porte-engins dans un champ" loading="lazy" width="1200" height="800"><span class="an">2018</span></div>
+      <div class="in">
+        <h3>Ensemble routier porte-engins</h3>
+        <div class="sous">Diesel · Automatisée · 2 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>720 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>480 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2018</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">62 000 € <span class="ht">HT</span><span class="mens">soit 1 300 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="p3" aria-label="Voir la fiche : Ensemble routier porte-engins">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="p4" data-univ="pl" data-seg="porteur" data-carb="diesel"
+      data-boite="Automatisée" data-prix="48900" data-km="210000" data-an="2021"
+      data-fiche='{"titre": "Porteur frigorifique 12 tonnes", "photo": "photos/porteur-frigo.jpg", "alt": "Porteur frigorifique blanc stationné devant un entrepôt", "an": 2021, "km": 210000, "prix": 48900, "ht": true, "ch": 280, "carb": "Diesel", "boite": "Automatisée", "coul": "Blanc", "places": 3, "conso": "21 L/100 km", "co2": "Euro VI", "mains": "1re main", "note": "Groupe froid bi-température révisé, relevé de températures remis avec le véhicule. Attestation ATP valable encore trois ans.", "equip": "Groupe bi-température · ATP valable 3 ans · Hayon 1 500 kg · Cloison mobile · Rails d&#39;arrimage · Euro VI", "mens": 1020, "financement": "soit 1 020 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><img src="photos/porteur-frigo.jpg" alt="Porteur frigorifique blanc stationné devant un entrepôt" loading="lazy" width="1200" height="800"><span class="an">2021</span></div>
+      <div class="in">
+        <h3>Porteur frigorifique 12 tonnes</h3>
+        <div class="sous">Diesel · Automatisée · 3 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>210 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>280 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2021</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">48 900 € <span class="ht">HT</span><span class="mens">soit 1 020 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="p4" aria-label="Voir la fiche : Porteur frigorifique 12 tonnes">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="p5" data-univ="pl" data-seg="benne" data-carb="diesel"
+      data-boite="Manuelle" data-prix="39500" data-km="340000" data-an="2017"
+      data-fiche='{"titre": "Porteur benne TP 26 tonnes", "photo": "photos/benne.jpg", "alt": "Porteur benne rouge circulant sur une route", "an": 2017, "km": 340000, "prix": 39500, "ht": true, "ch": 380, "carb": "Diesel", "boite": "Manuelle", "coul": "Rouge", "places": 3, "conso": "34 L/100 km", "co2": "Euro VI", "mains": "2 mains", "note": "Benne Enrobé à fond renforcé, vérins contrôlés et bâche automatique fonctionnelle. Châssis sain, traité anticorrosion chez nous avant mise en vente.", "equip": "Benne enrobé · Fond renforcé · Bâche automatique · Attelage remorque · Blocage de différentiel · Euro VI", "mens": 830, "financement": "soit 830 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><img src="photos/benne.jpg" alt="Porteur benne rouge circulant sur une route" loading="lazy" width="1200" height="800"><span class="an">2017</span></div>
+      <div class="in">
+        <h3>Porteur benne TP 26 tonnes</h3>
+        <div class="sous">Diesel · Manuelle · 3 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>340 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>380 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2017</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">39 500 € <span class="ht">HT</span><span class="mens">soit 830 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="p5" aria-label="Voir la fiche : Porteur benne TP 26 tonnes">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+    <article class="auto" id="p6" data-univ="pl" data-seg="grue" data-carb="diesel"
+      data-boite="Manuelle" data-prix="54000" data-km="290000" data-an="2016"
+      data-fiche='{"titre": "Porteur grue auxiliaire 8×4", "photo": "photos/grue.jpg", "alt": "Porteur équipé d&#39;une grue auxiliaire, stationné sous les arbres", "an": 2016, "km": 290000, "prix": 54000, "ht": true, "ch": 410, "carb": "Diesel", "boite": "Manuelle", "coul": "Vert olive", "places": 3, "conso": "36 L/100 km", "co2": "Euro VI", "mains": "2 mains", "note": "Grue 22 tonnes-mètre avec vérification générale périodique à jour et rapport d&#39;organisme agréé. Plateau ridelles bois refait, stabilisateurs sans jeu.", "equip": "Grue 22 t.m · VGP à jour · Stabilisateurs hydrauliques · Plateau ridelles · Commande radio · Euro VI", "mens": 1130, "financement": "soit 1 130 €/mois en LOA sur 48 mois"}'>
+      <div class="ph"><span class="badge">VGP à jour</span><img src="photos/grue.jpg" alt="Porteur équipé d'une grue auxiliaire, stationné sous les arbres" loading="lazy" width="1200" height="800"><span class="an">2016</span></div>
+      <div class="in">
+        <h3>Porteur grue auxiliaire 8×4</h3>
+        <div class="sous">Diesel · Manuelle · 3 places</div>
+        <dl class="specs">
+          <div><dt>Kilométrage</dt><dd>290 000 km</dd></div>
+          <div><dt>Puissance</dt><dd>410 ch</dd></div>
+          <div><dt>Mise en circ.</dt><dd>2016</dd></div>
+        </dl>
+        <div class="bas">
+          <div class="prix">54 000 € <span class="ht">HT</span><span class="mens">soit 1 130 €/mois en LOA sur 48 mois</span></div>
+          <button type="button" class="voir" data-voir="p6" aria-label="Voir la fiche : Porteur grue auxiliaire 8×4">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+<!-- CATALOGUE:FIN -->
+    <div class="vide" id="vide" hidden>
+      <h3>Rien à ce critère aujourd'hui</h3>
+      <p>Une partie du parc part avant d'être publiée, et beaucoup de véhicules se trouvent sur commande en trois à six semaines. Dites-nous ce qu'il vous faut.</p>
+      <a href="tel:+35200000000" class="btn fil">Nous dire ce que vous cherchez <span class="ar">→</span></a>
+    </div>
+  </div>
+</div></section>
+
+<section id="atelier" class="atelier"><div class="wrap">
+  <div class="tete">
+    <div data-reveal="left"><span class="kick">L'atelier · plus de 60 prestations</span><h2>De la citadine<br>au 44 tonnes</h2></div>
+    <p class="lede" data-reveal="right">Sept univers, deux lignes d'atelier : une ligne véhicules légers et utilitaires, une ligne poids lourds avec fosse, pont 20 tonnes et banc de freinage. Cochez ce dont vous avez besoin, l'estimation se construit au fur et à mesure.</p>
+  </div>
+
+  <div class="onglets" id="onglets" role="tablist">
+<!-- ONGLETS:DEBUT -->
+    <button type="button" class="ong on" data-ong="entretien" role="tab" aria-selected="true" aria-controls="p-entretien">Entretien VL &amp; utilitaires<small>11 prestations</small></button>
+    <button type="button" class="ong" data-ong="diagnostic" role="tab" aria-selected="false" aria-controls="p-diagnostic">Mécanique &amp; diagnostic VL<small>9 prestations</small></button>
+    <button type="button" class="ong" data-ong="carrosserie" role="tab" aria-selected="false" aria-controls="p-carrosserie">Carrosserie &amp; marquage<small>8 prestations</small></button>
+    <button type="button" class="ong pl" data-ong="pl-atelier" role="tab" aria-selected="false" aria-controls="p-pl-atelier">Atelier poids lourds<small>12 prestations</small></button>
+    <button type="button" class="ong pl" data-ong="pl-roulants" role="tab" aria-selected="false" aria-controls="p-pl-roulants">Freinage, pneus &amp; trains PL<small>9 prestations</small></button>
+    <button type="button" class="ong pl" data-ong="pl-regle" role="tab" aria-selected="false" aria-controls="p-pl-regle">Tachygraphe &amp; réglementation<small>7 prestations</small></button>
+    <button type="button" class="ong pl" data-ong="flotte" role="tab" aria-selected="false" aria-controls="p-flotte">Gestion de flotte<small>8 prestations</small></button>
+<!-- ONGLETS:FIN -->
+  </div>
+<!-- PANNEAUX:DEBUT -->
+  <div class="panneau on" id="p-entretien" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Entretien VL &amp; utilitaires</h3>
+        <p>Ce qu'une voiture de société ou un fourgon demandent chaque année. Sur contrat de flotte, les échéances sont planifiées et vous n'y pensez plus.</p>
+      </div>
+      <img src="photos/atelier-pont.jpg" alt="Véhicule sur le pont élévateur dans l'atelier" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Vidange et filtre à huile" data-prix="95"><span class="coche" aria-hidden="true">✓</span><span class="nom">Vidange et filtre à huile<em>Huile constructeur, remise à zéro du témoin</em></span><span class="de">dès 95 €</span></button>
+      <button type="button" class="presta" data-nom="Révision constructeur complète" data-prix="240"><span class="coche" aria-hidden="true">✓</span><span class="nom">Révision constructeur complète<em>Selon le carnet, tampon inclus</em></span><span class="de">dès 240 €</span></button>
+      <button type="button" class="presta" data-nom="Filtre à air et filtre d'habitacle" data-prix="70"><span class="coche" aria-hidden="true">✓</span><span class="nom">Filtre à air et filtre d'habitacle<em>Filtre charbon actif en option</em></span><span class="de">dès 70 €</span></button>
+      <button type="button" class="presta" data-nom="Plaquettes de frein" data-prix="160"><span class="coche" aria-hidden="true">✓</span><span class="nom">Plaquettes de frein<em>Un train, contrôle des disques compris</em></span><span class="de">dès 160 €</span></button>
+      <button type="button" class="presta" data-nom="Disques et plaquettes" data-prix="340"><span class="coche" aria-hidden="true">✓</span><span class="nom">Disques et plaquettes<em>Un train, montage et rodage</em></span><span class="de">dès 340 €</span></button>
+      <button type="button" class="presta" data-nom="Courroie de distribution" data-prix="690"><span class="coche" aria-hidden="true">✓</span><span class="nom">Courroie de distribution<em>Avec pompe à eau et galets</em></span><span class="de">dès 690 €</span></button>
+      <button type="button" class="presta" data-nom="Embrayage et volant moteur" data-prix="1150"><span class="coche" aria-hidden="true">✓</span><span class="nom">Embrayage et volant moteur<em>Kit complet, butée comprise</em></span><span class="de">dès 1 150 €</span></button>
+      <button type="button" class="presta" data-nom="Batterie" data-prix="180"><span class="coche" aria-hidden="true">✓</span><span class="nom">Batterie<em>Test de charge, pose et codage si besoin</em></span><span class="de">dès 180 €</span></button>
+      <button type="button" class="presta" data-nom="Climatisation : recharge et désinfection" data-prix="175"><span class="coche" aria-hidden="true">✓</span><span class="nom">Climatisation : recharge et désinfection<em>R134a ou R1234yf, contrôle d'étanchéité</em></span><span class="de">dès 175 €</span></button>
+      <button type="button" class="presta" data-nom="Amortisseurs" data-prix="480"><span class="coche" aria-hidden="true">✓</span><span class="nom">Amortisseurs<em>Un train, coupelles et butées contrôlées</em></span><span class="de">dès 480 €</span></button>
+      <button type="button" class="presta" data-nom="Liquides et points d'usure" data-prix="90"><span class="coche" aria-hidden="true">✓</span><span class="nom">Liquides et points d'usure<em>Freins, refroidissement, essuie-glaces</em></span><span class="de">dès 90 €</span></button>
+    </div>
+  </div>
+  <div class="panneau" id="p-diagnostic" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Mécanique &amp; diagnostic VL</h3>
+        <p>Les interventions où le devis se joue au démontage. On ouvre, on photographie, on vous appelle, et rien ne repart sans votre accord écrit.</p>
+      </div>
+      <img src="photos/atelier-prepa.jpg" alt="Véhicule en préparation dans un box d'atelier" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Lecture de défauts" data-prix="60"><span class="coche" aria-hidden="true">✓</span><span class="nom">Lecture de défauts<em>Tous calculateurs, rapport imprimé</em></span><span class="de">dès 60 €</span></button>
+      <button type="button" class="presta" data-nom="Recherche de panne électrique" data-prix="110"><span class="coche" aria-hidden="true">✓</span><span class="nom">Recherche de panne électrique<em>Au temps passé, première heure</em></span><span class="de">dès 110 €</span></button>
+      <button type="button" class="presta" data-nom="Filtre à particules" data-prix="290"><span class="coche" aria-hidden="true">✓</span><span class="nom">Filtre à particules<em>Décalaminage, sinon remplacement</em></span><span class="de">dès 290 €</span></button>
+      <button type="button" class="presta" data-nom="Turbo" data-prix="1450"><span class="coche" aria-hidden="true">✓</span><span class="nom">Turbo<em>Contrôle de jeu, remplacement, circuit d'huile nettoyé</em></span><span class="de">dès 1 450 €</span></button>
+      <button type="button" class="presta" data-nom="Vanne EGR et admission" data-prix="380"><span class="coche" aria-hidden="true">✓</span><span class="nom">Vanne EGR et admission<em>Nettoyage complet ou remplacement</em></span><span class="de">dès 380 €</span></button>
+      <button type="button" class="presta" data-nom="Boîte automatique : vidange" data-prix="380"><span class="coche" aria-hidden="true">✓</span><span class="nom">Boîte automatique : vidange<em>Huile, filtre et joint de carter</em></span><span class="de">dès 380 €</span></button>
+      <button type="button" class="presta" data-nom="Recalibrage des aides à la conduite" data-prix="240"><span class="coche" aria-hidden="true">✓</span><span class="nom">Recalibrage des aides à la conduite<em>Caméra et radar, après pare-brise ou géométrie</em></span><span class="de">dès 240 €</span></button>
+      <button type="button" class="presta" data-nom="Système hybride et haute tension" data-prix="220"><span class="coche" aria-hidden="true">✓</span><span class="nom">Système hybride et haute tension<em>Habilitation requise, contrôle du pack</em></span><span class="de">dès 220 €</span></button>
+      <button type="button" class="presta" data-nom="Clé et antidémarrage" data-prix="190"><span class="coche" aria-hidden="true">✓</span><span class="nom">Clé et antidémarrage<em>Programmation d'une clé supplémentaire</em></span><span class="de">dès 190 €</span></button>
+    </div>
+  </div>
+  <div class="panneau" id="p-carrosserie" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Carrosserie &amp; marquage</h3>
+        <p>Sur une flotte, la carrosserie est votre publicité. On répare, on repeint, et on pose votre identité visuelle dans le même atelier.</p>
+      </div>
+      <img src="photos/atelier-polish.jpg" alt="Finition de la carrosserie d'un véhicule" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Débosselage sans peinture" data-prix="90"><span class="coche" aria-hidden="true">✓</span><span class="nom">Débosselage sans peinture<em>Un impact de grêle ou de portière</em></span><span class="de">dès 90 €</span></button>
+      <button type="button" class="presta" data-nom="Retouche et raccord de peinture" data-prix="290"><span class="coche" aria-hidden="true">✓</span><span class="nom">Retouche et raccord de peinture<em>Un élément, teinte relevée au spectromètre</em></span><span class="de">dès 290 €</span></button>
+      <button type="button" class="presta" data-nom="Peinture d'un élément complet" data-prix="480"><span class="coche" aria-hidden="true">✓</span><span class="nom">Peinture d'un élément complet<em>Cabine chauffante, vernis deux couches</em></span><span class="de">dès 480 €</span></button>
+      <button type="button" class="presta" data-nom="Pare-brise" data-prix="420"><span class="coche" aria-hidden="true">✓</span><span class="nom">Pare-brise<em>Remplacement, recalibrage caméra en supplément</em></span><span class="de">dès 420 €</span></button>
+      <button type="button" class="presta" data-nom="Marquage publicitaire" data-prix="340"><span class="coche" aria-hidden="true">✓</span><span class="nom">Marquage publicitaire<em>Pose de votre logo et coordonnées, un véhicule</em></span><span class="de">dès 340 €</span></button>
+      <button type="button" class="presta" data-nom="Covering total" data-prix="1890"><span class="coche" aria-hidden="true">✓</span><span class="nom">Covering total<em>Film couleur intégral, un fourgon</em></span><span class="de">dès 1 890 €</span></button>
+      <button type="button" class="presta" data-nom="Dépose de marquage" data-prix="260"><span class="coche" aria-hidden="true">✓</span><span class="nom">Dépose de marquage<em>Avant revente, colle et voile retirés</em></span><span class="de">dès 260 €</span></button>
+      <button type="button" class="presta" data-nom="Lettrage réglementaire PL" data-prix="190"><span class="coche" aria-hidden="true">✓</span><span class="nom">Lettrage réglementaire PL<em>Nom, adresse, licence de transport</em></span><span class="de">dès 190 €</span></button>
+    </div>
+  </div>
+  <div class="panneau pl" id="p-pl-atelier" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Atelier poids lourds</h3>
+        <p>Deuxième ligne d'atelier : fosse, pont 20 tonnes et outillage pneumatique. Un porteur y entre entier, remorque comprise.</p>
+      </div>
+      <img src="photos/remorques.jpg" alt="Remorques à quai devant l'atelier" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Vidange moteur PL" data-prix="320"><span class="coche" aria-hidden="true">✓</span><span class="nom">Vidange moteur PL<em>Jusqu'à 40 litres, filtres compris</em></span><span class="de">dès 320 €</span></button>
+      <button type="button" class="presta" data-nom="Révision constructeur PL" data-prix="690"><span class="coche" aria-hidden="true">✓</span><span class="nom">Révision constructeur PL<em>Selon le plan d'entretien, tampon inclus</em></span><span class="de">dès 690 €</span></button>
+      <button type="button" class="presta" data-nom="Filtre à particules et AdBlue" data-prix="540"><span class="coche" aria-hidden="true">✓</span><span class="nom">Filtre à particules et AdBlue<em>Contrôle du dosage, nettoyage du circuit</em></span><span class="de">dès 540 €</span></button>
+      <button type="button" class="presta" data-nom="Embrayage PL" data-prix="3200"><span class="coche" aria-hidden="true">✓</span><span class="nom">Embrayage PL<em>Kit complet, dépose de boîte</em></span><span class="de">dès 3 200 €</span></button>
+      <button type="button" class="presta" data-nom="Boîte automatisée : entretien" data-prix="780"><span class="coche" aria-hidden="true">✓</span><span class="nom">Boîte automatisée : entretien<em>Huile, filtre, apprentissage</em></span><span class="de">dès 780 €</span></button>
+      <button type="button" class="presta" data-nom="Circuit de refroidissement" data-prix="890"><span class="coche" aria-hidden="true">✓</span><span class="nom">Circuit de refroidissement<em>Pompe, radiateur, durites</em></span><span class="de">dès 890 €</span></button>
+      <button type="button" class="presta" data-nom="Suspension pneumatique" data-prix="720"><span class="coche" aria-hidden="true">✓</span><span class="nom">Suspension pneumatique<em>Coussins, valves, compresseur</em></span><span class="de">dès 720 €</span></button>
+      <button type="button" class="presta" data-nom="Ligne d'échappement et SCR" data-prix="1290"><span class="coche" aria-hidden="true">✓</span><span class="nom">Ligne d'échappement et SCR<em>Silencieux, catalyseur, injecteur AdBlue</em></span><span class="de">dès 1 290 €</span></button>
+      <button type="button" class="presta" data-nom="Hayon élévateur" data-prix="460"><span class="coche" aria-hidden="true">✓</span><span class="nom">Hayon élévateur<em>Vérins, flexibles, vérification périodique</em></span><span class="de">dès 460 €</span></button>
+      <button type="button" class="presta" data-nom="Groupe froid" data-prix="420"><span class="coche" aria-hidden="true">✓</span><span class="nom">Groupe froid<em>Entretien annuel, contrôle des températures</em></span><span class="de">dès 420 €</span></button>
+      <button type="button" class="presta" data-nom="Grue auxiliaire" data-prix="390"><span class="coche" aria-hidden="true">✓</span><span class="nom">Grue auxiliaire<em>Graissage, jeux, contrôle des stabilisateurs</em></span><span class="de">dès 390 €</span></button>
+      <button type="button" class="presta" data-nom="Remorque et semi-remorque" data-prix="560"><span class="coche" aria-hidden="true">✓</span><span class="nom">Remorque et semi-remorque<em>Freinage, éclairage, suspension, plancher</em></span><span class="de">dès 560 €</span></button>
+    </div>
+  </div>
+  <div class="panneau pl" id="p-pl-roulants" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Freinage, pneus &amp; trains PL</h3>
+        <p>Le poste qui immobilise le plus vite un camion, et celui que le contrôle technique sanctionne le plus souvent. Banc de freinage sur place.</p>
+      </div>
+      <img src="photos/pneus-pl.jpg" alt="Pneumatiques de poids lourd" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Passage au banc de freinage" data-prix="140"><span class="coche" aria-hidden="true">✓</span><span class="nom">Passage au banc de freinage<em>Relevé essieu par essieu, rapport remis</em></span><span class="de">dès 140 €</span></button>
+      <button type="button" class="presta" data-nom="Plaquettes ou garnitures" data-prix="590"><span class="coche" aria-hidden="true">✓</span><span class="nom">Plaquettes ou garnitures<em>Un essieu, disques ou tambours contrôlés</em></span><span class="de">dès 590 €</span></button>
+      <button type="button" class="presta" data-nom="Disques et plaquettes PL" data-prix="1180"><span class="coche" aria-hidden="true">✓</span><span class="nom">Disques et plaquettes PL<em>Un essieu, montage et rodage</em></span><span class="de">dès 1 180 €</span></button>
+      <button type="button" class="presta" data-nom="Circuit d'air comprimé" data-prix="420"><span class="coche" aria-hidden="true">✓</span><span class="nom">Circuit d'air comprimé<em>Dessiccateur, valves, recherche de fuite</em></span><span class="de">dès 420 €</span></button>
+      <button type="button" class="presta" data-nom="Montage pneumatique PL" data-prix="85"><span class="coche" aria-hidden="true">✓</span><span class="nom">Montage pneumatique PL<em>Le pneu, valve et équilibrage</em></span><span class="de">dès 85 €</span></button>
+      <button type="button" class="presta" data-nom="Recreusage et rechapage" data-prix="45"><span class="coche" aria-hidden="true">✓</span><span class="nom">Recreusage et rechapage<em>Le pneu, si la carcasse le permet</em></span><span class="de">dès 45 €</span></button>
+      <button type="button" class="presta" data-nom="Géométrie porteur ou ensemble" data-prix="290"><span class="coche" aria-hidden="true">✓</span><span class="nom">Géométrie porteur ou ensemble<em>Banc à caméras, relevé avant/après</em></span><span class="de">dès 290 €</span></button>
+      <button type="button" class="presta" data-nom="Moyeux et roulements" data-prix="640"><span class="coche" aria-hidden="true">✓</span><span class="nom">Moyeux et roulements<em>Un essieu, graissage et jeux</em></span><span class="de">dès 640 €</span></button>
+      <button type="button" class="presta" data-nom="Dépannage pneumatique sur route" data-prix="260"><span class="coche" aria-hidden="true">✓</span><span class="nom">Dépannage pneumatique sur route<em>Grand-Duché, intervention de jour</em></span><span class="de">dès 260 €</span></button>
+    </div>
+  </div>
+  <div class="panneau pl" id="p-pl-regle" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Tachygraphe &amp; réglementation</h3>
+        <p>Atelier agréé tachygraphe. Tout ce qui vous met en règle, ou vous coûte cher le jour d'un contrôle si ça ne l'est pas.</p>
+      </div>
+      <img src="photos/cabine.jpg" alt="Poste de conduite d'un poids lourd" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Étalonnage de tachygraphe" data-prix="220"><span class="coche" aria-hidden="true">✓</span><span class="nom">Étalonnage de tachygraphe<em>Tachygraphe numérique, agrément à jour</em></span><span class="de">dès 220 €</span></button>
+      <button type="button" class="presta" data-nom="Installation de tachygraphe" data-prix="890"><span class="coche" aria-hidden="true">✓</span><span class="nom">Installation de tachygraphe<em>Fourniture, pose et scellement</em></span><span class="de">dès 890 €</span></button>
+      <button type="button" class="presta" data-nom="Téléchargement des données" data-prix="45"><span class="coche" aria-hidden="true">✓</span><span class="nom">Téléchargement des données<em>Carte conducteur et mémoire de masse</em></span><span class="de">dès 45 €</span></button>
+      <button type="button" class="presta" data-nom="Limiteur de vitesse" data-prix="190"><span class="coche" aria-hidden="true">✓</span><span class="nom">Limiteur de vitesse<em>Contrôle et réglage, scellement</em></span><span class="de">dès 190 €</span></button>
+      <button type="button" class="presta" data-nom="Contrôle technique PL : dépôt et passage" data-prix="290"><span class="coche" aria-hidden="true">✓</span><span class="nom">Contrôle technique PL : dépôt et passage<em>On dépose, on attend, on récupère</em></span><span class="de">dès 290 €</span></button>
+      <button type="button" class="presta" data-nom="Contre-visite : remise en conformité" data-prix="340"><span class="coche" aria-hidden="true">✓</span><span class="nom">Contre-visite : remise en conformité<em>Réparation puis repassage</em></span><span class="de">dès 340 €</span></button>
+      <button type="button" class="presta" data-nom="Vérification générale périodique" data-prix="310"><span class="coche" aria-hidden="true">✓</span><span class="nom">Vérification générale périodique<em>Hayon ou grue, avec organisme agréé</em></span><span class="de">dès 310 €</span></button>
+    </div>
+  </div>
+  <div class="panneau pl" id="p-flotte" role="tabpanel">
+    <div class="panneau-tete">
+      <div>
+        <h3>Gestion de flotte</h3>
+        <p>Tout ce qui ne se démonte pas mais qui fait qu'une flotte ne s'arrête pas : le planning, le remplacement, le suivi des coûts.</p>
+      </div>
+      <img src="photos/quai.jpg" alt="Camions et remorques stationnés devant un entrepôt" loading="lazy" width="1200" height="800">
+    </div>
+    <div class="prestas">
+      <button type="button" class="presta" data-nom="Contrat d'entretien de flotte" data-prix="45"><span class="coche" aria-hidden="true">✓</span><span class="nom">Contrat d'entretien de flotte<em>Par véhicule et par mois, à partir de</em></span><span class="de">dès 45 €</span></button>
+      <button type="button" class="presta" data-nom="Véhicule de remplacement" data-prix="0"><span class="coche" aria-hidden="true">✓</span><span class="nom">Véhicule de remplacement<em>VL ou utilitaire, la journée, sous contrat</em></span><span class="de">Inclus</span></button>
+      <button type="button" class="presta" data-nom="Porteur de remplacement" data-prix="180"><span class="coche" aria-hidden="true">✓</span><span class="nom">Porteur de remplacement<em>Porteur 12 t, la journée</em></span><span class="de">dès 180 €</span></button>
+      <button type="button" class="presta" data-nom="Prise en charge et livraison" data-prix="60"><span class="coche" aria-hidden="true">✓</span><span class="nom">Prise en charge et livraison<em>Aller-retour à votre dépôt</em></span><span class="de">dès 60 €</span></button>
+      <button type="button" class="presta" data-nom="Dépannage et remorquage PL" data-prix="390"><span class="coche" aria-hidden="true">✓</span><span class="nom">Dépannage et remorquage PL<em>Grand-Duché et Grande Région</em></span><span class="de">dès 390 €</span></button>
+      <button type="button" class="presta" data-nom="Expertise avant achat" data-prix="240"><span class="coche" aria-hidden="true">✓</span><span class="nom">Expertise avant achat<em>Un véhicule repéré ailleurs, contrôlé par nous</em></span><span class="de">dès 240 €</span></button>
+      <button type="button" class="presta" data-nom="Préparation à la revente" data-prix="350"><span class="coche" aria-hidden="true">✓</span><span class="nom">Préparation à la revente<em>Nettoyage, retouches, dossier d'entretien</em></span><span class="de">dès 350 €</span></button>
+      <button type="button" class="presta" data-nom="Suivi des coûts par véhicule" data-prix="0"><span class="coche" aria-hidden="true">✓</span><span class="nom">Suivi des coûts par véhicule<em>Point trimestriel, sous contrat de flotte</em></span><span class="de">Inclus</span></button>
+    </div>
+  </div>
+<!-- PANNEAUX:FIN -->
+</div></section>
+
+<section id="flotte"><div class="wrap">
+  <div class="tete">
+    <div data-reveal="left"><span class="kick">Gestion de flotte</span><h2>Un camion à l'arrêt<br>coûte plus cher<br>que sa réparation</h2></div>
+    <p class="lede" data-reveal="right">C'est tout le métier : ne pas réparer moins cher, mais immobiliser moins longtemps. Voilà comment on s'y prend.</p>
+  </div>
+  <div class="gar3" data-stagger="130">
+    <div class="g3"><span class="num">01</span><h3>Créneau réservé à l'année</h3>
+      <p>Au-delà de cinq véhicules, on vous bloque un créneau d'atelier récurrent. Vous n'appelez plus pour savoir quand : vous savez déjà.</p></div>
+    <div class="g3"><span class="num">02</span><h3>Véhicule de remplacement</h3>
+      <p>Fourgon ou porteur de la même catégorie, réservé en même temps que l'intervention. Pas promis puis indisponible le jour J.</p></div>
+    <div class="g3"><span class="num">03</span><h3>Un seul interlocuteur</h3>
+      <p>Le même chef d'atelier suit toute votre flotte, VL et PL confondus. Il connaît vos véhicules, vous ne réexpliquez rien.</p></div>
+  </div>
+
+  <div class="quai" data-reveal="scale">
+    <img src="photos/quai.jpg" alt="Camions et remorques stationnés devant un entrepôt" loading="lazy" width="2000" height="1125">
+    <div class="quai-txt">
+      <h3>Contrat d'entretien de flotte</h3>
+      <p>Entretien préventif planifié, contrôles techniques déposés et repris, tachygraphes suivis à l'échéance, et un point trimestriel sur les coûts par véhicule. Facturation mensuelle unique.</p>
+      <a href="#contact" class="btn clair">Faire chiffrer ma flotte <span class="ar">→</span></a>
+    </div>
+  </div>
+</div></section>
+
+<section id="garage"><div class="wrap">
+  <div class="garage">
+    <div class="garage-ph" data-reveal="scale" data-tilt data-tilt-max="5">
+      <img src="photos/remorques.jpg" alt="Remorques à quai devant l'atelier" loading="lazy" width="1200" height="800">
+    </div>
+    <div>
+      <span class="kick" data-reveal="left">L'entreprise · depuis 2006</span>
+      <h2 style="font-size:clamp(30px,4.2vw,50px);margin-top:16px" data-reveal="left" data-delay="120">On a commencé<br>par réparer,<br>on vend depuis</h2>
+      <p class="lede" data-reveal data-delay="220" style="margin-top:20px;max-width:520px">L'atelier a vingt ans, la vente en a douze. C'est l'ordre qui compte : on sait ce qu'un véhicule coûte à entretenir avant de vous le vendre, et on ne met en vente que ce qu'on saura suivre après.</p>
+      <ul class="engage" data-stagger="90">
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span><b>Devis avant toute intervention.</b> Photos du défaut à l'appui, envoyées avant qu'on touche à quoi que ce soit.</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span><b>Immobilisation annoncée.</b> Une durée engagée, pas une fourchette : si on dépasse, le véhicule de remplacement est offert.</span></li>
+        <li><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span><b>Dépannage 7j/7.</b> Sur le Grand-Duché et la Grande Région, pour les clients sous contrat de flotte.</span></li>
+      </ul>
+      <div class="chiffres" data-stagger="110">
+        <div class="chf"><b><span data-count="20" data-duration="1600">0</span></b><span>ans d'atelier</span></div>
+        <div class="chf"><b><span data-count="340" data-suffix="+" data-duration="1800">0</span></b><span>véhicules sous contrat</span></div>
+        <div class="chf"><b><span data-count="2" data-duration="1400">0</span></b><span>lignes d'atelier VL et PL</span></div>
+        <div class="chf"><b>7j/7</b><span>dépannage sous contrat</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="avis"><div class="wrap">
+  <div class="tete"><div data-reveal="left"><span class="kick">Ce qu'en disent nos clients</span><h2>Des flottes qui<br>ne s'arrêtent pas</h2></div></div>
+  <div class="avis" data-stagger="120">
+    <div class="av"><div class="et">★★★★★</div>
+      <p>« Quatorze véhicules chez eux, du fourgon au porteur. Le vrai changement, c'est le planning : je sais six mois à l'avance quel camion part à l'atelier et quel jour. »</p>
+      <div class="qui"><span class="ini">PF</span><div><b>Philippe F.</b><span>Entreprise de second œuvre · Bertrange</span></div></div></div>
+    <div class="av"><div class="et">★★★★★</div>
+      <p>« Tachygraphe à réétalonner un vendredi après-midi, avec une tournée le lundi. Pris en charge le jour même, chauffeur reparti avec la carte à jour. »</p>
+      <div class="qui"><span class="ini">MK</span><div><b>Marco K.</b><span>Transport régional · Esch-sur-Alzette</span></div></div></div>
+    <div class="av"><div class="et">★★★★★</div>
+      <p>« On a acheté trois fourgons et revendu deux anciens le même jour. Un seul dossier, un seul interlocuteur, et les véhicules livrés marqués à nos couleurs. »</p>
+      <div class="qui"><span class="ini">AL</span><div><b>Anne L.</b><span>Société de services · Luxembourg</span></div></div></div>
+  </div>
+</div></section>
+
+<section id="contact" class="fin" style="padding:0">
+  <div class="fin-img"><img src="photos/nuit.jpg" alt="" aria-hidden="true" loading="lazy" width="2000" height="1125"></div>
+  <div class="fin-in"><div class="wrap">
+    <h2 data-reveal="scale">Parlons de<br><em>votre parc.</em></h2>
+    <p data-reveal data-delay="200">Un véhicule à remplacer, une flotte à faire chiffrer, un camion immobilisé : on répond au téléphone, y compris le samedi matin.</p>
+    <div data-reveal data-delay="320"><a href="tel:+35200000000" class="btn or" data-magnetic data-strength="0.4">Appeler l'atelier <span class="ar">→</span></a></div>
+    <div><a href="tel:+35200000000" class="num" data-reveal data-delay="420">+352 00 00 00</a></div>
+    <p class="heures" data-reveal data-delay="500">Atelier lundi au vendredi 7h – 18h · Samedi 8h – 12h · Dépannage 7j/7 sous contrat</p>
+  </div></div>
+</section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="infos" data-stagger="90">
+    <div class="inf"><b>Adresse</b><p>Zone d'activités à compléter<br>L-0000 Luxembourg</p></div>
+    <div class="inf"><b>Téléphone</b><p><a href="tel:+35200000000" class="ns-link">+352 00 00 00</a></p></div>
+    <div class="inf"><b>E-mail</b><p><a href="mailto:flotte@motorline.example" class="ns-link">flotte@motorline.example</a></p></div>
+    <div class="inf"><b>Atelier</b><p>Lun – ven 7h – 18h<br>Samedi 8h – 12h</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="pied">
+    <a href="#haut" class="logo">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M4 26V6l12 13L28 6v20" stroke="#d7a557" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M4 26h24" stroke="#f1f3f7" stroke-width="2.4"/>
+      </svg>MOTORLINE <b class="pro">PRO</b></a>
+    <div class="c">Voitures · Utilitaires · Poids lourds · Luxembourg</div>
+  </div>
+  <div class="mention">
+    <span>Démonstration : le nom, les coordonnées, les photos, les véhicules et les tarifs de ce site sont fictifs.</span>
+    <span>Maquette réalisée par <b>NS Development</b> — création de sites web au Luxembourg</span>
+  </div>
+</div></footer>
+
+<div class="panier" id="panier" role="region" aria-label="Prestations sélectionnées">
+  <div class="panier-in">
+    <span class="n" id="panier-n"><b>0</b> prestation sélectionnée</span>
+    <span class="est">Estimation <b id="panier-est">—</b></span>
+    <button type="button" class="vider" id="panier-vider">Tout retirer</button>
+    <button type="button" class="btn or" id="panier-devis">Voir ma demande <span class="ar">→</span></button>
+  </div>
+</div>
+
+<div class="fiche" id="fiche" hidden role="dialog" aria-modal="true" aria-labelledby="fiche-titre">
+  <div class="fiche-fond" data-fermer></div>
+  <div class="fiche-in">
+    <button type="button" class="fiche-x" data-fermer aria-label="Fermer la fiche">&#10005;</button>
+    <div class="fiche-ph"><img id="fiche-img" alt=""></div>
+    <div class="fiche-txt">
+      <span class="kick" id="fiche-kick"></span>
+      <h3 id="fiche-titre"></h3>
+      <div class="fiche-prix"><b id="fiche-prix"></b><span id="fiche-mens"></span></div>
+      <p class="fiche-note" id="fiche-note"></p>
+      <dl class="fiche-grille" id="fiche-grille"></dl>
+      <div class="fiche-equip" id="fiche-equip"></div>
+      <div class="fiche-fin">
+        <a href="#contact" class="btn or" data-fermer>Demander un essai <span class="ar">&#8594;</span></a>
+        <a href="tel:+35200000000" class="tel-lien">ou appelez le +352 00 00 00</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="recap" id="recap" hidden role="dialog" aria-modal="true" aria-labelledby="recap-titre">
+  <div class="fiche-fond" data-fermer-recap></div>
+  <div class="recap-in">
+    <button type="button" class="fiche-x" data-fermer-recap aria-label="Fermer">&#10005;</button>
+    <span class="kick">Votre demande d'atelier</span>
+    <h3 id="recap-titre" style="margin-top:14px">Ce que vous avez coché</h3>
+    <p>Lisez-nous cette liste au téléphone, ou envoyez-la par e-mail : on vous rappelle avec un devis ferme, un créneau et la durée d'immobilisation.</p>
+    <ul class="recap-liste" id="recap-liste"></ul>
+    <div class="recap-total"><span>Estimation indicative</span><b id="recap-total">—</b></div>
+    <p class="recap-note">Fourchette calculée à partir des tarifs de départ, hors taxes, hors pièces spécifiques et hors main-d'œuvre supplémentaire constatée au démontage. Seul le devis signé après examen du véhicule fait foi.</p>
+    <div class="fiche-fin">
+      <a href="tel:+35200000000" class="btn or">Appeler l'atelier <span class="ar">→</span></a>
+      <button type="button" class="btn fil" id="recap-copier">Copier la liste</button>
+    </div>
+  </div>
+</div>
+
+<script src="site.js" defer></script>
+
+<!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
+<script src="nsd-chat.js" defer
+        data-site="poids-lourds"
+        data-nom="MOTORLINE PRO"
+        data-accent="#d7a557"
+        data-encre="#1a1204"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour ! Une question sur un véhicule, une flotte ou une intervention à l'atelier ?"></script>
+</body>
+</html>

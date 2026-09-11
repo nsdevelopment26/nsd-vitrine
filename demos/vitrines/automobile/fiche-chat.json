@@ -1,16 +1,19 @@
 {
   "nom": "MOTORLINE",
-  "activite": "garage et vente automobile",
+  "activite": "vente d'automobiles premium et atelier toutes marques",
   "commune": "Luxembourg",
   "telephone": "+352 00 00 00",
-  "horaires_texte": "Du lundi au vendredi de 8h à 18h, et le samedi de 9h à 13h.",
-  "services_texte": "Occasions sélectionnées et garanties 12 mois, entretien toutes marques, et reprise de votre ancienne voiture. Sans blabla et sans mauvaise surprise.",
-  "prix_texte": "Notre sélection se filtre par budget : jusqu'à 15 000 €, de 15 000 à 25 000 €, de 25 000 à 35 000 €, et plus de 35 000 €.",
-  "essai_texte": "L'essai se fait sur rendez-vous, du lundi au samedi. Appelez-nous pour caler un créneau.",
-  "contact_texte": "Appelez-nous au +352 00 00 00 pour un essai ou une reprise.",
+  "horaires_texte": "L'atelier est ouvert du lundi au vendredi de 8h à 18h, et le samedi de 9h à 13h.",
+  "services_texte": "Quinze véhicules premium en stock, contrôlés sur 150 points et garantis 24 mois. Et plus de 40 prestations à l'atelier : entretien, mécanique lourde, diagnostic, pneumatiques, carrosserie et esthétique.",
+  "prix_texte": "Le stock va d'environ 25 000 € à 190 000 €. Chaque fiche affiche aussi une mensualité indicative sur 60 mois, à titre de simulation.",
+  "essai_texte": "L'essai se fait sur rendez-vous, du lundi au samedi. Appelez-nous pour caler un créneau, on prépare la voiture avant votre arrivée.",
+  "garantie_texte": "Chaque véhicule part avec 24 mois de garantie pièces et main-d'œuvre, comprise dans le prix affiché, et le rapport du contrôle en 150 points.",
+  "reprise_texte": "Envoyez-nous trois photos et le kilométrage, on vous donne un prix ferme le lendemain. Si vous achetez chez nous, il vient en déduction.",
+  "atelier_texte": "L'atelier couvre six univers : entretien courant, mécanique lourde, diagnostic et électronique, pneumatiques et trains roulants, carrosserie et esthétique, et les services au client. Vous pouvez cocher vos besoins sur la page pour obtenir une estimation.",
+  "contact_texte": "Appelez-nous au +352 00 00 00 pour un essai, une reprise ou un rendez-vous d'atelier.",
   "suggestions": [
-    "Vous êtes ouverts le samedi ?",
     "Je peux essayer une voiture ?",
+    "Qu'est-ce que couvre la garantie ?",
     "Vous reprenez mon ancienne ?"
   ],
   "demo_regles": [
@@ -19,7 +22,8 @@
         "essai",
         "essayer",
         "conduire",
-        "tester"
+        "tester",
+        "rendez"
       ],
       "cle": "essai_texte"
     },
@@ -35,22 +39,52 @@
     },
     {
       "mots": [
+        "garantie",
+        "garanti",
+        "panne",
+        "apres"
+      ],
+      "cle": "garantie_texte"
+    },
+    {
+      "mots": [
+        "reprise",
+        "reprend",
+        "ancienne",
+        "revendre",
+        "rachat"
+      ],
+      "cle": "reprise_texte"
+    },
+    {
+      "mots": [
+        "atelier",
+        "entretien",
+        "revision",
+        "vidange",
+        "carrosserie",
+        "pneu",
+        "diagnostic"
+      ],
+      "cle": "atelier_texte"
+    },
+    {
+      "mots": [
         "prix",
         "tarif",
         "cout",
         "combien",
-        "budget"
+        "budget",
+        "mensualite",
+        "financement"
       ],
       "cle": "prix_texte"
     },
     {
       "mots": [
-        "entretien",
-        "revision",
-        "reprise",
-        "garantie",
         "service",
-        "faites"
+        "faites",
+        "proposez"
       ],
       "cle": "services_texte"
     },
