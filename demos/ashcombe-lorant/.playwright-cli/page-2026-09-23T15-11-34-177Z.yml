@@ -1,0 +1,262 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - link "Ashcombe Lorant, accueil" [ref=e3] [cursor=pointer]:
+      - /url: "#top"
+      - generic [ref=e4]: A
+      - generic [ref=e5]:
+        - text: Ashcombe
+        - emphasis [ref=e6]: Lorant
+    - generic [ref=e7]:
+      - link "Expertises" [ref=e8] [cursor=pointer]:
+        - /url: "#expertises"
+      - link "Dossiers" [ref=e9] [cursor=pointer]:
+        - /url: "#dossiers"
+      - link "Associés" [ref=e10] [cursor=pointer]:
+        - /url: "#associes"
+      - link "Contact" [ref=e11] [cursor=pointer]:
+        - /url: "#contact"
+    - link "Consultation confidentielle" [ref=e12] [cursor=pointer]:
+      - /url: "#contact"
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic:
+        - paragraph: Avocats à la Cour · Barreau de Luxembourg
+        - heading "Les autres négocient. Nous fermons le dossier." [level=1]:
+          - generic: Les
+          - generic: autres
+          - generic: négocient.
+          - generic: Nous
+          - generic: fermons
+          - generic: le
+          - generic: dossier.
+        - paragraph: Contentieux, arbitrage international et opérations transfrontalières. Depuis le Kirchberg, partout où votre affaire se joue.
+        - generic:
+          - link "Exposer votre dossier" [ref=e17] [cursor=pointer]:
+            - /url: "#contact"
+            - text: Exposer votre dossier
+            - generic [aria-hidden] [ref=e18]: →
+          - link "ou +352 28 00 00 00, jour et nuit" [ref=e19] [cursor=pointer]:
+            - /url: tel:+35228000000
+      - complementary [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e23]: AL-2025-014
+          - generic [ref=e24]: Singapour
+        - paragraph [ref=e25]: Arbitrage CCI, groupe logistique
+        - paragraph [ref=e26]: 2,4 Md€ obtenus
+      - link "Descendre" [ref=e29] [cursor=pointer]:
+        - /url: "#bande"
+        - text: Défiler
+    - region "Le cabinet en bref" [ref=e30]:
+      - list [ref=e31]:
+        - listitem [ref=e32]:
+          - generic [ref=e33]: 24 h
+          - generic [ref=e34]: premier avis écrit
+        - listitem [ref=e35]:
+          - generic [ref=e36]: "31"
+          - generic [ref=e37]: juridictions couvertes
+        - listitem [ref=e38]:
+          - generic [ref=e39]: FR · EN · DE · PT
+          - generic [ref=e40]: langues de travail
+        - listitem [ref=e41]:
+          - generic [ref=e42]: Secret
+          - generic [ref=e43]: professionnel absolu
+    - generic [ref=e44]:
+      - heading [level=2] [ref=e46]:
+        - text: Six terrains.
+        - emphasis [ref=e47]: "Un seul réflexe : préparer comme si l'on allait plaider."
+      - list [ref=e48]:
+        - listitem [ref=e49]:
+          - button "01 Contentieux des affaires" [expanded] [ref=e50] [cursor=pointer]:
+            - generic [ref=e51]: "01"
+            - generic [ref=e52]: Contentieux des affaires
+          - paragraph [ref=e55]: Litiges entre associés, ruptures de contrats, responsabilité des dirigeants. Devant les juridictions luxembourgeoises et en coordination avec nos correspondants à l'étranger.
+        - listitem [ref=e56]:
+          - button "02 Arbitrage international" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: "02"
+            - generic [ref=e59]: Arbitrage international
+          - generic:
+            - paragraph: CCI, LCIA, SIAC, CIRDI. De la rédaction de la clause à l'exécution de la sentence, y compris l'exequatur dans le pays où se trouvent les actifs.
+        - listitem [ref=e61]:
+          - button "03 Fusions & acquisitions" [ref=e62] [cursor=pointer]:
+            - generic [ref=e63]: "03"
+            - generic [ref=e64]: Fusions & acquisitions
+          - generic:
+            - paragraph: Audit, structuration, négociation, closing. Pour les acquéreurs comme pour les cédants, avec une équipe qui reste la même du premier rendez-vous à la signature.
+        - listitem [ref=e66]:
+          - button "04 Fonds & droit bancaire" [ref=e67] [cursor=pointer]:
+            - generic [ref=e68]: "04"
+            - generic [ref=e69]: Fonds & droit bancaire
+          - generic:
+            - paragraph: Véhicules d'investissement luxembourgeois, conformité CSSF, financements structurés. La place financière, vue de l'intérieur.
+        - listitem [ref=e71]:
+          - button "05 Pénal des affaires" [ref=e72] [cursor=pointer]:
+            - generic [ref=e73]: "05"
+            - generic [ref=e74]: Pénal des affaires
+          - generic:
+            - paragraph: Enquêtes internes, perquisitions, abus de biens sociaux, blanchiment. On décroche le soir même, parce que c'est souvent là que tout se décide.
+        - listitem [ref=e76]:
+          - button "06 Clients privés" [ref=e77] [cursor=pointer]:
+            - generic [ref=e78]: "06"
+            - generic [ref=e79]: Clients privés
+          - generic:
+            - paragraph: Patrimoines familiaux, successions internationales, transmission d'entreprise. La même rigueur, avec la discrétion en plus.
+    - generic [ref=e81]:
+      - generic [ref=e82]:
+        - heading "Le monde est notre salle d'audience." [level=2] [ref=e83]
+        - paragraph [ref=e84]: Une sélection de dossiers menés depuis Luxembourg. Les noms restent au cabinet, les résultats parlent seuls.
+      - generic [ref=e85]:
+        - article [ref=e86]:
+          - generic [ref=e87]: Montants obtenus ou protégés pour nos clients
+          - generic [ref=e88]: 4 800 M€
+          - generic [ref=e89]: depuis 2019, tous dossiers confondus
+        - article [ref=e90]:
+          - generic [ref=e91]: Opérations conclues
+          - generic [ref=e92]: "212"
+        - article [ref=e93]:
+          - generic [ref=e94]: Juridictions
+          - generic [ref=e95]: "31"
+        - article [ref=e96]:
+          - generic [ref=e97]:
+            - generic [ref=e98]: AL-2025-014
+            - generic [ref=e99]: Singapour
+          - heading "Arbitrage CCI, groupe logistique" [level=3] [ref=e100]
+          - paragraph [ref=e101]: 2,4 Md€
+          - paragraph [ref=e102]: Sentence favorable, exécutée en 4 mois.
+        - article [ref=e103]:
+          - generic [ref=e104]:
+            - generic [ref=e105]: AL-2024-031
+            - generic [ref=e106]: New York
+          - heading "Action collective contre un fonds luxembourgeois" [level=3] [ref=e107]
+          - paragraph [ref=e108]: Rejetée
+          - paragraph [ref=e109]: Irrecevabilité obtenue en première instance.
+        - article [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]: AL-2025-008
+            - generic [ref=e113]: Londres
+          - heading "Recouvrement d'actifs, High Court" [level=3] [ref=e114]
+          - paragraph [ref=e115]: 380 M£
+          - paragraph [ref=e116]: Gel mondial des avoirs en 72 heures.
+        - article [ref=e117]:
+          - generic [ref=e118]:
+            - generic [ref=e119]: AL-2023-022
+            - generic [ref=e120]: Dubaï
+          - heading "Joint-venture énergie, DIFC" [level=3] [ref=e121]
+          - paragraph [ref=e122]: 1,1 Md$
+          - paragraph [ref=e123]: Restructurée sans procès.
+        - article [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: AL-2024-017
+            - generic [ref=e127]: São Paulo
+          - heading "Acquisition transfrontalière" [level=3] [ref=e128]
+          - paragraph [ref=e129]: 640 M€
+          - paragraph [ref=e130]: Closing en 11 semaines.
+        - article [ref=e131]:
+          - generic [ref=e132]:
+            - generic [ref=e133]: AL-2025-003
+            - generic [ref=e134]: Genève
+          - heading "Succession familiale internationale" [level=3] [ref=e135]
+          - paragraph [ref=e136]: 290 M CHF
+          - paragraph [ref=e137]: Accord signé entre quatre héritiers.
+    - region "Notre conviction" [ref=e138]:
+      - blockquote [ref=e139]:
+        - paragraph [ref=e140]: « Nous préparons chaque dossier comme s'il allait être plaidé. C'est pour ça qu'il l'est rarement. »
+        - generic [ref=e141]: Élise Ashcombe, associée gérante
+    - generic [ref=e142]:
+      - heading "Trois noms sur la porte. Trois numéros qui répondent." [level=2] [ref=e143]: Trois noms sur la porte.Trois numéros qui répondent.
+      - generic [ref=e144]:
+        - article [ref=e145]:
+          - generic [ref=e146]:
+            - generic [ref=e147]: EA
+            - generic [ref=e148]: Portrait ici
+          - heading "Élise Ashcombe" [level=3] [ref=e149]
+          - paragraph [ref=e150]: Associée gérante · Arbitrage
+          - paragraph [ref=e151]: Vingt ans de sentences internationales. Ancienne de Londres et de Singapour.
+        - article [ref=e152]:
+          - generic [ref=e153]:
+            - generic [ref=e154]: ML
+            - generic [ref=e155]: Portrait ici
+          - heading "Marc Lorant" [level=3] [ref=e156]
+          - paragraph [ref=e157]: Associé · Fusions & acquisitions
+          - paragraph [ref=e158]: Plus de 150 opérations conduites, de la PME familiale au groupe coté.
+        - article [ref=e159]:
+          - generic [ref=e160]:
+            - generic [ref=e161]: NF
+            - generic [ref=e162]: Portrait ici
+          - heading "Nadia Ferreira" [level=3] [ref=e163]
+          - paragraph [ref=e164]: Associée · Contentieux & pénal
+          - paragraph [ref=e165]: Celle qu'on appelle quand la perquisition a lieu à six heures du matin.
+    - generic [ref=e166]:
+      - heading "Ce qui se passe après votre appel." [level=2] [ref=e167]
+      - list [ref=e168]:
+        - listitem [ref=e169]:
+          - generic [ref=e170]: Aujourd'hui
+          - heading "Un associé vous rappelle." [level=3] [ref=e171]
+          - paragraph [ref=e172]: Pas un assistant, pas un stagiaire. Conflit d'intérêts vérifié avant la fin de la journée.
+        - listitem [ref=e173]:
+          - generic [ref=e174]: Sous 24 h
+          - heading "Un premier avis écrit." [level=3] [ref=e175]
+          - paragraph [ref=e176]: Vos options, vos risques, le coût réaliste de chacune. Sur deux pages, pas trente.
+        - listitem [ref=e177]:
+          - generic [ref=e178]: Sous 72 h
+          - heading "Une stratégie chiffrée." [level=3] [ref=e179]
+          - paragraph [ref=e180]: Une équipe nommée, un calendrier, un budget. Vous savez qui fait quoi et pour combien.
+    - generic [ref=e181]:
+      - generic [ref=e182]:
+        - heading [level=2] [ref=e183]:
+          - text: Exposez-nous le dossier.
+          - emphasis [ref=e184]: En confiance.
+        - paragraph [ref=e185]: Tout ce que vous écrivez ici est couvert par le secret professionnel dès l'envoi, même si vous ne nous confiez jamais l'affaire.
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - term [ref=e188]: Adresse
+            - definition [ref=e189]: Adresse du cabinet à compléterKirchberg, Luxembourg
+          - generic [ref=e190]:
+            - term [ref=e191]: Téléphone
+            - definition [ref=e192]:
+              - link "+352 28 00 00 00" [ref=e193] [cursor=pointer]:
+                - /url: tel:+35228000000
+          - generic [ref=e194]:
+            - term [ref=e195]: Email
+            - definition [ref=e196]:
+              - link "contact@exemple.lu" [ref=e197] [cursor=pointer]:
+                - /url: mailto:contact@exemple.lu
+          - generic [ref=e198]:
+            - term [ref=e199]: Accueil
+            - definition [ref=e200]: Lun. au ven., 8 h à 20 hUrgences pénales 24 h/24
+      - generic [ref=e201]:
+        - generic [ref=e202]:
+          - text: Nom et fonction
+          - textbox "Nom et fonction" [ref=e203]
+        - generic [ref=e204]:
+          - text: Société
+          - textbox "Société" [ref=e205]
+        - generic [ref=e206]:
+          - text: Email professionnel
+          - textbox "Email professionnel" [ref=e207]
+        - generic [ref=e208]:
+          - text: Où se joue le dossier ?
+          - combobox "Où se joue le dossier ?" [ref=e209]:
+            - option "Luxembourg" [selected]
+            - option "Union européenne"
+            - option "Royaume-Uni"
+            - option "États-Unis"
+            - option "Moyen-Orient"
+            - option "Asie"
+            - option "Plusieurs pays"
+        - generic [ref=e210]:
+          - text: En quelques lignes
+          - textbox "En quelques lignes" [ref=e211]:
+            - /placeholder: Les parties, l'enjeu, l'échéance la plus proche.
+        - button "Envoyer en toute confidentialité" [ref=e212] [cursor=pointer]:
+          - text: Envoyer en toute confidentialité
+          - generic [aria-hidden] [ref=e213]: →
+        - status [ref=e214]: Réponse d'un associé dans la journée ouvrée.
+  - contentinfo [ref=e215]:
+    - generic [ref=e216]:
+      - text: Ashcombe
+      - emphasis [ref=e217]: Lorant
+    - paragraph [ref=e218]: "Démonstration : cabinet, associés, dossiers et chiffres sont fictifs."
+    - paragraph [ref=e219]:
+      - text: Réalisé par
+      - link "NS Development" [ref=e220] [cursor=pointer]:
+        - /url: https://nsdevelopment26.github.io/nsd-vitrine/
