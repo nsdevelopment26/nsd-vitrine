@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="ns-motion.css">
 <script src="assets/vendor/supabase-2.117.1.js"></script>
 <script type="module" src="supabase-client.js?v=1"></script>
-<script src="espace-client.js?v=11" defer></script>
+<script src="espace-client.js?v=12" defer></script>
 <script src="ns-motion.js" defer></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -437,7 +437,8 @@
         <input id="ecMdp" type="password" placeholder="••••••••" autocomplete="current-password" required>
       </div>
     </div>
-    <a class="oubli" href="index.html#contact">Mot de passe oublié ?</a>
+    <a class="oubli" href="#" id="ecOubli">Mot de passe oublié ?</a>
+    <div id="ecInfo" role="status" style="display:none;font-size:13px;color:var(--ink,inherit);background:rgba(47,107,255,.08);border:1px solid rgba(47,107,255,.25);border-radius:9px;padding:9px 12px"></div>
     <div id="ecErr" role="alert" style="display:none;font-size:13px;color:var(--danger);background:var(--danger-bg);border:1px solid rgba(255,107,122,.30);border-radius:9px;padding:9px 12px"></div>
     <button type="submit" class="bt bt-plein large ns-shine" id="ecEntrer">
       Se connecter

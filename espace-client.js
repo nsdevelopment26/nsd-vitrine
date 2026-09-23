@@ -918,11 +918,78 @@
       ecran.classList.remove("parti");
     });
 
+    /* ---- Mot de passe oublié ----------------------------------------------
+       1. « Mot de passe oublié ? » envoie un lien de réinitialisation à
+          l'adresse saisie, qui revient sur CETTE page.
+       2. Au retour, l'URL porte « type=recovery » : Supabase ouvre une session
+          temporaire, et on affiche le choix du nouveau mot de passe au lieu
+          d'aiguiller vers l'espace (sinon un admin serait redirigé ailleurs).
+       Le message après envoi reste neutre : il ne dit jamais si l'adresse a un
+       compte, pour ne pas servir d'annuaire à qui teste des adresses. */
+    function infoCo(msg) {
+      var b = document.getElementById("ecInfo");
+      if (b) { b.textContent = msg || ""; b.style.display = msg ? "block" : "none"; }
+    }
+    var lienOubli = document.getElementById("ecOubli");
+    if (lienOubli) lienOubli.addEventListener("click", async function (e) {
+      e.preventDefault();
+      erreurCo(""); infoCo("");
+      var email = document.getElementById("ecMail").value.trim();
+      if (!email) { erreurCo("Saisissez d'abord votre adresse e-mail, puis cliquez à nouveau sur « Mot de passe oublié ? »."); return; }
+      var sb = getSb();
+      if (!sb) { erreurCo("Connexion au serveur indisponible. Réessayez dans un instant."); return; }
+      var retour = window.location.origin + window.location.pathname;
+      var res = await sb.auth.resetPasswordForEmail(email, { redirectTo: retour });
+      if (res.error && /rate|seconds|limit/i.test(res.error.message)) {
+        erreurCo("Un lien vient déjà d'être demandé. Patientez une minute avant de recommencer.");
+        return;
+      }
+      infoCo("Si un compte existe pour cette adresse, un lien pour choisir un nouveau mot de passe vient d'y être envoyé. Pensez à regarder les indésirables.");
+    });
+
+    var modeRecuperation = /type=recovery/.test(window.location.hash) && !/error_description=/.test(window.location.hash);
+    if (modeRecuperation) {
+      var formCo = document.getElementById("ecForm-connexion");
+      var formNouveau = document.createElement("form");
+      formNouveau.className = "form-co";
+      formNouveau.id = "ecForm-nouveau";
+      formNouveau.innerHTML =
+        '<p style="margin:0 0 6px;font-size:15px"><strong>Choisissez votre nouveau mot de passe.</strong> 8 caractères minimum.</p>' +
+        '<div class="champ"><label for="ecMdp1">Nouveau mot de passe</label><div class="box">' +
+        '<input id="ecMdp1" type="password" autocomplete="new-password" minlength="8" required></div></div>' +
+        '<div class="champ"><label for="ecMdp2">Confirmez-le</label><div class="box">' +
+        '<input id="ecMdp2" type="password" autocomplete="new-password" minlength="8" required></div></div>' +
+        '<div id="ecErrNouveau" role="alert" style="display:none;font-size:13px;color:var(--danger);background:var(--danger-bg);border:1px solid rgba(255,107,122,.30);border-radius:9px;padding:9px 12px"></div>' +
+        '<button type="submit" class="bt bt-plein large" id="ecEnregistrerMdp">Enregistrer le mot de passe</button>';
+      if (formCo) { formCo.style.display = "none"; formCo.parentNode.insertBefore(formNouveau, formCo); }
+      var errNouveau = function (m) { var b = document.getElementById("ecErrNouveau"); b.textContent = m || ""; b.style.display = m ? "block" : "none"; };
+      formNouveau.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        errNouveau("");
+        var m1 = document.getElementById("ecMdp1").value, m2 = document.getElementById("ecMdp2").value;
+        if (m1.length < 8) { errNouveau("8 caractères minimum."); return; }
+        if (m1 !== m2) { errNouveau("Les deux mots de passe ne sont pas identiques."); return; }
+        var sb = getSb();
+        var sess = sb ? await sb.auth.getSession() : null;
+        if (!sess || !sess.data || !sess.data.session) { errNouveau("Ce lien a expiré ou a déjà servi. Redemandez-en un depuis « Mot de passe oublié ? »."); return; }
+        var res = await sb.auth.updateUser({ password: m1 });
+        if (res.error) { errNouveau("Le mot de passe n'a pas pu être enregistré : " + res.error.message); return; }
+        history.replaceState(null, "", window.location.pathname);
+        formNouveau.remove();
+        if (formCo) formCo.style.display = "";
+        infoCo("Mot de passe enregistré. Vous pouvez maintenant vous connecter avec.");
+        try { await sb.auth.signOut(); } catch (e2) {}
+      });
+    }
+    if (/error_description=/.test(window.location.hash) && !modeRecuperation) {
+      erreurCo("Ce lien a expiré ou a déjà servi. Redemandez-en un depuis « Mot de passe oublié ? ».");
+    }
+
     /* Session déjà ouverte ? on aiguille directement, sans re-demander le login.
        On attend que le client Supabase (module, chargé à part) soit prêt.
        En mode démo on saute complètement cette étape : aucune session, aucun
        appel réseau. */
-    if (!estDemo()) {
+    if (!estDemo() && !modeRecuperation) {
       (function attendreSb(essais) {
         essais = essais || 0;
         var sb = getSb();

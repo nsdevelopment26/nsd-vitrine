@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<title>CRM NSD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="CRM NSD">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icones/nsd-vert-180.png">
+<link rel="icon" type="image/png" href="icones/favicon-64.png">
+<script>window.CRM_API = "https://script.google.com/macros/s/AKfycbyiSscsc1tvQiekpyzHl6EvPLnqugkx0TKEkJoQPYsDyHeCqg9HZ5tJSx8OZV7WBnk0/exec";</script>
+<meta name="theme-color" content="#0f0f10">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --fond: #f4f3f1; --carte: #ffffff; --encre: #141414; --doux: #6b6b6b; --ligne: #e4e2de;
+    --noir: #0f0f10; --accent: #141414; --danger: #b3261e; --ok: #2e7d32; --alerte: #c25e00;
+    --rayon: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--fond); color: var(--encre);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: inherit; }
+  .cache { display: none !important; }
+
+  header.barre { position: sticky; top: 0; z-index: 5; background: var(--noir); color: #fff;
+    padding: calc(12px + env(safe-area-inset-top)) 16px 12px; }
+  .barre-int { max-width: 1180px; margin: 0 auto; }
+  .logo img { width: 34px; height: 34px; border-radius: 9px; display: block; }
+  .barre-haut { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .02em; }
+  .tuile { width: 30px; height: 30px; border-radius: 8px; background: #1d1d1f; border: 1px solid #333;
+    display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+  .qui { background: #1d1d1f; border: 1px solid #333; color: #fff; border-radius: 999px;
+    padding: 6px 12px; font-size: 13px; }
+  .recherche { margin-top: 12px; width: 100%; border: 0; border-radius: 10px; padding: 11px 14px;
+    background: #fff; color: #141414; font-size: 16px; }
+
+  main { padding: 14px 16px; max-width: 760px; margin: 0 auto; }
+  @media (min-width: 1000px) {
+    main { max-width: 1180px; }
+    body[data-vue="pipeline"] main { max-width: none; padding-left: 24px; padding-right: 24px; }
+    .grille-cartes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .grille-cartes > .lp { margin-bottom: 0; }
+  }
+
+  /* Sélecteur de journée */
+  .jourbar { display: flex; align-items: center; gap: 8px; margin: 2px 0 6px; }
+  .jourbar .fleche { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--ligne); background: #fff; font-size: 20px; }
+  .jour-choix { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 42px; background: #fff;
+    border: 1px solid var(--ligne); border-radius: 12px; padding: 4px 12px; cursor: pointer; }
+  .jour-choix b { font-size: 16px; }
+  .jour-choix b::first-letter { text-transform: uppercase; }
+  .jour-choix small { color: var(--doux); font-size: 12px; }
+  .jour-choix input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+  .retour-auj { display: block; width: 100%; margin: 0 0 6px; border: 0; background: var(--noir); color: #fff; border-radius: 12px; padding: 10px; font-weight: 700; font-size: 14px; }
+  .bilan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+  .bilan div { background: #fff; border: 1px solid var(--ligne); border-radius: 12px; padding: 8px 10px; }
+  .bilan b { display: block; font-size: 20px; line-height: 1.1; }
+  .bilan span { color: var(--doux); font-size: 12px; }
+
+  /* Fiche lisible d'un coup d'œil */
+  .lp { background: var(--carte); border: 1px solid var(--ligne); border-left: 6px solid var(--statut, #fff); border-radius: var(--rayon);
+    padding: 12px 14px 10px; margin-bottom: 8px; cursor: pointer; }
+  .lp-tete { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .lp-nom { font-weight: 750; font-size: 16px; line-height: 1.25; }
+  .lp-droite { text-align: right; white-space: nowrap; font-weight: 750; font-size: 14px; }
+  .lp-droite.retard { color: var(--danger); }
+  .lp-droite small { display: block; font-weight: 600; color: var(--doux); font-size: 12px; }
+  .lp-sous { color: var(--doux); font-size: 13px; margin-top: 1px; }
+  .lp-grille { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin-top: 8px; font-size: 14px; }
+  .lp-grille dt { color: var(--doux); font-size: 12px; padding-top: 2px; }
+  .lp-grille dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .lp-grille dd.faible { color: var(--doux); }
+  .lp-grille a { font-weight: 650; text-decoration: none; }
+  .lp-resultat { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--statut, #eee); }
+  .lp-actions { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 6px; margin-top: 10px; }
+  .lp-actions a, .lp-actions button { display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 10px; padding: 9px 6px;
+    font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid var(--ligne); background: #fff; }
+  .lp-actions .appeler { background: var(--noir); color: #fff; border-color: var(--noir); }
+  .lp-actions .inactif { opacity: .35; pointer-events: none; }
+  h2.section { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--doux);
+    margin: 22px 2px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  h2.section:first-child { margin-top: 4px; }
+  h2.section small { text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .vide { color: var(--doux); font-size: 14px; padding: 14px; background: var(--carte);
+    border-radius: var(--rayon); border: 1px dashed var(--ligne); }
+
+  .pastille { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    background: var(--statut, #eee); color: #141414; border: 1px solid rgba(0,0,0,.08); }
+  .plus { width: 100%; background: transparent; border: 1px solid var(--ligne); border-radius: 10px; padding: 10px; color: var(--doux); }
+
+  nav.onglets { position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; background: #fff; border-top: 1px solid var(--ligne);
+    display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom); }
+  nav.onglets button { border: 0; background: none; padding: 10px 4px 12px; font-size: 12px; color: var(--doux);
+    display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  nav.onglets button .ico { font-size: 20px; line-height: 1; }
+  nav.onglets button.actif { color: var(--encre); font-weight: 700; }
+
+  /* Pipeline */
+  .filtres { display: flex; gap: 8px; margin-bottom: 12px; }
+  .filtres select { flex: 1; border: 1px solid var(--ligne); background: #fff; border-radius: 10px; padding: 10px; }
+  .colonnes { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px;
+    margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .colonne { flex: 0 0 82%; max-width: 320px; scroll-snap-align: start; background: #ebe9e5; border-radius: var(--rayon); padding: 10px; }
+  /* Sur ordinateur, les sept colonnes occupent toute la largeur : plus rien à faire glisser. */
+  @media (min-width: 1000px) {
+    .colonnes { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); overflow: visible; margin: 0; padding: 0; gap: 8px; }
+    .colonne { max-width: none; min-width: 0; padding: 8px; }
+    .colonne .liste { max-height: calc(100vh - 290px); }
+  }
+  .colonne h3 { margin: 2px 4px 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .colonne .liste { max-height: 64vh; overflow-y: auto; }
+  .pc { background: var(--carte); border: 1px solid var(--ligne); border-left: 5px solid var(--statut, #fff); border-radius: 12px;
+    padding: 9px 10px; margin-bottom: 6px; cursor: pointer; font-size: 13px; }
+  .pc-nom { font-weight: 700; font-size: 14px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pc-meta { color: var(--doux); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+  .pc-bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 6px; margin-top: 5px; align-items: baseline; }
+  .pc-bas a { font-weight: 650; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .pc-date { font-weight: 700; white-space: nowrap; }
+  .pc-date.retard { color: var(--danger); }
+
+  /* Stats */
+  .grille { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi { background: var(--carte); border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 14px; }
+  .kpi .v { font-size: 28px; font-weight: 800; line-height: 1.1; }
+  .kpi .l { color: var(--doux); font-size: 13px; }
+  .barres { display: flex; align-items: flex-end; gap: 4px; height: 130px; background: var(--carte); border: 1px solid var(--ligne);
+    border-radius: var(--rayon); padding: 12px 10px 26px; position: relative; }
+  .barre-j { flex: 1; background: var(--noir); border-radius: 4px 4px 0 0; position: relative; min-height: 2px; }
+  .barre-j span { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--doux); }
+  .barre-j em { position: absolute; top: -17px; left: 50%; transform: translateX(-50%); font-size: 10px; font-style: normal; color: var(--encre); }
+  table.recap { width: 100%; border-collapse: collapse; background: var(--carte); border-radius: var(--rayon); overflow: hidden; border: 1px solid var(--ligne); }
+  table.recap td { padding: 10px 12px; border-bottom: 1px solid var(--ligne); font-size: 14px; }
+  table.recap td:last-child { text-align: right; font-weight: 700; }
+
+  /* Formulaires */
+  label.champ { display: block; margin-bottom: 12px; font-size: 13px; color: var(--doux); }
+  label.champ input, label.champ select, label.champ textarea { display: block; width: 100%; margin-top: 4px; border: 1px solid var(--ligne);
+    background: #fff; border-radius: 10px; padding: 11px 12px; font-size: 16px; color: var(--encre); }
+  textarea { resize: vertical; min-height: 70px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 12px; padding: 13px 16px;
+    font-weight: 700; background: var(--noir); color: #fff; text-decoration: none; }
+  .btn.large { width: 100%; }
+  .btn.clair { background: #fff; color: var(--encre); border: 1px solid var(--ligne); }
+  .btn:disabled { opacity: .5; }
+
+  /* Fiche */
+  .voile { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10; display: flex; align-items: flex-end; justify-content: center; }
+  .feuille { background: var(--fond); width: 100%; max-width: 760px; max-height: 94vh; overflow-y: auto; border-radius: 20px 20px 0 0;
+    padding: 0 16px calc(24px + env(safe-area-inset-bottom)); }
+  .feuille-tete { position: sticky; top: 0; background: var(--fond); padding: 12px 0 10px; z-index: 2; }
+  .poignee { width: 40px; height: 5px; border-radius: 3px; background: #cfccc6; margin: 0 auto 10px; }
+  .feuille-tete .ligne1 { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .feuille-tete h1 { font-size: 20px; margin: 0; line-height: 1.2; }
+  .fermer { border: 0; background: #e6e3de; border-radius: 50%; width: 34px; height: 34px; font-size: 18px; flex: 0 0 auto; }
+  .sous { color: var(--doux); font-size: 14px; margin-top: 4px; }
+  .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 4px; }
+  .actions a, .actions button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px; background: #fff;
+    border: 1px solid var(--ligne); border-radius: 12px; text-decoration: none; font-size: 12px; font-weight: 600; }
+  .actions .ico { font-size: 20px; }
+  .actions .inactif { opacity: .35; pointer-events: none; }
+  .actions .principal { background: var(--noir); color: #fff; border-color: var(--noir); }
+  .bloc { background: var(--carte); border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 14px; margin-top: 12px; }
+  .bloc h3 { margin: 0 0 10px; font-size: 14px; }
+  .resultats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .resultats button { border: 1px solid var(--ligne); background: #fff; border-radius: 12px; padding: 12px 8px; font-weight: 650; font-size: 14px;
+    border-left: 6px solid var(--statut, #ddd); text-align: left; }
+  .resultats button.choisi { outline: 2px solid var(--noir); }
+  .dates { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .dates button { border: 1px solid var(--ligne); background: #fff; border-radius: 999px; padding: 7px 12px; font-size: 13px; }
+  .dates button.choisi { background: var(--noir); color: #fff; border-color: var(--noir); }
+  dl.infos { margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 8px 10px; font-size: 14px; }
+  dl.infos dt { color: var(--doux); }
+  dl.infos dd { margin: 0; word-break: break-word; }
+  .conseil { background: #fff7e6; border: 1px solid #f3d9a4; border-radius: 12px; padding: 10px 12px; font-size: 13px; margin-top: 10px; }
+  .histo { list-style: none; padding: 0; margin: 0; }
+  .histo li { padding: 8px 0; border-bottom: 1px solid var(--ligne); font-size: 14px; }
+  .histo li:last-child { border-bottom: 0; }
+  .histo .d { color: var(--doux); font-size: 12px; }
+  .doublon { background: #fdecea; border: 1px solid #f5c2bd; border-radius: 12px; padding: 12px; margin-bottom: 12px; font-size: 14px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--noir); color: #fff;
+    padding: 11px 16px; border-radius: 12px; z-index: 20; font-size: 14px; max-width: 90vw; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .toast.erreur { background: var(--danger); }
+  .chargement { text-align: center; padding: 60px 20px; color: var(--doux); }
+
+  /* Connexion */
+  .connexion { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 24px; max-width: 380px; margin: 0 auto; }
+  .logo-connexion { width: 64px; height: 64px; border-radius: 16px; margin-bottom: 18px; }
+  .connexion h1 { margin: 0 0 6px; }
+  .connexion p { color: var(--doux); margin: 0 0 22px; }
+  .choix-qui { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .choix-qui button { padding: 12px; border-radius: 12px; border: 1px solid var(--ligne); background: #fff; font-weight: 650; }
+  .choix-qui button.choisi { background: var(--noir); color: #fff; border-color: var(--noir); }
+  .code { letter-spacing: .4em; text-align: center; font-size: 24px !important; }
+</style>
+</head>
+<body>
+
+<div id="ecran-connexion" class="connexion cache">
+  <img class="logo-connexion" src="icones/nsd-vert-tuile-96.png" alt="NS Development" width="64" height="64">
+  <h1>CRM NSD</h1>
+  <p>La prospection de NS Development, reliée au Google Sheets.</p>
+  <div class="choix-qui" id="choix-qui">
+    <button type="button" data-qui="Sam">Sam</button>
+    <button type="button" data-qui="Nelson">Nelson</button>
+  </div>
+  <label class="champ">Code d’accès
+    <input id="pin" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••">
+  </label>
+  <button class="btn large" id="btn-connexion">Entrer</button>
+</div>
+
+<div id="app" class="cache">
+  <header class="barre"><div class="barre-int">
+    <div class="barre-haut">
+      <div class="logo"><img src="icones/nsd-vert-tuile-96.png" alt="NS Development"> CRM</div>
+      <button class="qui" id="btn-qui"></button>
+    </div>
+    <input class="recherche" id="recherche" type="search" placeholder="Chercher un nom, un numéro, une commune…">
+  </div></header>
+  <main id="vue"><div class="chargement">Chargement du Sheets…</div></main>
+  <nav class="onglets" id="onglets">
+    <button data-vue="jour" class="actif"><span class="ico">☎︎</span>Journée</button>
+    <button data-vue="pipeline"><span class="ico">▦</span>Pipeline</button>
+    <button data-vue="ajouter"><span class="ico">＋</span>Ajouter</button>
+    <button data-vue="factu"><span class="ico">€</span>Factu</button>
+    <button data-vue="stats"><span class="ico">↗︎</span>Stats</button>
+  </nav>
+</div>
+
+<div id="fiche" class="voile cache"></div>
+<div id="toast" class="toast cache"></div>
+
+<script>
+// ---------------------------------------------------------------------------
+// État
+// ---------------------------------------------------------------------------
+const S = { pin: '', par: '', data: null, vue: 'jour', recherche: '', filtreSecteur: '', ouvert: null, plusJour: 25,
+  jour: '', journeesChargees: {} };
+
+function stocker(k, v) { try { localStorage.setItem('crmnsd_' + k, v); } catch (e) {} }
+function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } catch (e) { return ''; } }
+
+// Deux façons de parler au Sheets, même code serveur derrière :
+// - ouverte depuis script.google.com : google.script.run ;
+// - installée sur le téléphone (nsd-vitrine/crm/) : l'API JSON de l'Apps Script.
+function appel(fn, ...args) {
+  if (window.google && google.script && google.script.run) {
+    return new Promise((ok, ko) => {
+      google.script.run.withSuccessHandler(ok).withFailureHandler(e => ko(e))[fn](...args);
+    });
+  }
+  return fetch(window.CRM_API, { method: 'POST', body: JSON.stringify({ fn, args }) })
+    .then(r => { if (!r.ok) throw new Error('Serveur injoignable (' + r.status + '). Réessaie.'); return r.json(); })
+    .then(r => { if (r.erreur) throw new Error(r.erreur); return r.resultat; });
+}
+
+function toast(msg, erreur) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (erreur ? ' erreur' : '');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('cache'), erreur ? 5000 : 2600);
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ---------------------------------------------------------------------------
+// Dates (format du Sheets : « 2026-09-23 14:00 »)
+// ---------------------------------------------------------------------------
+const pad = n => String(n).padStart(2, '0');
+function fmt(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function maintenant() { return fmt(new Date()); }
+function aujourdhui() { return maintenant().slice(0, 10); }
+function versDate(s) { const m = String(s).match(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/); return m ? new Date(+m[1], m[2] - 1, +m[3], +m[4], +m[5]) : null; }
+const JOURS = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+const JOURS_LONG = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+function heure(s) { const d = versDate(s); return d ? d.getHours() + ' h' + (d.getMinutes() ? pad(d.getMinutes()) : '') : ''; }
+function dateCourte(s) {
+  const d = versDate(s); if (!d) return '';
+  const j = s.slice(0, 10);
+  if (j === aujourdhui()) return 'auj. ' + heure(s);
+  const demain = new Date(); demain.setDate(demain.getDate() + 1);
+  if (j === fmt(demain).slice(0, 10)) return 'demain ' + heure(s);
+  return JOURS[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1) + ' ' + heure(s);
+}
+function dateLongue(s) { const d = versDate(s); return d ? JOURS_LONG[d.getDay()] + ' ' + d.getDate() + ' ' + MOIS[d.getMonth()] + ' à ' + heure(s) : ''; }
+
+// ---------------------------------------------------------------------------
+// Métiers, statuts, téléphones
+// ---------------------------------------------------------------------------
+function sansAccent(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function metierDe(p) {
+  if (p._metier !== undefined) return p._metier;
+  const txt = sansAccent(p.secteur + ' ' + p.entreprise);
+  const sect = sansAccent(p.secteur);
+  let trouve = null;
+  // Le secteur prime sur le nom : « Café » dans un nom de restaurant ne doit pas gagner.
+  for (const pass of [sect, txt]) {
+    if (!pass.trim()) continue;
+    trouve = S.data.metiers.find(m => m.motsCles.split(',').map(x => sansAccent(x).trim()).some(k => k && k !== '*' && pass.includes(k)));
+    if (trouve) break;
+  }
+  trouve = trouve || S.data.metiers.find(m => m.motsCles.trim() === '*') || null;
+  p._metier = trouve; return trouve;
+}
+function dansCreneau(p, quand) {
+  const m = metierDe(p); if (!m || !m.creneaux) return true;
+  const hm = (quand || maintenant()).slice(11, 16);
+  return m.creneaux.split(',').some(c => { const [a, b] = c.trim().split('-'); return a && b && hm >= a.trim() && hm < b.trim(); });
+}
+function prochainCreneau(p) {
+  const m = metierDe(p); if (!m || !m.creneaux) return '';
+  const hm = maintenant().slice(11, 16);
+  const debuts = m.creneaux.split(',').map(c => c.trim().split('-')[0].trim()).filter(Boolean).sort();
+  return debuts.find(d => d > hm) || '';
+}
+function statut(label) { return S.data.statuts.find(s => s.label === label || s.k === label) || S.data.statuts[0]; }
+function cle(p) { return statut(p.statut).k; }
+function couleur(p) { return statut(p.statut).color; }
+function telInternational(t) {
+  let d = String(t || '').split(/[\/;,]| ou /)[0].replace(/\.0$/, '').replace(/[^\d+]/g, '');
+  if (!d) return '';
+  if (d.startsWith('+')) return d.slice(1);
+  if (d.startsWith('00')) return d.slice(2);
+  if (d.startsWith('352') && d.length > 9) return d;
+  return '352' + d;
+}
+function lienTel(t) { const i = telInternational(t); return i ? 'tel:+' + i : ''; }
+function lienSite(s) { s = String(s || '').trim(); if (!s || !/[.]/.test(s)) return ''; return /^https?:/i.test(s) ? s : 'https://' + s; }
+function lienInsta(s) { s = String(s || '').trim(); if (!s) return ''; if (/^https?:/i.test(s)) return s; return 'https://instagram.com/' + s.replace(/^@/, ''); }
+function trouver(id) { return S.data.prospects.find(p => p.id === id); }
+function historique(id) { return S.data.journal.filter(j => j.id === id).sort((a, b) => b.date.localeCompare(a.date)); }
+const RES_APPEL = () => Object.values(S.data.resultats).filter(r => r.appel).map(r => r.label);
+
+// ---------------------------------------------------------------------------
+// Rendu
+// ---------------------------------------------------------------------------
+// Tout ce qu'il faut pour appeler, sans ouvrir la fiche.
+function dernierContact(p) {
+  const h = historique(p.id).find(e => e.resultat !== 'Ajout');
+  if (!h) return p.dernier ? 'Dernier contact ' + dateCourte(p.dernier) : '';
+  return dateCourte(h.date) + ' · ' + h.resultat + (h.note ? ' · « ' + h.note + ' »' : '');
+}
+function carteRiche(p, droite, entree) {
+  const m = metierDe(p), tel = lienTel(p.telephone), wa = telInternational(p.telephone);
+  const sous = [p.secteur || (m && m.metier), p.commune].filter(Boolean).join(' · ');
+  const notes = String(p.notes || '').split(' · ').filter(x => !/^Contacté \?/.test(x)).join(' · ');
+  const dernier = entree ? '' : dernierContact(p);
+  const lignes = [
+    ['Gérant', p.gerant ? esc(p.gerant) : '<span class="faible">inconnu, demander le responsable</span>'],
+    ['Tél.', tel ? `<a href="${tel}" data-stop="1">${esc(p.telephone)}</a>` : '<span class="faible">aucun numéro</span>'],
+    p.mauvais || p.site ? ['Constat', esc(p.mauvais || '') + (p.site && !/^https?:\/\/(www\.)?facebook/i.test(p.site) ? (p.mauvais ? ' · ' : '') + esc(p.site) : '')] : null,
+    entree ? ['Résultat', `<span class="lp-resultat" style="--statut:${statut(entree.statut).color}">${esc(entree.resultat)}</span>${entree.rappel ? ' → ' + esc(dateCourte(entree.rappel)) : ''}${entree.par ? ' <span class="faible">· ' + esc(entree.par) + '</span>' : ''}`] : null,
+    entree && entree.note ? ['Dit', esc(entree.note)] : null,
+    dernier ? ['Dernier', esc(dernier)] : null,
+    !entree && notes ? ['Notes', esc(notes.length > 160 ? notes.slice(0, 160) + '…' : notes)] : null,
+  ].filter(Boolean);
+  return `<div class="lp" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
+    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span></div></div>
+      ${droite || ''}</div>
+    <dl class="lp-grille">${lignes.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    <div class="lp-actions">
+      <a class="appeler ${tel ? '' : 'inactif'}" href="${tel || '#'}" data-stop="1">☎︎ Appeler</a>
+      <button data-action="carte-wa" data-id="${esc(p.id)}" class="${wa ? '' : 'inactif'}">WhatsApp</button>
+      <button data-action="carte-noter" data-id="${esc(p.id)}">Noter l’appel</button>
+    </div></div>`;
+}
+// Carte du pipeline : étroite, rien ne doit être tronqué d'important.
+function carteCompacte(p) {
+  const m = metierDe(p), tel = lienTel(p.telephone);
+  return `<div class="pc" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
+    <div class="pc-nom">${esc(p.entreprise)}</div>
+    <div class="pc-meta">${esc([p.secteur || (m && m.metier), p.commune, p.gerant].filter(Boolean).join(' · ') || '—')}</div>
+    <div class="pc-bas">${tel ? `<a href="${tel}" data-stop="1">${esc(String(p.telephone).split(/\s*[\/;]\s*|\s+ou\s+/)[0])}</a>` : '<span class="pc-meta">sans tél.</span>'}
+      ${p.rappel ? `<span class="pc-date ${p.rappel < maintenant() ? 'retard' : ''}">${cle(p) === 'rdv' ? 'RDV ' : ''}${esc(dateCourte(p.rappel))}</span>` : ''}</div>
+  </div>`;
+}
+function droite(texte, sous, retard) {
+  return `<div class="lp-droite ${retard ? 'retard' : ''}">${esc(texte)}${sous ? `<small>${esc(sous)}</small>` : ''}</div>`;
+}
+function grille(html) { return `<div class="grille-cartes">${html}</div>`; }
+
+function section(titre, info, html) {
+  return `<h2 class="section">${titre}${info ? `<small>${info}</small>` : ''}</h2>${html}`;
+}
+
+function rendre() {
+  if (!S.data) return;
+  document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', b.dataset.vue === S.vue));
+  document.body.dataset.vue = S.recherche ? 'recherche' : S.vue;
+  document.getElementById('btn-qui').textContent = S.par + ' ▾';
+  const v = document.getElementById('vue');
+  if (S.recherche) v.innerHTML = vueRecherche();
+  else if (S.vue === 'jour') v.innerHTML = vueJour();
+  else if (S.vue === 'pipeline') v.innerHTML = vuePipeline();
+  else if (S.vue === 'ajouter') v.innerHTML = vueAjouter();
+  else if (S.vue === 'factu') v.innerHTML = Factu.vue();
+  else v.innerHTML = vueStats();
+}
+
+// ---------------------------------------------------------------------------
+// Journée : n'importe quel jour, passé ou à venir
+// ---------------------------------------------------------------------------
+function jourLong(j) {
+  const [a, m, d] = j.split('-').map(Number); const dt = new Date(a, m - 1, d);
+  return JOURS_LONG[dt.getDay()] + ' ' + d + ' ' + MOIS[m - 1] + (a !== new Date().getFullYear() ? ' ' + a : '');
+}
+function decalerJour(j, n) { const [a, m, d] = j.split('-').map(Number); const dt = new Date(a, m - 1, d + n); return fmt(dt).slice(0, 10); }
+function barreJour() {
+  const auj = aujourdhui(), j = S.jour;
+  const ecart = Math.round((new Date(j) - new Date(auj)) / 864e5);
+  const rel = ecart === 0 ? 'Aujourd’hui' : ecart === -1 ? 'Hier' : ecart === 1 ? 'Demain' : ecart < 0 ? 'Il y a ' + (-ecart) + ' jours' : 'Dans ' + ecart + ' jours';
+  return `<div class="jourbar">
+    <button class="fleche" data-action="jour" data-n="-1" aria-label="Jour précédent">‹</button>
+    <label class="jour-choix"><b>${esc(jourLong(j))}</b><small>${rel} · changer de date</small>
+      <input type="date" id="jour-date" value="${j}" aria-label="Choisir une date"></label>
+    <button class="fleche" data-action="jour" data-n="1" aria-label="Jour suivant">›</button>
+  </div>
+  ${ecart !== 0 ? '<button class="retour-auj" data-action="jour-auj">Revenir à aujourd’hui</button>' : ''}`;
+}
+// Le journal d'un jour : en mémoire (120 derniers jours), sinon demandé au Sheets.
+function journalDe(j) {
+  if (S.journeesChargees[j]) return S.journeesChargees[j];
+  const limite = S.data.journal.reduce((m, e) => e.date < m ? e.date : m, aujourdhui());
+  if (j >= limite.slice(0, 10)) return S.data.journal.filter(e => e.date.startsWith(j) || String(e.rappel).startsWith(j));
+  appel('api_journee', S.pin, j).then(r => { S.journeesChargees[j] = r; if (S.vue === 'jour' && S.jour === j) rendre(); })
+    .catch(e => toast(e.message || String(e), true));
+  return null;
+}
+function bilanJour(entrees) {
+  const appels = RES_APPEL();
+  const faits = entrees.filter(e => appels.includes(e.resultat));
+  const n = f => faits.filter(f).length;
+  return `<div class="bilan"><div><b>${faits.length}</b><span>appels</span></div>
+    <div><b>${n(e => e.resultat !== 'Pas de réponse')}</b><span>décrochés</span></div>
+    <div><b>${n(e => e.resultat === 'Lien envoyé')}</b><span>liens</span></div>
+    <div><b>${n(e => e.resultat === 'RDV obtenu')}</b><span>RDV</span></div></div>`;
+}
+// Les appels passés un jour donné, dans l'ordre de la journée.
+function sectionAppelsDuJour(j, entrees) {
+  const faits = entrees.filter(e => e.date.startsWith(j) && e.id && e.resultat !== 'Import')
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const cartes = faits.map(e => {
+    const p = trouver(e.id) || { id: e.id, entreprise: e.entreprise, statut: e.statut };
+    return carteRiche(p, droite(heure(e.date)), e);
+  });
+  return section('Appels passés', faits.length ? faits.length + ' contacts' : '',
+    faits.length ? grille(cartes.join('')) : '<div class="vide">Aucun contact enregistré ce jour-là.</div>');
+}
+
+function vueJour() {
+  if (!S.jour) S.jour = aujourdhui();
+  const j = S.jour, auj = aujourdhui();
+  if (j !== auj) return barreJour() + (j < auj ? vueJourPasse(j) : vueJourAVenir(j));
+  const entrees = journalDe(j) || [];
+  return barreJour() + bilanJour(entrees.filter(e => e.date.startsWith(j))) + vueAujourdhui() + sectionAppelsDuJour(j, entrees);
+}
+
+function vueJourPasse(j) {
+  const entrees = journalDe(j);
+  if (!entrees) return '<div class="chargement">Lecture du journal de ce jour-là…</div>';
+  const duJour = entrees.filter(e => e.date.startsWith(j));
+  // Ce qui était prévu pour ce jour-là (rappels et RDV posés avant).
+  const prevus = entrees.filter(e => String(e.rappel).startsWith(j) && !e.date.startsWith(j));
+  const vus = new Set();
+  const cartesPrevus = prevus.sort((a, b) => a.rappel.localeCompare(b.rappel)).filter(e => !vus.has(e.id) && vus.add(e.id)).map(e => {
+    const p = trouver(e.id) || { id: e.id, entreprise: e.entreprise, statut: e.statut };
+    const fait = duJour.some(x => x.id === e.id);
+    return carteRiche(p, droite(heure(e.rappel), fait ? 'fait' : 'pas rappelé', !fait));
+  });
+  return bilanJour(duJour) + sectionAppelsDuJour(j, entrees)
+    + (cartesPrevus.length ? section('Ce qui était prévu', cartesPrevus.length + ' rappels ou RDV', grille(cartesPrevus.join(''))) : '');
+}
+
+function vueJourAVenir(j) {
+  const prevus = S.data.prospects.filter(p => String(p.rappel).startsWith(j) && !['perdu', 'signe'].includes(cle(p)))
+    .sort((a, b) => a.rappel.localeCompare(b.rappel));
+  return section('Rappels et RDV prévus', prevus.length ? prevus.length + ' prévus' : '',
+    prevus.length ? grille(prevus.map(p => carteRiche(p, droite((cle(p) === 'rdv' ? 'RDV ' : '') + heure(p.rappel)))).join(''))
+      : '<div class="vide">Rien de prévu ce jour-là pour l’instant. Les rappels posés depuis la fiche d’un prospect apparaîtront ici.</div>');
+}
+
+function vueAujourdhui() {
+  const now = maintenant(), jour = aujourdhui();
+  const actifs = S.data.prospects.filter(p => !['perdu', 'signe'].includes(cle(p)));
+  const avecRappel = actifs.filter(p => p.rappel);
+  const retard = avecRappel.filter(p => p.rappel < now).sort((a, b) => a.rappel.localeCompare(b.rappel));
+  const duJour = avecRappel.filter(p => p.rappel.slice(0, 10) === jour && p.rappel >= now).sort((a, b) => a.rappel.localeCompare(b.rappel));
+  const aDater = actifs.filter(p => cle(p) === 'rappel' && !p.rappel);
+  const froids = actifs.filter(p => ['a_appeler', 'sans_reponse'].includes(cle(p)) && !p.rappel && !String(p.dernier).startsWith(jour) && p.telephone);
+  const ordre = (a, b) => (cle(a) === 'a_appeler' ? 0 : 1) - (cle(b) === 'a_appeler' ? 0 : 1) || String(a.dernier).localeCompare(String(b.dernier)) || a.id.localeCompare(b.id);
+  const maintenantOk = froids.filter(p => dansCreneau(p)).sort(ordre);
+  const plusTard = froids.filter(p => !dansCreneau(p) && prochainCreneau(p)).sort((a, b) => prochainCreneau(a).localeCompare(prochainCreneau(b)) || ordre(a, b));
+  const il2j = new Date(); il2j.setDate(il2j.getDate() - 2);
+  const relances = actifs.filter(p => cle(p) === 'lien' && !p.rappel && String(p.dernier || '') < fmt(il2j))
+    .sort((a, b) => String(a.dernier).localeCompare(String(b.dernier)));
+  const rdvOuRappel = p => (cle(p) === 'rdv' ? 'RDV ' : '') + dateCourte(p.rappel);
+
+  let h = '';
+  if (retard.length) h += section('En retard', retard.length + ' à replacer', grille(retard.map(p => carteRiche(p, droite(rdvOuRappel(p), 'en retard', true))).join('')));
+  h += section('Rappels et RDV du jour', duJour.length ? duJour.length + ' prévus' : '',
+    duJour.length ? grille(duJour.map(p => carteRiche(p, droite((cle(p) === 'rdv' ? 'RDV ' : '') + heure(p.rappel)))).join(''))
+      : '<div class="vide">Aucun rappel prévu pour le reste de la journée.</div>');
+  if (aDater.length) h += section('Rappels sans date', 'à dater', grille(aDater.map(p => carteRiche(p, droite('à dater'))).join('')));
+  h += section('À appeler maintenant', maintenantOk.length + ' dans leur créneau',
+    maintenantOk.length ? grille(maintenantOk.slice(0, S.plusJour).map(p => carteRiche(p, cle(p) === 'sans_reponse' ? droite(p.nb + '×', 'sans réponse') : '')).join(''))
+      + (maintenantOk.length > S.plusJour ? '<button class="plus" data-action="plus">Afficher plus</button>' : '')
+      : '<div class="vide">Personne dans son créneau d’appel à cette heure. Regarde « Plus tard ».</div>');
+  if (relances.length) h += section('Liens envoyés à relancer', relances.length + ' sans relance prévue',
+    grille(relances.map(p => carteRiche(p, droite('à relancer', p.dernier ? 'lien ' + dateCourte(p.dernier) : ''))).join('')));
+  if (plusTard.length) h += section('Plus tard aujourd’hui', plusTard.length + ' prospects',
+    grille(plusTard.slice(0, 15).map(p => carteRiche(p, droite('à ' + prochainCreneau(p).replace(':', ' h ')))).join('')));
+  return h;
+}
+
+function vueRecherche() {
+  const q = sansAccent(S.recherche), qt = S.recherche.replace(/\D/g, '');
+  const res = S.data.prospects.filter(p => sansAccent([p.entreprise, p.secteur, p.commune, p.gerant, p.email].join(' ')).includes(q)
+    || (qt.length >= 3 && String(p.telephone).replace(/\D/g, '').includes(qt)));
+  return section('Résultats', res.length + ' trouvés', res.length ? grille(res.slice(0, 60).map(p => carteRiche(p, p.rappel ? droite(dateCourte(p.rappel)) : '')).join(''))
+    : '<div class="vide">Aucun prospect ne correspond. Tu peux l’ajouter dans l’onglet « Ajouter ».</div>');
+}
+
+function vuePipeline() {
+  const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
+  const liste = S.data.prospects.filter(p => !S.filtreSecteur || p.secteur === S.filtreSecteur);
+  const cols = S.data.statuts.map(s => {
+    const items = liste.filter(p => cle(p) === s.k);
+    return `<div class="colonne"><h3><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span><span>${items.length}</span></h3>
+      <div class="liste">${items.length ? items.slice(0, 120).map(carteCompacte).join('') : '<div class="vide">Vide</div>'}
+      ${items.length > 120 ? `<div class="vide">+ ${items.length - 120} autres : utilise la recherche.</div>` : ''}</div></div>`;
+  }).join('');
+  return `<div class="filtres"><select id="filtre-secteur"><option value="">Tous les secteurs</option>
+    ${secteurs.map(s => `<option ${s === S.filtreSecteur ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></div>
+    <div class="colonnes">${cols}</div>`;
+}
+
+function vueAjouter(doublons) {
+  const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
+  return `<h2 class="section">Nouveau prospect</h2>
+  <div id="zone-doublons"></div>
+  <form id="form-ajout" autocomplete="off">
+    <label class="champ">Entreprise *<input name="entreprise" required></label>
+    <label class="champ">Secteur<input name="secteur" list="liste-secteurs" placeholder="Restauration, Coiffure, Garage…"></label>
+    <datalist id="liste-secteurs">${secteurs.map(s => `<option value="${esc(s)}">`).join('')}</datalist>
+    <label class="champ">Commune<input name="commune"></label>
+    <label class="champ">Téléphone<input name="telephone" type="tel" inputmode="tel"></label>
+    <label class="champ">Nom du gérant<input name="gerant" placeholder="Seulement si tu en es sûr"></label>
+    <label class="champ">Email<input name="email" type="email" inputmode="email"></label>
+    <label class="champ">Site web<input name="site" inputmode="url"></label>
+    <label class="champ">Instagram<input name="instagram"></label>
+    <label class="champ">Mauvais points<select name="mauvais"><option></option><option>pas de site web, zero vitrine</option>
+      <option>site web, mais pas quali</option><option>site web, non actuel</option></select></label>
+    <label class="champ">N° RCS<input name="rcs"></label>
+    <label class="champ">Notes<textarea name="notes" placeholder="Repéré où, ce qu'on a vu, à qui parler…"></textarea></label>
+    <button class="btn large" type="submit">Ajouter au Sheets</button>
+  </form>`;
+}
+
+function vueStats() {
+  const appels = RES_APPEL(), J = S.data.journal;
+  const jour = aujourdhui();
+  const lundi = new Date(); lundi.setHours(0, 0, 0, 0); lundi.setDate(lundi.getDate() - ((lundi.getDay() + 6) % 7));
+  const debutSem = fmt(lundi).slice(0, 10);
+  const il30 = new Date(); il30.setDate(il30.getDate() - 30); const d30 = fmt(il30).slice(0, 10);
+  const compte = (depuis, filtre) => J.filter(e => e.date.slice(0, 10) >= depuis && filtre(e)).length;
+  const estAppel = e => appels.includes(e.resultat);
+  const decroche = e => estAppel(e) && e.resultat !== 'Pas de réponse';
+  const rdv = e => e.resultat === 'RDV obtenu';
+  const a30 = compte(d30, estAppel), r30 = compte(d30, rdv), dec30 = compte(d30, decroche);
+
+  const jours = [];
+  for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = fmt(d).slice(0, 10); jours.push({ k, d, n: J.filter(e => e.date.startsWith(k) && estAppel(e)).length }); }
+  const max = Math.max(1, ...jours.map(j => j.n));
+  const pers = {};
+  J.filter(e => e.date.slice(0, 10) >= debutSem && estAppel(e)).forEach(e => { pers[e.par || '—'] = (pers[e.par || '—'] || 0) + 1; });
+
+  return section('Aujourd’hui', '', `<div class="grille">
+      <div class="kpi"><div class="v">${compte(jour, estAppel)}</div><div class="l">appels</div></div>
+      <div class="kpi"><div class="v">${compte(jour, rdv)}</div><div class="l">RDV obtenus</div></div></div>`)
+    + section('Cette semaine', 'depuis lundi', `<div class="grille">
+      <div class="kpi"><div class="v">${compte(debutSem, estAppel)}</div><div class="l">appels</div></div>
+      <div class="kpi"><div class="v">${compte(debutSem, decroche)}</div><div class="l">décrochés</div></div>
+      <div class="kpi"><div class="v">${compte(debutSem, e => e.resultat === 'Lien envoyé')}</div><div class="l">liens envoyés</div></div>
+      <div class="kpi"><div class="v">${compte(debutSem, rdv)}</div><div class="l">RDV obtenus</div></div></div>`)
+    + section('Appels par jour', '14 derniers jours', `<div class="barres">${jours.map(j =>
+      `<div class="barre-j" style="height:${Math.round(j.n / max * 100)}%"><em>${j.n || ''}</em><span>${j.d.getDate()}</span></div>`).join('')}</div>`)
+    + section('Sur 30 jours', '', `<table class="recap">
+      <tr><td>Appels passés</td><td>${a30}</td></tr>
+      <tr><td>Taux de décroché</td><td>${a30 ? Math.round(dec30 / a30 * 100) + ' %' : '—'}</td></tr>
+      <tr><td>Appels pour un RDV</td><td>${r30 ? Math.round(a30 / r30) : '—'}</td></tr>
+      ${Object.keys(pers).map(k => `<tr><td>Appels de ${esc(k)} cette semaine</td><td>${pers[k]}</td></tr>`).join('')}</table>`)
+    + section('Pipeline', S.data.prospects.length + ' prospects', `<table class="recap">${S.data.statuts.map(s =>
+      `<tr><td><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span></td><td>${S.data.prospects.filter(p => cle(p) === s.k).length}</td></tr>`).join('')}</table>`)
+    + `<p style="margin-top:18px"><a class="btn clair large" href="${esc(S.data.lienSheets)}" target="_blank">Ouvrir le Google Sheets</a></p>`;
+}
+
+// ---------------------------------------------------------------------------
+// Fiche prospect
+// ---------------------------------------------------------------------------
+const CHOIX = { res: '', rappel: '', duree: 60 };
+
+function ouvrirFiche(id) {
+  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60;
+  rendreFiche();
+  document.getElementById('fiche').classList.remove('cache');
+  document.body.style.overflow = 'hidden';
+}
+function fermerFiche() {
+  S.ouvert = null;
+  document.getElementById('fiche').classList.add('cache');
+  document.body.style.overflow = '';
+}
+
+function rendreFiche(edition) {
+  const p = trouver(S.ouvert); if (!p) return fermerFiche();
+  const m = metierDe(p), tel = lienTel(p.telephone), wa = telInternational(p.telephone);
+  const site = lienSite(p.site), insta = lienInsta(p.instagram);
+  const st = statut(p.statut);
+  const hist = historique(p.id);
+  const res = S.data.resultats;
+  const ordreRes = ['pas_repondu', 'absent', 'rappel', 'lien', 'rdv', 'refus', 'signe', 'note'];
+  const couleurRes = { absent: 'rappel', rappel: 'rappel', lien: 'lien', rdv: 'rdv', refus: 'perdu', signe: 'signe', pas_repondu: 'sans_reponse', note: 'a_appeler' };
+  const creneau = m && m.creneaux ? (dansCreneau(p) ? 'dans son créneau maintenant' : 'hors créneau (' + m.creneaux + ')') : '';
+
+  const f = document.getElementById('fiche');
+  f.innerHTML = `<div class="feuille" id="feuille">
+    <div class="feuille-tete"><div class="poignee"></div>
+      <div class="ligne1"><div><h1>${esc(p.entreprise)}</h1>
+        <div class="sous"><span class="pastille" style="--statut:${st.color}">${esc(st.label)}</span>
+        ${p.rappel ? ' · ' + esc(cle(p) === 'rdv' ? 'RDV ' : 'rappel ') + esc(dateCourte(p.rappel)) : ''}</div>
+        <div class="sous">${esc([p.secteur || (m && m.metier), p.commune].filter(Boolean).join(' · '))}${p.gerant ? ' · <b>' + esc(p.gerant) + '</b>' : ''}</div></div>
+        <button class="fermer" data-action="fermer" aria-label="Fermer">✕</button></div>
+      <div class="actions">
+        <a class="principal ${tel ? '' : 'inactif'}" href="${tel || '#'}"><span class="ico">☎︎</span>Appeler</a>
+        <button data-action="msg" data-canal="whatsapp" class="${wa ? '' : 'inactif'}"><span class="ico">✆</span>WhatsApp</button>
+        <button data-action="msg" data-canal="sms" class="${wa ? '' : 'inactif'}"><span class="ico">✉︎</span>SMS</button>
+        <button data-action="msg" data-canal="mail" class="${p.email ? '' : 'inactif'}"><span class="ico">@</span>Mail</button>
+      </div>
+    </div>
+
+    ${edition ? formEdition(p) : `
+    <div class="bloc"><h3>Résultat du contact</h3>
+      <div class="resultats">${ordreRes.map(k => `<button data-res="${k}" style="--statut:${statut(couleurRes[k]).color}" class="${CHOIX.res === k ? 'choisi' : ''}">${esc(res[k].label)}</button>`).join('')}</div>
+      <div id="zone-res" class="${CHOIX.res ? '' : 'cache'}">${zoneResultat()}</div>
+    </div>
+
+    ${m && (m.conseil || creneau) ? `<div class="conseil"><b>${esc(m.metier)}</b>${creneau ? ' · ' + esc(creneau) : ''}${m.conseil ? '<br>' + esc(m.conseil) : ''}</div>` : ''}
+
+    <div class="bloc"><h3>Infos</h3><dl class="infos">
+      <dt>Téléphone</dt><dd>${p.telephone ? `<a href="${tel}">${esc(p.telephone)}</a>` : '—'}</dd>
+      <dt>Gérant</dt><dd>${esc(p.gerant || '—')}</dd>
+      <dt>Email</dt><dd>${p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '—'}</dd>
+      <dt>Site</dt><dd>${site ? `<a href="${esc(site)}" target="_blank">${esc(p.site)}</a>` : esc(p.site || '—')}</dd>
+      <dt>Instagram</dt><dd>${insta ? `<a href="${esc(insta)}" target="_blank">${esc(p.instagram)}</a>` : '—'}</dd>
+      <dt>Constat</dt><dd>${esc(p.mauvais || '—')}</dd>
+      <dt>Démo à montrer</dt><dd>${m && m.lien ? `<a href="${esc(m.lien)}" target="_blank">${esc(m.metier)}</a>` : '—'}</dd>
+      <dt>N° RCS</dt><dd>${esc(p.rcs || '—')}</dd>
+      <dt>Contacts</dt><dd>${esc(p.nb || '0')}${p.dernier ? ' · dernier ' + esc(dateCourte(p.dernier)) : ''}</dd>
+      <dt>Notes</dt><dd style="white-space:pre-wrap">${esc(p.notes || '—')}</dd>
+    </dl>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+      <button class="btn clair" data-action="editer">Modifier la fiche</button>
+      <button class="btn" data-action="devis">Faire un devis</button></div>
+    ${p.client ? '<div class="sous" style="margin-top:8px">Fiche client liée à la facturation.</div>' : ''}</div>
+
+    <div class="bloc"><h3>Historique</h3>${hist.length ? `<ul class="histo">${hist.map(e =>
+      `<li><b>${esc(e.resultat)}</b>${e.rappel ? ' → ' + esc(dateCourte(e.rappel)) : ''}${e.note ? '<br>' + esc(e.note) : ''}<div class="d">${esc(dateCourte(e.date))}${e.par ? ' · ' + esc(e.par) : ''}</div></li>`).join('')}</ul>`
+      : '<div class="sous">Aucun contact enregistré dans l’appli.</div>'}</div>`}
+  </div>`;
+}
+
+function optionsDates() {
+  const o = [], now = new Date();
+  const dans = h => { const d = new Date(now.getTime() + h * 36e5); d.setMinutes(d.getMinutes() < 30 ? 30 : 60, 0, 0); return d; };
+  const a = (jPlus, h, m) => { const d = new Date(now); d.setDate(d.getDate() + jPlus); d.setHours(h, m || 0, 0, 0); return d; };
+  o.push(['Dans 1 h', dans(1)], ['Dans 2 h', dans(2)]);
+  if (now.getHours() < 15) o.push(['Auj. 16 h', a(0, 16)]);
+  o.push(['Demain 10 h', a(1, 10)], ['Demain 15 h', a(1, 15)]);
+  const lundi = a(((8 - now.getDay()) % 7) || 7, 10); o.push(['Lundi 10 h', lundi]);
+  return o.map(([l, d]) => [l, fmt(d)]);
+}
+function zoneResultat() {
+  const def = S.data.resultats[CHOIX.res]; if (!def) return '';
+  const avecDate = CHOIX.res !== 'refus' && CHOIX.res !== 'signe' && CHOIX.res !== 'note';
+  const titreDate = CHOIX.res === 'rdv' ? 'Date du rendez-vous' : CHOIX.res === 'lien' ? 'Relancer le… (facultatif)' : CHOIX.res === 'pas_repondu' ? 'Réessayer le… (facultatif)' : 'Rappeler le…';
+  return `${avecDate ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">${titreDate}${def.rappelObligatoire ? ' *' : ''}</div>
+    <div class="dates">${optionsDates().map(([l, v]) => `<button data-date="${v}" class="${CHOIX.rappel === v ? 'choisi' : ''}">${l}</button>`).join('')}</div>
+    <label class="champ">Ou une date précise<input type="datetime-local" id="date-precise" value="${CHOIX.rappel ? CHOIX.rappel.replace(' ', 'T') : ''}"></label>` : ''}
+    ${CHOIX.res === 'rdv' ? `<div style="font-size:13px;color:var(--doux)">Durée dans l’agenda</div>
+    <div class="dates">${(S.data.rdvDurees || [30, 60, 90]).map(m => `<button data-duree="${m}" class="${CHOIX.duree === m ? 'choisi' : ''}">${m < 60 ? m + ' min' : (m / 60 + ' h').replace('.5 h', ' h 30')}</button>`).join('')}</div>` : ''}
+    <label class="champ">${CHOIX.res === 'note' ? 'Note' : 'Ce qui s’est dit (facultatif)'}<textarea id="note-res" placeholder="Nom de la personne, objection, heure qui l’arrange…"></textarea></label>
+    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(def.label)} »</button>`;
+}
+
+function formEdition(p) {
+  const f = (k, l, type) => `<label class="champ">${l}<input name="${k}" type="${type || 'text'}" value="${esc(p[k] || '')}"></label>`;
+  return `<form class="bloc" id="form-edit"><h3>Modifier la fiche</h3>
+    ${f('entreprise', 'Entreprise')}${f('secteur', 'Secteur')}${f('commune', 'Commune')}${f('telephone', 'Téléphone', 'tel')}
+    ${f('gerant', 'Nom du gérant')}${f('email', 'Email', 'email')}${f('site', 'Site web')}${f('instagram', 'Instagram')}
+    ${f('mauvais', 'Mauvais points')}${f('rcs', 'N° RCS')}
+    <label class="champ">Prochain rappel<input name="rappel" type="datetime-local" value="${esc((p.rappel || '').replace(' ', 'T'))}"></label>
+    <label class="champ">Statut<select name="statut">${S.data.statuts.map(s => `<option value="${s.k}" ${s.k === cle(p) ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
+    <label class="champ">Notes<textarea name="notes">${esc(p.notes || '')}</textarea></label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="btn clair" data-action="annuler-edit">Annuler</button>
+    <button class="btn" type="submit">Enregistrer</button></div></form>`;
+}
+
+// --- Messages -------------------------------------------------------------
+function remplir(txt, p) {
+  const m = metierDe(p);
+  return String(txt)
+    .replace(/{bonjour}/g, 'Bonjour')
+    .replace(/{gerant}/g, p.gerant || '')
+    .replace(/{entreprise}/g, p.entreprise || '')
+    .replace(/{metier}/g, m ? m.metier.toLowerCase() : 'votre métier')
+    .replace(/{lien}/g, m ? m.lien : '')
+    .replace(/{rdv}/g, p.rappel ? dateLongue(p.rappel) : '[date du RDV]')
+    .replace(/{signature}/g, SIGNATURE);
+}
+const SIGNATURE = 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nSamir DINIS DA ROSA\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 621 757 113\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development';
+
+function ouvrirMessages(canal) {
+  const p = trouver(S.ouvert);
+  const modeles = S.data.messages.filter(m => m.canal.toLowerCase().trim() === canal);
+  const zone = document.createElement('div');
+  zone.className = 'bloc'; zone.id = 'bloc-msg';
+  zone.innerHTML = `<h3>${canal === 'mail' ? 'Mail' : canal === 'sms' ? 'SMS' : 'WhatsApp'} à ${esc(p.entreprise)}</h3>
+    ${modeles.length ? `<label class="champ">Modèle<select id="msg-modele">${modeles.map((m, i) => `<option value="${i}">${esc(m.titre)}</option>`).join('')}</select></label>` : ''}
+    ${canal === 'mail' ? `<label class="champ">Objet<input id="msg-sujet"></label>` : ''}
+    <label class="champ">Message<textarea id="msg-texte" style="min-height:180px"></textarea></label>
+    <button class="btn large" data-action="envoyer" data-canal="${canal}">Ouvrir ${canal === 'mail' ? 'le mail' : canal === 'sms' ? 'le SMS' : 'WhatsApp'}</button>`;
+  const ancien = document.getElementById('bloc-msg'); if (ancien) ancien.remove();
+  document.querySelector('.feuille-tete').after(zone);
+  const appliquer = () => {
+    const m = modeles[+(document.getElementById('msg-modele') || { value: 0 }).value];
+    document.getElementById('msg-texte').value = m ? remplir(m.texte, p) : '';
+    const s = document.getElementById('msg-sujet'); if (s) s.value = m ? remplir(m.sujet, p) : '';
+  };
+  const sel = document.getElementById('msg-modele'); if (sel) sel.onchange = appliquer;
+  appliquer();
+  document.getElementById('feuille').scrollTo({ top: 0, behavior: 'smooth' });  // le bloc est juste sous l'en-tête collant
+}
+
+function envoyer(canal) {
+  const p = trouver(S.ouvert);
+  const txt = document.getElementById('msg-texte').value;
+  const sel = document.getElementById('msg-modele');
+  const titre = sel ? sel.options[sel.selectedIndex].text : 'Message libre';
+  let url = '';
+  if (canal === 'whatsapp') url = 'https://wa.me/' + telInternational(p.telephone) + '?text=' + encodeURIComponent(txt);
+  else if (canal === 'sms') url = 'sms:+' + telInternational(p.telephone) + '?&body=' + encodeURIComponent(txt);
+  else url = 'mailto:' + encodeURIComponent(p.email) + '?subject=' + encodeURIComponent(document.getElementById('msg-sujet').value) + '&body=' + encodeURIComponent(txt);
+  window.open(url, '_blank');
+  const zone = document.getElementById('bloc-msg');
+  zone.innerHTML = `<h3>Message parti ?</h3><p class="sous">Note-le pour garder la trace dans l’historique.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+    <button class="btn clair" data-action="fermer-msg">Pas envoyé</button>
+    <button class="btn" data-action="noter-msg" data-titre="${esc(canal + ' : ' + titre)}">Oui, noter</button></div>`;
+}
+
+// --- Actions serveur ------------------------------------------------------
+async function enregistrer(btn) {
+  const res = CHOIX.res, def = S.data.resultats[res];
+  const precise = document.getElementById('date-precise');
+  const rappel = (precise && precise.value ? precise.value.replace('T', ' ') : CHOIX.rappel) || '';
+  if (def.rappelObligatoire && !rappel) return toast('Choisis une date.', true);
+  const note = (document.getElementById('note-res') || {}).value || '';
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  try {
+    const p = await appel('api_logger', S.pin, S.ouvert, res, note, rappel, S.par, res === 'rdv' ? CHOIX.duree : null);
+    majLocale(p, { resultat: def.label, note, rappel });
+    toast('« ' + def.label + ' » enregistré.' + (p._agenda ? ' ' + p._agenda + '.' : ''), /NON/.test(p._agenda || ''));
+    fermerFiche(); rendre();
+  } catch (e) { btn.disabled = false; btn.textContent = 'Réessayer'; toast(e.message || String(e), true); }
+}
+
+function majLocale(p, entree) {
+  delete p._ligne; delete p._agenda;
+  const i = S.data.prospects.findIndex(x => x.id === p.id);
+  const ancien = S.data.prospects[i] || {};
+  const neuf = Object.assign({}, ancien, p); delete neuf._metier;
+  if (i >= 0) S.data.prospects[i] = neuf; else S.data.prospects.push(neuf);
+  if (entree) S.data.journal.push(Object.assign({ date: maintenant(), id: p.id, entreprise: p.entreprise, statut: neuf.statut, par: S.par }, entree));
+}
+
+async function noterMessage(titre) {
+  try {
+    const p = await appel('api_logger', S.pin, S.ouvert, 'message', titre, '', S.par, null);
+    majLocale(p, { resultat: 'Message envoyé', note: titre, rappel: '' });
+    toast('Message noté.'); rendreFiche(); rendre();
+  } catch (e) { toast(e.message || String(e), true); }
+}
+
+async function sauverEdition(form) {
+  const champs = Object.fromEntries(new FormData(form).entries());
+  champs.rappel = champs.rappel ? champs.rappel.replace('T', ' ') : '';
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const p = await appel('api_modifier', S.pin, S.ouvert, champs);
+    majLocale(p); toast('Fiche mise à jour.' + (p._agenda ? ' ' + p._agenda + '.' : '')); rendreFiche(); rendre();
+  } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
+}
+
+async function ajouter(form, forcer) {
+  const champs = Object.fromEntries(new FormData(form).entries());
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const r = await appel('api_ajouter', S.pin, champs, S.par, !!forcer);
+    if (r.doublons) {
+      btn.disabled = false;
+      document.getElementById('zone-doublons').innerHTML = `<div class="doublon"><b>Déjà dans le Sheets ?</b><br>
+        ${r.doublons.map(d => `<a href="#" data-ouvrir="${esc(d.id)}">${esc(d.entreprise)}</a> · ${esc(d.telephone || 'sans tél.')} · ${esc(d.statut)}`).join('<br>')}
+        <p style="margin:10px 0 0"><button class="btn clair large" data-action="forcer-ajout">Ce n’est pas le même, ajouter quand même</button></p></div>`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    majLocale(r.prospect, { resultat: 'Ajout', note: champs.notes || '', rappel: '' });
+    toast(r.prospect.entreprise + ' ajouté.');
+    S.vue = 'jour'; rendre(); ouvrirFiche(r.prospect.id);
+  } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
+}
+
+// ---------------------------------------------------------------------------
+// Événements
+// ---------------------------------------------------------------------------
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-stop]'); if (t) { e.stopPropagation(); return; }
+  const onglet = e.target.closest('#onglets button');
+  if (onglet) { S.vue = onglet.dataset.vue; S.recherche = ''; document.getElementById('recherche').value = ''; window.scrollTo(0, 0); rendre();
+    if (S.vue === 'factu') Factu.recharger(); return; }
+  const ouvrir = e.target.closest('[data-ouvrir]'); if (ouvrir) { e.preventDefault(); ouvrirFiche(ouvrir.dataset.ouvrir); return; }
+  const ac = e.target.closest('[data-action="carte-noter"], [data-action="carte-wa"]');
+  if (ac) {
+    ouvrirFiche(ac.dataset.id);
+    // Les boutons de résultat sont le premier bloc de la fiche : rien à faire défiler.
+    if (ac.dataset.action === 'carte-wa') ouvrirMessages('whatsapp');
+    return;
+  }
+  const c = e.target.closest('.lp, .pc'); if (c && !e.target.closest('[data-action]')) { ouvrirFiche(c.dataset.id); return; }
+  if (e.target.id === 'fiche') { fermerFiche(); return; }
+  const r = e.target.closest('[data-res]');
+  if (r) { CHOIX.res = r.dataset.res; CHOIX.rappel = ''; document.querySelectorAll('[data-res]').forEach(b => b.classList.toggle('choisi', b === r));
+    const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat(); z.classList.remove('cache'); z.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+  const du = e.target.closest('[data-duree]');
+  if (du) { CHOIX.duree = Number(du.dataset.duree); document.querySelectorAll('[data-duree]').forEach(b => b.classList.toggle('choisi', b === du)); return; }
+  const d = e.target.closest('[data-date]');
+  if (d) { CHOIX.rappel = d.dataset.date; document.querySelectorAll('[data-date]').forEach(b => b.classList.toggle('choisi', b === d));
+    const p = document.getElementById('date-precise'); if (p) p.value = d.dataset.date.replace(' ', 'T'); return; }
+  const a = e.target.closest('[data-action]'); if (!a) return;
+  const act = a.dataset.action;
+  if (act === 'fermer') fermerFiche();
+  else if (act === 'plus') { S.plusJour += 25; rendre(); }
+  else if (act === 'jour') { S.jour = decalerJour(S.jour || aujourdhui(), Number(a.dataset.n)); rendre(); }
+  else if (act === 'jour-auj') { S.jour = aujourdhui(); rendre(); }
+  else if (act === 'enregistrer') enregistrer(a);
+  else if (act === 'editer') rendreFiche(true);
+  else if (act === 'devis') { const p = trouver(S.ouvert); fermerFiche(); Factu.nouveauDevis(p); }
+  else if (act === 'annuler-edit') rendreFiche();
+  else if (act === 'msg') ouvrirMessages(a.dataset.canal);
+  else if (act === 'envoyer') envoyer(a.dataset.canal);
+  else if (act === 'fermer-msg') document.getElementById('bloc-msg').remove();
+  else if (act === 'noter-msg') noterMessage(a.dataset.titre);
+  else if (act === 'forcer-ajout') ajouter(document.getElementById('form-ajout'), true);
+});
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  if (e.target.id === 'form-edit') sauverEdition(e.target);
+  if (e.target.id === 'form-ajout') ajouter(e.target);
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'filtre-secteur') { S.filtreSecteur = e.target.value; rendre(); }
+  if (e.target.id === 'jour-date' && e.target.value) { S.jour = e.target.value; rendre(); }
+});
+document.getElementById('recherche').addEventListener('input', e => { S.recherche = e.target.value.trim(); rendre(); });
+document.getElementById('btn-qui').addEventListener('click', () => { S.par = S.par === 'Sam' ? 'Nelson' : 'Sam'; stocker('par', S.par); rendre(); toast('Les appels seront notés au nom de ' + S.par + '.'); });
+
+// Connexion
+document.getElementById('choix-qui').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  S.par = b.dataset.qui; document.querySelectorAll('#choix-qui button').forEach(x => x.classList.toggle('choisi', x === b));
+});
+document.getElementById('btn-connexion').addEventListener('click', connexion);
+document.getElementById('pin').addEventListener('keydown', e => { if (e.key === 'Enter') connexion(); });
+
+async function connexion() {
+  const pin = document.getElementById('pin').value.trim();
+  if (!S.par) return toast('Choisis qui appelle.', true);
+  if (!pin) return toast('Entre le code.', true);
+  try { await appel('api_connexion', pin); S.pin = pin; stocker('pin', pin); stocker('par', S.par); demarrer(); }
+  catch (e) { toast(e.message || String(e), true); }
+}
+
+async function charger() {
+  S.data = await appel('api_charger', S.pin);
+  S.data.prospects.forEach(p => delete p._ligne);
+  rendre();
+  Factu.init();
+}
+
+async function demarrer() {
+  document.getElementById('ecran-connexion').classList.add('cache');
+  document.getElementById('app').classList.remove('cache');
+  try { await charger(); }
+  catch (e) {
+    if (/Code/.test(e.message || '')) { stocker('pin', ''); location.reload(); return; }
+    document.getElementById('vue').innerHTML = `<div class="vide">Impossible de lire le Sheets : ${esc(e.message || e)}</div>`;
+  }
+}
+
+// Recharge les données quand Sam revient sur l'appli (après un appel par exemple).
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.pin && S.data && !S.ouvert) charger().catch(() => {}); });
+setInterval(() => { if (S.data && !S.ouvert && !document.hidden) rendre(); }, 60000);
+
+S.pin = lire('pin'); S.par = lire('par');
+if (S.pin && S.par) demarrer();
+else {
+  document.getElementById('ecran-connexion').classList.remove('cache');
+  if (S.par) document.querySelector(`#choix-qui [data-qui="${S.par}"]`)?.classList.add('choisi');
+}
+</script>
+<script>
+// ===========================================================================
+// Documents DEVIS et FACTURE à la charte NS Development.
+// Un seul fichier, utilisé à deux endroits pour que le PDF soit identique :
+//   - dans l'appli CRM (onglet Factu), pour voir et imprimer ;
+//   - sur le Mac, par synchroniser-dossiers.mjs, qui range les PDF dans
+//     sites-web/clients/<client>/devis et /factures.
+// Repris de sites-web/ns-development/espace-client-admin.html.
+// ===========================================================================
+var NSDocs = (function () {
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // 2 625 € pour un montant rond, 1 462,50 € dès qu'il y a des centimes (jamais « 1 462,5 »).
+  const eur = n => { n = Math.round((Number(n) || 0) * 100) / 100; return n.toLocaleString('fr-FR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
+  const fmtDate = s => { if (!s) return '—'; const p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+  const aboAnnuel = t => Math.round((Number(t) || 0) / 3 * 11 * 100) / 100;
+
+  let OPTS = { iban: '', bic: '', logo: 'https://nsdevelopment26.github.io/nsd-vitrine/assets/logo-ns-dark.png' };
+  const EMETTEUR = () => ({
+    nom: 'NS Development SARL-S', adresse: '2, rue de la fontaine, L-4988 Sanem',
+    rcs: 'RCS Luxembourg B310037', autorisation: 'Autorisation d’établissement n° 10196211/0',
+    email: 'nsdevelopment26@gmail.com', tva: 'LU37686640',
+    iban: OPTS.iban || 'à compléter', bic: OPTS.bic || 'à compléter',
+  });
+  const CSS_DOC = ':root{--paper:#fff;--ink:#172232;--ink-soft:#47536a;--muted:#8b95a7;--faint:#b8c0ce;--line:#e7eaf0;--line-strong:#d3d9e4;--accent:#2b52e0;--accent-wash:#f4f6fe;--fill:#f6f7fa;--sans:"Helvetica Neue","Segoe UI",system-ui,-apple-system,Arial,sans-serif;--mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;}'
+    + '*{box-sizing:border-box}html,body{margin:0;padding:0}body{background:#eceef2;font-family:var(--sans);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding:24px 12px 60px}'
+    + '.sheet{max-width:820px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:4px;box-shadow:0 8px 40px rgba(23,34,50,.10);padding:56px 60px 52px}'
+    + '.head{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;padding-bottom:26px;border-bottom:2px solid var(--ink)}.brandlogo{height:82px;width:auto;display:block}'
+    + '.doc-label{text-align:right}.doc-label h1{margin:0;font-size:30px;letter-spacing:.14em;font-weight:700}'
+    + '.doc-meta{margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);display:grid;grid-template-columns:auto auto;gap:3px 14px;justify-content:end}.doc-meta .k{color:var(--muted);text-align:right}.doc-meta .v{text-align:right;font-variant-numeric:tabular-nums}'
+    + '.parties{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:30px}.eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:9px}'
+    + '.party .who{font-weight:700;font-size:15px;margin-bottom:2px}.party .r{font-size:13px;color:var(--ink-soft)}'
+    + 'section{margin-top:34px}.sec-title{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:baseline;gap:10px;margin-bottom:12px}.sec-title .sub{font-weight:400;color:var(--muted);font-size:12px}'
+    + 'table{width:100%;border-collapse:collapse}thead th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 0 9px;border-bottom:1px solid var(--line-strong)}thead th.num{text-align:right;padding-left:28px}'
+    + 'tbody td{padding:14px 0;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:28px}.item-name{font-weight:700;margin-bottom:3px}.item-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.5}'
+    + '.line-total{display:flex;justify-content:flex-end;align-items:baseline;gap:18px;margin-top:14px;font-size:13.5px}.line-total .lbl{color:var(--ink-soft)}.line-total .amt{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}'
+    + '.modal{margin-top:14px;background:var(--accent-wash);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:14px 18px}.modal ul{margin:0;padding-left:18px}.modal li{font-size:12.5px;color:var(--ink-soft);margin:4px 0}.modal li strong{color:var(--ink)}'
+    + '.recap{margin-top:34px;border:1px solid var(--line-strong);border-radius:9px;overflow:hidden}.recap .r{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;font-size:13.5px;border-bottom:1px solid var(--line)}.recap .r .rl{color:var(--ink-soft)}.recap .r .rv{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}'
+    + '.recap .r.total{background:var(--ink);color:#fff;border-bottom:none;padding:17px 20px}.recap .r.total .rl{color:#fff;font-weight:700}.recap .r.total .rv{color:#fff;font-weight:700;font-size:16px}'
+    + '.sign{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}.sign .note{font-size:12.5px;color:var(--ink-soft)}.sign .box .lbl{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:30px}.sign .box .rule{border-top:1px solid var(--ink);padding-top:6px;font-size:11.5px;color:var(--muted)}'
+    + 'footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}footer .pay{color:var(--ink-soft);font-family:var(--mono);font-size:11.5px;margin-bottom:8px}footer .pay b{color:var(--ink);font-family:var(--sans)}'
+    + '@media (max-width:640px){.sheet{padding:28px 20px}.parties,.sign{grid-template-columns:1fr;gap:22px}.brandlogo{height:56px}.doc-label h1{font-size:22px}}'
+    // Impression et PDF : une page A4, jamais un total ou le pied bancaire seul en page 2.
+    + '@page{size:A4;margin:12mm 12mm 10mm}'
+    + '@media print{body{background:#fff;padding:0;font-size:12.5px}.sheet{box-shadow:none;border:none;max-width:100%;padding:0;border-radius:0}'
+    + '.parties,.sign{grid-template-columns:1fr 1fr}.head{padding-bottom:16px}.brandlogo{height:60px}.parties{margin-top:18px}'
+    + 'section{margin-top:20px}tbody td{padding:9px 0}.modal{padding:10px 14px}.recap{margin-top:18px}.recap .r{padding:8px 16px}.recap .r.total{padding:11px 16px}'
+    + '.sign{margin-top:22px}footer{margin-top:20px;padding-top:12px}.recap,.sign,footer,.modal,tr{break-inside:avoid}'
+    + '.modal,.recap .r.total{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+
+  function blocs(c) {
+    return '<div class="who">' + esc(c.nom_etablissement || 'Client') + '</div>'
+      + [[c.contact_prenom, c.contact_nom].filter(Boolean).join(' '), c.metier, c.ville, c.email, c.telephone]
+        .filter(Boolean).map(x => '<div class="r">' + esc(x) + '</div>').join('');
+  }
+  function tableLignes(lignes) {
+    const m = n => eur(n) + ' €';
+    return lignes.length ? lignes.map(l => '<tr><td><div class="item-name">' + esc(l.designation) + '</div></td><td class="num">' + eur(l.quantite)
+      + '</td><td class="num">' + m(l.prix_unitaire_ht) + '</td><td class="num">' + m(l.montant_ht) + '</td></tr>').join('')
+      : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucune ligne</td></tr>';
+  }
+  function entete(titre, num, meta, c, qui) {
+    const E = EMETTEUR();
+    return '<div class="sheet"><header class="head"><img class="brandlogo" src="' + OPTS.logo + '" alt="NS Development">'
+      + '<div class="doc-label"><h1>' + titre + '</h1><div class="doc-meta"><div class="k">N°</div><div class="v">' + esc(num) + '</div>' + meta + '</div></div></header>'
+      + '<div class="parties"><div class="party"><div class="eyebrow">Émetteur</div><div class="who">' + E.nom + '</div><div class="r">' + E.adresse + '</div><div class="r">' + E.rcs
+      + '</div><div class="r">' + E.autorisation + '</div><div class="r">N° TVA ' + E.tva + '</div><div class="r">' + E.email + '</div><div class="r">Contact commercial : Samir</div></div>'
+      + '<div class="party"><div class="eyebrow">' + qui + '</div>' + blocs(c) + '</div></div>';
+  }
+  function pied(taux) {
+    const E = EMETTEUR();
+    return '<footer><div class="pay"><b>Paiement</b> · Titulaire : ' + E.nom + ' · IBAN : ' + esc(E.iban) + ' · BIC : ' + esc(E.bic) + '</div>'
+      + (taux ? 'TVA luxembourgeoise ' + eur(taux) + ' % appliquée. Prix HT et TTC indiqués.' : 'TVA non applicable, art. 57 de la loi TVA luxembourgeoise (franchise de base). Prix exprimés en HT.')
+      + '</footer></div>';
+  }
+  const page = (titre, corps) => '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'
+    + esc(titre) + '</title><style>' + CSS_DOC + '</style></head><body>' + corps + '</body></html>';
+
+  function docDevisHTML(d, lignes, c) {
+    const m = n => eur(n) + ' €';
+    const taux = Number(d.tva_taux) || 0, ht = Number(d.total_ht) || 0, tva = ht * taux / 100, ttc = ht + tva;
+    const acompte = ht * 0.5, aRegler = taux ? acompte * (1 + taux / 100) : acompte;
+    const abo = Number(c.abonnement_mensuel) || 0, annuel = c.abonnement_periodicite === 'annuel', aboAn = aboAnnuel(abo);
+    const num = d.numero || 'Brouillon';
+    const aboSection = abo > 0 ? '<section><div class="sec-title">Maintenance <span class="sub">· forfait ' + (annuel ? 'annuel, réglé en une fois' : 'trimestriel, facturation récurrente') + '</span></div>'
+      + '<table><thead><tr><th>Désignation</th><th class="num">Prix HT / ' + (annuel ? 'an' : 'trimestre') + '</th></tr></thead><tbody><tr><td><div class="item-name">Maintenance, hébergement &amp; sécurité</div>'
+      + '<div class="item-desc">Hébergement au Luxembourg, nom de domaine, boîte mail, maintenance, sécurité et sauvegardes, petites modifications régulières, support prioritaire.</div></td><td class="num">' + m(annuel ? aboAn : abo) + '</td></tr></tbody></table>'
+      + '<div class="modal"><ul><li><strong>Engagement 12 mois minimum</strong>, puis reconduction tacite' + (annuel ? ' d’année en année' : ' de trimestre en trimestre') + '.</li>'
+      + (annuel ? '<li>Réglé en une fois par virement : <strong>' + m(aboAn) + ' / an</strong> au lieu de ' + m(abo * 4) + ' en trimestriel, soit <strong>1 mois offert</strong>.</li>'
+        : '<li>Prélèvement automatique trimestriel (SEPA / carte). Il n’y a pas de paiement au mois.</li><li><strong>Option annuelle :</strong> réglé en une fois, ' + m(aboAn) + ' / an au lieu de ' + m(abo * 4) + ', <strong>1 mois offert</strong>.</li>')
+      + '<li>Maintenance indissociable de la mise en ligne : pas de maintenance, pas de mise en ligne.</li></ul></div></section>' : '';
+    return page('Devis ' + num + ' · ' + (c.nom_etablissement || ''),
+      entete('DEVIS', num, '<div class="k">Date</div><div class="v">' + fmtDate(d.date_emission) + '</div><div class="k">Validité</div><div class="v">' + (d.date_validite ? fmtDate(d.date_validite) : '30 jours') + '</div>', c, 'Client')
+      + '<section><div class="sec-title">Prestation <span class="sub">· création du site web, facturation unique</span></div>'
+      + '<table><thead><tr><th>Désignation</th><th class="num">Qté</th><th class="num">P.U. HT</th><th class="num">Total HT</th></tr></thead><tbody>' + tableLignes(lignes) + '</tbody></table>'
+      + '<div class="line-total"><span class="lbl">Total prestation</span><span class="amt">' + m(ht) + ' HT</span></div>'
+      + '<div class="modal"><ul><li><strong>50 % à la signature du devis :</strong> ' + m(acompte) + ' HT</li><li><strong>50 % à la mise en ligne du site :</strong> ' + m(acompte) + ' HT</li><li>Le site est mis en ligne une fois le solde réglé.</li></ul></div></section>'
+      + aboSection
+      + (d.notes ? '<section><div class="sec-title">Notes</div><div class="item-desc" style="white-space:pre-wrap">' + esc(d.notes) + '</div></section>' : '')
+      + '<div class="recap"><div class="r"><span class="rl">Prestation (unique)</span><span class="rv">' + m(ht) + ' HT</span></div>'
+      + (taux ? '<div class="r"><span class="rl">TVA ' + eur(taux) + ' %</span><span class="rv">' + m(tva) + '</span></div><div class="r"><span class="rl">Total TTC</span><span class="rv">' + m(ttc) + '</span></div>' : '')
+      + (abo > 0 ? '<div class="r"><span class="rl">Maintenance ' + (annuel ? 'annuelle' : 'trimestrielle') + '</span><span class="rv">' + m(annuel ? aboAn : abo) + ' HT / ' + (annuel ? 'an' : 'trimestre') + '</span></div>' : '')
+      + '<div class="r total"><span class="rl">À régler à la commande</span><span class="rv">' + m(aRegler) + (taux ? ' TTC' : ' HT') + '</span></div></div>'
+      + '<div class="sign"><div class="note"><div class="eyebrow">Bon pour accord</div>Le client reconnaît avoir pris connaissance des conditions ci-dessus et accepte le devis. Signature à faire précéder de la mention manuscrite « Bon pour accord ».</div><div class="box"><div class="lbl">Date &amp; signature du client</div><div class="rule">Signature</div></div></div>'
+      + pied(taux));
+  }
+
+  function docFactureHTML(f, lignes, c) {
+    const m = n => eur(n) + ' €';
+    const taux = Number(f.tva_taux) || 0, ht = Number(f.total_ht) || 0, tva = ht * taux / 100, ttc = ht + tva;
+    const paye = Number(f.montant_paye) || 0, reste = ttc - paye;
+    const num = f.numero || 'Brouillon', ech = f.date_echeance ? fmtDate(f.date_echeance) : 'à réception';
+    return page('Facture ' + num + ' · ' + (c.nom_etablissement || ''),
+      entete('FACTURE', num, '<div class="k">Date</div><div class="v">' + fmtDate(f.date_emission) + '</div><div class="k">Échéance</div><div class="v">' + ech + '</div>', c, 'Facturé à')
+      + '<section><div class="sec-title">Détail <span class="sub">· prestation facturée</span></div>'
+      + '<table><thead><tr><th>Désignation</th><th class="num">Qté</th><th class="num">P.U. HT</th><th class="num">Total HT</th></tr></thead><tbody>' + tableLignes(lignes) + '</tbody></table>'
+      + '<div class="line-total"><span class="lbl">Total HT</span><span class="amt">' + m(ht) + '</span></div>'
+      + '<div class="modal"><ul><li>Facture payable pour le <strong>' + ech + '</strong>.</li><li>Règlement par virement sur le compte indiqué ci-dessous.</li><li>Merci d’indiquer le numéro de facture en référence du virement.</li></ul></div></section>'
+      + '<div class="recap"><div class="r"><span class="rl">Total HT</span><span class="rv">' + m(ht) + '</span></div>'
+      + (taux ? '<div class="r"><span class="rl">TVA ' + eur(taux) + ' %</span><span class="rv">' + m(tva) + '</span></div>' : '<div class="r"><span class="rl">TVA</span><span class="rv">Non applicable</span></div>')
+      + (paye > 0 ? '<div class="r"><span class="rl">Total TTC</span><span class="rv">' + m(ttc) + '</span></div><div class="r"><span class="rl">Déjà réglé</span><span class="rv">- ' + m(paye) + '</span></div>' : '')
+      + '<div class="r total"><span class="rl">' + (paye > 0 ? 'Reste à payer' : 'Net à payer') + '</span><span class="rv">' + m(paye > 0 ? reste : ttc) + (taux ? ' TTC' : '') + '</span></div></div>'
+      + pied(taux));
+  }
+
+  return {
+    // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
+    devis(d, lignes, c, options) { regler(options); return docDevisHTML(d, lignes || [], c || {}); },
+    facture(f, lignes, c, options) { regler(options); return docFactureHTML(f, lignes || [], c || {}); },
+  };
+  function regler(o) { Object.keys(o || {}).forEach(k => { if (o[k]) OPTS[k] = o[k]; }); }
+})();
+if (typeof module !== 'undefined') module.exports = NSDocs;
+</script>
+
+<style>
+  .fx-bar { display: flex; gap: 8px; margin-bottom: 4px; }
+  .fx-bar .btn { flex: 1; }
+  .fx-carte { background: var(--carte); border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 12px 14px; margin-bottom: 8px;
+    display: flex; gap: 10px; align-items: center; cursor: pointer; }
+  .fx-carte .corps { flex: 1; min-width: 0; }
+  .fx-carte .nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fx-carte .meta { color: var(--doux); font-size: 13px; }
+  .fx-carte .mt { font-weight: 750; white-space: nowrap; text-align: right; }
+  .fx-st { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #eee; }
+  .fx-st.brouillon { background: #eee; } .fx-st.envoye, .fx-st.envoyee { background: #c9daf8; }
+  .fx-st.accepte, .fx-st.payee { background: #93c47d; } .fx-st.refuse, .fx-st.annulee, .fx-st.retard { background: #dd7e6b; }
+  .fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fx-chips button { border: 1px solid var(--ligne); background: #fff; border-radius: 10px; padding: 8px 10px; font-size: 13px; text-align: left; }
+  .fx-chips button b { display: block; font-size: 12px; color: var(--doux); font-weight: 600; }
+  .fx-chips button.on { background: var(--noir); color: #fff; border-color: var(--noir); }
+  .fx-chips button.on b { color: #cfcfcf; }
+  .fx-ligne { display: grid; grid-template-columns: 1fr 56px 84px 30px; gap: 6px; margin-bottom: 6px; }
+  .fx-ligne input { border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 15px; width: 100%; background: #fff; }
+  .fx-ligne button { border: 0; background: none; font-size: 20px; color: var(--doux); }
+  .fx-totaux { background: var(--noir); color: #fff; border-radius: var(--rayon); padding: 12px 14px; margin-top: 12px; }
+  .fx-totaux div { display: flex; justify-content: space-between; font-size: 14px; padding: 2px 0; }
+  .fx-totaux div.gros { font-size: 17px; font-weight: 800; border-top: 1px solid #333; margin-top: 6px; padding-top: 8px; }
+  .fx-deux { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fx-doc { position: fixed; inset: 0; z-index: 30; background: #eceef2; display: flex; flex-direction: column; }
+  .fx-doc .outils { display: flex; gap: 8px; padding: 10px 12px; background: var(--noir); }
+  .fx-doc .outils .btn { flex: 1; padding: 11px 10px; }
+  .fx-doc iframe { flex: 1; border: 0; width: 100%; background: #eceef2; }
+  .fx-alerte { background: #fdecea; border: 1px solid #f5c2bd; border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
+</style>
+
+<script>
+// ===========================================================================
+// Devis et factures : branchés sur la base Supabase existante (la même que
+// l'espace client et l'admin). Une seule numérotation DEV / FAC, attribuée
+// par la base au moment où le document quitte le brouillon.
+// Logique et documents repris de sites-web/ns-development/espace-client-admin.html.
+// ===========================================================================
+const Factu = (() => {
+  const F = { sb: null, session: null, clients: [], devis: [], factures: [], pret: false, erreur: '' };
+
+  // Catalogue : identique à la grille tarifaire et à l'admin.
+  const FORMULES = [
+    { n: 'Essentiel', pu: 1350 }, { n: 'Vitrine', pu: 2625 }, { n: 'Pro', pu: 3750 },
+    { n: 'Boutique', pu: 3750 }, { n: 'Signature', pu: 6000 },
+  ];
+  const OPTIONS = [
+    { n: 'Langue supplémentaire', pu: 450 }, { n: 'Rendez-vous en ligne', pu: 300 },
+    { n: 'Paiement en ligne', pu: 900 }, { n: 'Catalogue métier', pu: 900 },
+    { n: 'Rédaction des textes', pu: 300 }, { n: 'Logo et identité', pu: 350 },
+    { n: 'SEO local avancé', pu: 350 }, { n: 'Fiche Google Business', pu: 90 },
+    { n: 'Blog / actualités', pu: 250 }, { n: 'Galerie avancée', pu: 150 },
+    { n: 'Page supplémentaire', pu: 150 },
+  ];
+  // Options de suivi, au trimestre (valeurs de commercial/facturation/index.html).
+  const SUIVI = [
+    { id: 'mail', n: 'Boîte mail supplémentaire', pu: 15 },
+    { id: 'seo', n: 'SEO local suivi', pu: 75 },
+    { id: 'modif', n: 'Modifications illimitées', pu: 60 },
+  ];
+  const MTN_TRIMESTRE = { Essentiel: 150, Vitrine: 150, Pro: 225, Boutique: 225, Signature: 300 };
+  const aboAnnuel = t => Math.round((Number(t) || 0) / 3 * 11 * 100) / 100;
+  const eur = n => (Number(n) || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  const isoJour = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const fmtDate = s => { if (!s) return '—'; const p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+  const cls = s => sansAccent(s || '').replace(/[^a-z]/g, '');
+
+  // ------------------------------------------------------------------ données
+  async function init() {
+    if (F.sb || !window.supabase || !S.data) return;
+    F.sb = window.supabase.createClient(S.data.supabase.url, S.data.supabase.cle, { auth: { persistSession: true, storageKey: 'crmnsd-supabase' } });
+    const { data } = await F.sb.auth.getSession();
+    F.session = data.session;
+    if (F.session) await charger(); else { F.pret = true; if (S.vue === 'factu') rendre(); }
+  }
+
+  async function charger() {
+    F.erreur = '';
+    const [c, d, f] = await Promise.all([
+      F.sb.from('clients').select('*').order('created_at', { ascending: false }),
+      F.sb.from('devis').select('*, clients(nom_etablissement)').order('created_at', { ascending: false }),
+      F.sb.from('factures').select('*, clients(nom_etablissement)').order('created_at', { ascending: false }),
+    ]);
+    const err = c.error || d.error || f.error;
+    if (err) F.erreur = err.message;
+    F.clients = c.data || []; F.devis = d.data || []; F.factures = f.data || [];
+    F.pret = true;
+    if (S.vue === 'factu') rendre();
+  }
+
+  async function connexion(form) {
+    const btn = form.querySelector('button'); btn.disabled = true; btn.textContent = 'Connexion…';
+    const { data, error } = await F.sb.auth.signInWithPassword({ email: form.email.value.trim(), password: form.mdp.value });
+    if (error) { btn.disabled = false; btn.textContent = 'Se connecter'; return toast('Email ou mot de passe incorrect.', true); }
+    const { data: prof } = await F.sb.from('profiles').select('role').eq('id', data.session.user.id).single();
+    if (!prof || prof.role !== 'admin') { await F.sb.auth.signOut(); btn.disabled = false; btn.textContent = 'Se connecter'; return toast('Ce compte n’est pas administrateur.', true); }
+    F.session = data.session; await charger();
+  }
+
+  // ------------------------------------------------------------------ vue liste
+  function vue() {
+    if (!F.pret) return '<div class="chargement">Connexion à la facturation…</div>';
+    if (!F.session) return `<h2 class="section">Facturation</h2>
+      <div class="bloc" style="margin-top:0"><p class="sous" style="margin-top:0">Connexion avec le compte admin <b>NSD</b> (nsdevelopment26@gmail.com), le même pour Sam et Nelson. Une seule fois par téléphone.</p>
+      <form id="fx-login"><label class="champ">Email<input name="email" type="email" autocomplete="username" required></label>
+      <label class="champ">Mot de passe<input name="mdp" type="password" autocomplete="current-password" required></label>
+      <button class="btn large">Se connecter</button></form></div>`;
+
+    const auj = isoJour(new Date());
+    const aEmettre = F.factures.filter(f => f.statut === 'brouillon');
+    const impayees = F.factures.filter(f => f.statut === 'envoyée' || f.statut === 'en_retard');
+    const enAttente = F.devis.filter(d => d.statut === 'envoyé');
+    const du = impayees.reduce((s, f) => s + (Number(f.total_ttc) || 0) - (Number(f.montant_paye) || 0), 0);
+    const carteDevis = d => `<div class="fx-carte" data-fx-devis="${d.id}"><div class="corps"><div class="nom">${esc(d.clients ? d.clients.nom_etablissement : '?')}</div>
+      <div class="meta">${d.numero ? esc(d.numero) : 'Brouillon'} · ${fmtDate(d.date_emission)} <span class="fx-st ${cls(d.statut)}">${esc(d.statut)}</span></div></div>
+      <div class="mt">${eur(d.total_ttc)} €</div></div>`;
+    const carteFacture = f => {
+      const retard = f.statut === 'envoyée' && f.date_echeance && f.date_echeance < auj;
+      return `<div class="fx-carte" data-fx-facture="${f.id}"><div class="corps"><div class="nom">${esc(f.clients ? f.clients.nom_etablissement : '?')}</div>
+      <div class="meta">${f.numero ? esc(f.numero) : 'Brouillon'} · échéance ${fmtDate(f.date_echeance)} <span class="fx-st ${retard ? 'retard' : cls(f.statut)}">${retard ? 'en retard' : esc(f.statut)}</span></div></div>
+      <div class="mt">${eur(f.total_ttc)} €${Number(f.montant_paye) ? `<div class="meta">payé ${eur(f.montant_paye)} €</div>` : ''}</div></div>`;
+    };
+    return `${F.erreur ? `<div class="fx-alerte">Erreur Supabase : ${esc(F.erreur)}</div>` : ''}
+      ${!S.data.banque.iban ? '<div class="fx-alerte">IBAN non configuré : les documents afficheront « à compléter » en pied de page.</div>' : ''}
+      <div class="grille" style="margin-bottom:6px">
+        <div class="kpi"><div class="v">${eur(du)} €</div><div class="l">à encaisser TTC</div></div>
+        <div class="kpi"><div class="v">${enAttente.length}</div><div class="l">devis en attente de réponse</div></div></div>
+      <div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button></div>
+      ${aEmettre.length ? section('Factures à émettre', 'brouillons sans numéro', aEmettre.map(carteFacture).join('')) : ''}
+      ${impayees.length ? section('Factures à encaisser', impayees.length + '', impayees.map(carteFacture).join('')) : ''}
+      ${section('Devis', F.devis.length + '', F.devis.length ? F.devis.map(carteDevis).join('') : '<div class="vide">Aucun devis. Ouvre la fiche d’un prospect et touche « Faire un devis ».</div>')}
+      ${section('Toutes les factures', F.factures.length + '', F.factures.length ? F.factures.map(carteFacture).join('') : '<div class="vide">Aucune facture. Une facture se crée depuis un devis accepté.</div>')}
+      <p style="margin-top:18px"><button class="btn clair large" data-fx="deconnexion">Se déconnecter de la facturation</button></p>`;
+  }
+
+  // ------------------------------------------------------------------ feuille
+  function feuille(html) {
+    let v = document.getElementById('fx-voile');
+    if (!v) { v = document.createElement('div'); v.id = 'fx-voile'; v.className = 'voile'; document.body.appendChild(v);
+      v.addEventListener('click', e => { if (e.target === v) fermer(); }); }
+    v.innerHTML = `<div class="feuille">${html}</div>`;
+    v.classList.remove('cache'); document.body.style.overflow = 'hidden';
+  }
+  function fermer() { const v = document.getElementById('fx-voile'); if (v) v.classList.add('cache'); document.body.style.overflow = ''; }
+  function tete(titre, sous) {
+    return `<div class="feuille-tete"><div class="poignee"></div><div class="ligne1"><div><h1>${titre}</h1>${sous ? `<div class="sous">${sous}</div>` : ''}</div>
+      <button class="fermer" data-fx="fermer" aria-label="Fermer">✕</button></div></div>`;
+  }
+
+  // ------------------------------------------------------------------ devis : composition
+  const D = { prospect: null, clientId: '', base: null, opts: {}, suivi: {}, lignes: [] };
+
+  function nouveauDevis(prospect) {
+    if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
+    D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
+    D.base = null; D.opts = {}; D.suivi = {}; D.lignes = [];
+    const dans30 = new Date(Date.now() + 30 * 864e5);
+    const nomClient = prospect ? prospect.entreprise : '';
+    feuille(tete('Nouveau devis', nomClient ? esc(nomClient) + (D.clientId ? '' : ' · la fiche client sera créée') : '') + `
+      <form id="fx-devis">
+      ${prospect ? '' : `<div class="bloc"><label class="champ" style="margin:0">Client<select name="client" required><option value="">Choisir un client…</option>
+        ${F.clients.map(c => `<option value="${c.id}">${esc(c.nom_etablissement)}</option>`).join('')}</select></label>
+        <div class="sous">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div></div>`}
+      <div class="bloc"><h3>Formule</h3><div class="fx-chips" id="fx-bases"></div></div>
+      <div class="bloc"><h3>Options</h3><div class="fx-chips" id="fx-opts"></div></div>
+      <div class="bloc"><h3>Lignes sur mesure</h3><div id="fx-lignes"></div>
+        <button type="button" class="btn clair large" data-fx="ajout-ligne">＋ Ajouter une ligne</button></div>
+      <div class="bloc"><h3>Maintenance</h3><div class="fx-chips" id="fx-suivi"></div>
+        <div class="fx-deux" style="margin-top:12px">
+          <label class="champ">Forfait trimestriel HT<input name="abo" type="number" min="0" step="1"></label>
+          <label class="champ">Facturée<select name="periode"><option value="trimestriel">au trimestre</option><option value="annuel">à l’année (1 mois offert)</option></select></label></div>
+        <div class="sous" id="fx-abo-info"></div></div>
+      <div class="bloc"><div class="fx-deux">
+          <label class="champ">TVA %<input name="tva" type="number" value="17" min="0" step="0.01"></label>
+          <label class="champ">Valable jusqu’au<input name="validite" type="date" value="${isoJour(dans30)}"></label></div>
+        <label class="champ">Notes (visibles sur le devis)<textarea name="notes"></textarea></label>
+        <label class="champ">Enregistrer comme<select name="statut"><option value="brouillon">Brouillon, sans numéro</option><option value="envoyé">Envoyé : reçoit son numéro DEV</option></select></label></div>
+      <div class="fx-totaux" id="fx-totaux"></div>
+      <p><button class="btn large" type="submit">Enregistrer le devis</button></p></form>`);
+    dessinerChoix(); calculer();
+  }
+
+  function dessinerChoix() {
+    const chip = (attr, cle, n, prix, on) => `<button type="button" ${attr}="${esc(cle)}" class="${on ? 'on' : ''}">${esc(n)}<b>${prix}</b></button>`;
+    document.getElementById('fx-bases').innerHTML = FORMULES.map(b => chip('data-fx-base', b.n, b.n, eur(b.pu) + ' €', D.base === b.n)).join('');
+    document.getElementById('fx-opts').innerHTML = OPTIONS.map(o => chip('data-fx-opt', o.n, o.n, eur(o.pu) + ' €', D.opts[o.n])).join('');
+    document.getElementById('fx-suivi').innerHTML = SUIVI.map(o => chip('data-fx-suivi', o.id, o.n, '+ ' + o.pu + ' € / trim.', D.suivi[o.id])).join('');
+    document.getElementById('fx-lignes').innerHTML = D.lignes.map((l, i) => `<div class="fx-ligne" data-i="${i}">
+      <input data-k="designation" placeholder="Désignation" value="${esc(l.designation)}"><input data-k="quantite" type="number" min="0" value="${l.quantite}">
+      <input data-k="pu" type="number" min="0" step="0.01" placeholder="PU HT" value="${l.pu}"><button type="button" data-fx="suppr-ligne" data-i="${i}">×</button></div>`).join('');
+  }
+
+  function lignesDevis() {
+    const L = []; let ordre = 0;
+    const base = FORMULES.find(b => b.n === D.base);
+    if (base) L.push({ designation: base.n, quantite: 1, prix_unitaire_ht: base.pu, montant_ht: base.pu, ordre: ordre++ });
+    OPTIONS.forEach(o => { if (D.opts[o.n]) L.push({ designation: o.n, quantite: 1, prix_unitaire_ht: o.pu, montant_ht: o.pu, ordre: ordre++ }); });
+    D.lignes.forEach(l => { if (!String(l.designation).trim()) return; const q = Number(l.quantite) || 0, pu = Number(l.pu) || 0;
+      L.push({ designation: l.designation.trim(), quantite: q, prix_unitaire_ht: pu, montant_ht: Math.round(q * pu * 100) / 100, ordre: ordre++ }); });
+    return L;
+  }
+
+  function calculer(aboManuel) {
+    const form = document.getElementById('fx-devis'); if (!form) return;
+    const suivi = SUIVI.reduce((s, o) => s + (D.suivi[o.id] ? o.pu : 0), 0);
+    // Le forfait suit la formule choisie DANS le devis (et non la fiche client).
+    if (!aboManuel) form.abo.value = D.base ? MTN_TRIMESTRE[D.base] + suivi : (suivi || '');
+    const abo = Number(form.abo.value) || 0, annuel = form.periode.value === 'annuel';
+    document.getElementById('fx-abo-info').textContent = abo ? (annuel ? 'Facturé ' + eur(aboAnnuel(abo)) + ' € HT / an au lieu de ' + eur(abo * 4) + ' €.' : 'Facturé ' + eur(abo) + ' € HT / trimestre, soit ' + eur(abo * 4) + ' € sur l’année.') : '';
+    const ht = lignesDevis().reduce((s, l) => s + l.montant_ht, 0), taux = Number(form.tva.value) || 0, tva = ht * taux / 100;
+    document.getElementById('fx-totaux').innerHTML = `<div><span>Prestation HT</span><span>${eur(ht)} €</span></div>
+      <div><span>TVA ${eur(taux)} %</span><span>${eur(tva)} €</span></div><div class="gros"><span>Total TTC</span><span>${eur(ht + tva)} €</span></div>
+      <div><span>Acompte 50 % à la signature</span><span>${eur((ht + tva) / 2)} € TTC</span></div>
+      ${abo ? `<div><span>Maintenance</span><span>${annuel ? eur(aboAnnuel(abo)) + ' € HT / an' : eur(abo) + ' € HT / trim.'}</span></div>` : ''}`;
+  }
+
+  async function enregistrerDevis(form) {
+    const lignes = lignesDevis();
+    if (!lignes.length) return toast('Choisis au moins une formule, une option ou une ligne.', true);
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+    const echec = m => { btn.disabled = false; btn.textContent = 'Enregistrer le devis'; toast(m, true); };
+    try {
+      let clientId = D.clientId || (form.client ? form.client.value : '');
+      // Prospect sans fiche client : on la crée depuis le CRM, et on garde le lien.
+      if (!clientId && D.prospect) {
+        const p = D.prospect;
+        const { data: c, error } = await F.sb.from('clients').insert({
+          nom_etablissement: p.entreprise, contact_nom: p.gerant || null, email: p.email || null,
+          telephone: p.telephone || null, ville: p.commune || null, metier: p.secteur || null,
+          site_domaine: p.site || null, formule: D.base || null, statut: 'prospect',
+          notes: 'Créé depuis le CRM NSD (' + p.id + ').',
+        }).select('*').single();
+        if (error) return echec('Fiche client : ' + error.message);
+        clientId = c.id; F.clients.unshift(c);
+        const maj = await appel('api_modifier', S.pin, p.id, { client: c.id });
+        majLocale(maj); D.prospect = maj; D.clientId = c.id;
+      }
+      if (!clientId) return echec('Choisis un client.');
+      const ht = lignes.reduce((s, l) => s + l.montant_ht, 0), taux = Number(form.tva.value) || 0;
+      const { data: dev, error: e1 } = await F.sb.from('devis').insert({
+        client_id: clientId, date_emission: isoJour(new Date()), date_validite: form.validite.value || null,
+        statut: form.statut.value, tva_taux: taux, total_ht: ht, total_ttc: Math.round((ht + ht * taux / 100) * 100) / 100,
+        notes: form.notes.value.trim() || null,
+      }).select('id').single();
+      if (e1) return echec('Devis : ' + e1.message);
+      const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: dev.id })));
+      if (e2) return echec('Devis créé, mais erreur sur les lignes : ' + e2.message);
+      const majAbo = { abonnement_mensuel: Number(form.abo.value) || 0, abonnement_periodicite: form.periode.value };
+      if (D.base) majAbo.formule = D.base;
+      const cc = F.clients.find(c => c.id === clientId);
+      if (!cc || !cc.abonnement_moyen) majAbo.abonnement_moyen = form.periode.value === 'annuel' ? 'virement' : 'sepa';
+      await F.sb.from('clients').update(majAbo).eq('id', clientId);
+      toast(form.statut.value === 'envoyé' ? 'Devis enregistré avec son numéro.' : 'Devis enregistré en brouillon.');
+      await charger(); ouvrirDevis(dev.id);
+    } catch (e) { echec(e.message || String(e)); }
+  }
+
+  // ------------------------------------------------------------------ devis : fiche
+  function prospectDuClient(clientId) { return S.data.prospects.find(p => p.client === clientId); }
+
+  function ouvrirDevis(id) {
+    const d = F.devis.find(x => x.id === id); if (!d) return;
+    const fac = F.factures.find(f => f.devis_id === id);
+    const act = [];
+    act.push('<button class="btn large" data-fx="voir-devis" data-id="' + id + '">Voir le devis (PDF)</button>');
+    if (d.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="statut-devis" data-st="envoyé" data-id="' + id + '">Marquer envoyé (attribue le numéro)</button>');
+    if (d.statut === 'envoyé') act.push('<div class="fx-deux"><button class="btn" data-fx="statut-devis" data-st="accepté" data-id="' + id + '">Accepté</button><button class="btn clair" data-fx="statut-devis" data-st="refusé" data-id="' + id + '">Refusé</button></div>');
+    if (!fac && d.statut !== 'refusé') act.push('<button class="btn clair large" data-fx="facturer" data-id="' + id + '">Créer la facture</button>');
+    if (fac) act.push('<button class="btn clair large" data-fx-facture="' + fac.id + '">Voir la facture ' + esc(fac.numero || 'brouillon') + '</button>');
+    feuille(tete(d.numero ? esc(d.numero) : 'Devis brouillon', esc(d.clients ? d.clients.nom_etablissement : '') + ' · <span class="fx-st ' + cls(d.statut) + '">' + esc(d.statut) + '</span>')
+      + `<div class="bloc"><dl class="infos"><dt>Émis le</dt><dd>${fmtDate(d.date_emission)}</dd><dt>Valable jusqu’au</dt><dd>${fmtDate(d.date_validite)}</dd>
+         <dt>Total HT</dt><dd>${eur(d.total_ht)} €</dd><dt>Total TTC</dt><dd><b>${eur(d.total_ttc)} €</b></dd></dl></div>
+         <div style="display:grid;gap:8px;margin-top:12px">${act.join('')}</div>`);
+  }
+
+  async function changerStatutDevis(id, st) {
+    if (st === 'envoyé' && !confirm('Marquer ce devis comme envoyé ? Il reçoit un numéro DEV définitif.')) return;
+    const { error } = await F.sb.from('devis').update({ statut: st }).eq('id', id);
+    if (error) return toast(error.message, true);
+    await charger();
+    const d = F.devis.find(x => x.id === id);
+    toast(st === 'envoyé' ? 'Devis ' + (d && d.numero || '') + ' envoyé.' : 'Devis ' + st + '.');
+    // Devis accepté = client signé dans le CRM.
+    const p = d && prospectDuClient(d.client_id);
+    if (st === 'accepté' && p && cle(p) !== 'signe' && confirm('Passer ' + p.entreprise + ' en « Client signé » dans le CRM ?')) {
+      try { const maj = await appel('api_logger', S.pin, p.id, 'signe', 'Devis ' + (d.numero || '') + ' accepté', '', S.par, null);
+        majLocale(maj, { resultat: 'Client signé', note: 'Devis accepté', rappel: '' }); } catch (e) { toast(e.message, true); }
+    }
+    ouvrirDevis(id);
+  }
+
+  // ------------------------------------------------------------------ factures
+  async function facturer(devisId) {
+    const dev = F.devis.find(x => x.id === devisId);
+    const { data: lignes, error: e0 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', devisId).order('ordre');
+    if (e0) return toast(e0.message, true);
+    const { data: fac, error: e1 } = await F.sb.from('factures').insert({
+      client_id: dev.client_id, devis_id: dev.id, date_emission: isoJour(new Date()), date_echeance: isoJour(new Date(Date.now() + 15 * 864e5)),
+      statut: 'brouillon', tva_taux: dev.tva_taux, total_ht: dev.total_ht, total_ttc: dev.total_ttc, notes: dev.notes || null,
+    }).select('id').single();
+    if (e1) return toast(e1.message, true);
+    if (lignes && lignes.length) {
+      const { error: e2 } = await F.sb.from('factures_lignes').insert(lignes.map(l => ({ facture_id: fac.id, designation: l.designation,
+        quantite: l.quantite, prix_unitaire_ht: l.prix_unitaire_ht, montant_ht: l.montant_ht, ordre: l.ordre })));
+      if (e2) toast('Facture créée, mais erreur sur les lignes : ' + e2.message, true);
+    }
+    await charger(); toast('Facture créée en brouillon. Vérifie-la, puis émets-la.'); ouvrirFacture(fac.id);
+  }
+
+  function ouvrirFacture(id) {
+    const f = F.factures.find(x => x.id === id); if (!f) return;
+    const reste = (Number(f.total_ttc) || 0) - (Number(f.montant_paye) || 0);
+    const act = ['<button class="btn large" data-fx="voir-facture" data-id="' + id + '">Voir la facture (PDF)</button>'];
+    if (f.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="emettre" data-id="' + id + '">Émettre : attribuer le numéro légal</button>');
+    const paiement = (f.statut === 'envoyée' || f.statut === 'en_retard') ? `<form class="bloc" id="fx-paiement" data-id="${id}"><h3>Enregistrer un paiement</h3>
+      <div class="fx-deux"><label class="champ">Montant<input name="montant" type="number" step="0.01" min="0" value="${Math.round(reste * 100) / 100}"></label>
+      <label class="champ">Date<input name="date" type="date" value="${isoJour(new Date())}"></label></div>
+      <div class="fx-deux"><label class="champ">Moyen<select name="moyen"><option value="virement">Virement</option><option value="sepa">SEPA</option><option value="carte">Carte</option><option value="espèces">Espèces</option></select></label>
+      <label class="champ">Référence<input name="ref"></label></div><button class="btn large">Enregistrer le paiement</button></form>` : '';
+    feuille(tete(f.numero ? esc(f.numero) : 'Facture brouillon', esc(f.clients ? f.clients.nom_etablissement : '') + ' · <span class="fx-st ' + cls(f.statut) + '">' + esc(f.statut) + '</span>')
+      + `<div class="bloc"><dl class="infos"><dt>Émise le</dt><dd>${fmtDate(f.date_emission)}</dd><dt>Échéance</dt><dd>${fmtDate(f.date_echeance)}</dd>
+         <dt>Total TTC</dt><dd><b>${eur(f.total_ttc)} €</b></dd><dt>Déjà payé</dt><dd>${eur(f.montant_paye)} €</dd><dt>Reste dû</dt><dd><b>${eur(reste)} €</b></dd></dl></div>
+         <div style="display:grid;gap:8px;margin-top:12px">${act.join('')}</div>${paiement}`);
+  }
+
+  async function emettre(id) {
+    if (!confirm('Émettre cette facture ? Elle reçoit un numéro FAC légal et définitif. C’est irréversible.')) return;
+    const { error } = await F.sb.from('factures').update({ statut: 'envoyée' }).eq('id', id);
+    if (error) return toast(error.message, true);
+    await charger(); const f = F.factures.find(x => x.id === id);
+    toast('Facture ' + (f && f.numero || '') + ' émise.'); ouvrirFacture(id);
+  }
+
+  async function payer(form) {
+    const id = form.dataset.id, montant = Number(form.montant.value) || 0;
+    if (montant <= 0) return toast('Montant invalide.', true);
+    const btn = form.querySelector('button'); btn.disabled = true;
+    const { error } = await F.sb.from('paiements').insert({ facture_id: id, date: form.date.value || null, montant, moyen: form.moyen.value, reference: form.ref.value.trim() || null });
+    if (error) { btn.disabled = false; return toast(error.message, true); }
+    const { data: pays } = await F.sb.from('paiements').select('montant').eq('facture_id', id);
+    const total = (pays || []).reduce((s, p) => s + Number(p.montant), 0);
+    const f = F.factures.find(x => x.id === id);
+    await F.sb.from('factures').update({ montant_paye: total, statut: total >= Number(f.total_ttc) - 0.005 ? 'payée' : 'envoyée' }).eq('id', id);
+    await charger(); toast('Paiement enregistré.'); ouvrirFacture(id);
+  }
+
+  // ------------------------------------------------------------------ documents
+  async function voir(type, id) {
+    const table = type === 'devis' ? 'devis' : 'factures';
+    const { data: doc, error } = await F.sb.from(table).select('*, clients(*)').eq('id', id).single();
+    if (error) return toast(error.message, true);
+    const { data: lignes } = await F.sb.from(table + '_lignes').select('*').eq(type === 'devis' ? 'devis_id' : 'facture_id', id).order('ordre');
+    const html = type === 'devis' ? docDevisHTML(doc, lignes || [], doc.clients || {}) : docFactureHTML(doc, lignes || [], doc.clients || {});
+    const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
+    v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">Imprimer / PDF</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
+    document.body.appendChild(v);
+    v.querySelector('iframe').srcdoc = html;
+    v._html = html;
+  }
+
+  const docDevisHTML = (d, l, c) => NSDocs.devis(d, l, c, S.data.banque);
+  const docFactureHTML = (f, l, c) => NSDocs.facture(f, l, c, S.data.banque);
+
+  // ------------------------------------------------------------------ événements
+  document.addEventListener('click', e => {
+    const t = e.target;
+    const dv = t.closest('[data-fx-devis]'); if (dv) return ouvrirDevis(dv.dataset.fxDevis);
+    const fc = t.closest('[data-fx-facture]'); if (fc) return ouvrirFacture(fc.dataset.fxFacture);
+    const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; dessinerChoix(); return calculer(); }
+    const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true; dessinerChoix(); return calculer(); }
+    const s = t.closest('[data-fx-suivi]'); if (s) { const k = s.dataset.fxSuivi; if (D.suivi[k]) delete D.suivi[k]; else D.suivi[k] = true; dessinerChoix(); return calculer(); }
+    const a = t.closest('[data-fx]'); if (!a) return;
+    const act = a.dataset.fx, id = a.dataset.id;
+    if (act === 'fermer') fermer();
+    else if (act === 'nouveau-devis') nouveauDevis(null);
+    else if (act === 'deconnexion') F.sb.auth.signOut().then(() => { F.session = null; rendre(); });
+    else if (act === 'ajout-ligne') { D.lignes.push({ designation: '', quantite: 1, pu: '' }); dessinerChoix(); calculer(); }
+    else if (act === 'suppr-ligne') { D.lignes.splice(Number(a.dataset.i), 1); dessinerChoix(); calculer(); }
+    else if (act === 'voir-devis') voir('devis', id);
+    else if (act === 'voir-facture') voir('facture', id);
+    else if (act === 'statut-devis') changerStatutDevis(id, a.dataset.st);
+    else if (act === 'facturer') facturer(id);
+    else if (act === 'emettre') emettre(id);
+    else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
+    else if (act === 'imprimer') { const f = document.querySelector('#fx-doc iframe'); f.contentWindow.focus(); f.contentWindow.print(); }
+    else if (act === 'onglet') { const u = URL.createObjectURL(new Blob([document.getElementById('fx-doc')._html], { type: 'text/html' })); window.open(u, '_blank'); }
+  });
+  document.addEventListener('input', e => {
+    const l = e.target.closest('.fx-ligne');
+    if (l) { D.lignes[Number(l.dataset.i)][e.target.dataset.k] = e.target.value; return calculer(true); }
+    // Le forfait ne se recalcule qu'au choix d'une formule ou d'un suivi : une saisie à la main est respectée.
+    if (e.target.closest('#fx-devis')) calculer(true);
+  });
+  document.addEventListener('change', e => { if (e.target.name === 'periode' && e.target.closest('#fx-devis')) calculer(true); });
+  document.addEventListener('submit', e => {
+    if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
+    if (e.target.id === 'fx-devis') { e.preventDefault(); enregistrerDevis(e.target); }
+    if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
+  });
+
+  return { init, vue, nouveauDevis, recharger: () => F.session && charger() };
+})();
+</script>
+
+</body>
+</html>
