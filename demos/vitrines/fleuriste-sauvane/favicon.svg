@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Sauvane">
+  <rect width="140" height="140" rx="24" fill="#12261f"/>
+  <g fill="#e6d04a">
+    <ellipse cx="70" cy="42" rx="13" ry="20"/>
+    <ellipse cx="70" cy="42" rx="13" ry="20" transform="rotate(72 70 70)"/>
+    <ellipse cx="70" cy="42" rx="13" ry="20" transform="rotate(144 70 70)"/>
+    <ellipse cx="70" cy="42" rx="13" ry="20" transform="rotate(216 70 70)"/>
+    <ellipse cx="70" cy="42" rx="13" ry="20" transform="rotate(288 70 70)"/>
+  </g>
+  <circle cx="70" cy="70" r="11" fill="#12261f"/>
+</svg>

@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MOTORLINE — Automobiles premium &amp; atelier · Luxembourg</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <meta name="description" content="MOTORLINE, vente d'automobiles premium et atelier toutes marques au Luxembourg. SUV, 4x4, berlines, coupés et sportives contrôlés sur 150 points et garantis 24 mois. Plus de 40 prestations à l'atelier.">
 <meta property="og:title" content="MOTORLINE — Automobiles premium &amp; atelier · Luxembourg">
 <meta property="og:description" content="Des véhicules d'exception préparés dans notre atelier, garantis 24 mois. Et plus de 40 prestations pour les entretenir ensuite.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="photos/hero-coupe.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@110..125,600..800&family=Manrope:wght@400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../assets/fonts/polices-a9821462c2.css">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
 <style>
@@ -22,7 +22,7 @@
        le vert citron du fitness ou l'or antique sur crème de l'immobilier. */
     --nuit:#07080b;--nuit2:#0b0d12;--carte:#11141b;--carte2:#171b24;
     --line:#1e222c;--line2:#2b323f;--line3:#3b4453;
-    --blanc:#f1f3f7;--gris:#939bab;--gris2:#646c7c;
+    --blanc:#f1f3f7;--gris:#939bab;--gris2:#7a8394;
     --or:#d7a557;--or-l:#f2d19a;--or-d:#b0812f;
     --disp:'Archivo',system-ui,sans-serif;--sans:'Manrope',system-ui,sans-serif;
     --tr:.42s cubic-bezier(.2,.7,.2,1);
@@ -133,7 +133,7 @@
     border:1px solid var(--line);margin-bottom:28px}
   .ch{background:var(--carte);padding:14px 18px;display:flex;flex-direction:column;gap:3px;transition:var(--tr);min-width:0}
   .ch:hover{background:var(--carte2)}
-  .ch label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris2);font-weight:700}
+  .ch label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris2);font-weight:700}
   .ch select{border:none;background:none;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--blanc);
     cursor:pointer;padding:0;width:100%;appearance:none;text-overflow:ellipsis}
   .ch select:focus{outline:none}
@@ -167,7 +167,7 @@
   .auto .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ns-ease)}
   .auto:hover .ph img{transform:scale(1.07)}
   .auto .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(7,8,11,.7))}
-  .badge{position:absolute;top:0;left:0;z-index:2;background:var(--or);color:#1a1204;font-size:10.5px;font-weight:800;
+  .badge{position:absolute;top:0;left:0;z-index:2;background:var(--or);color:#1a1204;font-size:11px;font-weight:800;
     letter-spacing:.16em;text-transform:uppercase;padding:7px 14px}
   .badge.sombre{background:rgba(7,8,11,.82);color:var(--or-l);box-shadow:inset 0 0 0 1px rgba(215,165,87,.35)}
   .auto .an{position:absolute;bottom:12px;right:14px;z-index:2;font-family:var(--disp);font-weight:700;font-size:13px;
@@ -177,12 +177,12 @@
   .auto .sous{font-size:12.5px;color:var(--gris2);margin-top:6px;letter-spacing:.05em;text-transform:uppercase}
   .auto .specs{display:flex;gap:16px;margin:16px 0 18px;padding:14px 0;border-top:1px solid var(--line);
     border-bottom:1px solid var(--line)}
-  .auto .specs div{flex:1;min-width:0}
-  .auto .specs dt{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris2);font-weight:700}
-  .auto .specs dd{font-size:14px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums}
+  .auto .specs div{flex:1;min-width:0;display:flex;flex-direction:column}
+  .auto .specs dt{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris2);font-weight:700}
+  .auto .specs dd{font-size:14px;font-weight:700;margin-top:auto;padding-top:3px;font-variant-numeric:tabular-nums}
   .auto .bas{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}
   .auto .prix{font-family:var(--disp);font-weight:700;font-size:25px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-  .auto .mens{display:block;font-family:var(--sans);font-size:11.5px;font-weight:600;color:var(--gris2);
+  .auto .mens{display:block;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--gris2);
     letter-spacing:.04em;text-transform:none;margin-top:2px}
   .auto .voir{background:none;border:1px solid var(--line2);color:var(--gris);width:44px;height:44px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;transition:var(--tr);flex:none}
@@ -229,7 +229,7 @@
     font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
     color:var(--gris);cursor:pointer;transition:var(--tr);text-align:left;position:relative}
   .ong:last-child{border-right:none}
-  .ong small{display:block;font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--gris2);margin-top:3px}
+  .ong small{display:block;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:none;color:var(--gris2);margin-top:3px}
   .ong:hover{background:var(--carte2);color:var(--blanc)}
   .ong.on{background:var(--carte2);color:var(--or-l)}
   .ong.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--or)}
@@ -249,7 +249,7 @@
     justify-content:center;transition:var(--tr);font-size:11px;color:transparent}
   .presta.on .coche{background:var(--or);border-color:var(--or);color:#1a1204}
   .presta .nom{flex:1;min-width:0;font-size:13.5px;font-weight:600;line-height:1.35}
-  .presta .nom em{display:block;font-style:normal;font-size:11.5px;font-weight:500;color:var(--gris2);margin-top:2px}
+  .presta .nom em{display:block;font-style:normal;font-size:12px;font-weight:500;color:var(--gris2);margin-top:2px}
   .presta .de{font-size:12.5px;font-weight:700;color:var(--gris);white-space:nowrap;font-variant-numeric:tabular-nums}
   .presta.on .de{color:var(--or-l)}
 
@@ -340,7 +340,7 @@
   /* ---- infos & pied ---- */
   .infos{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
   .inf{background:var(--nuit2);padding:24px 24px 22px}
-  .inf b{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);display:block;margin-bottom:10px}
+  .inf b{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);display:block;margin-bottom:10px}
   .inf p{font-size:14.5px;color:var(--gris);line-height:1.6}
   .inf p a:hover{color:var(--blanc)}
   footer{border-top:1px solid var(--line);padding:44px 0 40px}

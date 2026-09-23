@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Maison Lonviere">
+  <rect width="140" height="140" rx="24" fill="#2a1d28"/>
+  <g fill="none" stroke="#c4614c" stroke-width="9" stroke-linecap="round">
+    <path d="M44 26 L92 92"/>
+    <path d="M96 26 L48 92"/>
+    <circle cx="42" cy="106" r="13"/>
+    <circle cx="98" cy="106" r="13"/>
+  </g>
+</svg>

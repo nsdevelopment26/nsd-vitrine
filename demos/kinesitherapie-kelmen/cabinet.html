@@ -11,9 +11,7 @@
 <meta property="og:image" content="assets/img/facade-cabinet.jpg">
 <meta name="theme-color" content="#F7F3EC">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Manrope:wght@400;600;700&family=Sacramento&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/fonts/polices-94e3e0f935.css">
 <link rel="stylesheet" href="assets/ns-motion.css">
 <link rel="stylesheet" href="assets/style.css">
 <script>
@@ -139,7 +137,7 @@ setTimeout(function(){document.documentElement.classList.remove('i18n-attente');
       <iframe
         data-i18n-attr="title:cab.map.iframe" title="Carte : 21 rue de la Gare, L-6117 Junglinster"
         loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.openstreetmap.org/export/embed.html?bbox=6.2230%2C49.6920%2C6.2830%2C49.7260&layer=mapnik&marker=49.7092%2C6.2528"></iframe>
+        data-src="https://www.openstreetmap.org/export/embed.html?bbox=6.2230%2C49.6920%2C6.2830%2C49.7260&layer=mapnik&marker=49.7092%2C6.2528"></iframe><button type="button" class="carte-consent" onclick="var f=this.parentNode.querySelector('iframe');f.src=f.dataset.src;this.remove()" style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;border:0;background:rgba(0,0,0,.55);color:#fff;font:inherit;cursor:pointer;text-align:center"><strong>Afficher la carte</strong><span style="font-size:.85em;opacity:.85;max-width:34ch">La carte est fournie par OpenStreetMap, qui recevra votre adresse IP.</span></button>
     </div>
     <p style="text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--ink-mute)" data-reveal data-i18n="cab.map.note">
       Le repère est posé sur le centre de Junglinster.

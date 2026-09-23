@@ -150,8 +150,8 @@ ul{margin:0; padding:0; list-style:none}
 .btn--primary:hover{background:var(--ink); transform:translateY(-3px); box-shadow:0 22px 44px -20px rgba(55,49,44,.7)}
 .btn--ghost{border-color:var(--taupe-lt); color:var(--ink)}
 .btn--ghost:hover{background:var(--paper); border-color:var(--taupe); transform:translateY(-3px)}
-.btn--blush{background:var(--blush); color:#FFF}
-.btn--blush:hover{background:#BE8880; transform:translateY(-3px)}
+.btn--blush{background:var(--blush); color:var(--ink)}  /* blanc sur blush = 2.4:1 ; encre = 5.3:1 */
+.btn--blush:hover{background:#D6A79F; transform:translateY(-3px)}
 .btn--sm{padding:.68rem 1.3rem; font-size:.74rem}
 .btn[disabled]{opacity:.45; pointer-events:none}
 .btn svg{width:16px;height:16px;flex:none}
@@ -355,7 +355,7 @@ section{position:relative}
 .contact-list a{color:var(--taupe-deep); text-decoration:none; border-bottom:1px solid var(--taupe-pale)}
 .contact-list a:hover{border-color:var(--taupe)}
 
-.map-card{
+.map-card{position:relative;
   border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--taupe-pale);
   background:var(--paper); box-shadow:var(--shadow);
 }

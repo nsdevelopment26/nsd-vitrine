@@ -6,7 +6,9 @@
 // rôle en base de données (Row Level Security), pas du secret de cette clé.
 // NE JAMAIS mettre ici la clé "service_role" (secrète).
 // ============================================================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// La bibliothèque est hébergée sur le site (assets/vendor/), chargée juste avant
+// ce fichier : aucun appel à un CDN tiers, donc aucune adresse IP transmise.
+const { createClient } = window.supabase;
 
 const SUPABASE_URL = 'https://atgykykesntvporvbvuf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CERC6vjpnV91Fh_2mA4VTQ_I0jcJ05F';

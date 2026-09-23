@@ -432,11 +432,11 @@ const NS_I18N = {
      de:"✓ Danke! Ihr E-Mail-Programm öffnet sich mit der vorausgefüllten Anfrage. Senden Sie sie ab, wir antworten innerhalb von 24 Stunden.",
      en:"✓ Thank you! Your mail app will open with your request pre-filled. Send it and we'll reply within 24 hours.",
      pt:"✓ Obrigado! O seu email vai abrir com o pedido pré-preenchido. Envie-o e respondemos em 24 h."},
-  "Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu":
-    {lb:"Et ass e Feeler geschitt. Schreift eis direkt op info@nsdevelopment.lu",
-     de:"Ein Fehler ist aufgetreten. Schreiben Sie uns direkt an info@nsdevelopment.lu",
-     en:"Something went wrong. Write to us directly at info@nsdevelopment.lu",
-     pt:"Ocorreu um erro. Escreva-nos diretamente para info@nsdevelopment.lu"},
+  "Une erreur est survenue. Écrivez-nous directement à nsdevelopment26@gmail.com":
+    {lb:"Et ass e Feeler geschitt. Schreift eis direkt op nsdevelopment26@gmail.com",
+     de:"Ein Fehler ist aufgetreten. Schreiben Sie uns direkt an nsdevelopment26@gmail.com",
+     en:"Something went wrong. Write to us directly at nsdevelopment26@gmail.com",
+     pt:"Ocorreu um erro. Escreva-nos diretamente para nsdevelopment26@gmail.com"},
 
   /* ---------- Footer ---------- */
   "Création de sites web modernes pour les commerçants, restaurants et indépendants du Luxembourg.":
@@ -446,7 +446,13 @@ const NS_I18N = {
      pt:"Criação de sites modernos para comerciantes, restaurantes e independentes no Luxemburgo."},
   "© 2026 NS Development. Tous droits réservés.": {lb:"© 2026 NS Development. All Rechter virbehalen.", de:"© 2026 NS Development. Alle Rechte vorbehalten.", en:"© 2026 NS Development. All rights reserved.", pt:"© 2026 NS Development. Todos os direitos reservados."},
   "Mentions légales": {lb:"Impressum", de:"Impressum", en:"Legal notice", pt:"Menções legais"},
-  "Confidentialité": {lb:"Dateschutz", de:"Datenschutz", en:"Privacy", pt:"Privacidade"}
+  "Confidentialité": {lb:"Dateschutz", de:"Datenschutz", en:"Privacy", pt:"Privacidade"},
+  "Conditions générales": {lb:"Allgemeng Geschäftsbedingungen", de:"AGB", en:"Terms and conditions", pt:"Condições gerais"},
+  "Montants hors TVA, hors maintenance, donnés pour situer. Offres réservées aux professionnels. Chaque site est chiffré sur ce que vous demandez vraiment, et le devis est gratuit.":
+    {lb:"Montanten ouni TVA an ouni Wartung, fir Iech ze orientéieren. Offeren nëmme fir Professionneller. All Websäit gëtt no deem berechent, wat Dir wierklech braucht, an den Devis ass gratis.",
+     de:"Beträge zzgl. MwSt., ohne Wartung, zur Orientierung. Angebote ausschließlich für Gewerbetreibende. Jede Website wird nach Ihrem tatsächlichen Bedarf kalkuliert, das Angebot ist kostenlos.",
+     en:"Amounts excl. VAT and maintenance, given as a guide. Offers reserved for businesses. Every site is priced on what you actually need, and the quote is free.",
+     pt:"Valores sem IVA e sem manutenção, indicativos. Ofertas reservadas a profissionais. Cada site é orçamentado segundo o que realmente pede, e o orçamento é gratuito."}
 };
 
 /* ---------- Moteur ---------- */

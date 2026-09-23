@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="MOTORLINE">
+  <rect width="140" height="140" rx="24" fill="#07080b"/>
+  <g fill="none" stroke="#d7a557" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 44 L70 70 L34 96"/>
+    <path d="M74 44 L110 70 L74 96"/>
+  </g>
+</svg>

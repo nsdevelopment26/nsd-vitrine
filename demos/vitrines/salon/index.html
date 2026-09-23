@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <meta name="description" content="Salon de coiffure, barbier, institut de beauté et toilettage à Luxembourg. Prenez rendez-vous en ligne en trente secondes, sept jours sur sept.">
 <link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/salon/">
 
@@ -19,9 +20,7 @@
 <meta name="twitter:image" content="photos/salon-interieur.jpg">
 <meta name="theme-color" content="#2a1d28">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../assets/fonts/polices-2a68898199.css">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
 <script src="prestations.js" defer></script>
@@ -32,8 +31,8 @@
   --paper-2:#efe6da;
   --ink:#2a1d28;
   --ink-soft:#6b5a66;
-  --rose:#c4614c;
-  --rose-d:#a94b38;
+  --rose:#a94b38;--rose-l:#cd7360;
+  --rose-d:#8e3d2d;
   --sauge:#7f9179;
   --line:#e0d3c3;
   --shadow:0 24px 60px -28px rgba(42,29,40,.38);
@@ -179,6 +178,9 @@ nav.ns-solid{background:rgba(246,241,234,.93);backdrop-filter:blur(14px);
   font-family:"Bodoni Moda",serif;font-size:1.5rem;padding:0 1.6rem;white-space:nowrap;
 }
 .band em{font-style:italic;color:var(--rose)}
+  /* Sur l'encre sombre, le rose accessible tombe a 2.9:1 :
+     les sections sombres basculent sur la variante claire. */
+  .band,.proof,footer{--rose:var(--rose-l)}
 
 /* ---------- sections ---------- */
 section{padding:6.2rem 0}

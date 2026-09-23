@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sauvane — Artisan fleuriste · Luxembourg</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 <meta name="description" content="Artisan fleuriste à Luxembourg. Bouquets de saison, plantes et compositions sur mesure. Commande en ligne, retrait en deux heures ou livraison le lendemain.">
 <link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/fleuriste-sauvane/">
 
@@ -19,9 +20,7 @@
 <meta name="twitter:image" content="photos/fl-boutique.jpg">
 <meta name="theme-color" content="#12261f">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../assets/fonts/polices-5bf0f89d9e.css">
 <link rel="stylesheet" href="ns-motion.css">
 <script src="ns-motion.js" defer></script>
 
@@ -32,7 +31,7 @@
   --blanc:#ffffff;
   --gris:#f2f4f2;
   --soufre:#e6d04a;
-  --soufre-d:#cbb534;
+  --soufre-d:#7d7020;--soufre-l:#cbb534;
   --texte-clair:#c2cec7;
   --line:#dfe4e0;
   --ns-progress-color:#e6d04a;
@@ -54,7 +53,7 @@ h2{font-size:clamp(1.9rem,4vw,3.1rem);text-transform:uppercase}
 h3{font-size:1rem;font-weight:700;line-height:1.25;letter-spacing:-.005em}
 p{margin:0 0 1em}
 h2+p{margin-top:1.1rem}
-.eti{font-family:Archivo;font-size:.68rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--soufre-d)}
+.eti{font-family:Archivo;font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--soufre-d)}
 :focus-visible{outline:3px solid var(--soufre);outline-offset:3px}
 
 /* boutons : contour fin, majuscules espacees, remplissage au survol */
@@ -82,7 +81,7 @@ h2+p{margin-top:1.1rem}
   border:1px solid rgba(255,255,255,.5);color:var(--blanc);padding:.55rem 1rem;
   font-family:Archivo;font-weight:700;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase}
 .pan-b:hover{background:var(--soufre);border-color:var(--soufre);color:var(--nuit)}
-.pan-n{min-width:19px;height:19px;background:var(--soufre);color:var(--nuit);font-size:.68rem;font-weight:700;
+.pan-n{min-width:19px;height:19px;background:var(--soufre);color:var(--nuit);font-size:11px;font-weight:700;
   display:inline-flex;align-items:center;justify-content:center;padding:0 5px;border-radius:999px}
 .brg{display:none;width:42px;height:42px;border:1px solid rgba(255,255,255,.5);background:transparent;
   cursor:pointer;flex-direction:column;gap:5px;align-items:center;justify-content:center}
@@ -107,7 +106,7 @@ h2+p{margin-top:1.1rem}
 .hero-bas p{max-width:38ch;color:var(--texte-clair);margin:0}
 .hero .b{color:var(--blanc)}
 .defiler{position:absolute;right:0;bottom:4.6rem;z-index:2;writing-mode:vertical-rl;
-  font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+  font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 
 /* ---------- bandeau ---------- */
 .serv{background:var(--nuit);color:var(--texte-clair);padding:1.5rem 0;font-size:.8rem;
@@ -174,7 +173,7 @@ section{padding:6rem 0}
 /* ---------- chiffres : ligne, pas grille de cartes ---------- */
 .ch-ligne{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
 .ch b{display:block;font-family:Syne,sans-serif;font-weight:800;font-size:clamp(2.2rem,4.4vw,3.3rem);line-height:1}
-.ch i{font-style:normal;display:block;margin-top:.4rem;font-size:.66rem;font-weight:700;
+.ch i{font-style:normal;display:block;margin-top:.4rem;font-size:11px;font-weight:700;
   letter-spacing:.18em;text-transform:uppercase;color:#5c6b63}
 
 /* ---------- acces ---------- */
@@ -186,6 +185,9 @@ section{padding:6rem 0}
 .coord{margin-top:1.7rem;display:flex;flex-direction:column;gap:.45rem}
 .coord a{text-decoration:none;font-weight:600}
 .coord a:hover{color:var(--soufre-d)}
+/* Le jaune assombri pour le fond blanc devient illisible sur le vert nuit :
+   les sections sombres reprennent le jaune d'origine (7.7:1 sur #12261f). */
+#mob,#haut,.serv,#surmesure,footer,#fond,.pt{--soufre-d:var(--soufre-l)}
 .plan{background:var(--gris);min-height:320px;position:relative;display:flex;align-items:center;justify-content:center;
   border:1px solid var(--line)}
 .pin{width:16px;height:16px;background:var(--soufre);border-radius:50% 50% 50% 0;transform:rotate(-45deg);
@@ -220,11 +222,11 @@ footer b{color:var(--blanc)}
 .q span{min-width:18px;text-align:center;font-weight:700;font-size:.87rem}
 .pp{border-top:1px solid var(--line);padding:1.1rem 1.4rem 1.4rem}
 .mode{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.8rem}
-.mode button{font-family:Archivo;font-weight:700;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+.mode button{font-family:Archivo;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
   padding:.6rem .4rem;cursor:pointer;border:1px solid var(--line);background:transparent;color:#5c6b63}
 .mode button[aria-pressed="true"]{background:var(--nuit);border-color:var(--nuit);color:var(--blanc)}
 .cre{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.9rem}
-.cre label{font-size:.64rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#5c6b63}
+.cre label{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#5c6b63}
 .cre select{font-family:Archivo;font-size:.9rem;padding:.6rem .65rem;border:1px solid var(--line);
   background:var(--blanc);color:var(--nuit);border-radius:0;width:100%;min-width:0}
 .tot{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.9rem}

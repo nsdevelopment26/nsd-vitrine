@@ -21,9 +21,7 @@
   <meta name="twitter:image" content="og.jpg">
 
   <link rel="icon" href="logo.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/fonts/polices-11997f125f.css">
   <link rel="stylesheet" href="ns-motion.css">
 
   <style>
@@ -40,7 +38,7 @@
     --white:#FCFCFA;
     --ink:#16211C;
     --ink-2:#4E5B55;
-    --ink-3:#87918B;
+    --ink-3:#5F6863;
     --green:#1D5140;
     --green-2:#143A2E;
     --green-deep:#0F2A21;
@@ -124,7 +122,7 @@
   .brand-mark{width:40px;height:40px;border:1px solid var(--rule-2);background:var(--white);padding:5px;flex:none}
   .brand-mark img{width:100%;height:100%;object-fit:contain}
   .brand-name{display:block;font-family:'Fraunces',serif;font-weight:600;font-size:20px;letter-spacing:-.01em;line-height:1}
-  .brand-sub{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:600;margin-top:4px}
+  .brand-sub{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:600;margin-top:4px}
 
   .nav-right{display:flex;align-items:center;gap:30px}
   .nav-links{display:flex;align-items:center;gap:28px}
@@ -216,7 +214,7 @@
   .sheet-head > span:nth-child(2){flex:1 1 auto;min-width:0}
   .sheet-title{display:block;font-family:'Fraunces',serif;font-size:18px;font-weight:600;line-height:1.2}
   .sheet-sub{display:block;font-size:12.5px;color:#9FC4B2;letter-spacing:.04em;margin-top:4px}
-  .sheet-ref{margin-left:auto;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.42);padding-top:5px}
+  .sheet-ref{margin-left:auto;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.55);padding-top:5px}
 
   .sheet-rows li{
     display:flex;align-items:center;justify-content:space-between;gap:16px;
@@ -372,7 +370,7 @@
   .form .btn{width:100%;justify-content:center;margin-top:6px}
   .form-ok{display:none;margin-top:18px;font-size:14.5px;color:var(--green);border-left:2px solid var(--green);padding-left:14px;line-height:1.6}
 
-  .map{margin-top:26px;border:1px solid var(--rule-2);height:280px;background:var(--paper-2)}
+  .map{position:relative;margin-top:26px;border:1px solid var(--rule-2);height:280px;background:var(--paper-2)}
   .map iframe{width:100%;height:100%;border:0;filter:grayscale(1) contrast(1.04);transition:filter .5s}
   .map:hover iframe{filter:grayscale(.25) contrast(1)}
 
@@ -876,9 +874,9 @@
 
         <div class="map">
           <iframe
-            src="https://maps.google.com/maps?q=Dudelange%2C%20Luxembourg&z=14&output=embed"
+            data-src="https://maps.google.com/maps?q=Dudelange%2C%20Luxembourg&z=14&output=embed"
             loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-            title="Dudelange, Luxembourg"></iframe>
+            title="Dudelange, Luxembourg"></iframe><button type="button" class="carte-consent" onclick="var f=this.parentNode.querySelector('iframe');f.src=f.dataset.src;this.remove()" style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;border:0;background:rgba(0,0,0,.55);color:#fff;font:inherit;cursor:pointer;text-align:center"><strong>Afficher la carte</strong><span style="font-size:.85em;opacity:.85;max-width:34ch">La carte est fournie par Google, qui recevra votre adresse IP.</span></button>
         </div>
       </div>
 

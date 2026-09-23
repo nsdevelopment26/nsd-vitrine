@@ -20,9 +20,7 @@
 <meta name="twitter:title" content="NS Development — Création de sites web au Luxembourg">
 <meta name="twitter:description" content="Des sites web modernes, rapides et multilingues pour les commerçants et indépendants du Luxembourg.">
 <meta name="twitter:image" content="https://nsdevelopment.lu/assets/og-cover.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts/polices-dca6f46f1b.css">
 <link rel="stylesheet" href="ns-motion.css">
 <link rel="stylesheet" href="ns-fx.css?v=7">
 <link rel="stylesheet" href="ns-clair.css?v=5">
@@ -713,7 +711,7 @@
         </div>
       </article>
     </div>
-    <p class="works-note" data-reveal="blur" data-delay="120">Montants hors TVA, hors maintenance, donnés pour situer. Chaque site est chiffré sur ce que vous demandez vraiment, et le devis est gratuit.</p>
+    <p class="works-note" data-reveal="blur" data-delay="120">Montants hors TVA, hors maintenance, donnés pour situer. Offres réservées aux professionnels. Chaque site est chiffré sur ce que vous demandez vraiment, et le devis est gratuit.</p>
   </div>
 </section>
 
@@ -971,7 +969,7 @@
     </div>
     <div class="contact-grid">
       <div class="cinfo" data-reveal="left">
-        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">info@nsdevelopment.lu</div></div></div>
+        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">nsdevelopment26@gmail.com</div></div></div>
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="ci-l">Zone</div><div class="ci-v">Luxembourg & alentours</div></div></div>
         <div class="cline" style="border-bottom:none"><div class="ci-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="ci-l">Réponse</div><div class="ci-v">Sous 24 h ouvrées</div></div></div>
       </div>
@@ -1013,7 +1011,7 @@
       </div>
       <div class="foot-col">
         <h4>Contact</h4>
-        <a href="mailto:info@nsdevelopment.lu">info@nsdevelopment.lu</a>
+        <a href="mailto:nsdevelopment26@gmail.com">nsdevelopment26@gmail.com</a>
         <a href="#contact">Devis gratuit</a>
         <span style="display:block;font-size:13.5px;color:var(--muted);padding:5px 0">Luxembourg</span>
       </div>
@@ -1023,6 +1021,7 @@
       <span style="display:flex;gap:20px;flex-wrap:wrap">
         <a href="mentions-legales.html" style="color:var(--muted)">Mentions légales</a>
         <a href="confidentialite.html" style="color:var(--muted)">Confidentialité</a>
+        <a href="cgv.html" style="color:var(--muted)">Conditions générales</a>
       </span>
     </div>
   </div>
@@ -1190,14 +1189,14 @@
     if(FORMSPREE.indexOf('VOTRE_ID')!==-1){
       const s=encodeURIComponent('Demande de devis — '+f.type.value+' — '+f.nom.value);
       const b=encodeURIComponent('Nom : '+f.nom.value+'\nEmail : '+f.email.value+'\nTéléphone : '+(f.tel.value||'—')+'\nType de projet : '+f.type.value+'\n\nMessage :\n'+f.message.value+'\n');
-      window.location.href='mailto:info@nsdevelopment.lu?subject='+s+'&body='+b;
+      window.location.href='mailto:nsdevelopment26@gmail.com?subject='+s+'&body='+b;
       ok.textContent=T("✓ Merci ! Votre messagerie va s'ouvrir avec votre demande pré-remplie. Envoyez-la et on vous répond sous 24 h.");
       ok.style.display='block';
       return false;
     }
     fetch(FORMSPREE,{method:'POST',body:new FormData(f),headers:{'Accept':'application/json'}})
       .then(r=>{ if(!r.ok) throw new Error(); f.reset(); ok.textContent="✓ Merci ! Votre demande a bien été envoyée, on vous répond sous 24 h ouvrées."; ok.style.display='block'; })
-      .catch(()=>{ ok.textContent=T("Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu"); ok.style.display='block'; });
+      .catch(()=>{ ok.textContent=T("Une erreur est survenue. Écrivez-nous directement à nsdevelopment26@gmail.com"); ok.style.display='block'; });
     return false;
   }
 </script>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Atelier Verveine">
+  <rect width="140" height="140" rx="24" fill="#0f1f19"/>
+  <path d="M70 120 V62" fill="none" stroke="#7fb79a" stroke-width="9" stroke-linecap="round"/>
+  <path d="M70 92 C44 92 34 80 34 66 C56 64 70 74 70 92 Z" fill="#7fb79a"/>
+  <path d="M70 106 C96 106 106 94 106 80 C84 78 70 88 70 106 Z" fill="#7fb79a"/>
+  <circle cx="70" cy="40" r="24" fill="#ea5a86"/>
+  <circle cx="70" cy="40" r="8" fill="#0f1f19"/>
+</svg>
