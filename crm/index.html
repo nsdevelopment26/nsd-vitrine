@@ -38,8 +38,6 @@
   .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .02em; }
   .tuile { width: 30px; height: 30px; border-radius: 8px; background: #1d1d1f; border: 1px solid #333;
     display: grid; place-items: center; font-size: 12px; font-weight: 800; }
-  .qui { background: #1d1d1f; border: 1px solid #333; color: #fff; border-radius: 999px;
-    padding: 6px 12px; font-size: 13px; }
   .recherche { margin-top: 12px; width: 100%; border: 0; border-radius: 10px; padding: 11px 14px;
     background: #fff; color: #141414; font-size: 16px; }
 
@@ -194,25 +192,22 @@
 
   /* Connexion */
   .connexion { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 24px; max-width: 380px; margin: 0 auto; }
+  .bandeau-installer { display: block; background: #35d29a; color: #0f0f10; font-weight: 700; font-size: 14px; text-align: center;
+    padding: 10px 16px; text-decoration: none; }
   .logo-connexion { width: 64px; height: 64px; border-radius: 16px; margin-bottom: 18px; }
   .connexion h1 { margin: 0 0 6px; }
   .connexion p { color: var(--doux); margin: 0 0 22px; }
-  .choix-qui { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-  .choix-qui button { padding: 12px; border-radius: 12px; border: 1px solid var(--ligne); background: #fff; font-weight: 650; }
-  .choix-qui button.choisi { background: var(--noir); color: #fff; border-color: var(--noir); }
   .code { letter-spacing: .4em; text-align: center; font-size: 24px !important; }
 </style>
 </head>
 <body>
+<a id="bandeau-installer" class="bandeau-installer cache" href="https://nsdevelopment26.github.io/nsd-vitrine/crm/" target="_top">
+  Pour avoir le logo NS sur l’écran d’accueil, ouvre l’appli ici puis ajoute-la depuis Safari →</a>
 
 <div id="ecran-connexion" class="connexion cache">
   <img class="logo-connexion" src="icones/nsd-vert-tuile-96.png" alt="NS Development" width="64" height="64">
   <h1>CRM NSD</h1>
   <p>La prospection de NS Development, reliée au Google Sheets.</p>
-  <div class="choix-qui" id="choix-qui">
-    <button type="button" data-qui="Sam">Sam</button>
-    <button type="button" data-qui="Nelson">Nelson</button>
-  </div>
   <label class="champ">Code d’accès
     <input id="pin" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••">
   </label>
@@ -223,7 +218,6 @@
   <header class="barre"><div class="barre-int">
     <div class="barre-haut">
       <div class="logo"><img src="icones/nsd-vert-tuile-96.png" alt="NS Development"> CRM</div>
-      <button class="qui" id="btn-qui"></button>
     </div>
     <input class="recherche" id="recherche" type="search" placeholder="Chercher un nom, un numéro, une commune…">
   </div></header>
@@ -244,7 +238,8 @@
 // ---------------------------------------------------------------------------
 // État
 // ---------------------------------------------------------------------------
-const S = { pin: '', par: '', data: null, vue: 'jour', recherche: '', filtreSecteur: '', ouvert: null, plusJour: 25,
+// Un seul compte, « NSD », partagé par Sam et Nelson (décision du 23/09/2026).
+const S = { pin: '', par: 'NSD', data: null, vue: 'jour', recherche: '', filtreSecteur: '', ouvert: null, plusJour: 25,
   jour: '', journeesChargees: {} };
 
 function stocker(k, v) { try { localStorage.setItem('crmnsd_' + k, v); } catch (e) {} }
@@ -361,7 +356,7 @@ function carteRiche(p, droite, entree) {
     ['Gérant', p.gerant ? esc(p.gerant) : '<span class="faible">inconnu, demander le responsable</span>'],
     ['Tél.', tel ? `<a href="${tel}" data-stop="1">${esc(p.telephone)}</a>` : '<span class="faible">aucun numéro</span>'],
     p.mauvais || p.site ? ['Constat', esc(p.mauvais || '') + (p.site && !/^https?:\/\/(www\.)?facebook/i.test(p.site) ? (p.mauvais ? ' · ' : '') + esc(p.site) : '')] : null,
-    entree ? ['Résultat', `<span class="lp-resultat" style="--statut:${statut(entree.statut).color}">${esc(entree.resultat)}</span>${entree.rappel ? ' → ' + esc(dateCourte(entree.rappel)) : ''}${entree.par ? ' <span class="faible">· ' + esc(entree.par) + '</span>' : ''}`] : null,
+    entree ? ['Résultat', `<span class="lp-resultat" style="--statut:${statut(entree.statut).color}">${esc(entree.resultat)}</span>${entree.rappel ? ' → ' + esc(dateCourte(entree.rappel)) : ''}`] : null,
     entree && entree.note ? ['Dit', esc(entree.note)] : null,
     dernier ? ['Dernier', esc(dernier)] : null,
     !entree && notes ? ['Notes', esc(notes.length > 160 ? notes.slice(0, 160) + '…' : notes)] : null,
@@ -399,7 +394,6 @@ function rendre() {
   if (!S.data) return;
   document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', b.dataset.vue === S.vue));
   document.body.dataset.vue = S.recherche ? 'recherche' : S.vue;
-  document.getElementById('btn-qui').textContent = S.par + ' ▾';
   const v = document.getElementById('vue');
   if (S.recherche) v.innerHTML = vueRecherche();
   else if (S.vue === 'jour') v.innerHTML = vueJour();
@@ -583,8 +577,6 @@ function vueStats() {
   const jours = [];
   for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = fmt(d).slice(0, 10); jours.push({ k, d, n: J.filter(e => e.date.startsWith(k) && estAppel(e)).length }); }
   const max = Math.max(1, ...jours.map(j => j.n));
-  const pers = {};
-  J.filter(e => e.date.slice(0, 10) >= debutSem && estAppel(e)).forEach(e => { pers[e.par || '—'] = (pers[e.par || '—'] || 0) + 1; });
 
   return section('Aujourd’hui', '', `<div class="grille">
       <div class="kpi"><div class="v">${compte(jour, estAppel)}</div><div class="l">appels</div></div>
@@ -599,8 +591,7 @@ function vueStats() {
     + section('Sur 30 jours', '', `<table class="recap">
       <tr><td>Appels passés</td><td>${a30}</td></tr>
       <tr><td>Taux de décroché</td><td>${a30 ? Math.round(dec30 / a30 * 100) + ' %' : '—'}</td></tr>
-      <tr><td>Appels pour un RDV</td><td>${r30 ? Math.round(a30 / r30) : '—'}</td></tr>
-      ${Object.keys(pers).map(k => `<tr><td>Appels de ${esc(k)} cette semaine</td><td>${pers[k]}</td></tr>`).join('')}</table>`)
+      <tr><td>Appels pour un RDV</td><td>${r30 ? Math.round(a30 / r30) : '—'}</td></tr></table>`)
     + section('Pipeline', S.data.prospects.length + ' prospects', `<table class="recap">${S.data.statuts.map(s =>
       `<tr><td><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span></td><td>${S.data.prospects.filter(p => cle(p) === s.k).length}</td></tr>`).join('')}</table>`)
     + `<p style="margin-top:18px"><a class="btn clair large" href="${esc(S.data.lienSheets)}" target="_blank">Ouvrir le Google Sheets</a></p>`;
@@ -676,7 +667,7 @@ function rendreFiche(edition) {
     ${p.client ? '<div class="sous" style="margin-top:8px">Fiche client liée à la facturation.</div>' : ''}</div>
 
     <div class="bloc"><h3>Historique</h3>${hist.length ? `<ul class="histo">${hist.map(e =>
-      `<li><b>${esc(e.resultat)}</b>${e.rappel ? ' → ' + esc(dateCourte(e.rappel)) : ''}${e.note ? '<br>' + esc(e.note) : ''}<div class="d">${esc(dateCourte(e.date))}${e.par ? ' · ' + esc(e.par) : ''}</div></li>`).join('')}</ul>`
+      `<li><b>${esc(e.resultat)}</b>${e.rappel ? ' → ' + esc(dateCourte(e.rappel)) : ''}${e.note ? '<br>' + esc(e.note) : ''}<div class="d">${esc(dateCourte(e.date))}</div></li>`).join('')}</ul>`
       : '<div class="sous">Aucun contact enregistré dans l’appli.</div>'}</div>`}
   </div>`;
 }
@@ -884,21 +875,15 @@ document.addEventListener('change', e => {
   if (e.target.id === 'jour-date' && e.target.value) { S.jour = e.target.value; rendre(); }
 });
 document.getElementById('recherche').addEventListener('input', e => { S.recherche = e.target.value.trim(); rendre(); });
-document.getElementById('btn-qui').addEventListener('click', () => { S.par = S.par === 'Sam' ? 'Nelson' : 'Sam'; stocker('par', S.par); rendre(); toast('Les appels seront notés au nom de ' + S.par + '.'); });
 
 // Connexion
-document.getElementById('choix-qui').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  S.par = b.dataset.qui; document.querySelectorAll('#choix-qui button').forEach(x => x.classList.toggle('choisi', x === b));
-});
 document.getElementById('btn-connexion').addEventListener('click', connexion);
 document.getElementById('pin').addEventListener('keydown', e => { if (e.key === 'Enter') connexion(); });
 
 async function connexion() {
   const pin = document.getElementById('pin').value.trim();
-  if (!S.par) return toast('Choisis qui appelle.', true);
   if (!pin) return toast('Entre le code.', true);
-  try { await appel('api_connexion', pin); S.pin = pin; stocker('pin', pin); stocker('par', S.par); demarrer(); }
+  try { await appel('api_connexion', pin); S.pin = pin; stocker('pin', pin); demarrer(); }
   catch (e) { toast(e.message || String(e), true); }
 }
 
@@ -923,12 +908,12 @@ async function demarrer() {
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.pin && S.data && !S.ouvert) charger().catch(() => {}); });
 setInterval(() => { if (S.data && !S.ouvert && !document.hidden) rendre(); }, 60000);
 
-S.pin = lire('pin'); S.par = lire('par');
-if (S.pin && S.par) demarrer();
-else {
-  document.getElementById('ecran-connexion').classList.remove('cache');
-  if (S.par) document.querySelector(`#choix-qui [data-qui="${S.par}"]`)?.classList.add('choisi');
-}
+// Ouverte depuis script.google.com (et non la version installable) : on guide vers la bonne adresse.
+if (!window.CRM_API) document.getElementById('bandeau-installer').classList.remove('cache');
+
+S.pin = lire('pin');
+if (S.pin) demarrer();
+else document.getElementById('ecran-connexion').classList.remove('cache');
 </script>
 <script>
 // ===========================================================================
