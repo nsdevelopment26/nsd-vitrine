@@ -922,124 +922,275 @@ else document.getElementById('ecran-connexion').classList.remove('cache');
 //   - dans l'appli CRM (onglet Factu), pour voir et imprimer ;
 //   - sur le Mac, par synchroniser-dossiers.mjs, qui range les PDF dans
 //     sites-web/clients/<client>/devis et /factures.
-// Repris de sites-web/ns-development/espace-client-admin.html.
+// Le devis suit le modèle validé commercial/devis-modeles/devis-NSD.pdf
+// (généré par commercial/facturation/generer-modeles.py) : page 1 l'offre
+// (formule, options, maintenance, cases cochées), page 2 le décompte, l'acompte,
+// le solde et les signatures. Le CATALOGUE ci-dessous est le même que celui du
+// modèle (_charte_pdf.py) : un prix qui change se change aux deux endroits.
 // ===========================================================================
 var NSDocs = (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  // 2 625 € pour un montant rond, 1 462,50 € dès qu'il y a des centimes (jamais « 1 462,5 »).
-  const eur = n => { n = Math.round((Number(n) || 0) * 100) / 100; return n.toLocaleString('fr-FR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
+  // Toujours deux décimales, comme sur le modèle validé : 1 350,00 €.
+  // Formatage à la main : selon le moteur, toLocaleString('fr-FR') écrit « 1350,00 » sans séparateur.
+  const eur = n => { const v = Math.round((Number(n) || 0) * 100) / 100, [e, d] = Math.abs(v).toFixed(2).split('.');
+    return (v < 0 ? '-' : '') + e.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + ',' + d; };
   const fmtDate = s => { if (!s) return '—'; const p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
-  const aboAnnuel = t => Math.round((Number(t) || 0) / 3 * 11 * 100) / 100;
+  const arr = n => Math.round((Number(n) || 0) * 100) / 100;
+
+  // ------------------------------------------------------------------ catalogue (modèle validé)
+  const CATALOGUE = {
+    FORMULES: [
+      { n: 'Essentiel', pu: 1350, desc: '1 page, présentation essentielle, responsive, formulaire contact, Maps, mise en ligne.' },
+      { n: 'Vitrine', pu: 2625, desc: '4 à 5 pages, galerie photos, services / menu, formulaire, SEO local de base.' },
+      { n: 'Pro', pu: 3750, desc: '8 à 10 pages, configuration bilingue, formulaires avancés, SEO renforcé.' },
+      { n: 'Boutique', pu: 3750, desc: 'E-commerce jusqu’à 50 produits, gestion panier, paiement sécurisé.' },
+      { n: 'Signature', pu: 6000, desc: 'Sur-mesure (catalogue immobilier / autos), haut de gamme, développements spécifiques.' },
+    ],
+    // court : l'étiquette du bouton dans l'appli. qte : option vendue à l'unité.
+    OPTIONS: [
+      { n: 'Langue(s) supplémentaire(s)', court: 'Langue supplémentaire', pu: 450, qte: true },
+      { n: 'Page(s) supplémentaire(s)', court: 'Page supplémentaire', pu: 150, qte: true },
+      { n: 'Pack Photos / Visuels professionnels libres de droits', court: 'Pack photos', pu: 15, qte: true },
+      { n: 'SEO local avancé & Optimisation complète du référencement Google', court: 'SEO local avancé', pu: 350 },
+      { n: 'Système de prise de rendez-vous en ligne / Module de réservation', court: 'Rendez-vous en ligne', pu: 300 },
+      { n: 'Système de rendez-vous sur-mesure (agenda propre + espace praticien)', court: 'Rendez-vous sur-mesure', pu: 1200 },
+      { n: 'Création et optimisation intégrale de la Fiche Google Business Profile', court: 'Fiche Google Business', pu: 90 },
+      { n: 'Intégration d’un module de paiement en ligne (Stripe / PayPal / SumUp)', court: 'Paiement en ligne', pu: 900 },
+      { n: 'Mise en place d’un Blog / Section Actualités avec gestion d’articles', court: 'Blog / actualités', pu: 250 },
+      { n: 'Catalogue métier dynamique (Biens immobiliers / Véhicules d’occasion)', court: 'Catalogue métier', pu: 900 },
+      { n: 'Galerie photos interactive avancée / Portfolio de réalisations', court: 'Galerie avancée', pu: 150 },
+      { n: 'Rédaction professionnelle des textes et contenus structurés (5 pages)', court: 'Rédaction des textes', pu: 300 },
+      { n: 'Création du Logo d’entreprise & conception de la Charte Graphique', court: 'Logo et charte', pu: 350 },
+    ],
+    // Trimestriel ou annuel (11 mois payés, 1 offert). Plus de paiement au mois.
+    MAINTENANCE: [
+      { cat: 'Essentiel / Vitrine', formules: ['Essentiel', 'Vitrine'], trim: 150, an: 550 },
+      { cat: 'Pro / Boutique', formules: ['Pro', 'Boutique'], trim: 225, an: 825 },
+      { cat: 'Signature', formules: ['Signature'], trim: 300, an: 1100 },
+    ],
+    INCLUS: 'Hébergement localisé au Luxembourg, nom de domaine, boîte email professionnelle, maintenance technique continue, sauvegardes journalières & mises à jour.',
+    PREFIXE_MTN: 'Maintenance, hébergement & sécurité',
+  };
+  const C = CATALOGUE;
+  const cleNom = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
+  const estMaintenance = l => String(l.designation || '').startsWith(C.PREFIXE_MTN);
+  // Ligne de maintenance d'un devis : « Maintenance, hébergement & sécurité · Pro / Boutique · annuelle (11 mois + 1 offert) ».
+  function ligneMaintenance(cat, annuel) {
+    const m = C.MAINTENANCE.find(x => x.cat === cat); if (!m) return null;
+    return { designation: C.PREFIXE_MTN + ' · ' + m.cat + ' · ' + (annuel ? 'annuelle (11 mois + 1 offert)' : 'trimestrielle (3 mois)'),
+      quantite: 1, prix_unitaire_ht: annuel ? m.an : m.trim, montant_ht: annuel ? m.an : m.trim };
+  }
+  function lireMaintenance(l) {
+    if (!l) return null;
+    const m = C.MAINTENANCE.find(x => l.designation.indexOf('· ' + x.cat + ' ·') > 0);
+    return m ? { cat: m.cat, annuel: /annuelle/.test(l.designation), montant: Number(l.montant_ht) || 0 } : null;
+  }
+  // Répartit les lignes d'un devis entre le catalogue (cases à cocher) et le reste.
+  function analyser(lignes, c) {
+    const r = { formule: null, options: {}, libres: [], mtn: null, site: 0, maintenance: 0 };
+    lignes.forEach(l => {
+      const mt = Number(l.montant_ht) || 0;
+      if (estMaintenance(l)) { r.mtn = lireMaintenance(l) || { cat: '', annuel: false, montant: mt, libre: l.designation }; r.maintenance += mt; return; }
+      r.site += mt;
+      const f = C.FORMULES.find(x => cleNom(x.n) === cleNom(l.designation));
+      if (f && !r.formule && Number(l.prix_unitaire_ht) === f.pu) { r.formule = f.n; return; }
+      const o = C.OPTIONS.find(x => cleNom(x.n) === cleNom(l.designation));
+      if (o && Number(l.prix_unitaire_ht) === o.pu && !r.options[o.n]) { r.options[o.n] = Number(l.quantite) || 1; return; }
+      r.libres.push(l);
+    });
+    // Devis d'avant le 24/09/2026 : la maintenance vivait sur la fiche client, pas dans les lignes.
+    if (!r.mtn && c && Number(c.abonnement_mensuel) > 0) {
+      const trim = Number(c.abonnement_mensuel), m = C.MAINTENANCE.find(x => x.trim === trim), annuel = c.abonnement_periodicite === 'annuel';
+      r.mtn = { cat: m ? m.cat : '', annuel, montant: annuel ? arr(trim / 3 * 11) : trim, ancien: true };
+      r.maintenance = r.mtn.montant;
+    }
+    return r;
+  }
 
   let OPTS = { iban: '', bic: '', logo: 'https://nsdevelopment26.github.io/nsd-vitrine/assets/logo-ns-dark.png' };
   const EMETTEUR = () => ({
     nom: 'NS Development SARL-S', adresse: '2, rue de la fontaine, L-4988 Sanem',
-    rcs: 'RCS Luxembourg B310037', autorisation: 'Autorisation d’établissement n° 10196211/0',
-    email: 'nsdevelopment26@gmail.com', tva: 'LU37686640',
+    rcs: 'B310037', tva: 'LU37686640', autorisation: '10196211 / 0',
+    email: 'nsdevelopment26@gmail.com', tel: '+352 621 757 113',
+    gerants: 'Samir DINIS DA ROSA / Nelson BARROSO',
     iban: OPTS.iban || 'à compléter', bic: OPTS.bic || 'à compléter',
   });
-  const CSS_DOC = ':root{--paper:#fff;--ink:#172232;--ink-soft:#47536a;--muted:#8b95a7;--faint:#b8c0ce;--line:#e7eaf0;--line-strong:#d3d9e4;--accent:#2b52e0;--accent-wash:#f4f6fe;--fill:#f6f7fa;--sans:"Helvetica Neue","Segoe UI",system-ui,-apple-system,Arial,sans-serif;--mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;}'
-    + '*{box-sizing:border-box}html,body{margin:0;padding:0}body{background:#eceef2;font-family:var(--sans);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding:24px 12px 60px}'
-    + '.sheet{max-width:820px;margin:0 auto;background:var(--paper);border:1px solid var(--line);border-radius:4px;box-shadow:0 8px 40px rgba(23,34,50,.10);padding:56px 60px 52px}'
-    + '.head{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;padding-bottom:26px;border-bottom:2px solid var(--ink)}.brandlogo{height:82px;width:auto;display:block}'
-    + '.doc-label{text-align:right}.doc-label h1{margin:0;font-size:30px;letter-spacing:.14em;font-weight:700}'
-    + '.doc-meta{margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);display:grid;grid-template-columns:auto auto;gap:3px 14px;justify-content:end}.doc-meta .k{color:var(--muted);text-align:right}.doc-meta .v{text-align:right;font-variant-numeric:tabular-nums}'
-    + '.parties{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:30px}.eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:9px}'
-    + '.party .who{font-weight:700;font-size:15px;margin-bottom:2px}.party .r{font-size:13px;color:var(--ink-soft)}'
-    + 'section{margin-top:34px}.sec-title{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:baseline;gap:10px;margin-bottom:12px}.sec-title .sub{font-weight:400;color:var(--muted);font-size:12px}'
-    + 'table{width:100%;border-collapse:collapse}thead th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 0 9px;border-bottom:1px solid var(--line-strong)}thead th.num{text-align:right;padding-left:28px}'
-    + 'tbody td{padding:14px 0;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:28px}.item-name{font-weight:700;margin-bottom:3px}.item-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.5}'
-    + '.line-total{display:flex;justify-content:flex-end;align-items:baseline;gap:18px;margin-top:14px;font-size:13.5px}.line-total .lbl{color:var(--ink-soft)}.line-total .amt{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}'
-    + '.modal{margin-top:14px;background:var(--accent-wash);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:14px 18px}.modal ul{margin:0;padding-left:18px}.modal li{font-size:12.5px;color:var(--ink-soft);margin:4px 0}.modal li strong{color:var(--ink)}'
-    + '.recap{margin-top:34px;border:1px solid var(--line-strong);border-radius:9px;overflow:hidden}.recap .r{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;font-size:13.5px;border-bottom:1px solid var(--line)}.recap .r .rl{color:var(--ink-soft)}.recap .r .rv{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}'
-    + '.recap .r.total{background:var(--ink);color:#fff;border-bottom:none;padding:17px 20px}.recap .r.total .rl{color:#fff;font-weight:700}.recap .r.total .rv{color:#fff;font-weight:700;font-size:16px}'
-    + '.sign{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}.sign .note{font-size:12.5px;color:var(--ink-soft)}.sign .box .lbl{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:30px}.sign .box .rule{border-top:1px solid var(--ink);padding-top:6px;font-size:11.5px;color:var(--muted)}'
-    + 'footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}footer .pay{color:var(--ink-soft);font-family:var(--mono);font-size:11.5px;margin-bottom:8px}footer .pay b{color:var(--ink);font-family:var(--sans)}'
-    + '@media (max-width:640px){.sheet{padding:28px 20px}.parties,.sign{grid-template-columns:1fr;gap:22px}.brandlogo{height:56px}.doc-label h1{font-size:22px}}'
-    // Impression et PDF : une page A4, jamais un total ou le pied bancaire seul en page 2.
-    + '@page{size:A4;margin:12mm 12mm 10mm}'
-    + '@media print{body{background:#fff;padding:0;font-size:12.5px}.sheet{box-shadow:none;border:none;max-width:100%;padding:0;border-radius:0}'
-    + '.parties,.sign{grid-template-columns:1fr 1fr}.head{padding-bottom:16px}.brandlogo{height:60px}.parties{margin-top:18px}'
-    + 'section{margin-top:20px}tbody td{padding:9px 0}.modal{padding:10px 14px}.recap{margin-top:18px}.recap .r{padding:8px 16px}.recap .r.total{padding:11px 16px}'
-    + '.sign{margin-top:22px}footer{margin-top:20px;padding-top:12px}.recap,.sign,footer,.modal,tr{break-inside:avoid}'
-    + '.modal,.recap .r.total{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
 
-  function blocs(c) {
-    return '<div class="who">' + esc(c.nom_etablissement || 'Client') + '</div>'
-      + [[c.contact_prenom, c.contact_nom].filter(Boolean).join(' '), c.metier, c.ville, c.email, c.telephone]
-        .filter(Boolean).map(x => '<div class="r">' + esc(x) + '</div>').join('');
+  const CSS_DOC = ':root{--paper:#fff;--ink:#172232;--ink-soft:#47536a;--muted:#8b95a7;--faint:#b8c0ce;--line:#e7eaf0;--line-strong:#d3d9e4;--accent:#2b52e0;--accent-wash:#f4f6fe;--fill:#f6f7fa;--sans:"Helvetica Neue","Segoe UI",system-ui,-apple-system,Arial,sans-serif;--mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;}'
+    + '*{box-sizing:border-box}html,body{margin:0;padding:0}body{background:#eceef2;font-family:var(--sans);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding:24px 12px 60px}'
+    + '.sheet{max-width:820px;margin:0 auto 24px;background:var(--paper);border:1px solid var(--line);border-radius:4px;box-shadow:0 8px 40px rgba(23,34,50,.10);padding:48px 56px 40px}'
+    + '.head{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;padding-bottom:22px;border-bottom:2px solid var(--ink)}'
+    + '.brand{display:flex;gap:18px;align-items:center}.brandlogo{height:76px;width:76px;display:block;border-radius:14px}.brand .n{font-size:22px;font-weight:700;letter-spacing:.01em}.brand .s{font-size:10.5px;letter-spacing:.24em;color:var(--muted);margin-top:4px}.brand .l{font-size:13px;color:var(--muted);margin-top:4px}'
+    + '.doc-label{text-align:right}.doc-label h1{margin:0;font-size:38px;letter-spacing:.14em;font-weight:800;line-height:1}'
+    + '.doc-meta{margin-top:12px;display:grid;grid-template-columns:auto 170px;gap:5px 12px;justify-content:end;font-size:13px}.doc-meta .k{color:var(--muted);text-align:right}.doc-meta .v{background:var(--fill);border-bottom:1px solid var(--line-strong);padding:2px 8px;font-variant-numeric:tabular-nums;text-align:left}'
+    + '.parties{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:24px}.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}'
+    + '.party .who{font-weight:700;font-size:15px;margin-bottom:2px}.party .r{font-size:13px;color:var(--ink-soft)}'
+    + '.champ-c{border-bottom:1px solid var(--line-strong);background:var(--fill);padding:3px 8px 4px;margin-bottom:5px;min-height:24px}.champ-c .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.champ-c .v{font-size:13px;color:var(--ink)}'
+    + 'section{margin-top:24px}.sec{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line-strong);padding-bottom:6px;margin-bottom:6px}.sec .no{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:11.5px;font-weight:700;display:grid;place-items:center;flex:none}.sec .t{font-size:17px;font-weight:700;flex:1}.sec .sub{font-size:12px;color:var(--muted)}'
+    + '.cb{width:13px;height:13px;border:1px solid var(--line-strong);background:var(--fill);border-radius:2px;flex:none;position:relative;margin-top:3px}.cb.on{background:var(--ink);border-color:var(--ink)}.cb.on::after{content:"";position:absolute;left:3.5px;top:0.5px;width:3.5px;height:7.5px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}'
+    + '.row{display:flex;gap:12px;align-items:flex-start;padding:5px 0}.row .d{flex:1;min-width:0}.row .nm{font-weight:700;font-size:13.5px}.row .ds{font-size:11.5px;color:var(--muted)}.row .p{font-weight:700;font-size:13.5px;white-space:nowrap;font-variant-numeric:tabular-nums}.row .u{font-size:11.5px;color:var(--muted);font-weight:400;margin-right:6px}.row .q{font-size:12px;color:var(--muted);margin-left:6px;font-weight:400}.row .q b{color:var(--ink);background:var(--fill);border-bottom:1px solid var(--line-strong);padding:0 8px}'
+    + '.row.off .nm,.row.off .p{color:var(--ink-soft);font-weight:600}.row.on{background:var(--accent-wash);margin:0 -8px;padding:5px 8px;border-radius:4px}.row .tot{font-size:11.5px;color:var(--accent);margin-left:8px;font-weight:600}'
+    + '.inclus{font-size:11.5px;color:var(--muted);margin:6px 0 10px}'
+    + '.mtn{width:100%;border-collapse:collapse}.mtn th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 0 7px;border-bottom:1px solid var(--line-strong)}.mtn td{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}.mtn td.cat{font-weight:700}.mtn .opt{display:flex;gap:9px;align-items:flex-start}.mtn .opt b{font-variant-numeric:tabular-nums}.mtn .opt span{color:var(--muted)}.mtn .eco{display:block;font-size:11px;color:var(--accent)}.mtn td.on .opt{color:var(--ink)}'
+    + '.bas{margin-top:14px;font-size:11px;color:var(--muted)}'
+    + '.page2{display:grid;grid-template-columns:1fr 300px;gap:32px;margin-top:6px}.cond p{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}.cond b{color:var(--ink)}'
+    + '.recap{border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;align-self:start}.recap .r{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 14px;font-size:13px;border-bottom:1px solid var(--line)}.recap .r .rl{color:var(--ink-soft)}.recap .r .rv{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}'
+    + '.recap .r.total{background:var(--ink);color:#fff;padding:12px 14px}.recap .r.total .rl,.recap .r.total .rv{color:#fff;font-weight:700;font-size:15px}.recap .r.acc .rl,.recap .r.acc .rv{color:var(--accent);font-weight:700}'
+    + '.sign{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:36px}.sign .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}.sign .note{font-size:12px;color:var(--ink-soft);margin-top:6px}.sign .zone{margin-top:10px;height:120px;border:1px dashed var(--line-strong);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--muted)}'
+    + '.detail{width:100%;border-collapse:collapse}.detail th{text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 0 7px;border-bottom:1px solid var(--line-strong)}.detail th.num{text-align:right}.detail td{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}.detail td.num{text-align:right;white-space:nowrap;padding-left:20px;font-variant-numeric:tabular-nums}.detail .nm{font-weight:700}'
+    + '.modal{margin-top:12px;background:var(--accent-wash);border-left:3px solid var(--accent);border-radius:0 7px 7px 0;padding:10px 16px}.modal ul{margin:0;padding-left:18px}.modal li{font-size:12.5px;color:var(--ink-soft);margin:3px 0}.modal li strong{color:var(--ink)}'
+    + 'footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}footer .soc{color:var(--ink);font-weight:700;font-size:12px}footer .pay{color:var(--ink-soft);font-size:12px;margin-bottom:8px}'
+    + '@media (max-width:640px){.sheet{padding:26px 18px}.parties,.sign,.page2{grid-template-columns:1fr;gap:20px}.head{flex-direction:column}.doc-label{text-align:left}.brandlogo{height:56px;width:56px}.doc-label h1{font-size:26px}.doc-meta{justify-content:start}.mtn th:first-child,.mtn td.cat{width:30%}}'
+    // Impression et PDF : le devis tient en deux pages A4, le décompte ouvre la page 2.
+    + '@page{size:A4;margin:9mm 12mm 8mm}'
+    + '@media print{body{background:#fff;padding:0;font-size:12px}.sheet{box-shadow:none;border:none;max-width:100%;padding:0;margin:0;border-radius:0}.sheet+.sheet{break-before:page}'
+    + '.parties,.sign{grid-template-columns:1fr 1fr}.page2{grid-template-columns:1fr 290px}.head{flex-direction:row}.doc-label{text-align:right}'
+    + 'body{font-size:11px}.head{padding-bottom:10px}.brandlogo{height:52px;width:52px;border-radius:10px}.brand .n{font-size:18px}.doc-label h1{font-size:30px}.doc-meta{margin-top:8px;gap:3px 10px;font-size:11.5px}'
+    + '.parties{margin-top:12px;gap:28px}.party .r{font-size:11.5px}.party .who{font-size:13px}.eyebrow{margin-bottom:5px}'
+    + '.champ-c{display:flex;gap:10px;align-items:baseline;min-height:0;padding:2px 8px;margin-bottom:3px}.champ-c .k{width:92px;flex:none;font-size:8.5px}.champ-c .v{font-size:11.5px}'
+    + 'section{margin-top:11px}.sec{padding-bottom:4px;margin-bottom:3px}.sec .t{font-size:14.5px}.sec .no{width:19px;height:19px;font-size:10px}'
+    + '.row{padding:2px 0}.row.on{padding:2px 8px}.row .nm,.row .p{font-size:11.5px}.row .ds{font-size:9.5px;line-height:1.3}.cb{width:11px;height:11px;margin-top:2px}.cb.on::after{left:3px;top:0;width:3px;height:7px}'
+    + '.row .d .nm{display:inline}.row .ds{display:inline;margin-left:8px}'
+    + '.inclus{font-size:10px;margin:3px 0 5px}.mtn th{font-size:8.5px;padding-bottom:5px}.mtn td{padding:4px 0;font-size:11.5px}.mtn .eco{display:inline;margin-left:8px;font-size:9.5px}.bas{margin-top:8px;font-size:9.5px}'
+    + '.cond p{font-size:11.5px}.recap .r{padding:7px 12px;font-size:12px}.sign{margin-top:24px}footer{margin-top:24px}.detail td{padding:6px 0;font-size:11.5px}'
+    + '.recap,.sign,footer,.modal,tr,.row{break-inside:avoid}.cb,.cb.on,.row.on,.sec .no,.recap .r.total,.modal,.doc-meta .v,.champ-c{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+
+  const cb = on => '<span class="cb' + (on ? ' on' : '') + '"></span>';
+  const sec = (no, t, sub) => '<div class="sec"><span class="no">' + no + '</span><span class="t">' + t + '</span><span class="sub">' + sub + '</span></div>';
+  const champ = (k, v) => '<div class="champ-c"><div class="k">' + k + '</div><div class="v">' + (v ? esc(v) : '&nbsp;') + '</div></div>';
+
+  function tete(titre, meta) {
+    return '<header class="head"><div class="brand"><img class="brandlogo" src="' + OPTS.logo + '" alt="NS Development">'
+      + '<div><div class="n">NS DEVELOPMENT</div><div class="s">CRÉATION DE SITES WEB</div><div class="l">SARL-S · Luxembourg</div></div></div>'
+      + '<div class="doc-label"><h1>' + titre + '</h1><div class="doc-meta">' + meta.map(m => '<div class="k">' + m[0] + '</div><div class="v">' + esc(m[1]) + '</div>').join('') + '</div></div></header>';
   }
-  function tableLignes(lignes) {
-    const m = n => eur(n) + ' €';
-    return lignes.length ? lignes.map(l => '<tr><td><div class="item-name">' + esc(l.designation) + '</div></td><td class="num">' + eur(l.quantite)
-      + '</td><td class="num">' + m(l.prix_unitaire_ht) + '</td><td class="num">' + m(l.montant_ht) + '</td></tr>').join('')
-      : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucune ligne</td></tr>';
-  }
-  function entete(titre, num, meta, c, qui) {
+  function parties(c, qui) {
     const E = EMETTEUR();
-    return '<div class="sheet"><header class="head"><img class="brandlogo" src="' + OPTS.logo + '" alt="NS Development">'
-      + '<div class="doc-label"><h1>' + titre + '</h1><div class="doc-meta"><div class="k">N°</div><div class="v">' + esc(num) + '</div>' + meta + '</div></div></header>'
-      + '<div class="parties"><div class="party"><div class="eyebrow">Émetteur</div><div class="who">' + E.nom + '</div><div class="r">' + E.adresse + '</div><div class="r">' + E.rcs
-      + '</div><div class="r">' + E.autorisation + '</div><div class="r">N° TVA ' + E.tva + '</div><div class="r">' + E.email + '</div><div class="r">Contact commercial : Samir</div></div>'
-      + '<div class="party"><div class="eyebrow">' + qui + '</div>' + blocs(c) + '</div></div>';
+    const contact = [c.contact_prenom, c.contact_nom].filter(Boolean).join(' ');
+    const nom = [c.nom_etablissement, contact].filter(Boolean).join(' · ');
+    const adresse = c.adresse || c.ville || '';
+    return '<div class="parties"><div class="party"><div class="eyebrow">Émetteur</div><div class="who">' + E.nom + '</div>'
+      + '<div class="r">' + E.adresse + '</div><div class="r">RCS Luxembourg : ' + E.rcs + '</div><div class="r">N° TVA Intra. : ' + E.tva + '</div>'
+      + '<div class="r">Aut. d’établissement : ' + E.autorisation + '</div><div class="r">Email : ' + E.email + '</div><div class="r">Tél : ' + E.tel + '</div></div>'
+      + '<div class="party"><div class="eyebrow">' + qui + '</div>' + champ('Nom / société', nom) + champ('Adresse', adresse)
+      + champ('N° TVA client', c.tva_intra) + champ('Email', c.email) + champ('Tél', c.telephone) + '</div></div>';
   }
-  function pied(taux) {
-    const E = EMETTEUR();
-    return '<footer><div class="pay"><b>Paiement</b> · Titulaire : ' + E.nom + ' · IBAN : ' + esc(E.iban) + ' · BIC : ' + esc(E.bic) + '</div>'
-      + (taux ? 'TVA luxembourgeoise ' + eur(taux) + ' % appliquée. Prix HT et TTC indiqués.' : 'TVA non applicable, art. 57 de la loi TVA luxembourgeoise (franchise de base). Prix exprimés en HT.')
-      + '</footer></div>';
+  function piedLegal(E) {
+    return '<footer><div class="soc">NS DEVELOPMENT SARL-S</div><div>Co-gérants : ' + E.gerants + '</div>'
+      + '<div class="pay">IBAN : ' + esc(E.iban) + ' · BIC : ' + esc(E.bic) + '</div>'
+      + 'Prix exprimés en hors taxes. TVA luxembourgeoise de 17 % applicable, n° TVA intracommunautaire ' + E.tva + '.<br>'
+      + E.nom + ' · ' + E.adresse + ' · ' + E.email + ' · ' + E.tel + '<br>RCS Luxembourg ' + E.rcs + ' · N° TVA Intra. ' + E.tva + ' · Autorisation d’établissement n° ' + E.autorisation + '</footer>';
   }
   const page = (titre, corps) => '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'
     + esc(titre) + '</title><style>' + CSS_DOC + '</style></head><body>' + corps + '</body></html>';
 
-  function docDevisHTML(d, lignes, c) {
-    const m = n => eur(n) + ' €';
-    const taux = Number(d.tva_taux) || 0, ht = Number(d.total_ht) || 0, tva = ht * taux / 100, ttc = ht + tva;
-    const acompte = ht * 0.5, aRegler = taux ? acompte * (1 + taux / 100) : acompte;
-    const abo = Number(c.abonnement_mensuel) || 0, annuel = c.abonnement_periodicite === 'annuel', aboAn = aboAnnuel(abo);
-    const num = d.numero || 'Brouillon';
-    const aboSection = abo > 0 ? '<section><div class="sec-title">Maintenance <span class="sub">· forfait ' + (annuel ? 'annuel, réglé en une fois' : 'trimestriel, facturation récurrente') + '</span></div>'
-      + '<table><thead><tr><th>Désignation</th><th class="num">Prix HT / ' + (annuel ? 'an' : 'trimestre') + '</th></tr></thead><tbody><tr><td><div class="item-name">Maintenance, hébergement &amp; sécurité</div>'
-      + '<div class="item-desc">Hébergement au Luxembourg, nom de domaine, boîte mail, maintenance, sécurité et sauvegardes, petites modifications régulières, support prioritaire.</div></td><td class="num">' + m(annuel ? aboAn : abo) + '</td></tr></tbody></table>'
-      + '<div class="modal"><ul><li><strong>Engagement 12 mois minimum</strong>, puis reconduction tacite' + (annuel ? ' d’année en année' : ' de trimestre en trimestre') + '.</li>'
-      + (annuel ? '<li>Réglé en une fois par virement : <strong>' + m(aboAn) + ' / an</strong> au lieu de ' + m(abo * 4) + ' en trimestriel, soit <strong>1 mois offert</strong>.</li>'
-        : '<li>Prélèvement automatique trimestriel (SEPA / carte). Il n’y a pas de paiement au mois.</li><li><strong>Option annuelle :</strong> réglé en une fois, ' + m(aboAn) + ' / an au lieu de ' + m(abo * 4) + ', <strong>1 mois offert</strong>.</li>')
-      + '<li>Maintenance indissociable de la mise en ligne : pas de maintenance, pas de mise en ligne.</li></ul></div></section>' : '';
-    return page('Devis ' + num + ' · ' + (c.nom_etablissement || ''),
-      entete('DEVIS', num, '<div class="k">Date</div><div class="v">' + fmtDate(d.date_emission) + '</div><div class="k">Validité</div><div class="v">' + (d.date_validite ? fmtDate(d.date_validite) : '30 jours') + '</div>', c, 'Client')
-      + '<section><div class="sec-title">Prestation <span class="sub">· création du site web, facturation unique</span></div>'
-      + '<table><thead><tr><th>Désignation</th><th class="num">Qté</th><th class="num">P.U. HT</th><th class="num">Total HT</th></tr></thead><tbody>' + tableLignes(lignes) + '</tbody></table>'
-      + '<div class="line-total"><span class="lbl">Total prestation</span><span class="amt">' + m(ht) + ' HT</span></div>'
-      + '<div class="modal"><ul><li><strong>50 % à la signature du devis :</strong> ' + m(acompte) + ' HT</li><li><strong>50 % à la mise en ligne du site :</strong> ' + m(acompte) + ' HT</li><li>Le site est mis en ligne une fois le solde réglé.</li></ul></div></section>'
-      + aboSection
-      + (d.notes ? '<section><div class="sec-title">Notes</div><div class="item-desc" style="white-space:pre-wrap">' + esc(d.notes) + '</div></section>' : '')
-      + '<div class="recap"><div class="r"><span class="rl">Prestation (unique)</span><span class="rv">' + m(ht) + ' HT</span></div>'
-      + (taux ? '<div class="r"><span class="rl">TVA ' + eur(taux) + ' %</span><span class="rv">' + m(tva) + '</span></div><div class="r"><span class="rl">Total TTC</span><span class="rv">' + m(ttc) + '</span></div>' : '')
-      + (abo > 0 ? '<div class="r"><span class="rl">Maintenance ' + (annuel ? 'annuelle' : 'trimestrielle') + '</span><span class="rv">' + m(annuel ? aboAn : abo) + ' HT / ' + (annuel ? 'an' : 'trimestre') + '</span></div>' : '')
-      + '<div class="r total"><span class="rl">À régler à la commande</span><span class="rv">' + m(aRegler) + (taux ? ' TTC' : ' HT') + '</span></div></div>'
-      + '<div class="sign"><div class="note"><div class="eyebrow">Bon pour accord</div>Le client reconnaît avoir pris connaissance des conditions ci-dessus et accepte le devis. Signature à faire précéder de la mention manuscrite « Bon pour accord ».</div><div class="box"><div class="lbl">Date &amp; signature du client</div><div class="rule">Signature</div></div></div>'
-      + pied(taux));
+  // Les montants du décompte, calculés comme sur le modèle validé :
+  // acompte = 50 % du site + 100 % de la maintenance, solde = 50 % du site.
+  function decompte(site, maintenance, taux) {
+    const ht = arr(site + maintenance), tva = arr(ht * taux / 100), ttc = arr(ht + tva);
+    const acompte = arr((site / 2 + maintenance) * (1 + taux / 100));
+    return { site: arr(site), maintenance: arr(maintenance), ht, tva, ttc, acompte, solde: arr(ttc - acompte) };
   }
 
-  function docFactureHTML(f, lignes, c) {
+  // ------------------------------------------------------------------ devis
+  function docDevisHTML(d, lignes, c) {
+    const E = EMETTEUR();
+    const num = d.numero || 'Brouillon';
+    const taux = Number(d.tva_taux) || 0;
+    const a = analyser(lignes, c);
+    const t = decompte(a.site, a.maintenance, taux);
     const m = n => eur(n) + ' €';
-    const taux = Number(f.tva_taux) || 0, ht = Number(f.total_ht) || 0, tva = ht * taux / 100, ttc = ht + tva;
-    const paye = Number(f.montant_paye) || 0, reste = ttc - paye;
+
+    const formules = C.FORMULES.map(f => { const on = a.formule === f.n;
+      return '<div class="row' + (on ? ' on' : ' off') + '">' + cb(on) + '<div class="d"><div class="nm">' + f.n + '</div><div class="ds">' + esc(f.desc) + '</div></div><div class="p">' + m(f.pu) + '</div></div>'; }).join('');
+    const options = C.OPTIONS.map(o => { const q = a.options[o.n], on = Boolean(q);
+      return '<div class="row' + (on ? ' on' : ' off') + '">' + cb(on) + '<div class="d"><span class="nm">' + esc(o.n) + '</span>'
+        + (o.qte ? '<span class="q">x <b>' + (on ? eur(q).replace(/,00$/, '') : '&nbsp;&nbsp;') + '</b></span>' : '') + '</div>'
+        + '<div class="p">' + (o.qte ? '<span class="u">l’unité</span>' : '') + m(o.pu) + (on && o.qte && q !== 1 ? '<span class="tot">= ' + m(o.pu * q) + '</span>' : '') + '</div></div>'; }).join('')
+      + a.libres.map(l => '<div class="row on">' + cb(true) + '<div class="d"><span class="nm">' + esc(l.designation) + '</span>'
+        + (Number(l.quantite) !== 1 ? '<span class="q">x <b>' + eur(l.quantite).replace(/,00$/, '') + '</b></span>' : '') + '</div>'
+        + '<div class="p">' + (Number(l.quantite) !== 1 ? '<span class="u">l’unité</span>' + m(l.prix_unitaire_ht) + '<span class="tot">= ' + m(l.montant_ht) + '</span>' : m(l.montant_ht)) + '</div></div>').join('');
+    const mtn = a.mtn;
+    const maintenance = C.MAINTENANCE.map(x => {
+      const onT = mtn && mtn.cat === x.cat && !mtn.annuel, onA = mtn && mtn.cat === x.cat && mtn.annuel;
+      return '<tr><td class="cat">' + x.cat + '</td><td class="' + (onT ? 'on' : '') + '"><div class="opt">' + cb(onT) + '<div><b>' + m(x.trim) + '</b> <span>HT / trim.</span></div></div></td>'
+        + '<td class="' + (onA ? 'on' : '') + '"><div class="opt">' + cb(onA) + '<div><b>' + m(x.an) + '</b> <span>HT / an</span><span class="eco">Éco. ' + eur(x.trim / 3 * 12 - x.an).replace(/,00$/, '') + ' €</span></div></div></td></tr>';
+    }).join('') + (mtn && !mtn.cat ? '<tr><td class="cat">Forfait convenu</td><td colspan="2" class="on"><div class="opt">' + cb(true) + '<div><b>' + m(mtn.montant) + '</b> <span>HT / ' + (mtn.annuel ? 'an' : 'trim.') + '</span></div></div></td></tr>' : '');
+
+    const page1 = '<div class="sheet">' + tete('DEVIS', [['Devis N°', num], ['Date', fmtDate(d.date_emission)], ['Validité', d.date_validite ? 'jusqu’au ' + fmtDate(d.date_validite) : '30 jours']])
+      + parties(c, 'Client &amp; références')
+      + '<section>' + sec(1, 'Formule de base', 'formule choisie, prix HT') + formules + '</section>'
+      + '<section>' + sec(2, 'Options complémentaires', 'options retenues, prix unit. HT') + options + '</section>'
+      + '<section>' + sec(3, 'Maintenance, hébergement &amp; sécurité', 'obligatoire, ligne retenue cochée')
+      + '<div class="inclus">Inclus : ' + C.INCLUS + '</div>'
+      + '<table class="mtn"><thead><tr><th>Catégorie de formule</th><th>Option trimestrielle (3 mois)</th><th>Option annuelle (11 mois + 1 offert)</th></tr></thead><tbody>' + maintenance + '</tbody></table></section>'
+      + '<div class="bas">NS Development SARL-S · devis ' + esc(num) + ' · page 1 / 2 · le décompte financier est en page 2</div></div>';
+
+    const page2 = '<div class="sheet">' + tete('DEVIS', [['Page', '2 / 2'], ['N°', num]])
+      + '<section>' + sec(4, 'Décompte financier &amp; modalités', 'montants en euros')
+      + '<div class="page2"><div class="cond"><p><b>Conditions de paiement :</b></p>'
+      + '<p><b>Acompte initial :</b> 50 % HT du prix du site web + 100 % HT du forfait de maintenance choisi (trimestriel ou annuel).</p>'
+      + '<p><b>Solde final :</b> les 50 % HT restants du site web sont exigibles à la livraison clés en main, avant la mise en ligne publique.</p>'
+      + '<p><b>Facturation :</b> une facture d’acompte est émise à la signature. La facture de solde sera émise lors de la validation finale.</p>'
+      + (d.notes ? '<p><b>Notes :</b><br><span style="white-space:pre-wrap">' + esc(d.notes) + '</span></p>' : '') + '</div>'
+      + '<div class="recap"><div class="r"><span class="rl">Total Création Site (HT)</span><span class="rv">' + m(t.site) + '</span></div>'
+      + '<div class="r"><span class="rl">Total Maintenance (HT)</span><span class="rv">' + m(t.maintenance) + '</span></div>'
+      + '<div class="r"><span class="rl"><b>Total HT Global</b></span><span class="rv">' + m(t.ht) + '</span></div>'
+      + '<div class="r"><span class="rl">TVA (' + eur(taux).replace(/,00$/, '') + ' %)</span><span class="rv">' + m(t.tva) + '</span></div>'
+      + '<div class="r total"><span class="rl">TOTAL TTC</span><span class="rv">' + m(t.ttc) + '</span></div>'
+      + '<div class="r acc"><span class="rl">Acompte TTC à régler</span><span class="rv">' + m(t.acompte) + '</span></div>'
+      + '<div class="r"><span class="rl">Solde TTC à la livraison</span><span class="rv">' + m(t.solde) + '</span></div></div></div></section>'
+      + '<div class="sign"><div><div class="lbl">Bon pour accord (le client)</div><div class="note">Mention manuscrite « Bon pour accord », date et signature :</div><div class="zone">Date :</div></div>'
+      + '<div><div class="lbl">Cachet et signature · NS Development</div><div class="note">&nbsp;</div><div class="zone"></div></div></div>'
+      + piedLegal(E) + '</div>';
+
+    return page('Devis ' + num + ' · ' + (c.nom_etablissement || ''), page1 + page2);
+  }
+
+  // ------------------------------------------------------------------ facture
+  // Objet lu dans les lignes : « Acompte 50 % … », « Solde 50 % … », sinon facture unique.
+  function objetFacture(lignes) {
+    if (lignes.some(l => /^Acompte 50 %/.test(l.designation))) return 'acompte';
+    if (lignes.some(l => /^Solde 50 %/.test(l.designation))) return 'solde';
+    return 'unique';
+  }
+  const OBJETS = { acompte: 'Acompte 50 % à la commande', solde: 'Solde 50 % à la mise en ligne', unique: 'Facture unique (100 %)' };
+
+  function docFactureHTML(f, lignes, c) {
+    const E = EMETTEUR();
+    const m = n => eur(n) + ' €';
+    const taux = Number(f.tva_taux) || 0;
+    const site = arr(lignes.filter(l => !estMaintenance(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
+    const mtn = arr(lignes.filter(estMaintenance).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
+    const ht = arr(site + mtn), tva = arr(ht * taux / 100), ttc = arr(ht + tva);
+    const paye = Number(f.montant_paye) || 0, reste = arr(ttc - paye);
     const num = f.numero || 'Brouillon', ech = f.date_echeance ? fmtDate(f.date_echeance) : 'à réception';
-    return page('Facture ' + num + ' · ' + (c.nom_etablissement || ''),
-      entete('FACTURE', num, '<div class="k">Date</div><div class="v">' + fmtDate(f.date_emission) + '</div><div class="k">Échéance</div><div class="v">' + ech + '</div>', c, 'Facturé à')
-      + '<section><div class="sec-title">Détail <span class="sub">· prestation facturée</span></div>'
-      + '<table><thead><tr><th>Désignation</th><th class="num">Qté</th><th class="num">P.U. HT</th><th class="num">Total HT</th></tr></thead><tbody>' + tableLignes(lignes) + '</tbody></table>'
-      + '<div class="line-total"><span class="lbl">Total HT</span><span class="amt">' + m(ht) + '</span></div>'
-      + '<div class="modal"><ul><li>Facture payable pour le <strong>' + ech + '</strong>.</li><li>Règlement par virement sur le compte indiqué ci-dessous.</li><li>Merci d’indiquer le numéro de facture en référence du virement.</li></ul></div></section>'
-      + '<div class="recap"><div class="r"><span class="rl">Total HT</span><span class="rv">' + m(ht) + '</span></div>'
-      + (taux ? '<div class="r"><span class="rl">TVA ' + eur(taux) + ' %</span><span class="rv">' + m(tva) + '</span></div>' : '<div class="r"><span class="rl">TVA</span><span class="rv">Non applicable</span></div>')
+    const obj = objetFacture(lignes);
+    const refDevis = f.devis && f.devis.numero ? f.devis.numero : '';
+    const meta = [['Facture N°', num], ['Date', fmtDate(f.date_emission)], ['Échéance', ech]];
+    if (refDevis) meta.push(['Réf. devis', refDevis]);
+    const table = lignes.length ? lignes.map(l => '<tr><td><div class="nm">' + esc(l.designation) + '</div></td><td class="num">' + eur(l.quantite).replace(/,00$/, '')
+      + '</td><td class="num">' + m(l.prix_unitaire_ht) + '</td><td class="num">' + m(l.montant_ht) + '</td></tr>').join('')
+      : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucune ligne</td></tr>';
+    return page('Facture ' + num + ' · ' + (c.nom_etablissement || ''), '<div class="sheet">' + tete('FACTURE', meta) + parties(c, 'Facturé à')
+      + '<section>' + sec(1, 'Objet de la facture', '') + Object.keys(OBJETS).map(k => '<div class="row' + (k === obj ? ' on' : ' off') + '">' + cb(k === obj) + '<div class="d"><span class="nm">' + OBJETS[k] + '</span></div></div>').join('') + '</section>'
+      + '<section>' + sec(2, 'Détail', 'repris du devis' + (refDevis ? ' ' + esc(refDevis) : ''))
+      + '<table class="detail"><thead><tr><th>Désignation</th><th class="num">Qté</th><th class="num">P.U. HT</th><th class="num">Total HT</th></tr></thead><tbody>' + table + '</tbody></table></section>'
+      + '<section>' + sec(3, 'Récapitulatif', 'montants en euros') + '<div class="page2"><div class="cond">'
+      + '<p><b>Règlement :</b> virement bancaire, titulaire ' + E.nom + ', IBAN ' + esc(E.iban) + ', BIC ' + esc(E.bic) + '.</p>'
+      + '<p><b>Communication :</b> le numéro de la facture. Échéance : <b>' + ech + '</b>.</p>'
+      + (mtn ? '<p>La maintenance est obligatoire et facturée dès l’acompte ; les 12 mois courent à partir de la mise en ligne du site.</p>' : '')
+      + '<p>Retard de paiement : intérêts au taux légal et indemnité forfaitaire de recouvrement de 40 €.</p></div>'
+      + '<div class="recap"><div class="r"><span class="rl">Création du site (HT)</span><span class="rv">' + m(site) + '</span></div>'
+      + (mtn ? '<div class="r"><span class="rl">Maintenance (HT)</span><span class="rv">' + m(mtn) + '</span></div>' : '')
+      + '<div class="r"><span class="rl">TVA (' + eur(taux).replace(/,00$/, '') + ' %)</span><span class="rv">' + m(tva) + '</span></div>'
       + (paye > 0 ? '<div class="r"><span class="rl">Total TTC</span><span class="rv">' + m(ttc) + '</span></div><div class="r"><span class="rl">Déjà réglé</span><span class="rv">- ' + m(paye) + '</span></div>' : '')
-      + '<div class="r total"><span class="rl">' + (paye > 0 ? 'Reste à payer' : 'Net à payer') + '</span><span class="rv">' + m(paye > 0 ? reste : ttc) + (taux ? ' TTC' : '') + '</span></div></div>'
-      + pied(taux));
+      + '<div class="r total"><span class="rl">NET À PAYER</span><span class="rv">' + m(paye > 0 ? reste : ttc) + '</span></div></div></div></section>'
+      + piedLegal(E) + '</div>');
   }
 
   return {
+    CATALOGUE, ligneMaintenance, lireMaintenance, estMaintenance, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
     devis(d, lignes, c, options) { regler(options); return docDevisHTML(d, lignes || [], c || {}); },
     facture(f, lignes, c, options) { regler(options); return docFactureHTML(f, lignes || [], c || {}); },
@@ -1066,6 +1217,10 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-chips button b { display: block; font-size: 12px; color: var(--doux); font-weight: 600; }
   .fx-chips button.on { background: var(--noir); color: #fff; border-color: var(--noir); }
   .fx-chips button.on b { color: #cfcfcf; }
+  .fx-qte { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; font-size: 14px; }
+  .fx-qte b { display: block; font-size: 12px; color: var(--doux); font-weight: 600; }
+  .fx-qte input { width: 70px; border: 1px solid var(--ligne); border-radius: 8px; padding: 8px; font-size: 15px; text-align: center; background: #fff; }
+  .fx-totaux .fx-note { display: block; font-size: 12px; color: #cfcfcf; padding-top: 6px; }
   .fx-ligne { display: grid; grid-template-columns: 1fr 56px 84px 30px; gap: 6px; margin-bottom: 6px; }
   .fx-ligne input { border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 15px; width: 100%; background: #fff; }
   .fx-ligne button { border: 0; background: none; font-size: 20px; color: var(--doux); }
@@ -1090,27 +1245,8 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
 const Factu = (() => {
   const F = { sb: null, session: null, clients: [], devis: [], factures: [], pret: false, erreur: '' };
 
-  // Catalogue : identique à la grille tarifaire et à l'admin.
-  const FORMULES = [
-    { n: 'Essentiel', pu: 1350 }, { n: 'Vitrine', pu: 2625 }, { n: 'Pro', pu: 3750 },
-    { n: 'Boutique', pu: 3750 }, { n: 'Signature', pu: 6000 },
-  ];
-  const OPTIONS = [
-    { n: 'Langue supplémentaire', pu: 450 }, { n: 'Rendez-vous en ligne', pu: 300 },
-    { n: 'Paiement en ligne', pu: 900 }, { n: 'Catalogue métier', pu: 900 },
-    { n: 'Rédaction des textes', pu: 300 }, { n: 'Logo et identité', pu: 350 },
-    { n: 'SEO local avancé', pu: 350 }, { n: 'Fiche Google Business', pu: 90 },
-    { n: 'Blog / actualités', pu: 250 }, { n: 'Galerie avancée', pu: 150 },
-    { n: 'Page supplémentaire', pu: 150 },
-  ];
-  // Options de suivi, au trimestre (valeurs de commercial/facturation/index.html).
-  const SUIVI = [
-    { id: 'mail', n: 'Boîte mail supplémentaire', pu: 15 },
-    { id: 'seo', n: 'SEO local suivi', pu: 75 },
-    { id: 'modif', n: 'Modifications illimitées', pu: 60 },
-  ];
-  const MTN_TRIMESTRE = { Essentiel: 150, Vitrine: 150, Pro: 225, Boutique: 225, Signature: 300 };
-  const aboAnnuel = t => Math.round((Number(t) || 0) / 3 * 11 * 100) / 100;
+  // Catalogue : celui du devis validé (commercial/devis-modeles/devis-NSD.pdf), tenu dans Documents.html.
+  const { FORMULES, OPTIONS, MAINTENANCE } = NSDocs.CATALOGUE;
   const eur = n => (Number(n) || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   const isoJour = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const fmtDate = s => { if (!s) return '—'; const p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
@@ -1130,7 +1266,7 @@ const Factu = (() => {
     const [c, d, f] = await Promise.all([
       F.sb.from('clients').select('*').order('created_at', { ascending: false }),
       F.sb.from('devis').select('*, clients(nom_etablissement)').order('created_at', { ascending: false }),
-      F.sb.from('factures').select('*, clients(nom_etablissement)').order('created_at', { ascending: false }),
+      F.sb.from('factures').select('*, clients(nom_etablissement), factures_lignes(designation)').order('created_at', { ascending: false }),
     ]);
     const err = c.error || d.error || f.error;
     if (err) F.erreur = err.message;
@@ -1199,28 +1335,33 @@ const Factu = (() => {
   }
 
   // ------------------------------------------------------------------ devis : composition
-  const D = { prospect: null, clientId: '', base: null, opts: {}, suivi: {}, lignes: [] };
+  // Même déroulé que le devis validé : 1 formule, 2 options, 3 maintenance
+  // (obligatoire), 4 décompte avec acompte et solde.
+  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false };
+  const catDe = formule => { const m = MAINTENANCE.find(x => x.formules.includes(formule)); return m ? m.cat : null; };
 
   function nouveauDevis(prospect) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
-    D.base = null; D.opts = {}; D.suivi = {}; D.lignes = [];
+    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false;
     const dans30 = new Date(Date.now() + 30 * 864e5);
     const nomClient = prospect ? prospect.entreprise : '';
+    const cc = F.clients.find(c => c.id === D.clientId) || {};
     feuille(tete('Nouveau devis', nomClient ? esc(nomClient) + (D.clientId ? '' : ' · la fiche client sera créée') : '') + `
       <form id="fx-devis">
-      ${prospect ? '' : `<div class="bloc"><label class="champ" style="margin:0">Client<select name="client" required><option value="">Choisir un client…</option>
+      <div class="bloc"><h3>Client &amp; références</h3>
+      ${prospect ? '' : `<label class="champ">Client<select name="client" required><option value="">Choisir un client…</option>
         ${F.clients.map(c => `<option value="${c.id}">${esc(c.nom_etablissement)}</option>`).join('')}</select></label>
-        <div class="sous">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div></div>`}
-      <div class="bloc"><h3>Formule</h3><div class="fx-chips" id="fx-bases"></div></div>
-      <div class="bloc"><h3>Options</h3><div class="fx-chips" id="fx-opts"></div></div>
+        <div class="sous" style="margin-bottom:10px">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div>`}
+        <label class="champ">Adresse<input name="adresse" value="${esc(cc.adresse || '')}" placeholder="N°, rue, code postal, localité"></label>
+        <label class="champ">N° TVA client<input name="tva_intra" value="${esc(cc.tva_intra || '')}" placeholder="LU12345678, si société"></label></div>
+      <div class="bloc"><h3>1 · Formule de base</h3><div class="fx-chips" id="fx-bases"></div></div>
+      <div class="bloc"><h3>2 · Options complémentaires</h3><div id="fx-qtes"></div><div class="fx-chips" id="fx-opts"></div></div>
       <div class="bloc"><h3>Lignes sur mesure</h3><div id="fx-lignes"></div>
         <button type="button" class="btn clair large" data-fx="ajout-ligne">＋ Ajouter une ligne</button></div>
-      <div class="bloc"><h3>Maintenance</h3><div class="fx-chips" id="fx-suivi"></div>
-        <div class="fx-deux" style="margin-top:12px">
-          <label class="champ">Forfait trimestriel HT<input name="abo" type="number" min="0" step="1"></label>
-          <label class="champ">Facturée<select name="periode"><option value="trimestriel">au trimestre</option><option value="annuel">à l’année (1 mois offert)</option></select></label></div>
-        <div class="sous" id="fx-abo-info"></div></div>
+      <div class="bloc"><h3>3 · Maintenance, hébergement &amp; sécurité</h3>
+        <div class="sous" style="margin:0 0 8px">Obligatoire. Catégorie reprise de la formule, modifiable.</div>
+        <div class="fx-chips" id="fx-mtn-cat"></div><div class="fx-chips" id="fx-mtn-per" style="margin-top:8px"></div></div>
       <div class="bloc"><div class="fx-deux">
           <label class="champ">TVA %<input name="tva" type="number" value="17" min="0" step="0.01"></label>
           <label class="champ">Valable jusqu’au<input name="validite" type="date" value="${isoJour(dans30)}"></label></div>
@@ -1234,40 +1375,54 @@ const Factu = (() => {
   function dessinerChoix() {
     const chip = (attr, cle, n, prix, on) => `<button type="button" ${attr}="${esc(cle)}" class="${on ? 'on' : ''}">${esc(n)}<b>${prix}</b></button>`;
     document.getElementById('fx-bases').innerHTML = FORMULES.map(b => chip('data-fx-base', b.n, b.n, eur(b.pu) + ' €', D.base === b.n)).join('');
-    document.getElementById('fx-opts').innerHTML = OPTIONS.map(o => chip('data-fx-opt', o.n, o.n, eur(o.pu) + ' €', D.opts[o.n])).join('');
-    document.getElementById('fx-suivi').innerHTML = SUIVI.map(o => chip('data-fx-suivi', o.id, o.n, '+ ' + o.pu + ' € / trim.', D.suivi[o.id])).join('');
+    document.getElementById('fx-qtes').innerHTML = OPTIONS.filter(o => o.qte).map(o => `<div class="fx-qte"><span>${esc(o.court)}<b>${eur(o.pu)} € l’unité</b></span>
+      <input type="number" min="0" step="1" inputmode="numeric" data-fx-qte="${esc(o.n)}" value="${D.opts[o.n] || 0}" aria-label="Quantité ${esc(o.court)}"></div>`).join('');
+    document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => chip('data-fx-opt', o.n, o.court, eur(o.pu) + ' €', D.opts[o.n])).join('');
+    document.getElementById('fx-mtn-cat').innerHTML = MAINTENANCE.map(m => chip('data-fx-mtn', m.cat, m.cat, eur(m.trim) + ' € / trim.', D.mtnCat === m.cat)).join('');
+    const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
+    document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'trim', 'Trimestrielle (3 mois)', eur(m.trim) + ' € HT / trim.', !D.annuel)
+      + chip('data-fx-per', 'an', 'Annuelle (11 mois + 1 offert)', eur(m.an) + ' € HT / an · éco. ' + eur(m.trim * 4 - m.an) + ' €', D.annuel) : '<div class="sous">Choisis la formule, ou une catégorie.</div>';
     document.getElementById('fx-lignes').innerHTML = D.lignes.map((l, i) => `<div class="fx-ligne" data-i="${i}">
       <input data-k="designation" placeholder="Désignation" value="${esc(l.designation)}"><input data-k="quantite" type="number" min="0" value="${l.quantite}">
       <input data-k="pu" type="number" min="0" step="0.01" placeholder="PU HT" value="${l.pu}"><button type="button" data-fx="suppr-ligne" data-i="${i}">×</button></div>`).join('');
   }
 
+  // Lignes du site (formule, options, sur mesure), puis la maintenance en dernier.
   function lignesDevis() {
-    const L = []; let ordre = 0;
+    const L = [];
     const base = FORMULES.find(b => b.n === D.base);
-    if (base) L.push({ designation: base.n, quantite: 1, prix_unitaire_ht: base.pu, montant_ht: base.pu, ordre: ordre++ });
-    OPTIONS.forEach(o => { if (D.opts[o.n]) L.push({ designation: o.n, quantite: 1, prix_unitaire_ht: o.pu, montant_ht: o.pu, ordre: ordre++ }); });
+    if (base) L.push({ designation: base.n, quantite: 1, prix_unitaire_ht: base.pu, montant_ht: base.pu });
+    OPTIONS.forEach(o => { const q = Number(D.opts[o.n]) || 0; if (q > 0) L.push({ designation: o.n, quantite: q, prix_unitaire_ht: o.pu, montant_ht: Math.round(q * o.pu * 100) / 100 }); });
     D.lignes.forEach(l => { if (!String(l.designation).trim()) return; const q = Number(l.quantite) || 0, pu = Number(l.pu) || 0;
-      L.push({ designation: l.designation.trim(), quantite: q, prix_unitaire_ht: pu, montant_ht: Math.round(q * pu * 100) / 100, ordre: ordre++ }); });
-    return L;
+      L.push({ designation: l.designation.trim(), quantite: q, prix_unitaire_ht: pu, montant_ht: Math.round(q * pu * 100) / 100 }); });
+    const mtn = D.mtnCat && NSDocs.ligneMaintenance(D.mtnCat, D.annuel);
+    if (mtn) L.push(mtn);
+    return L.map((l, i) => Object.assign(l, { ordre: i }));
   }
 
-  function calculer(aboManuel) {
+  function totaux() {
+    const L = lignesDevis(), form = document.getElementById('fx-devis');
+    const site = L.filter(l => !NSDocs.estMaintenance(l)).reduce((s, l) => s + l.montant_ht, 0);
+    const mtn = L.filter(NSDocs.estMaintenance).reduce((s, l) => s + l.montant_ht, 0);
+    return NSDocs.decompte(site, mtn, form ? Number(form.tva.value) || 0 : 17);
+  }
+
+  function calculer() {
     const form = document.getElementById('fx-devis'); if (!form) return;
-    const suivi = SUIVI.reduce((s, o) => s + (D.suivi[o.id] ? o.pu : 0), 0);
-    // Le forfait suit la formule choisie DANS le devis (et non la fiche client).
-    if (!aboManuel) form.abo.value = D.base ? MTN_TRIMESTRE[D.base] + suivi : (suivi || '');
-    const abo = Number(form.abo.value) || 0, annuel = form.periode.value === 'annuel';
-    document.getElementById('fx-abo-info').textContent = abo ? (annuel ? 'Facturé ' + eur(aboAnnuel(abo)) + ' € HT / an au lieu de ' + eur(abo * 4) + ' €.' : 'Facturé ' + eur(abo) + ' € HT / trimestre, soit ' + eur(abo * 4) + ' € sur l’année.') : '';
-    const ht = lignesDevis().reduce((s, l) => s + l.montant_ht, 0), taux = Number(form.tva.value) || 0, tva = ht * taux / 100;
-    document.getElementById('fx-totaux').innerHTML = `<div><span>Prestation HT</span><span>${eur(ht)} €</span></div>
-      <div><span>TVA ${eur(taux)} %</span><span>${eur(tva)} €</span></div><div class="gros"><span>Total TTC</span><span>${eur(ht + tva)} €</span></div>
-      <div><span>Acompte 50 % à la signature</span><span>${eur((ht + tva) / 2)} € TTC</span></div>
-      ${abo ? `<div><span>Maintenance</span><span>${annuel ? eur(aboAnnuel(abo)) + ' € HT / an' : eur(abo) + ' € HT / trim.'}</span></div>` : ''}`;
+    const t = totaux(), taux = Number(form.tva.value) || 0;
+    document.getElementById('fx-totaux').innerHTML = `<div><span>Total création site HT</span><span>${eur(t.site)} €</span></div>
+      <div><span>Total maintenance HT</span><span>${eur(t.maintenance)} €</span></div>
+      <div><span>Total HT global</span><span>${eur(t.ht)} €</span></div>
+      <div><span>TVA ${eur(taux)} %</span><span>${eur(t.tva)} €</span></div><div class="gros"><span>Total TTC</span><span>${eur(t.ttc)} €</span></div>
+      <div><span>Acompte TTC à la signature</span><span>${eur(t.acompte)} €</span></div>
+      <div><span>Solde TTC à la livraison</span><span>${eur(t.solde)} €</span></div>
+      <div class="fx-note">Acompte = 50 % du site + 100 % de la maintenance. Solde = 50 % du site.</div>`;
   }
 
   async function enregistrerDevis(form) {
     const lignes = lignesDevis();
-    if (!lignes.length) return toast('Choisis au moins une formule, une option ou une ligne.', true);
+    if (!lignes.some(l => !NSDocs.estMaintenance(l))) return toast('Choisis au moins une formule, une option ou une ligne.', true);
+    if (!D.mtnCat) return toast('La maintenance est obligatoire : choisis sa catégorie.', true);
     const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
     const echec = m => { btn.disabled = false; btn.textContent = 'Enregistrer le devis'; toast(m, true); };
     try {
@@ -1287,20 +1442,28 @@ const Factu = (() => {
         majLocale(maj); D.prospect = maj; D.clientId = c.id;
       }
       if (!clientId) return echec('Choisis un client.');
-      const ht = lignes.reduce((s, l) => s + l.montant_ht, 0), taux = Number(form.tva.value) || 0;
+      const t = totaux(), taux = Number(form.tva.value) || 0;
       const { data: dev, error: e1 } = await F.sb.from('devis').insert({
         client_id: clientId, date_emission: isoJour(new Date()), date_validite: form.validite.value || null,
-        statut: form.statut.value, tva_taux: taux, total_ht: ht, total_ttc: Math.round((ht + ht * taux / 100) * 100) / 100,
+        statut: form.statut.value, tva_taux: taux, total_ht: t.ht, total_ttc: t.ttc,
         notes: form.notes.value.trim() || null,
       }).select('id').single();
       if (e1) return echec('Devis : ' + e1.message);
       const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: dev.id })));
       if (e2) return echec('Devis créé, mais erreur sur les lignes : ' + e2.message);
-      const majAbo = { abonnement_mensuel: Number(form.abo.value) || 0, abonnement_periodicite: form.periode.value };
-      if (D.base) majAbo.formule = D.base;
+      // La fiche client suit le devis : formule, forfait trimestriel de référence, périodicité.
+      const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
+      const majClient = { abonnement_mensuel: m.trim, abonnement_periodicite: D.annuel ? 'annuel' : 'trimestriel' };
+      if (D.base) majClient.formule = D.base;
       const cc = F.clients.find(c => c.id === clientId);
-      if (!cc || !cc.abonnement_moyen) majAbo.abonnement_moyen = form.periode.value === 'annuel' ? 'virement' : 'sepa';
-      await F.sb.from('clients').update(majAbo).eq('id', clientId);
+      if (!cc || !cc.abonnement_moyen) majClient.abonnement_moyen = D.annuel ? 'virement' : 'sepa';
+      await F.sb.from('clients').update(majClient).eq('id', clientId);
+      // Adresse et n° TVA : colonnes ajoutées par la migration du 24/09/2026. Sans elle, le devis part quand même.
+      const adresse = form.adresse.value.trim(), tvaIntra = form.tva_intra.value.trim();
+      if (adresse || tvaIntra) {
+        const { error: e3 } = await F.sb.from('clients').update({ adresse: adresse || null, tva_intra: tvaIntra || null }).eq('id', clientId);
+        if (e3) toast('Devis enregistré, mais l’adresse et le n° TVA n’ont pas pu être gardés : ' + e3.message, true);
+      }
       toast(form.statut.value === 'envoyé' ? 'Devis enregistré avec son numéro.' : 'Devis enregistré en brouillon.');
       await charger(); ouvrirDevis(dev.id);
     } catch (e) { echec(e.message || String(e)); }
@@ -1311,13 +1474,20 @@ const Factu = (() => {
 
   function ouvrirDevis(id) {
     const d = F.devis.find(x => x.id === id); if (!d) return;
-    const fac = F.factures.find(f => f.devis_id === id);
+    const facs = F.factures.filter(f => f.devis_id === id && f.statut !== 'annulée');
+    const objets = facs.map(f => NSDocs.objetFacture(f.factures_lignes || []));
     const act = [];
     act.push('<button class="btn large" data-fx="voir-devis" data-id="' + id + '">Voir le devis (PDF)</button>');
     if (d.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="statut-devis" data-st="envoyé" data-id="' + id + '">Marquer envoyé (attribue le numéro)</button>');
     if (d.statut === 'envoyé') act.push('<div class="fx-deux"><button class="btn" data-fx="statut-devis" data-st="accepté" data-id="' + id + '">Accepté</button><button class="btn clair" data-fx="statut-devis" data-st="refusé" data-id="' + id + '">Refusé</button></div>');
-    if (!fac && d.statut !== 'refusé') act.push('<button class="btn clair large" data-fx="facturer" data-id="' + id + '">Créer la facture</button>');
-    if (fac) act.push('<button class="btn clair large" data-fx-facture="' + fac.id + '">Voir la facture ' + esc(fac.numero || 'brouillon') + '</button>');
+    // Modèle validé : facture d'acompte à la signature, facture de solde à la livraison.
+    if (d.statut !== 'refusé') {
+      if (!facs.length) act.push('<button class="btn clair large" data-fx="facturer" data-objet="acompte" data-id="' + id + '">Facture d’acompte (50 % du site + maintenance)</button>'
+        + '<button class="btn clair large" data-fx="facturer" data-objet="unique" data-id="' + id + '">Facture unique (100 %)</button>');
+      else if (objets.includes('acompte') && !objets.includes('solde')) act.push('<button class="btn clair large" data-fx="facturer" data-objet="solde" data-id="' + id + '">Facture de solde (50 % du site, à la livraison)</button>');
+    }
+    const libelle = { acompte: 'd’acompte', solde: 'de solde', unique: '' };
+    facs.forEach((f, i) => act.push('<button class="btn clair large" data-fx-facture="' + f.id + '">Voir la facture ' + libelle[objets[i]] + ' ' + esc(f.numero || 'brouillon') + '</button>'));
     feuille(tete(d.numero ? esc(d.numero) : 'Devis brouillon', esc(d.clients ? d.clients.nom_etablissement : '') + ' · <span class="fx-st ' + cls(d.statut) + '">' + esc(d.statut) + '</span>')
       + `<div class="bloc"><dl class="infos"><dt>Émis le</dt><dd>${fmtDate(d.date_emission)}</dd><dt>Valable jusqu’au</dt><dd>${fmtDate(d.date_validite)}</dd>
          <dt>Total HT</dt><dd>${eur(d.total_ht)} €</dd><dt>Total TTC</dt><dd><b>${eur(d.total_ttc)} €</b></dd></dl></div>
@@ -1341,21 +1511,32 @@ const Factu = (() => {
   }
 
   // ------------------------------------------------------------------ factures
-  async function facturer(devisId) {
+  // objet : 'acompte' (50 % du site + 100 % de la maintenance), 'solde' (50 % du site) ou 'unique' (tout le devis).
+  async function facturer(devisId, objet) {
     const dev = F.devis.find(x => x.id === devisId);
     const { data: lignes, error: e0 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', devisId).order('ordre');
     if (e0) return toast(e0.message, true);
+    const L = lignes || [], ref = dev.numero ? ' (devis ' + dev.numero + ')' : '';
+    const site = Math.round(L.filter(l => !NSDocs.estMaintenance(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0) * 100) / 100;
+    const moitie = Math.round(site / 2 * 100) / 100;
+    const mtn = L.filter(NSDocs.estMaintenance).map(l => ({ designation: l.designation, quantite: l.quantite, prix_unitaire_ht: l.prix_unitaire_ht, montant_ht: l.montant_ht }));
+    const ligne = (designation, mt) => ({ designation, quantite: 1, prix_unitaire_ht: mt, montant_ht: mt });
+    let FL;
+    if (objet === 'acompte') FL = [ligne('Acompte 50 % · création du site web' + ref, moitie), ...mtn];
+    else if (objet === 'solde') FL = [ligne('Solde 50 % · création du site web, à la livraison' + ref, Math.round((site - moitie) * 100) / 100)];
+    else FL = L.map(l => ({ designation: l.designation, quantite: l.quantite, prix_unitaire_ht: l.prix_unitaire_ht, montant_ht: l.montant_ht }));
+    FL.forEach((l, i) => { l.ordre = i; });
+    const ht = Math.round(FL.reduce((s, l) => s + (Number(l.montant_ht) || 0), 0) * 100) / 100, taux = Number(dev.tva_taux) || 0;
     const { data: fac, error: e1 } = await F.sb.from('factures').insert({
       client_id: dev.client_id, devis_id: dev.id, date_emission: isoJour(new Date()), date_echeance: isoJour(new Date(Date.now() + 15 * 864e5)),
-      statut: 'brouillon', tva_taux: dev.tva_taux, total_ht: dev.total_ht, total_ttc: dev.total_ttc, notes: dev.notes || null,
+      statut: 'brouillon', tva_taux: taux, total_ht: ht, total_ttc: Math.round(ht * (1 + taux / 100) * 100) / 100, notes: dev.notes || null,
     }).select('id').single();
     if (e1) return toast(e1.message, true);
-    if (lignes && lignes.length) {
-      const { error: e2 } = await F.sb.from('factures_lignes').insert(lignes.map(l => ({ facture_id: fac.id, designation: l.designation,
-        quantite: l.quantite, prix_unitaire_ht: l.prix_unitaire_ht, montant_ht: l.montant_ht, ordre: l.ordre })));
+    if (FL.length) {
+      const { error: e2 } = await F.sb.from('factures_lignes').insert(FL.map(l => Object.assign({ facture_id: fac.id }, l)));
       if (e2) toast('Facture créée, mais erreur sur les lignes : ' + e2.message, true);
     }
-    await charger(); toast('Facture créée en brouillon. Vérifie-la, puis émets-la.'); ouvrirFacture(fac.id);
+    await charger(); toast('Facture ' + ({ acompte: 'd’acompte', solde: 'de solde', unique: '' }[objet] || '') + ' créée en brouillon. Vérifie-la, puis émets-la.'); ouvrirFacture(fac.id);
   }
 
   function ouvrirFacture(id) {
@@ -1398,7 +1579,7 @@ const Factu = (() => {
   // ------------------------------------------------------------------ documents
   async function voir(type, id) {
     const table = type === 'devis' ? 'devis' : 'factures';
-    const { data: doc, error } = await F.sb.from(table).select('*, clients(*)').eq('id', id).single();
+    const { data: doc, error } = await F.sb.from(table).select(type === 'devis' ? '*, clients(*)' : '*, clients(*), devis(numero)').eq('id', id).single();
     if (error) return toast(error.message, true);
     const { data: lignes } = await F.sb.from(table + '_lignes').select('*').eq(type === 'devis' ? 'devis_id' : 'facture_id', id).order('ordre');
     const html = type === 'devis' ? docDevisHTML(doc, lignes || [], doc.clients || {}) : docFactureHTML(doc, lignes || [], doc.clients || {});
@@ -1417,9 +1598,10 @@ const Factu = (() => {
     const t = e.target;
     const dv = t.closest('[data-fx-devis]'); if (dv) return ouvrirDevis(dv.dataset.fxDevis);
     const fc = t.closest('[data-fx-facture]'); if (fc) return ouvrirFacture(fc.dataset.fxFacture);
-    const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; dessinerChoix(); return calculer(); }
+    const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) D.mtnCat = catDe(D.base); dessinerChoix(); return calculer(); }
     const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true; dessinerChoix(); return calculer(); }
-    const s = t.closest('[data-fx-suivi]'); if (s) { const k = s.dataset.fxSuivi; if (D.suivi[k]) delete D.suivi[k]; else D.suivi[k] = true; dessinerChoix(); return calculer(); }
+    const mc = t.closest('[data-fx-mtn]'); if (mc) { D.mtnCat = mc.dataset.fxMtn; dessinerChoix(); return calculer(); }
+    const pe = t.closest('[data-fx-per]'); if (pe) { D.annuel = pe.dataset.fxPer === 'an'; dessinerChoix(); return calculer(); }
     const a = t.closest('[data-fx]'); if (!a) return;
     const act = a.dataset.fx, id = a.dataset.id;
     if (act === 'fermer') fermer();
@@ -1430,7 +1612,7 @@ const Factu = (() => {
     else if (act === 'voir-devis') voir('devis', id);
     else if (act === 'voir-facture') voir('facture', id);
     else if (act === 'statut-devis') changerStatutDevis(id, a.dataset.st);
-    else if (act === 'facturer') facturer(id);
+    else if (act === 'facturer') facturer(id, a.dataset.objet);
     else if (act === 'emettre') emettre(id);
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
     else if (act === 'imprimer') { const f = document.querySelector('#fx-doc iframe'); f.contentWindow.focus(); f.contentWindow.print(); }
@@ -1438,11 +1620,11 @@ const Factu = (() => {
   });
   document.addEventListener('input', e => {
     const l = e.target.closest('.fx-ligne');
-    if (l) { D.lignes[Number(l.dataset.i)][e.target.dataset.k] = e.target.value; return calculer(true); }
-    // Le forfait ne se recalcule qu'au choix d'une formule ou d'un suivi : une saisie à la main est respectée.
-    if (e.target.closest('#fx-devis')) calculer(true);
+    if (l) { D.lignes[Number(l.dataset.i)][e.target.dataset.k] = e.target.value; return calculer(); }
+    const q = e.target.closest('[data-fx-qte]');
+    if (q) { const n = Math.max(0, Math.floor(Number(q.value) || 0)); if (n) D.opts[q.dataset.fxQte] = n; else delete D.opts[q.dataset.fxQte]; return calculer(); }
+    if (e.target.closest('#fx-devis')) calculer();
   });
-  document.addEventListener('change', e => { if (e.target.name === 'periode' && e.target.closest('#fx-devis')) calculer(true); });
   document.addEventListener('submit', e => {
     if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
     if (e.target.id === 'fx-devis') { e.preventDefault(); enregistrerDevis(e.target); }
