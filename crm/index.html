@@ -1247,7 +1247,8 @@ const Factu = (() => {
 
   // Catalogue : celui du devis validé (commercial/devis-modeles/devis-NSD.pdf), tenu dans Documents.html.
   const { FORMULES, OPTIONS, MAINTENANCE } = NSDocs.CATALOGUE;
-  const eur = n => (Number(n) || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  // 2 625 € pour un montant rond, 2 597,40 € dès qu'il y a des centimes (jamais « 2 597,4 »).
+  const eur = n => { n = Math.round((Number(n) || 0) * 100) / 100; return n.toLocaleString('fr-FR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
   const isoJour = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const fmtDate = s => { if (!s) return '—'; const p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
   const cls = s => sansAccent(s || '').replace(/[^a-z]/g, '');
