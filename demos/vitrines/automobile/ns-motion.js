@@ -72,7 +72,11 @@
 
         io.unobserve(el);
       });
-    }, { threshold: 0.14, rootMargin: "0px 0px -40px 0px" });
+    /* Seuil en position, pas en pourcentage : un seuil de 14 % ne se franchit jamais
+       sur un bloc plus de sept fois plus haut que l'écran (grille de démos en
+       mobile, 24/09/2026 : cartes invisibles sur iPhone). On révèle dès que le haut
+       du bloc dépasse de 40 px le bas de l'écran, quelle que soit sa taille. */
+    }, { threshold: 0, rootMargin: "0px 0px -40px 0px" });
 
     /* Un conteneur rempli par un script (module de réservation, galerie…) a une
        hauteur de 0 au moment où on l'observe. Le seuil de 0,14 ne peut alors
