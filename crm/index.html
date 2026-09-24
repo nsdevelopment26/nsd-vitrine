@@ -108,9 +108,9 @@
   .colonnes { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px;
     margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
   .colonne { flex: 0 0 82%; max-width: 320px; scroll-snap-align: start; background: #ebe9e5; border-radius: var(--rayon); padding: 10px; }
-  /* Sur ordinateur, les sept colonnes occupent toute la largeur : plus rien à faire glisser. */
+  /* Sur ordinateur, les colonnes occupent toute la largeur : plus rien à faire glisser. */
   @media (min-width: 1000px) {
-    .colonnes { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); overflow: visible; margin: 0; padding: 0; gap: 8px; }
+    .colonnes { display: grid; grid-template-columns: repeat(var(--nb-col, 7), minmax(0, 1fr)); overflow: visible; margin: 0; padding: 0; gap: 8px; }
     .colonne { max-width: none; min-width: 0; padding: 8px; }
     .colonne .liste { max-height: calc(100vh - 290px); }
   }
@@ -165,6 +165,7 @@
     border: 1px solid var(--ligne); border-radius: 12px; text-decoration: none; font-size: 12px; font-weight: 600; }
   .actions .ico { font-size: 20px; }
   .actions .inactif { opacity: .35; pointer-events: none; }
+  .btn.inactif { opacity: .35; pointer-events: none; }
   .actions .principal { background: var(--noir); color: #fff; border-color: var(--noir); }
   .bloc { background: var(--carte); border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 14px; margin-top: 12px; }
   .bloc h3 { margin: 0 0 10px; font-size: 14px; }
@@ -529,7 +530,9 @@ function vueRecherche() {
 function vuePipeline() {
   const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
   const liste = S.data.prospects.filter(p => !S.filtreSecteur || p.secteur === S.filtreSecteur);
-  const cols = S.data.statuts.map(s => {
+  // « Sans réponse » n'est plus posé depuis le 24/09 : sa colonne disparaît une fois vide.
+  const statuts = S.data.statuts.filter(s => s.k !== 'sans_reponse' || liste.some(p => cle(p) === s.k));
+  const cols = statuts.map(s => {
     const items = liste.filter(p => cle(p) === s.k);
     return `<div class="colonne"><h3><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span><span>${items.length}</span></h3>
       <div class="liste">${items.length ? items.slice(0, 120).map(carteCompacte).join('') : '<div class="vide">Vide</div>'}
@@ -537,7 +540,7 @@ function vuePipeline() {
   }).join('');
   return `<div class="filtres"><select id="filtre-secteur"><option value="">Tous les secteurs</option>
     ${secteurs.map(s => `<option ${s === S.filtreSecteur ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></div>
-    <div class="colonnes">${cols}</div>`;
+    <div class="colonnes" style="--nb-col:${statuts.length}">${cols}</div>`;
 }
 
 function vueAjouter(doublons) {
@@ -621,8 +624,7 @@ function rendreFiche(edition) {
   const st = statut(p.statut);
   const hist = historique(p.id);
   const res = S.data.resultats;
-  const ordreRes = ['pas_repondu', 'absent', 'rappel', 'lien', 'rdv', 'refus', 'signe', 'note'];
-  const couleurRes = { absent: 'rappel', rappel: 'rappel', lien: 'lien', rdv: 'rdv', refus: 'perdu', signe: 'signe', pas_repondu: 'sans_reponse', note: 'a_appeler' };
+  const couleurRes = { rappel: 'rappel', lien: 'lien', rdv: 'rdv', refus: 'perdu', note: 'a_appeler' };
   const creneau = m && m.creneaux ? (dansCreneau(p) ? 'dans son créneau maintenant' : 'hors créneau (' + m.creneaux + ')') : '';
 
   const f = document.getElementById('fiche');
@@ -643,7 +645,7 @@ function rendreFiche(edition) {
 
     ${edition ? formEdition(p) : `
     <div class="bloc"><h3>Résultat du contact</h3>
-      <div class="resultats">${ordreRes.map(k => `<button data-res="${k}" style="--statut:${statut(couleurRes[k]).color}" class="${CHOIX.res === k ? 'choisi' : ''}">${esc(res[k].label)}</button>`).join('')}</div>
+      <div class="resultats">${BOUTONS_RES.map(([k, l]) => `<button data-res="${k}" style="--statut:${statut(couleurRes[k]).color}" class="${boutonDe(CHOIX.res) === k ? 'choisi' : ''}">${esc(l || res[k].label)}</button>`).join('')}</div>
       <div id="zone-res" class="${CHOIX.res ? '' : 'cache'}">${zoneResultat()}</div>
     </div>
 
@@ -672,27 +674,48 @@ function rendreFiche(edition) {
   </div>`;
 }
 
+// Cinq boutons (décision du 24/09/2026). « Rappel » regroupe trois motifs, qui
+// restent distincts dans le Journal : c'est ce qui garde le suivi des appels.
+const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['refus'], ['note']];
+const MOTIFS_RAPPEL = [['pas_repondu', 'Pas de réponse'], ['absent', 'Gérant absent'], ['rappel', 'Convenu avec lui']];
+const boutonDe = res => MOTIFS_RAPPEL.some(([k]) => k === res) ? 'rappel' : res;
+// Le lendemain à la même heure (à 5 min près). Le dimanche saute au lundi.
+function demainMemeHeure() {
+  const d = new Date(); d.setDate(d.getDate() + 1);
+  if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+  d.setMinutes(Math.round(d.getMinutes() / 5) * 5, 0, 0);
+  return fmt(d);
+}
+
 function optionsDates() {
   const o = [], now = new Date();
   const dans = h => { const d = new Date(now.getTime() + h * 36e5); d.setMinutes(d.getMinutes() < 30 ? 30 : 60, 0, 0); return d; };
   const a = (jPlus, h, m) => { const d = new Date(now); d.setDate(d.getDate() + jPlus); d.setHours(h, m || 0, 0, 0); return d; };
+  o.push(['Demain même heure', null]);
   o.push(['Dans 1 h', dans(1)], ['Dans 2 h', dans(2)]);
   if (now.getHours() < 15) o.push(['Auj. 16 h', a(0, 16)]);
   o.push(['Demain 10 h', a(1, 10)], ['Demain 15 h', a(1, 15)]);
   const lundi = a(((8 - now.getDay()) % 7) || 7, 10); o.push(['Lundi 10 h', lundi]);
-  return o.map(([l, d]) => [l, fmt(d)]);
+  return o.map(([l, d]) => [l, d ? fmt(d) : demainMemeHeure()]);
 }
 function zoneResultat() {
   const def = S.data.resultats[CHOIX.res]; if (!def) return '';
   const avecDate = CHOIX.res !== 'refus' && CHOIX.res !== 'signe' && CHOIX.res !== 'note';
-  const titreDate = CHOIX.res === 'rdv' ? 'Date du rendez-vous' : CHOIX.res === 'lien' ? 'Relancer le… (facultatif)' : CHOIX.res === 'pas_repondu' ? 'Réessayer le… (facultatif)' : 'Rappeler le…';
-  return `${avecDate ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">${titreDate}${def.rappelObligatoire ? ' *' : ''}</div>
+  const motif = boutonDe(CHOIX.res) === 'rappel';
+  const p = trouver(S.ouvert);
+  // Un RDV qui ne décroche pas garde sa date : pas de rappel à choisir.
+  const garderRdv = p && cle(p) === 'rdv' && (CHOIX.res === 'pas_repondu' || CHOIX.res === 'absent');
+  const titreDate = CHOIX.res === 'rdv' ? 'Date du rendez-vous' : CHOIX.res === 'lien' ? 'Relancer le… (facultatif)' : 'Rappeler le…';
+  return `${motif ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">Pourquoi ?</div>
+    <div class="dates">${MOTIFS_RAPPEL.map(([k, l]) => `<button data-motif="${k}" class="${CHOIX.res === k ? 'choisi' : ''}">${l}</button>`).join('')}</div>` : ''}
+    ${garderRdv ? '<div class="sous" style="margin-top:10px">Le RDV reste à sa date, l’appel est noté dans l’historique.</div>' : ''}
+    ${avecDate && !garderRdv ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">${titreDate}${def.rappelObligatoire ? ' *' : ''}</div>
     <div class="dates">${optionsDates().map(([l, v]) => `<button data-date="${v}" class="${CHOIX.rappel === v ? 'choisi' : ''}">${l}</button>`).join('')}</div>
     <label class="champ">Ou une date précise<input type="datetime-local" id="date-precise" value="${CHOIX.rappel ? CHOIX.rappel.replace(' ', 'T') : ''}"></label>` : ''}
     ${CHOIX.res === 'rdv' ? `<div style="font-size:13px;color:var(--doux)">Durée dans l’agenda</div>
     <div class="dates">${(S.data.rdvDurees || [30, 60, 90]).map(m => `<button data-duree="${m}" class="${CHOIX.duree === m ? 'choisi' : ''}">${m < 60 ? m + ' min' : (m / 60 + ' h').replace('.5 h', ' h 30')}</button>`).join('')}</div>` : ''}
     <label class="champ">${CHOIX.res === 'note' ? 'Note' : 'Ce qui s’est dit (facultatif)'}<textarea id="note-res" placeholder="Nom de la personne, objection, heure qui l’arrange…"></textarea></label>
-    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(def.label)} »</button>`;
+    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(motif ? 'Rappel · ' + def.label.replace('Rappel convenu', 'convenu') : def.label)} »</button>`;
 }
 
 function formEdition(p) {
@@ -702,23 +725,48 @@ function formEdition(p) {
     ${f('gerant', 'Nom du gérant')}${f('email', 'Email', 'email')}${f('site', 'Site web')}${f('instagram', 'Instagram')}
     ${f('mauvais', 'Mauvais points')}${f('rcs', 'N° RCS')}
     <label class="champ">Prochain rappel<input name="rappel" type="datetime-local" value="${esc((p.rappel || '').replace(' ', 'T'))}"></label>
-    <label class="champ">Statut<select name="statut">${S.data.statuts.map(s => `<option value="${s.k}" ${s.k === cle(p) ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
+    <label class="champ">Statut<select name="statut">${S.data.statuts.filter(s => s.k !== 'sans_reponse' || s.k === cle(p)).map(s => `<option value="${s.k}" ${s.k === cle(p) ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
     <label class="champ">Notes<textarea name="notes">${esc(p.notes || '')}</textarea></label>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="btn clair" data-action="annuler-edit">Annuler</button>
     <button class="btn" type="submit">Enregistrer</button></div></form>`;
 }
 
 // --- Messages -------------------------------------------------------------
-function remplir(txt, p) {
+// v : ce que Sam a ajusté avant l'envoi ({nom}, {date}, {lien}). Sans v, le
+// gérant, le prochain rappel et la démo de son métier.
+function remplir(txt, p, v) {
   const m = metierDe(p);
-  return String(txt)
+  v = v || {};
+  const nom = v.nom !== undefined ? v.nom : nomCourt(p.gerant);
+  const date = v.date !== undefined ? v.date : p.rappel;
+  const lien = v.lien !== undefined ? v.lien : (m ? m.lien : '');
+  let t = String(txt);
+  // Pas de date : la phrase qui l'annonce disparaît (un lien sans relance prévue).
+  if (!date) t = t.split('\n').filter(l => !/{date}/.test(l)).join('\n').replace(/\n{3,}/g, '\n\n');
+  return t
+    .replace(/ ?{nom}/g, nom ? ' ' + nom : '')
+    .replace(/{date}/g, date ? dateMessage(date) : '')
     .replace(/{bonjour}/g, 'Bonjour')
     .replace(/{gerant}/g, p.gerant || '')
     .replace(/{entreprise}/g, p.entreprise || '')
     .replace(/{metier}/g, m ? m.metier.toLowerCase() : 'votre métier')
-    .replace(/{lien}/g, m ? m.lien : '')
+    .replace(/{lien}/g, lien)
     .replace(/{rdv}/g, p.rappel ? dateLongue(p.rappel) : '[date du RDV]')
     .replace(/{signature}/g, SIGNATURE);
+}
+// « Jean-Marc DUPONT » → « Jean-Marc Dupont ». Sam le change en « Monsieur Dupont » s'il veut.
+function nomCourt(g) {
+  return String(g || '').split(/[\/;,]| et /)[0].trim().toLowerCase()
+    .replace(/(^|[\s'’-])(\p{L})/gu, (x, a, b) => a + b.toUpperCase());
+}
+// « aujourd'hui à 16 h », « demain à 10 h 30 », « lundi 29 septembre à 10 h ».
+function dateMessage(s) {
+  const d = versDate(s); if (!d) return '';
+  const j = s.slice(0, 10), h = heure(s).replace(/h(\d)/, 'h $1');
+  if (j === aujourdhui()) return 'aujourd’hui à ' + h;
+  const demain = new Date(); demain.setDate(demain.getDate() + 1);
+  if (j === fmt(demain).slice(0, 10)) return 'demain à ' + h;
+  return JOURS_LONG[d.getDay()] + ' ' + (d.getDate() === 1 ? '1er' : d.getDate()) + ' ' + MOIS[d.getMonth()] + ' à ' + h;
 }
 const SIGNATURE = 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nSamir DINIS DA ROSA\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 621 757 113\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development';
 
@@ -761,19 +809,106 @@ function envoyer(canal) {
     <button class="btn" data-action="noter-msg" data-titre="${esc(canal + ' : ' + titre)}">Oui, noter</button></div>`;
 }
 
+// --- Message d'après-appel ------------------------------------------------
+// Rappel convenu, RDV obtenu, Lien envoyé : chacun son texte (onglet Messages,
+// colonne APRÈS). Sam ajuste le nom et l'heure, le texte suit.
+const APRES = { modele: null, v: null, genere: '', dateCrm: '' };
+
+function ouvrirMessageApres(res) {
+  const p = trouver(S.ouvert);
+  const modele = p && (S.data.messages || []).find(m => m.apres === res);
+  if (!modele || !(telInternational(p.telephone) || p.email)) return false;
+  const m = metierDe(p);
+  APRES.modele = modele; APRES.dateCrm = p.rappel || '';
+  APRES.v = { nom: nomCourt(p.gerant), date: p.rappel || '', lien: m ? m.lien : '' };
+  APRES.genere = remplir(modele.texte, p, APRES.v);
+  const wa = telInternational(p.telephone);
+  const avecLien = /{lien}/.test(modele.texte);
+  document.getElementById('feuille').innerHTML = `<div class="feuille-tete"><div class="poignee"></div>
+      <div class="ligne1"><div><h1>${esc(p.entreprise)}</h1>
+        <div class="sous">« ${esc(S.data.resultats[res].label)} » enregistré. Le message à lui envoyer :</div></div>
+        <button class="fermer" data-action="fermer" aria-label="Fermer">✕</button></div></div>
+    <div class="bloc" id="bloc-apres"><h3>${esc(modele.titre)}</h3>
+      <label class="champ">Nom de la personne<input id="apres-nom" value="${esc(APRES.v.nom)}" placeholder="Laisser vide : « Bonjour, »"></label>
+      <label class="champ">${res === 'rdv' ? 'Date du rendez-vous' : res === 'lien' ? 'Je rappelle le… (vide : pas de phrase de rappel)' : 'Je rappelle le…'}
+        <input type="datetime-local" id="apres-date" value="${esc(APRES.v.date.replace(' ', 'T'))}"></label>
+      ${avecLien ? `<label class="champ">Lien envoyé<input id="apres-lien" value="${esc(APRES.v.lien)}"></label>` : ''}
+      <label class="champ">Message<textarea id="msg-texte" style="min-height:230px">${esc(APRES.genere)}</textarea></label>
+      <div class="sous" id="apres-avert"></div>
+      <div style="display:grid;grid-template-columns:${p.email ? '1fr 1fr 1fr' : '1fr 1fr'};gap:8px;margin-top:10px">
+        <button class="btn ${wa ? '' : 'inactif'}" data-action="apres-envoyer" data-canal="whatsapp">WhatsApp</button>
+        <button class="btn clair ${wa ? '' : 'inactif'}" data-action="apres-envoyer" data-canal="sms">SMS</button>
+        ${p.email ? '<button class="btn clair" data-action="apres-envoyer" data-canal="mail">Mail</button>' : ''}</div>
+      <button class="btn clair large" style="margin-top:8px" data-action="fermer">Pas de message</button>
+    </div>`;
+  document.getElementById('feuille').scrollTo({ top: 0 });
+  return true;
+}
+
+// Nom, date ou lien changé : on remplace dans le texte, sans perdre ce que Sam a retouché à la main.
+function majMessageApres() {
+  const p = trouver(S.ouvert), zone = document.getElementById('msg-texte');
+  const lienEl = document.getElementById('apres-lien');
+  const v = { nom: document.getElementById('apres-nom').value.trim(),
+    date: document.getElementById('apres-date').value.replace('T', ' '),
+    lien: lienEl ? lienEl.value.trim() : APRES.v.lien };
+  const neuf = remplir(APRES.modele.texte, p, v);
+  if (zone.value === APRES.genere) zone.value = neuf;
+  else {
+    let t = zone.value;
+    if (APRES.v.nom !== v.nom) t = t.replace('Bonjour' + (APRES.v.nom ? ' ' + APRES.v.nom : '') + ',', 'Bonjour' + (v.nom ? ' ' + v.nom : '') + ',');
+    if (APRES.v.date && v.date && APRES.v.date !== v.date) t = t.split(dateMessage(APRES.v.date)).join(dateMessage(v.date));
+    if (APRES.v.lien && APRES.v.lien !== v.lien) t = t.split(APRES.v.lien).join(v.lien);
+    zone.value = t;
+  }
+  APRES.v = v; APRES.genere = neuf;
+  document.getElementById('apres-avert').textContent = v.date !== APRES.dateCrm
+    ? (v.date ? 'À l’envoi, le rappel du CRM et l’agenda passent aussi au ' + dateMessage(v.date) + '.' : 'À l’envoi, la date prévue dans le CRM est retirée.')
+    : '';
+}
+
+async function envoyerApres(canal) {
+  const p = trouver(S.ouvert);
+  // La date écrite au client fait foi : le CRM et l'agenda s'alignent dessus.
+  if (APRES.v.date !== APRES.dateCrm) {
+    try {
+      const maj = await appel('api_modifier', S.pin, p.id, { rappel: APRES.v.date });
+      majLocale(maj); APRES.dateCrm = APRES.v.date; rendre();
+      toast('Rappel déplacé au ' + dateMessage(APRES.v.date) + '.' + (maj._agenda ? ' ' + maj._agenda + '.' : ''));
+    } catch (e) { return toast(e.message || String(e), true); }
+  }
+  const txt = document.getElementById('msg-texte').value;
+  let url;
+  if (canal === 'whatsapp') url = 'https://wa.me/' + telInternational(p.telephone) + '?text=' + encodeURIComponent(txt);
+  else if (canal === 'sms') url = 'sms:+' + telInternational(p.telephone) + '?&body=' + encodeURIComponent(txt);
+  else {
+    // Un mail porte toujours la signature complète de Samir, à la place du « Samir, NS Development ».
+    const corps = txt.replace(/\n*Samir, NS Development\s*$/, '') + '\n\n' + SIGNATURE;
+    url = 'mailto:' + encodeURIComponent(p.email) + '?subject=' + encodeURIComponent(p.entreprise + ' : ' + APRES.modele.titre.toLowerCase()) + '&body=' + encodeURIComponent(corps);
+  }
+  window.open(url, '_blank');
+  document.getElementById('bloc-apres').innerHTML = `<h3>Message parti ?</h3><p class="sous">Note-le pour garder la trace dans l’historique.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+    <button class="btn clair" data-action="fermer">Pas envoyé</button>
+    <button class="btn" data-action="noter-apres" data-titre="${esc(canal + ' : ' + APRES.modele.titre)}">Oui, noter</button></div>`;
+}
+
 // --- Actions serveur ------------------------------------------------------
 async function enregistrer(btn) {
   const res = CHOIX.res, def = S.data.resultats[res];
   const precise = document.getElementById('date-precise');
   const rappel = (precise && precise.value ? precise.value.replace('T', ' ') : CHOIX.rappel) || '';
-  if (def.rappelObligatoire && !rappel) return toast('Choisis une date.', true);
+  const pr = trouver(S.ouvert);
+  const garderRdv = pr && cle(pr) === 'rdv' && (res === 'pas_repondu' || res === 'absent');
+  if (def.rappelObligatoire && !rappel && !garderRdv) return toast('Choisis une date.', true);
   const note = (document.getElementById('note-res') || {}).value || '';
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   try {
     const p = await appel('api_logger', S.pin, S.ouvert, res, note, rappel, S.par, res === 'rdv' ? CHOIX.duree : null);
     majLocale(p, { resultat: def.label, note, rappel });
     toast('« ' + def.label + ' » enregistré.' + (p._agenda ? ' ' + p._agenda + '.' : ''), /NON/.test(p._agenda || ''));
-    fermerFiche(); rendre();
+    rendre();
+    if (!ouvrirMessageApres(res)) fermerFiche();
   } catch (e) { btn.disabled = false; btn.textContent = 'Réessayer'; toast(e.message || String(e), true); }
 }
 
@@ -791,7 +926,8 @@ async function noterMessage(titre) {
     const p = await appel('api_logger', S.pin, S.ouvert, 'message', titre, '', S.par, null);
     majLocale(p, { resultat: 'Message envoyé', note: titre, rappel: '' });
     toast('Message noté.'); rendreFiche(); rendre();
-  } catch (e) { toast(e.message || String(e), true); }
+    return true;
+  } catch (e) { toast(e.message || String(e), true); return false; }
 }
 
 async function sauverEdition(form) {
@@ -842,8 +978,17 @@ document.addEventListener('click', e => {
   const c = e.target.closest('.lp, .pc'); if (c && !e.target.closest('[data-action]')) { ouvrirFiche(c.dataset.id); return; }
   if (e.target.id === 'fiche') { fermerFiche(); return; }
   const r = e.target.closest('[data-res]');
-  if (r) { CHOIX.res = r.dataset.res; CHOIX.rappel = ''; document.querySelectorAll('[data-res]').forEach(b => b.classList.toggle('choisi', b === r));
+  if (r) { CHOIX.res = r.dataset.res === 'rappel' ? 'pas_repondu' : r.dataset.res;
+    // Un rappel part par défaut le lendemain à la même heure : un tap et c'est posé.
+    CHOIX.rappel = r.dataset.res === 'rappel' ? demainMemeHeure() : '';
+    document.querySelectorAll('[data-res]').forEach(b => b.classList.toggle('choisi', b === r));
     const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat(); z.classList.remove('cache'); z.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+  const mo = e.target.closest('[data-motif]');
+  if (mo) { CHOIX.res = mo.dataset.motif;
+    const note = (document.getElementById('note-res') || {}).value || '', pr = (document.getElementById('date-precise') || {}).value || '';
+    if (pr) CHOIX.rappel = pr.replace('T', ' ');
+    const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat();
+    const n = document.getElementById('note-res'); if (n) n.value = note; return; }
   const du = e.target.closest('[data-duree]');
   if (du) { CHOIX.duree = Number(du.dataset.duree); document.querySelectorAll('[data-duree]').forEach(b => b.classList.toggle('choisi', b === du)); return; }
   const d = e.target.closest('[data-date]');
@@ -863,12 +1008,17 @@ document.addEventListener('click', e => {
   else if (act === 'envoyer') envoyer(a.dataset.canal);
   else if (act === 'fermer-msg') document.getElementById('bloc-msg').remove();
   else if (act === 'noter-msg') noterMessage(a.dataset.titre);
+  else if (act === 'apres-envoyer') { if (!a.classList.contains('inactif')) envoyerApres(a.dataset.canal); }
+  else if (act === 'noter-apres') noterMessage(a.dataset.titre).then(ok => { if (ok) fermerFiche(); });
   else if (act === 'forcer-ajout') ajouter(document.getElementById('form-ajout'), true);
 });
 document.addEventListener('submit', e => {
   e.preventDefault();
   if (e.target.id === 'form-edit') sauverEdition(e.target);
   if (e.target.id === 'form-ajout') ajouter(e.target);
+});
+document.addEventListener('input', e => {
+  if (['apres-nom', 'apres-date', 'apres-lien'].includes(e.target.id)) majMessageApres();
 });
 document.addEventListener('change', e => {
   if (e.target.id === 'filtre-secteur') { S.filtreSecteur = e.target.value; rendre(); }
