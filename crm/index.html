@@ -38,6 +38,15 @@
   .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .02em; }
   .tuile { width: 30px; height: 30px; border-radius: 8px; background: #1d1d1f; border: 1px solid #333;
     display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+  .moi { border: 1px solid #333; background: #1d1d1f; color: #ddd; border-radius: 99px; padding: 6px 12px;
+    font-size: 13px; font-weight: 600; }
+  .espaces { display: flex; gap: 6px; margin-top: 12px; }
+  .espaces button { flex: 1; border: 1px solid #333; background: #1d1d1f; color: #c9c9c9; border-radius: 9px;
+    padding: 8px 6px; font-size: 14px; font-weight: 600; }
+  .espaces button.actif { background: #fff; color: var(--noir); border-color: #fff; }
+  .qui { display: inline-block; font-size: 12px; font-weight: 700; padding: 0 7px; border-radius: 99px;
+    background: #e9e7e3; color: #333; }
+  .qui.libre { background: transparent; border: 1px dashed #aaa; color: var(--doux); }
   .recherche { margin-top: 12px; width: 100%; border: 0; border-radius: 10px; padding: 11px 14px;
     background: #fff; color: #141414; font-size: 16px; }
 
@@ -219,7 +228,9 @@
   <header class="barre"><div class="barre-int">
     <div class="barre-haut">
       <div class="logo"><img src="icones/nsd-vert-tuile-96.png" alt="NS Development"> CRM</div>
+      <button class="moi cache" id="moi" data-action="deconnexion" aria-label="Changer de personne"></button>
     </div>
+    <div class="espaces" id="espaces"></div>
     <input class="recherche" id="recherche" type="search" placeholder="Chercher un nom, un numéro, une commune…">
   </div></header>
   <main id="vue"><div class="chargement">Chargement du Sheets…</div></main>
@@ -239,8 +250,9 @@
 // ---------------------------------------------------------------------------
 // État
 // ---------------------------------------------------------------------------
-// Un seul compte, « NSD », partagé par Sam et Nelson (décision du 23/09/2026).
-const S = { pin: '', par: 'NSD', data: null, vue: 'jour', recherche: '', filtreSecteur: '', ouvert: null, plusJour: 25,
+// Un code par personne depuis le 26/09/2026 : le serveur dit qui est connecté
+// (S.moi). S.espace = ce qu'on regarde : son espace, celui de l'autre, ou Équipe.
+const S = { pin: '', par: '', moi: null, espace: '', data: null, vue: 'jour', recherche: '', filtreSecteur: '', ouvert: null, plusJour: 25,
   jour: '', journeesChargees: {} };
 
 function stocker(k, v) { try { localStorage.setItem('crmnsd_' + k, v); } catch (e) {} }
@@ -339,6 +351,28 @@ function trouver(id) { return S.data.prospects.find(p => p.id === id); }
 function historique(id) { return S.data.journal.filter(j => j.id === id).sort((a, b) => b.date.localeCompare(a.date)); }
 const RES_APPEL = () => Object.values(S.data.resultats).filter(r => r.appel).map(r => r.label);
 
+// --- Espaces ---------------------------------------------------------------
+// Un prospect travaillé sans responsable date d'avant les espaces : c'est Sam.
+// Un « À appeler » sans responsable est libre, visible des deux.
+const EQUIPE_VUE = 'Équipe';
+function respDe(p) { return p.responsable || (cle(p) === 'a_appeler' ? '' : S.data.equipe[0]); }
+function parDe(e) { return !e.par || e.par === S.data.parHistorique ? S.data.equipe[0] : e.par; }
+function vueEquipe() { return S.espace === EQUIPE_VUE; }
+function aLui(p) { return vueEquipe() || respDe(p) === S.espace; }
+function visible(p) { return aLui(p) || !respDe(p); }
+function entreeVisible(e) { return vueEquipe() || parDe(e) === S.espace; }
+function badgeQui(p) {
+  const r = respDe(p);
+  if (!vueEquipe() && r === S.espace) return '';
+  return ` · <span class="qui ${r ? '' : 'libre'}">${esc(r || 'libre')}</span>`;
+}
+function rendreEspaces() {
+  const noms = S.data.equipe.concat(EQUIPE_VUE);
+  document.getElementById('espaces').innerHTML = noms.map(n =>
+    `<button data-espace="${esc(n)}" class="${n === S.espace ? 'actif' : ''}">${esc(n === S.moi.nom ? n + ' (moi)' : n)}</button>`).join('');
+  const m = document.getElementById('moi'); m.textContent = S.moi.nom + ' · changer'; m.classList.remove('cache');
+}
+
 // ---------------------------------------------------------------------------
 // Rendu
 // ---------------------------------------------------------------------------
@@ -363,7 +397,7 @@ function carteRiche(p, droite, entree) {
     !entree && notes ? ['Notes', esc(notes.length > 160 ? notes.slice(0, 160) + '…' : notes)] : null,
   ].filter(Boolean);
   return `<div class="lp" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
-    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span></div></div>
+    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
       ${droite || ''}</div>
     <dl class="lp-grille">${lignes.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
     <div class="lp-actions">
@@ -378,6 +412,7 @@ function carteCompacte(p) {
   return `<div class="pc" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
     <div class="pc-nom">${esc(p.entreprise)}</div>
     <div class="pc-meta">${esc([p.secteur || (m && m.metier), p.commune, p.gerant].filter(Boolean).join(' · ') || '—')}</div>
+    ${vueEquipe() ? `<div class="pc-meta"><span class="qui ${respDe(p) ? '' : 'libre'}">${esc(respDe(p) || 'libre')}</span></div>` : ''}
     <div class="pc-bas">${tel ? `<a href="${tel}" data-stop="1">${esc(String(p.telephone).split(/\s*[\/;]\s*|\s+ou\s+/)[0])}</a>` : '<span class="pc-meta">sans tél.</span>'}
       ${p.rappel ? `<span class="pc-date ${p.rappel < maintenant() ? 'retard' : ''}">${cle(p) === 'rdv' ? 'RDV ' : ''}${esc(dateCourte(p.rappel))}</span>` : ''}</div>
   </div>`;
@@ -393,6 +428,7 @@ function section(titre, info, html) {
 
 function rendre() {
   if (!S.data) return;
+  rendreEspaces();
   document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', b.dataset.vue === S.vue));
   document.body.dataset.vue = S.recherche ? 'recherche' : S.vue;
   const v = document.getElementById('vue');
@@ -444,7 +480,7 @@ function bilanJour(entrees) {
 }
 // Les appels passés un jour donné, dans l'ordre de la journée.
 function sectionAppelsDuJour(j, entrees) {
-  const faits = entrees.filter(e => e.date.startsWith(j) && e.id && e.resultat !== 'Import')
+  const faits = entrees.filter(e => e.date.startsWith(j) && e.id && e.resultat !== 'Import' && entreeVisible(e))
     .sort((a, b) => a.date.localeCompare(b.date));
   const cartes = faits.map(e => {
     const p = trouver(e.id) || { id: e.id, entreprise: e.entreprise, statut: e.statut };
@@ -459,27 +495,29 @@ function vueJour() {
   const j = S.jour, auj = aujourdhui();
   if (j !== auj) return barreJour() + (j < auj ? vueJourPasse(j) : vueJourAVenir(j));
   const entrees = journalDe(j) || [];
-  return barreJour() + bilanJour(entrees.filter(e => e.date.startsWith(j))) + vueAujourdhui() + sectionAppelsDuJour(j, entrees);
+  return barreJour() + bilanJour(entrees.filter(e => e.date.startsWith(j) && entreeVisible(e))) + vueAujourdhui() + sectionAppelsDuJour(j, entrees);
 }
 
 function vueJourPasse(j) {
   const entrees = journalDe(j);
   if (!entrees) return '<div class="chargement">Lecture du journal de ce jour-là…</div>';
   const duJour = entrees.filter(e => e.date.startsWith(j));
-  // Ce qui était prévu pour ce jour-là (rappels et RDV posés avant).
-  const prevus = entrees.filter(e => String(e.rappel).startsWith(j) && !e.date.startsWith(j));
+  // Ce qui était prévu pour ce jour-là (rappels et RDV posés avant), dans cet espace.
+  // « Fait » compte l'appel de n'importe qui : un rappel repris par l'autre est fait.
+  const prevus = entrees.filter(e => String(e.rappel).startsWith(j) && !e.date.startsWith(j)
+    && (trouver(e.id) ? aLui(trouver(e.id)) : entreeVisible(e)));
   const vus = new Set();
   const cartesPrevus = prevus.sort((a, b) => a.rappel.localeCompare(b.rappel)).filter(e => !vus.has(e.id) && vus.add(e.id)).map(e => {
     const p = trouver(e.id) || { id: e.id, entreprise: e.entreprise, statut: e.statut };
     const fait = duJour.some(x => x.id === e.id);
     return carteRiche(p, droite(heure(e.rappel), fait ? 'fait' : 'pas rappelé', !fait));
   });
-  return bilanJour(duJour) + sectionAppelsDuJour(j, entrees)
+  return bilanJour(duJour.filter(entreeVisible)) + sectionAppelsDuJour(j, entrees)
     + (cartesPrevus.length ? section('Ce qui était prévu', cartesPrevus.length + ' rappels ou RDV', grille(cartesPrevus.join(''))) : '');
 }
 
 function vueJourAVenir(j) {
-  const prevus = S.data.prospects.filter(p => String(p.rappel).startsWith(j) && !['perdu', 'signe'].includes(cle(p)))
+  const prevus = S.data.prospects.filter(p => String(p.rappel).startsWith(j) && !['perdu', 'signe'].includes(cle(p)) && aLui(p))
     .sort((a, b) => a.rappel.localeCompare(b.rappel));
   return section('Rappels et RDV prévus', prevus.length ? prevus.length + ' prévus' : '',
     prevus.length ? grille(prevus.map(p => carteRiche(p, droite((cle(p) === 'rdv' ? 'RDV ' : '') + heure(p.rappel)))).join(''))
@@ -488,13 +526,15 @@ function vueJourAVenir(j) {
 
 function vueAujourdhui() {
   const now = maintenant(), jour = aujourdhui();
-  const actifs = S.data.prospects.filter(p => !['perdu', 'signe'].includes(cle(p)));
+  // Son espace : ses prospects, plus les « À appeler » libres (après les siens).
+  const actifs = S.data.prospects.filter(p => !['perdu', 'signe'].includes(cle(p)) && visible(p));
   const avecRappel = actifs.filter(p => p.rappel);
   const retard = avecRappel.filter(p => p.rappel < now).sort((a, b) => a.rappel.localeCompare(b.rappel));
   const duJour = avecRappel.filter(p => p.rappel.slice(0, 10) === jour && p.rappel >= now).sort((a, b) => a.rappel.localeCompare(b.rappel));
   const aDater = actifs.filter(p => cle(p) === 'rappel' && !p.rappel);
   const froids = actifs.filter(p => ['a_appeler', 'sans_reponse'].includes(cle(p)) && !p.rappel && !String(p.dernier).startsWith(jour) && p.telephone);
-  const ordre = (a, b) => (cle(a) === 'a_appeler' ? 0 : 1) - (cle(b) === 'a_appeler' ? 0 : 1) || String(a.dernier).localeCompare(String(b.dernier)) || a.id.localeCompare(b.id);
+  const libre = p => respDe(p) ? 0 : 1;
+  const ordre = (a, b) => (vueEquipe() ? 0 : libre(a) - libre(b)) || (cle(a) === 'a_appeler' ? 0 : 1) - (cle(b) === 'a_appeler' ? 0 : 1) || String(a.dernier).localeCompare(String(b.dernier)) || a.id.localeCompare(b.id);
   const maintenantOk = froids.filter(p => dansCreneau(p)).sort(ordre);
   const plusTard = froids.filter(p => !dansCreneau(p) && prochainCreneau(p)).sort((a, b) => prochainCreneau(a).localeCompare(prochainCreneau(b)) || ordre(a, b));
   const il2j = new Date(); il2j.setDate(il2j.getDate() - 2);
@@ -529,7 +569,7 @@ function vueRecherche() {
 
 function vuePipeline() {
   const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
-  const liste = S.data.prospects.filter(p => !S.filtreSecteur || p.secteur === S.filtreSecteur);
+  const liste = S.data.prospects.filter(p => (!S.filtreSecteur || p.secteur === S.filtreSecteur) && visible(p));
   // « Sans réponse » n'est plus posé depuis le 24/09 : sa colonne disparaît une fois vide.
   const statuts = S.data.statuts.filter(s => s.k !== 'sans_reponse' || liste.some(p => cle(p) === s.k));
   const cols = statuts.map(s => {
@@ -543,6 +583,10 @@ function vuePipeline() {
     <div class="colonnes" style="--nb-col:${statuts.length}">${cols}</div>`;
 }
 
+function optionsResponsable(choisi) {
+  return S.data.equipe.map(n => `<option value="${esc(n)}" ${n === choisi ? 'selected' : ''}>${esc(n)}</option>`).join('')
+    + `<option value="" ${!choisi ? 'selected' : ''}>Libre (le premier qui appelle)</option>`;
+}
 function vueAjouter(doublons) {
   const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
   return `<h2 class="section">Nouveau prospect</h2>
@@ -560,13 +604,14 @@ function vueAjouter(doublons) {
     <label class="champ">Mauvais points<select name="mauvais"><option></option><option>pas de site web, zero vitrine</option>
       <option>site web, mais pas quali</option><option>site web, non actuel</option></select></label>
     <label class="champ">N° RCS<input name="rcs"></label>
+    <label class="champ">Qui l’appelle<select name="responsable">${optionsResponsable(S.moi.nom)}</select></label>
     <label class="champ">Notes<textarea name="notes" placeholder="Repéré où, ce qu'on a vu, à qui parler…"></textarea></label>
     <button class="btn large" type="submit">Ajouter au Sheets</button>
   </form>`;
 }
 
 function vueStats() {
-  const appels = RES_APPEL(), J = S.data.journal;
+  const appels = RES_APPEL(), J = S.data.journal.filter(entreeVisible);
   const jour = aujourdhui();
   const lundi = new Date(); lundi.setHours(0, 0, 0, 0); lundi.setDate(lundi.getDate() - ((lundi.getDay() + 6) % 7));
   const debutSem = fmt(lundi).slice(0, 10);
@@ -576,6 +621,7 @@ function vueStats() {
   const decroche = e => estAppel(e) && e.resultat !== 'Pas de réponse';
   const rdv = e => e.resultat === 'RDV obtenu';
   const a30 = compte(d30, estAppel), r30 = compte(d30, rdv), dec30 = compte(d30, decroche);
+  const pipe = S.data.prospects.filter(aLui);
 
   const jours = [];
   for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = fmt(d).slice(0, 10); jours.push({ k, d, n: J.filter(e => e.date.startsWith(k) && estAppel(e)).length }); }
@@ -595,8 +641,12 @@ function vueStats() {
       <tr><td>Appels passés</td><td>${a30}</td></tr>
       <tr><td>Taux de décroché</td><td>${a30 ? Math.round(dec30 / a30 * 100) + ' %' : '—'}</td></tr>
       <tr><td>Appels pour un RDV</td><td>${r30 ? Math.round(a30 / r30) : '—'}</td></tr></table>`)
-    + section('Pipeline', S.data.prospects.length + ' prospects', `<table class="recap">${S.data.statuts.map(s =>
-      `<tr><td><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span></td><td>${S.data.prospects.filter(p => cle(p) === s.k).length}</td></tr>`).join('')}</table>`)
+    + (vueEquipe() ? section('Par personne', 'cette semaine', `<table class="recap">
+      <tr><td></td><td>Appels</td><td>Décrochés</td><td>RDV</td></tr>
+      ${S.data.equipe.map(n => { const c = f => compte(debutSem, e => parDe(e) === n && f(e));
+        return `<tr><td>${esc(n)}</td><td>${c(estAppel)}</td><td>${c(decroche)}</td><td>${c(rdv)}</td></tr>`; }).join('')}</table>`) : '')
+    + section('Pipeline', pipe.length + ' prospects', `<table class="recap">${S.data.statuts.map(s =>
+      `<tr><td><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span></td><td>${pipe.filter(p => cle(p) === s.k).length}</td></tr>`).join('')}</table>`)
     + `<p style="margin-top:18px"><a class="btn clair large" href="${esc(S.data.lienSheets)}" target="_blank">Ouvrir le Google Sheets</a></p>`;
 }
 
@@ -654,6 +704,7 @@ function rendreFiche(edition) {
     <div class="bloc"><h3>Infos</h3><dl class="infos">
       <dt>Téléphone</dt><dd>${p.telephone ? `<a href="${tel}">${esc(p.telephone)}</a>` : '—'}</dd>
       <dt>Gérant</dt><dd>${esc(p.gerant || '—')}</dd>
+      <dt>Responsable</dt><dd>${esc(respDe(p) || 'libre, le premier qui appelle le prend')}</dd>
       <dt>Email</dt><dd>${p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '—'}</dd>
       <dt>Site</dt><dd>${site ? `<a href="${esc(site)}" target="_blank">${esc(p.site)}</a>` : esc(p.site || '—')}</dd>
       <dt>Instagram</dt><dd>${insta ? `<a href="${esc(insta)}" target="_blank">${esc(p.instagram)}</a>` : '—'}</dd>
@@ -725,6 +776,7 @@ function formEdition(p) {
     ${f('gerant', 'Nom du gérant')}${f('email', 'Email', 'email')}${f('site', 'Site web')}${f('instagram', 'Instagram')}
     ${f('mauvais', 'Mauvais points')}${f('rcs', 'N° RCS')}
     <label class="champ">Prochain rappel<input name="rappel" type="datetime-local" value="${esc((p.rappel || '').replace(' ', 'T'))}"></label>
+    <label class="champ">Responsable<select name="responsable">${optionsResponsable(respDe(p))}</select></label>
     <label class="champ">Statut<select name="statut">${S.data.statuts.filter(s => s.k !== 'sans_reponse' || s.k === cle(p)).map(s => `<option value="${s.k}" ${s.k === cle(p) ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
     <label class="champ">Notes<textarea name="notes">${esc(p.notes || '')}</textarea></label>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button type="button" class="btn clair" data-action="annuler-edit">Annuler</button>
@@ -752,7 +804,8 @@ function remplir(txt, p, v) {
     .replace(/{metier}/g, m ? m.metier.toLowerCase() : 'votre métier')
     .replace(/{lien}/g, lien)
     .replace(/{rdv}/g, p.rappel ? dateLongue(p.rappel) : '[date du RDV]')
-    .replace(/{signature}/g, SIGNATURE);
+    .replace(/\bSamir\b/g, signataire().prenom)
+    .replace(/{signature}/g, signataire().texte);
 }
 // « Jean-Marc DUPONT » → « Jean-Marc Dupont ». Sam le change en « Monsieur Dupont » s'il veut.
 function nomCourt(g) {
@@ -768,7 +821,13 @@ function dateMessage(s) {
   if (j === fmt(demain).slice(0, 10)) return 'demain à ' + h;
   return JOURS_LONG[d.getDay()] + ' ' + (d.getDate() === 1 ? '1er' : d.getDate()) + ' ' + MOIS[d.getMonth()] + ' à ' + h;
 }
-const SIGNATURE = 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nSamir DINIS DA ROSA\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 621 757 113\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development';
+// Chacun signe ses messages : les modèles sont écrits au nom de Samir, ils
+// passent au prénom de celui qui est connecté (Nelson : sa signature complète).
+const SIGNATURES = {
+  Sam: { prenom: 'Samir', texte: 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nSamir DINIS DA ROSA\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 621 757 113\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development' },
+  Nelson: { prenom: 'Nelson', texte: 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nNelson BARROSO\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 691 144 753\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development' },
+};
+function signataire() { return SIGNATURES[S.moi && S.moi.nom] || SIGNATURES.Sam; }
 
 function ouvrirMessages(canal) {
   const p = trouver(S.ouvert);
@@ -882,8 +941,8 @@ async function envoyerApres(canal) {
   if (canal === 'whatsapp') url = 'https://wa.me/' + telInternational(p.telephone) + '?text=' + encodeURIComponent(txt);
   else if (canal === 'sms') url = 'sms:+' + telInternational(p.telephone) + '?&body=' + encodeURIComponent(txt);
   else {
-    // Un mail porte toujours la signature complète de Samir, à la place du « Samir, NS Development ».
-    const corps = txt.replace(/\n*Samir, NS Development\s*$/, '') + '\n\n' + SIGNATURE;
+    // Un mail porte toujours la signature complète de celui qui l'envoie, à la place du « Samir, NS Development ».
+    const corps = txt.replace(new RegExp('\\n*' + signataire().prenom + ', NS Development\\s*$'), '') + '\n\n' + signataire().texte;
     url = 'mailto:' + encodeURIComponent(p.email) + '?subject=' + encodeURIComponent(p.entreprise + ' : ' + APRES.modele.titre.toLowerCase()) + '&body=' + encodeURIComponent(corps);
   }
   window.open(url, '_blank');
@@ -918,7 +977,7 @@ function majLocale(p, entree) {
   const ancien = S.data.prospects[i] || {};
   const neuf = Object.assign({}, ancien, p); delete neuf._metier;
   if (i >= 0) S.data.prospects[i] = neuf; else S.data.prospects.push(neuf);
-  if (entree) S.data.journal.push(Object.assign({ date: maintenant(), id: p.id, entreprise: p.entreprise, statut: neuf.statut, par: S.par }, entree));
+  if (entree) S.data.journal.push(Object.assign({ date: maintenant(), id: p.id, entreprise: p.entreprise, statut: neuf.statut, par: S.moi.nom }, entree));
 }
 
 async function noterMessage(titre) {
@@ -994,8 +1053,14 @@ document.addEventListener('click', e => {
   const d = e.target.closest('[data-date]');
   if (d) { CHOIX.rappel = d.dataset.date; document.querySelectorAll('[data-date]').forEach(b => b.classList.toggle('choisi', b === d));
     const p = document.getElementById('date-precise'); if (p) p.value = d.dataset.date.replace(' ', 'T'); return; }
+  const es = e.target.closest('[data-espace]');
+  if (es) { S.espace = es.dataset.espace; stocker('espace', S.espace); S.plusJour = 25; window.scrollTo(0, 0); rendre(); return; }
   const a = e.target.closest('[data-action]'); if (!a) return;
   const act = a.dataset.action;
+  if (act === 'deconnexion') {
+    if (confirm('Changer de personne ? Il faudra entrer ton code.')) { stocker('pin', ''); stocker('espace', ''); location.reload(); }
+    return;
+  }
   if (act === 'fermer') fermerFiche();
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
   else if (act === 'jour') { S.jour = decalerJour(S.jour || aujourdhui(), Number(a.dataset.n)); rendre(); }
@@ -1033,13 +1098,16 @@ document.getElementById('pin').addEventListener('keydown', e => { if (e.key === 
 async function connexion() {
   const pin = document.getElementById('pin').value.trim();
   if (!pin) return toast('Entre le code.', true);
-  try { await appel('api_connexion', pin); S.pin = pin; stocker('pin', pin); demarrer(); }
+  try { const moi = await appel('api_connexion', pin); S.pin = pin; stocker('pin', pin); stocker('espace', ''); demarrer(); toast('Bonjour ' + moi.nom + '.'); }
   catch (e) { toast(e.message || String(e), true); }
 }
 
 async function charger() {
   S.data = await appel('api_charger', S.pin);
   S.data.prospects.forEach(p => delete p._ligne);
+  S.moi = S.data.moi; S.par = S.moi.nom;
+  // On arrive toujours sur son propre espace, sauf si on en a choisi un autre.
+  if (![...S.data.equipe, EQUIPE_VUE].includes(S.espace)) S.espace = S.moi.nom;
   rendre();
   Factu.init();
 }
@@ -1062,6 +1130,7 @@ setInterval(() => { if (S.data && !S.ouvert && !document.hidden) rendre(); }, 60
 if (!window.CRM_API) document.getElementById('bandeau-installer').classList.remove('cache');
 
 S.pin = lire('pin');
+S.espace = lire('espace');
 if (S.pin) demarrer();
 else document.getElementById('ecran-connexion').classList.remove('cache');
 </script>
