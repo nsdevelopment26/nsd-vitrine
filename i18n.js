@@ -175,6 +175,13 @@ const NS_I18N = {
   "Estimation": {lb:"Schätzung", de:"Bewertung", en:"Valuation", pt:"Avaliação"},
   "Leads": {lb:"Leads", de:"Leads", en:"Leads", pt:"Leads"},
   "Voir la démo →": {lb:"Demo kucken →", de:"Demo ansehen →", en:"View demo →", pt:"Ver demo →"},
+  "Imprimerie & textile": {lb:"Dréckerei & Textil", de:"Druckerei & Textil", en:"Print shop & apparel", pt:"Gráfica & têxtil"},
+  "Boutique avec paiement Apple Pay, configurateur où le client pose son logo sur un T-shirt, catalogue print à feuilleter, en trois langues.":
+    {lb:"Buttek mat Apple Pay, e Konfigurator wou de Client säi Logo op en T-Shirt setzt, e Printkatalog fir ze bliederen, an dräi Sproochen.",
+     de:"Shop mit Apple Pay, ein Konfigurator, in dem der Kunde sein Logo auf ein T-Shirt setzt, ein Druckkatalog zum Durchblättern, in drei Sprachen.",
+     en:"A shop with Apple Pay, a configurator where customers place their logo on a T-shirt, and a flip-through print catalogue, in three languages.",
+     pt:"Loja com Apple Pay, um configurador onde o cliente coloca o seu logótipo numa T-shirt e um catálogo de impressão para folhear, em três línguas."},
+  "Configurateur textile": {lb:"Textil-Konfigurator", de:"Textil-Konfigurator", en:"Apparel configurator", pt:"Configurador têxtil"},
   "Fiduciaire & comptable": {lb:"Fiduciaire & Comptabel", de:"Treuhand & Buchhaltung", en:"Accountancy firm", pt:"Fiduciária & contabilidade"},
   "Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.":
     {lb:"Gastronomesch Tafel: Menüen, illustréiert Kaart, Wäikeller an eng Online-Reservatioun déi e vollen Service wierklech spaart.",

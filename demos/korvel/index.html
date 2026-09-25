@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KORVEL — atelier d'impression · Esch-sur-Alzette</title>
+<meta name="description" content="KORVEL, atelier d'impression à Esch-sur-Alzette : écussons, textile personnalisé (DTF, broderie, flex, flock), grand format, roll-up et covering. Boutique en ligne, configurateur textile et devis rapide.">
+<meta name="theme-color" content="#0b0d0f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="KORVEL — on imprime votre marque">
+<meta property="og:description" content="Écussons, textile, grand format et covering. Boutique en ligne, configurateur textile et devis en trois étapes.">
+<meta property="og:image" content="assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="KORVEL">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ns-motion.css">
+<link rel="stylesheet" href="korvel.css">
+<script src="produits.js" defer></script>
+<script src="i18n.js" defer></script>
+<script src="ns-motion.js" defer></script>
+<script src="korvel.js" defer></script>
+</head>
+<body>
+
+<div class="demo-bar" role="note">Exemple fictif de démonstration réalisé par NS Development · boutique et paiements simulés</div>
+
+<header class="nav" data-nav-solid>
+  <a href="#top" class="brand" aria-label="KORVEL, accueil">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-txt"><span class="brand-word">KORVEL</span><span class="brand-sub">atelier d'impression</span></span>
+  </a>
+  <nav class="nav-links" aria-label="Navigation principale">
+    <a class="ns-link" href="#boutique">Boutique</a>
+    <a class="ns-link" href="#studio">Studio</a>
+    <a class="ns-link" href="#textile" data-i18n="nav.textile">Textile</a>
+    <a class="ns-link" href="#catalogue" data-i18n="nav.cata">Catalogue</a>
+    <a class="ns-link" href="#solutions">Solutions</a>
+    <a class="ns-link" href="#patron">Le patron</a>
+    <a class="ns-link" href="#contact">Contact</a>
+  </nav>
+  <div class="nav-actions">
+    <div class="lang" role="group" aria-label="Langue">
+      <button type="button" data-lang="fr" aria-pressed="true">FR</button><button type="button" data-lang="de" aria-pressed="false">DE</button><button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <button type="button" class="k-btn" data-k-open aria-label="Recherche instantanée"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><kbd>⌘K</kbd></button>
+    <a href="#devis" class="btn-devis">Devis</a>
+    <button class="cart-btn" type="button" aria-label="Ouvrir le panier" data-open-cart>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2.2l2.3 11.2a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L21 8H6.3"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+      <span class="cart-count" data-cart-count>0</span>
+    </button>
+    <button class="burger" type="button" aria-label="Menu" aria-expanded="false" data-burger><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-menu" data-mobile-menu hidden>
+  <a href="#boutique">Boutique</a><a href="#studio">Studio</a><a href="#textile" data-i18n="nav.textile">Textile</a><a href="#catalogue" data-i18n="nav.cata">Catalogue</a><a href="#solutions">Solutions</a><a href="#patron">Le patron</a><a href="#devis">Demander un devis</a><a href="#contact">Contact</a>
+  <div class="lang mm-lang" role="group" aria-label="Langue"><button type="button" data-lang="fr" aria-pressed="true">FR</button><button type="button" data-lang="de" aria-pressed="false">DE</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
+  <a class="mm-tel" href="tel:+35227000000">+352 27 00 00 00</a>
+</div>
+
+<main id="top">
+
+<!-- ============ HERO : cadrage d'impression + produit à la une ============ -->
+<section class="hero">
+  <div class="crop tl"></div><div class="crop tr"></div><div class="crop bl"></div><div class="crop br"></div>
+  <div class="hero-text">
+    <p class="hero-kicker"><span class="dot c"></span><span class="dot m"></span><span class="dot y"></span><span class="dot k"></span> Esch-sur-Alzette · atelier d'impression</p>
+    <h1 class="plates" aria-label="On imprime votre marque.">
+      <span class="plate p-c" aria-hidden="true">On imprime<br>votre marque.</span>
+      <span class="plate p-m" aria-hidden="true">On imprime<br>votre marque.</span>
+      <span class="plate p-y" aria-hidden="true">On imprime<br>votre marque.</span>
+      <span class="plate p-k" aria-hidden="true">On imprime<br><em>votre marque.</em></span>
+    </h1>
+    <p class="hero-lead">Écussons, textile, grand format, covering de véhicules. Du petit badge au camion habillé, un seul atelier luxembourgeois s'occupe de tout.</p>
+    <div class="hero-cta">
+      <a href="#boutique" class="btn-main ns-shine">Ouvrir la boutique <span aria-hidden="true">→</span></a>
+      <a href="#devis" class="link-quiet">ou demander un devis sur mesure</a>
+    </div>
+  </div>
+
+  <aside class="hero-card" aria-label="Produit à la une">
+    <div class="hc-top">
+      <span class="hc-tag">À la une</span>
+      <span class="hc-count"><b data-hero-idx>01</b> / <span data-hero-total>05</span></span>
+    </div>
+    <button class="hc-stage" type="button" data-hero-open aria-label="Voir le produit">
+      <img data-hero-img src="assets/p/b01.svg" alt="" width="640" height="640">
+      <span class="reg" aria-hidden="true"></span>
+    </button>
+    <div class="hc-info">
+      <div>
+        <p class="hc-cat" data-hero-cat>Écusson brodé</p>
+        <p class="hc-name" data-hero-name>Écusson brodé Drapeau, rectangle</p>
+      </div>
+      <p class="hc-price" data-hero-price>8,50 €</p>
+    </div>
+    <div class="hc-bar"><span data-hero-bar></span></div>
+    <button class="hc-add" type="button" data-hero-add>Ajouter au panier</button>
+  </aside>
+</section>
+
+<!-- ============ BANDEAU ============ -->
+<div class="ns-marquee band" aria-hidden="true">
+  <div class="ns-marquee__track">
+    <span>DTF</span><i></i><span>DTG</span><i></i><span>Broderie</span><i></i><span>Flex</span><i></i><span>Flock</span><i></i><span>Grand format</span><i></i><span>Roll-up</span><i></i><span>Cartes de visite</span><i></i><span>Covering véhicule</span><i></i><span>Gadgets publicitaires</span><i></i>
+    <span>DTF</span><i></i><span>DTG</span><i></i><span>Broderie</span><i></i><span>Flex</span><i></i><span>Flock</span><i></i><span>Grand format</span><i></i><span>Roll-up</span><i></i><span>Cartes de visite</span><i></i><span>Covering véhicule</span><i></i><span>Gadgets publicitaires</span><i></i>
+  </div>
+</div>
+
+<!-- ============ RÉASSURANCE ============ -->
+<section class="assure" data-stagger="90">
+  <div><b>Retrait à l'atelier</b><span>12, rue des Presses, Esch-sur-Alzette</span></div>
+  <div><b>Lundi au vendredi</b><span>8 h 30 à 18 h</span></div>
+  <div><b>Production locale</b><span>avec des prestataires luxembourgeois</span></div>
+  <div><b>Une question ?</b><a href="tel:+35227000000">+352 27 00 00 00</a></div>
+</section>
+
+<!-- ============ BOUTIQUE ============ -->
+<section class="shop" id="boutique">
+  <div class="shop-head">
+    <h2 data-reveal>La boutique</h2>
+    <p data-reveal data-delay="100">Écussons, pin's, porte-clés, textile : filtrez, cherchez, ajoutez au panier, tout fonctionne.</p>
+  </div>
+
+  <div class="shop-tools">
+    <div class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+      <input type="search" placeholder="Chercher : camo, pins, rectangle, hoodie…" aria-label="Chercher un article" data-search>
+    </div>
+    <label class="sort">Trier
+      <select data-sort aria-label="Trier les articles">
+        <option value="pop">Sélection de l'atelier</option>
+        <option value="asc">Prix croissant</option>
+        <option value="desc">Prix décroissant</option>
+        <option value="az">Nom A → Z</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="chips" role="tablist" aria-label="Catégories" data-cats></div>
+  <div class="swatches" aria-label="Couleurs" data-colors></div>
+
+  <p class="shop-meta" aria-live="polite"><b data-result-count>54</b> articles <button type="button" class="reset" data-reset hidden>Tout effacer</button></p>
+
+  <div class="grid" data-grid></div>
+  <div class="empty" data-empty hidden>
+    <p>Aucun article ne correspond.</p>
+    <button type="button" class="reset" data-reset>Réinitialiser les filtres</button>
+  </div>
+</section>
+
+<!-- ============ STUDIO : badge nominatif ============ -->
+<section class="studio" id="studio">
+  <div class="studio-copy">
+    <h2 data-reveal>Studio : votre badge nominatif</h2>
+    <p data-reveal data-delay="80">Tapez le nom, choisissez la finition, voyez le rendu tout de suite. Le badge part en production tel que vous l'avez validé.</p>
+
+    <form class="studio-form" data-studio>
+      <label>Nom brodé
+        <input type="text" maxlength="16" value="P. Nom" data-st-name autocomplete="off">
+        <small><span data-st-left>10</span> caractères restants</small>
+      </label>
+      <fieldset>
+        <legend>Finition</legend>
+        <div class="finish">
+          <label><input type="radio" name="fin" value="noir" checked><span class="f f-noir"></span>Noir, liseré gris</label>
+          <label><input type="radio" name="fin" value="marine"><span class="f f-marine"></span>Marine, liseré rouge</label>
+        </div>
+      </fieldset>
+      <div class="studio-row">
+        <div class="qty" data-st-qty>
+          <button type="button" data-q="-1" aria-label="Moins">−</button>
+          <input type="number" min="1" max="500" value="2" aria-label="Quantité">
+          <button type="button" data-q="1" aria-label="Plus">+</button>
+        </div>
+        <p class="studio-total"><span data-st-total>19,00 €</span><small>9,50 € la pièce</small></p>
+      </div>
+      <button type="submit" class="btn-main ns-shine">Ajouter au panier</button>
+    </form>
+  </div>
+
+  <div class="studio-stage" data-reveal="scale">
+    <div class="st-table">
+      <svg class="st-badge" viewBox="0 0 520 120" role="img" aria-label="Aperçu du badge" data-st-svg>
+        <defs>
+          <pattern id="stitch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+            <rect width="4" height="4" fill="var(--bg)"/><line x1="0" y1="0" x2="0" y2="4" stroke="rgba(255,255,255,.06)" stroke-width="2"/>
+          </pattern>
+        </defs>
+        <rect x="4" y="4" width="512" height="112" rx="14" fill="var(--edge)"/>
+        <rect x="12" y="12" width="496" height="96" rx="9" fill="url(#stitch)" style="--bg:var(--fond)"/>
+        <rect x="18" y="18" width="484" height="84" rx="6" fill="none" stroke="var(--edge)" stroke-width="1.5" stroke-dasharray="5 4" opacity=".55"/>
+        <text x="260" y="78" text-anchor="middle" data-st-text>P. Nom</text>
+      </svg>
+      <p class="st-note">Aperçu indicatif, le rendu brodé final est validé avec vous.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONFIGURATEUR TEXTILE ============ -->
+<section class="config" id="textile">
+  <div class="cf-stage" data-reveal="scale">
+    <div class="cf-bar">
+      <div class="seg" role="group" aria-label="Vêtement">
+        <button type="button" class="on" data-cf-type="tshirt" data-i18n="cf.tshirt">T-shirt</button>
+        <button type="button" data-cf-type="hoodie" data-i18n="cf.hoodie">Hoodie</button>
+      </div>
+      <div class="seg" role="group" aria-label="Face">
+        <button type="button" class="on" data-cf-face="front" data-i18n="cf.front">Devant</button>
+        <button type="button" data-cf-face="back" data-i18n="cf.back">Dos</button>
+      </div>
+    </div>
+    <svg class="cf-svg" viewBox="0 0 400 460" data-cf-svg role="img" aria-label="Aperçu du vêtement personnalisé">
+      <defs>
+        <linearGradient id="cfShade" x1="0" x2="1">
+          <stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".18" stop-color="#000" stop-opacity="0"/>
+          <stop offset=".82" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/>
+        </linearGradient>
+        <linearGradient id="cfLight" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".12"/>
+        </linearGradient>
+        <clipPath id="cfZoneClip"><rect data-cf-clip x="132" y="118" width="136" height="176"/></clipPath>
+      </defs>
+      <g data-cf-hood>
+        <path d="M128 40 C120 -6 280 -6 272 40 L262 64 C240 44 160 44 138 64 Z" data-cf-fill fill="#16181a"/>
+        <path d="M128 40 C120 -6 280 -6 272 40 L262 64 C240 44 160 44 138 64 Z" fill="url(#cfLight)"/>
+      </g>
+      <path data-cf-body data-cf-fill fill="#16181a" d="M128 26 C150 44 250 44 272 26 L352 62 Q370 70 378 88 L398 150 L340 172 L330 150 L330 438 Q330 446 322 446 L78 446 Q70 446 70 438 L70 150 L60 172 L2 150 L22 88 Q30 70 48 62 Z"/>
+      <path d="M128 26 C150 44 250 44 272 26 L352 62 Q370 70 378 88 L398 150 L340 172 L330 150 L330 438 Q330 446 322 446 L78 446 Q70 446 70 438 L70 150 L60 172 L2 150 L22 88 Q30 70 48 62 Z" fill="url(#cfShade)"/>
+      <path d="M128 26 C150 44 250 44 272 26 L352 62 Q370 70 378 88 L398 150 L340 172 L330 150 L330 438 Q330 446 322 446 L78 446 Q70 446 70 438 L70 150 L60 172 L2 150 L22 88 Q30 70 48 62 Z" fill="url(#cfLight)"/>
+      <path data-cf-collar d="M128 26 C150 64 250 64 272 26" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="7"/>
+      <g data-cf-pocket><path d="M140 330 L260 330 L276 392 L124 392 Z" fill="#000" fill-opacity=".12"/><path d="M140 330 L260 330" stroke="#000" stroke-opacity=".25" stroke-width="2"/></g>
+      <path d="M70 150 L70 438 M330 150 L330 438" stroke="#000" stroke-opacity=".12" stroke-width="2"/>
+      <rect class="cf-zone" data-cf-zone x="132" y="118" width="136" height="176" rx="2"/>
+      <g clip-path="url(#cfZoneClip)"><image data-cf-logo href="assets/logo-exemple.svg" x="160" y="140" width="80" height="80" preserveAspectRatio="xMidYMid meet"/></g>
+    </svg>
+    <p class="cf-hint" data-i18n="cf.hint">Glissez le logo pour le placer dans la zone d'impression.</p>
+  </div>
+
+  <div class="cf-panel">
+    <h2 data-reveal data-i18n="cf.title">Votre textile, votre logo</h2>
+    <p class="cf-lead" data-reveal data-delay="80" data-i18n="cf.lead">Choisissez la pièce et la couleur, déposez votre logo, placez-le. Vous voyez le résultat avant même de nous appeler.</p>
+
+    <div class="cf-block">
+      <p class="cf-l" data-i18n="cf.color">Couleur</p>
+      <div class="cf-colors" data-cf-colors></div>
+    </div>
+
+    <div class="cf-block">
+      <p class="cf-l" data-i18n="cf.logo">Votre logo</p>
+      <div class="cf-up">
+        <input type="file" id="cf-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" data-cf-file>
+        <label for="cf-file" class="cf-upbtn"><span data-i18n="cf.upload">Importer mon logo</span></label>
+        <span class="cf-fname" data-cf-fname data-i18n="cf.example">Logo d'exemple</span>
+      </div>
+      <label class="cf-range"><span data-i18n="cf.size">Taille</span>
+        <input type="range" min="30" max="136" value="80" data-cf-size aria-label="Taille du logo">
+      </label>
+      <button type="button" class="cf-link" data-cf-center data-i18n="cf.center">Recentrer le logo</button>
+    </div>
+
+    <div class="cf-block">
+      <p class="cf-l" data-i18n="cf.tech">Technique</p>
+      <div class="cf-techs" data-cf-techs>
+        <button type="button" class="on" data-t="DTF">DTF</button><button type="button" data-t="DTG">DTG</button><button type="button" data-t="Broderie" data-i18n="t.brod">Broderie</button><button type="button" data-t="Flex">Flex</button><button type="button" data-t="Flock">Flock</button>
+      </div>
+      <p class="cf-tdesc" data-cf-tdesc></p>
+    </div>
+
+    <div class="cf-block">
+      <p class="cf-l"><span data-i18n="cf.sizes">Tailles et quantités</span> · <b data-cf-total>0</b> <span data-i18n="cf.pcs">pièces</span></p>
+      <div class="cf-sizes" data-cf-sizes></div>
+    </div>
+
+    <div class="cf-cta">
+      <button type="button" class="btn-main ns-shine" data-cf-quote data-i18n="cf.quote">Demander le prix</button>
+      <button type="button" class="cf-link" data-cf-dl data-i18n="cf.dl">Télécharger l'aperçu</button>
+    </div>
+    <p class="err" data-cf-err hidden data-i18n="cf.err">Indiquez au moins une pièce dans les tailles.</p>
+  </div>
+</section>
+
+<!-- ============ CATALOGUE PRINT (flipbook fait main) ============ -->
+<section class="cata" id="catalogue">
+  <div class="ca-head">
+    <h2 data-reveal data-i18n="ca.title">Le catalogue print</h2>
+    <p data-reveal data-delay="80" data-i18n="ca.lead">16 pages, 12 gammes : cartes, flyers, affiches, signalétique, salons, textile… Feuilletez-le comme un vrai catalogue papier.</p>
+  </div>
+
+  <div class="book-wrap" data-book-wrap>
+    <div class="book-tools">
+      <div class="book-jump" data-book-chips></div>
+    </div>
+    <div class="book-stage" data-book-stage>
+      <button type="button" class="book-nav prev" data-book-prev aria-label="Page précédente"><span aria-hidden="true">←</span></button>
+      <div class="book" data-book aria-live="polite"></div>
+      <button type="button" class="book-nav next" data-book-next aria-label="Page suivante"><span aria-hidden="true">→</span></button>
+    </div>
+    <div class="book-bar">
+      <span class="book-count" data-book-count>1 / 44</span>
+      <input type="range" min="1" max="44" value="1" data-book-range aria-label="Aller à la page">
+      <button type="button" class="book-btn" data-book-fs data-i18n="ca.fs">Plein écran</button>
+      <button type="button" class="book-btn" data-book-first data-i18n="ca.first">Revenir à la couverture</button>
+    </div>
+  </div>
+
+  <h3 class="ca-sub" data-reveal data-i18n="ca.ranges">Les 12 gammes</h3>
+  <div class="ranges" data-ranges data-stagger="60"></div>
+</section>
+
+<!-- ============ SOLUTIONS ============ -->
+<section class="solutions" id="solutions">
+  <h2 data-reveal>Tout ce qui s'imprime, on s'en charge</h2>
+  <div class="bento" data-stagger="80">
+    <article class="b b-big ns-lift">
+      <span class="b-k">01</span>
+      <h3>Textile et corporate wear</h3>
+      <p>T-shirts, hoodies, vestes de service, tenues d'équipe. Cinq techniques selon la pièce et la quantité.</p>
+      <ul class="techs"><li>DTF</li><li>DTG</li><li>Broderie</li><li>Flex</li><li>Flock</li></ul>
+      <img src="assets/p/t01.svg" alt="T-shirt noir imprimé du numéro 07" loading="lazy" width="640" height="640">
+    </article>
+    <article class="b ns-lift"><span class="b-k">02</span><h3>Grand format</h3><p>Bâches, roll-up, vitrophanie, panneaux : la visibilité qui se voit de la rue.</p></article>
+    <article class="b ns-lift"><span class="b-k">03</span><h3>Covering véhicule</h3><p>Utilitaires, voitures de société, camions. Votre flotte devient un support publicitaire.</p></article>
+    <article class="b ns-lift"><span class="b-k">04</span><h3>Petits formats</h3><p>Cartes de visite, flyers, étiquettes, papeterie d'entreprise.</p></article>
+    <article class="b ns-lift"><span class="b-k">05</span><h3>Gadgets publicitaires</h3><p>Écussons, pins, porte-clés, objets à votre marque pour vos salons et vos clients.</p></article>
+    <article class="b b-dark b-wide ns-lift"><span class="b-k">06</span><h3>Événements</h3><p>Organisation et habillage d'événements, de la signalétique aux tenues du staff.</p></article>
+    <article class="b b-wide ns-lift"><span class="b-k">07</span><h3>Solutions web</h3><p>Une présence en ligne qui prolonge vos supports imprimés.</p></article>
+  </div>
+</section>
+
+<!-- ============ DEVIS ============ -->
+<section class="devis" id="devis">
+  <div class="devis-head">
+    <h2 data-reveal>Un devis en trois étapes</h2>
+    <p data-reveal data-delay="80">Dites-nous quoi, combien et pour quand. Joignez votre logo, on revient vers vous avec un prix.</p>
+    <ol class="steps" data-steps>
+      <li class="on"><span>1</span>Le projet</li>
+      <li><span>2</span>Les détails</li>
+      <li><span>3</span>Vos coordonnées</li>
+    </ol>
+  </div>
+
+  <form class="devis-form" data-devis novalidate>
+    <div class="step on" data-step="1">
+      <p class="q">Qu'est-ce qu'on imprime ?</p>
+      <div class="needs">
+        <label><input type="radio" name="besoin" value="Textile et corporate wear" required><span>Textile</span><small>T-shirts, hoodies, tenues</small></label>
+        <label><input type="radio" name="besoin" value="Écussons et badges"><span>Écussons</span><small>Brodés, PVC, laser</small></label>
+        <label><input type="radio" name="besoin" value="Grand format et roll-up"><span>Grand format</span><small>Bâches, roll-up</small></label>
+        <label><input type="radio" name="besoin" value="Covering véhicule"><span>Covering</span><small>Voiture, utilitaire</small></label>
+        <label><input type="radio" name="besoin" value="Petits formats"><span>Petits formats</span><small>Cartes, flyers</small></label>
+        <label><input type="radio" name="besoin" value="Gadgets publicitaires"><span>Gadgets</span><small>Objets à votre marque</small></label>
+      </div>
+      <p class="err" data-err="1" hidden>Choisissez un type de projet pour continuer.</p>
+      <div class="step-nav"><span></span><button type="button" class="btn-main" data-next>Continuer <span aria-hidden="true">→</span></button></div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="f2">
+        <label>Quantité
+          <input type="number" name="quantite" min="1" placeholder="Ex. 50" required>
+        </label>
+        <label>Pour quand ?
+          <input type="date" name="date">
+        </label>
+        <label class="full" data-tech-field>Technique préférée
+          <select name="technique">
+            <option value="">Je ne sais pas, conseillez-moi</option>
+            <option>DTF</option><option>DTG</option><option>Broderie</option><option>Flex</option><option>Flock</option>
+          </select>
+        </label>
+        <label class="full">Votre projet en quelques mots
+          <textarea name="message" rows="3" placeholder="Couleurs, dimensions, emplacement du logo…"></textarea>
+        </label>
+        <div class="drop full" data-drop>
+          <input type="file" id="fichiers" name="fichiers" multiple accept=".pdf,.ai,.eps,.svg,.png,.jpg,.jpeg" data-files>
+          <label for="fichiers"><b>Déposez votre logo ici</b><span>ou cliquez pour choisir · PDF, AI, EPS, SVG, PNG, JPG</span></label>
+          <ul class="file-list" data-file-list></ul>
+        </div>
+      </div>
+      <p class="err" data-err="2" hidden>Indiquez une quantité.</p>
+      <div class="step-nav"><button type="button" class="back" data-prev>← Retour</button><button type="button" class="btn-main" data-next>Continuer <span aria-hidden="true">→</span></button></div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="f2">
+        <label>Nom et prénom<input type="text" name="nom" autocomplete="name" required></label>
+        <label><span>Société <small>(facultatif)</small></span><input type="text" name="societe" autocomplete="organization"></label>
+        <label>E-mail<input type="email" name="email" autocomplete="email" required></label>
+        <label>Téléphone<input type="tel" name="tel" autocomplete="tel"></label>
+      </div>
+      <p class="err" data-err="3" hidden>Un nom et un e-mail valide, et c'est parti.</p>
+      <div class="step-nav"><button type="button" class="back" data-prev>← Retour</button><button type="submit" class="btn-main ns-shine">Envoyer la demande</button></div>
+    </div>
+
+    <div class="step done" data-step="4">
+      <div class="done-mark" aria-hidden="true"></div>
+      <h3>Demande <span data-devis-ref>RQ-0000</span> bien reçue</h3>
+      <p>Récapitulatif envoyé à <b data-devis-mail></b>. L'atelier revient vers vous avec un prix.</p>
+      <dl class="recap" data-devis-recap></dl>
+      <p class="demo-note">Démonstration : en production, la demande arrive directement dans la boîte de l'atelier avec les fichiers joints.</p>
+      <button type="button" class="back" data-restart>Faire une autre demande</button>
+    </div>
+  </form>
+</section>
+
+<!-- ============ LE PATRON ============ -->
+<section class="patron" id="patron">
+  <div class="pa-head">
+    <h2 data-reveal>Le patron</h2>
+    <div class="pa-id" data-reveal data-delay="80"><p class="pa-name">Adrien Korvel</p><p class="pa-role">fondateur de l'atelier KORVEL</p></div>
+  </div>
+
+  <div class="pa-grid">
+    <figure class="pa-portrait" data-reveal="left">
+      <div class="pa-slot">
+        <img src="assets/adrien-korvel.jpg" alt="Adrien Korvel, fondateur de l'atelier (personnage fictif, portrait généré par IA)" width="1080" height="1350" loading="lazy">
+        <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+      </div>
+      <figcaption>Personnage fictif, portrait généré par intelligence artificielle.</figcaption>
+    </figure>
+
+    <div class="pa-copy">
+      <blockquote data-reveal>
+        <p>« Un bon imprimé, c'est d'abord une bonne question posée avant d'imprimer. »</p>
+        <cite>Adrien Korvel</cite>
+      </blockquote>
+      <p data-reveal data-delay="80">Imprimeur de métier, il a ouvert l'atelier pour que ses clients n'aient qu'un seul interlocuteur, du fichier au produit fini. Ici, on conseille le papier, on prépare les fichiers, on imprime et on contrôle chaque tirage sur place.</p>
+
+      <ol class="pa-time" data-stagger="110">
+        <li><b>Le conseil</b><span>Le bon support et le bon format, avant de lancer la moindre impression.</span></li>
+        <li><b>La préparation</b><span>Fichiers vérifiés, épreuve envoyée, rien ne part sans votre accord.</span></li>
+        <li><b>La fabrication</b><span>Impression, broderie, découpe et finitions dans le même atelier.</span></li>
+        <li><b>Le suivi</b><span>Retrait à l'atelier ou livraison, et réassort en un message.</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="at-stats" data-stagger="120">
+    <div><b data-count="39">39</b><span>articles en boutique</span></div>
+    <div><b data-count="12">12</b><span>gammes au catalogue</span></div>
+    <div><b data-count="5">5</b><span>techniques textile</span></div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contact">
+  <div class="ct-info">
+    <h2 data-reveal>Passez à l'atelier</h2>
+    <address data-reveal data-delay="80">
+      <b>KORVEL</b><br>
+      12, rue des Presses<br>
+      L-4002 Esch-sur-Alzette
+    </address>
+    <ul class="ct-list" data-stagger="80">
+      <li><span>Téléphone</span><a href="tel:+35227000000">+352 27 00 00 00</a></li>
+      <li><span>Atelier</span><a href="mailto:contact@korvel.example">contact@korvel.example</a></li>
+      <li><span>Boutique</span><a href="mailto:boutique@korvel.example">boutique@korvel.example</a></li>
+      <li><span>Horaires</span><b>Lundi au vendredi, 8 h 30 à 18 h</b></li>
+    </ul>
+  </div>
+  <div class="ct-map" data-reveal="scale">
+    <iframe title="Carte : Esch-sur-Alzette" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=5.9650%2C49.4880%2C5.9950%2C49.5040&amp;layer=mapnik"></iframe>
+  </div>
+</section>
+</main>
+<footer class="foot">
+  <div class="foot-top">
+    <a href="#top" class="brand brand-inv" aria-label="Retour en haut">
+      <span class="brand-mark" aria-hidden="true"></span><span class="brand-txt"><span class="brand-word">KORVEL</span><span class="brand-sub">atelier d'impression</span></span>
+    </a>
+    <p>Impression, textile et personnalisation, petits et grands formats. Entreprise fictive de démonstration.</p>
+  </div>
+  <div class="foot-bot">
+    <span>© 2026 KORVEL · exemple fictif · Esch-sur-Alzette</span>
+    <a href="https://nsdevelopment26.github.io/nsd-vitrine/" target="_blank" rel="noopener">Réalisé par NS Development</a>
+  </div>
+</footer>
+
+<!-- ============ FICHE PRODUIT ============ -->
+<div class="modal" data-modal hidden>
+  <div class="scrim" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-name">
+    <button class="x" type="button" data-close aria-label="Fermer">×</button>
+    <div class="m-img"><img data-m-img src="assets/p/b01.svg" alt=""><span class="reg" aria-hidden="true"></span></div>
+    <div class="m-body">
+      <p class="m-cat" data-m-cat></p>
+      <h3 id="m-name" data-m-name></h3>
+      <p class="m-price" data-m-price></p>
+      <p class="m-desc" data-m-desc></p>
+      <div class="m-row">
+        <div class="qty" data-m-qty>
+          <button type="button" data-q="-1" aria-label="Moins">−</button>
+          <input type="number" min="1" max="999" value="1" aria-label="Quantité">
+          <button type="button" data-q="1" aria-label="Plus">+</button>
+        </div>
+        <button type="button" class="btn-main ns-shine" data-m-add>Ajouter au panier</button>
+      </div>
+      <p class="m-sib-t">Dans la même collection</p>
+      <div class="m-sib" data-m-sib></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANIER ============ -->
+<div class="drawer" data-drawer hidden>
+  <div class="scrim" data-close-cart></div>
+  <aside class="panel" role="dialog" aria-modal="true" aria-label="Panier">
+    <div class="p-head">
+      <h3>Panier <span data-cart-n></span></h3>
+      <button class="x" type="button" data-close-cart aria-label="Fermer le panier">×</button>
+    </div>
+
+    <div class="p-view on" data-view="cart">
+      <ul class="lines" data-lines></ul>
+      <div class="p-empty" data-cart-empty>
+        <p>Votre panier est vide.</p>
+        <a href="#boutique" class="link-quiet" data-close-cart>Voir la boutique</a>
+      </div>
+      <div class="p-foot" data-cart-foot>
+        <div class="tot"><span>Sous-total</span><b data-subtotal>0,00 €</b></div>
+        <p class="tva">Prix TTC. Retrait gratuit à l'atelier d'Esch-sur-Alzette.</p>
+        <button type="button" class="apay" data-apay-express aria-label="Payer avec Apple Pay"><svg class="apl" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 1.43c0 1.14-.49 2.27-1.18 3.08-.74.9-1.99 1.57-2.99 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.57-2.27 1.21-2.98.8-.94 2.14-1.64 3.25-1.68.03.13.05.28.05.43zm4.56 15.71c-.03.07-.46 1.58-1.52 3.12-.94 1.34-1.94 2.71-3.43 2.71-1.52 0-1.9-.88-3.63-.88-1.7 0-2.3.91-3.67.91-1.38 0-2.33-1.26-3.43-2.8-1.29-1.82-2.32-4.63-2.32-7.28 0-4.28 2.8-6.55 5.55-6.55 1.45 0 2.68.95 3.6.95.87 0 2.22-1.01 3.9-1.01.61 0 2.89.06 4.37 2.19-.13.09-2.38 1.37-2.38 4.19 0 3.26 2.85 4.42 2.96 4.45z"/></svg><span>Pay</span></button>
+        <div class="or"><span data-i18n="or">ou</span></div>
+        <button type="button" class="btn-main full ns-shine" data-go-checkout>Commander</button>
+      </div>
+    </div>
+
+    <form class="p-view" data-view="checkout" data-checkout novalidate>
+      <button type="button" class="back" data-back-cart>← Panier</button>
+      <label>Nom et prénom<input name="nom" autocomplete="name" required></label>
+      <label>E-mail<input name="email" type="email" autocomplete="email" required></label>
+      <label>Téléphone<input name="tel" type="tel" autocomplete="tel"></label>
+      <fieldset class="opts">
+        <legend>Réception</legend>
+        <label><input type="radio" name="livraison" value="retrait" checked> Retrait à l'atelier, Esch-sur-Alzette <b>0,00 €</b></label>
+        <label><input type="radio" name="livraison" value="poste"> Envoi postal au Luxembourg <b>tarif à confirmer</b></label>
+      </fieldset>
+      <fieldset class="opts">
+        <legend>Paiement</legend>
+        <label class="opt-apay"><input type="radio" name="paiement" value="Apple Pay" checked> <span class="apay-mini"><svg class="apl" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 1.43c0 1.14-.49 2.27-1.18 3.08-.74.9-1.99 1.57-2.99 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.57-2.27 1.21-2.98.8-.94 2.14-1.64 3.25-1.68.03.13.05.28.05.43zm4.56 15.71c-.03.07-.46 1.58-1.52 3.12-.94 1.34-1.94 2.71-3.43 2.71-1.52 0-1.9-.88-3.63-.88-1.7 0-2.3.91-3.67.91-1.38 0-2.33-1.26-3.43-2.8-1.29-1.82-2.32-4.63-2.32-7.28 0-4.28 2.8-6.55 5.55-6.55 1.45 0 2.68.95 3.6.95.87 0 2.22-1.01 3.9-1.01.61 0 2.89.06 4.37 2.19-.13.09-2.38 1.37-2.38 4.19 0 3.26 2.85 4.42 2.96 4.45z"/></svg>Pay</span> <b data-i18n="apay.fast">le plus rapide</b></label>
+        <label><input type="radio" name="paiement" value="Carte bancaire"> <span data-i18n="pay.card">Carte bancaire</span></label>
+        <label><input type="radio" name="paiement" value="Payconiq"> Payconiq by Bancontact</label>
+        <label><input type="radio" name="paiement" value="Sur place"> Sur place, au retrait</label>
+      </fieldset>
+      <p class="err" data-co-err hidden>Un nom et un e-mail valide sont nécessaires.</p>
+      <div class="tot"><span>Total</span><b data-total>0,00 €</b></div>
+      <button type="submit" class="btn-main full ns-shine">Valider la commande</button>
+      <p class="demo-note">Démonstration : aucun paiement n'est prélevé.</p>
+    </form>
+
+    <div class="p-view" data-view="done">
+      <div class="done-mark" aria-hidden="true"></div>
+      <h3>Merci, commande <span data-order-ref></span></h3>
+      <p>Un e-mail de confirmation part à <b data-order-mail></b>. L'atelier vous prévient dès que c'est prêt.</p>
+      <dl class="recap" data-order-recap></dl>
+      <button type="button" class="btn-main full" data-close-cart>Continuer mes achats</button>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ APPLE PAY (simulation) ============ -->
+<div class="ap" data-ap hidden>
+  <div class="ap-scrim" data-ap-cancel></div>
+  <div class="ap-card" role="dialog" aria-modal="true" aria-label="Apple Pay">
+    <div class="ap-top">
+      <span class="ap-logo"><svg class="apl" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 1.43c0 1.14-.49 2.27-1.18 3.08-.74.9-1.99 1.57-2.99 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.57-2.27 1.21-2.98.8-.94 2.14-1.64 3.25-1.68.03.13.05.28.05.43zm4.56 15.71c-.03.07-.46 1.58-1.52 3.12-.94 1.34-1.94 2.71-3.43 2.71-1.52 0-1.9-.88-3.63-.88-1.7 0-2.3.91-3.67.91-1.38 0-2.33-1.26-3.43-2.8-1.29-1.82-2.32-4.63-2.32-7.28 0-4.28 2.8-6.55 5.55-6.55 1.45 0 2.68.95 3.6.95.87 0 2.22-1.01 3.9-1.01.61 0 2.89.06 4.37 2.19-.13.09-2.38 1.37-2.38 4.19 0 3.26 2.85 4.42 2.96 4.45z"/></svg>Pay</span>
+      <button type="button" class="ap-x" data-ap-cancel data-i18n="ap.cancel">Annuler</button>
+    </div>
+    <div class="ap-rows">
+      <div class="ap-row"><span class="ap-k" data-i18n="ap.card">Carte</span><span class="ap-v"><i class="ap-cc"></i><span data-i18n="ap.cardv">Carte de démonstration •••• 0000</span></span></div>
+      <div class="ap-row"><span class="ap-k" data-i18n="ap.pick">Retrait</span><span class="ap-v" data-i18n="ap.pickv">Atelier KORVEL, Esch-sur-Alzette</span></div>
+      <div class="ap-row"><span class="ap-k" data-i18n="ap.contact">Contact</span><span class="ap-v" data-ap-contact>Fourni par Apple Pay</span></div>
+    </div>
+    <div class="ap-total"><span><span data-i18n="ap.pay">Payer</span> KORVEL</span><b data-ap-total>0,00 €</b></div>
+    <div class="ap-auth" data-ap-auth>
+      <button type="button" class="ap-confirm" data-ap-confirm><span class="ap-side" aria-hidden="true"></span><span data-i18n="ap.confirm">Confirmer avec le bouton latéral</span></button>
+      <div class="ap-face" data-ap-face hidden>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path class="fid" d="M4 18V10a6 6 0 0 1 6-6h8M46 4h8a6 6 0 0 1 6 6v8M60 46v8a6 6 0 0 1-6 6h-8M18 60h-8a6 6 0 0 1-6-6v-8M22 24v4M42 24v4M32 24v12h-3M24 44c5 4 11 4 16 0"/><path class="ok" d="M18 33l9 9 19-20"/></svg>
+        <p data-ap-state>Face ID</p>
+      </div>
+    </div>
+    <p class="ap-demo" data-i18n="ap.demo">Démonstration : aucun paiement réel.</p>
+  </div>
+</div>
+
+<!-- ============ RECHERCHE INSTANTANÉE (⌘K) ============ -->
+<div class="kp" data-kp hidden>
+  <div class="scrim" data-k-close></div>
+  <div class="kp-box" role="dialog" aria-modal="true" aria-label="Recherche instantanée">
+    <div class="kp-in">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+      <input type="search" data-k-input placeholder="Chercher un produit, une gamme, une page…" aria-label="Recherche instantanée" autocomplete="off">
+      <kbd>esc</kbd>
+    </div>
+    <ul class="kp-list" data-k-list role="listbox"></ul>
+    <p class="kp-foot"><kbd>↑</kbd><kbd>↓</kbd> <span>pour naviguer</span> · <kbd>↵</kbd> <span>pour ouvrir</span></p>
+  </div>
+</div>
+
+<div class="toast" data-toast role="status" aria-live="polite"></div>
+</body>
+</html>

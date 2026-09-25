@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+<defs>
+<radialGradient id="bg" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#f6f7f8"/><stop offset="1" stop-color="#d9dee1"/></radialGradient>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur in="SourceAlpha" stdDeviation="16"/><feOffset dx="8" dy="22"/><feComponentTransfer><feFuncA type="linear" slope=".32"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<pattern id="stitch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(38)"><rect width="6" height="6" fill="#000" fill-opacity="0"/><line x1="0" y1="0" x2="0" y2="6" stroke="#fff" stroke-opacity=".13" stroke-width="2.4"/></pattern>
+<pattern id="stitch2" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-42)"><line x1="0" y1="0" x2="0" y2="5" stroke="#000" stroke-opacity=".12" stroke-width="2"/></pattern>
+<pattern id="mesh" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="1.6" fill="#000" fill-opacity=".22"/></pattern>
+<linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset=".45" stop-color="#fff" stop-opacity=".04"/><stop offset="1" stop-color="#000" stop-opacity=".1"/></linearGradient>
+<linearGradient id="or" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3dc8b"/><stop offset=".5" stop-color="#b58a2c"/><stop offset="1" stop-color="#f0d27a"/></linearGradient>
+<linearGradient id="argent" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f5f6"/><stop offset=".5" stop-color="#8e979c"/><stop offset="1" stop-color="#e6e9ea"/></linearGradient>
+</defs>
+<rect width="800" height="800" fill="url(#bg)"/>
+<clipPath id="ck01"><rect x="60" y="80" width="280" height="280" rx="46"/></clipPath><g filter="url(#sh)" transform="translate(130 95) scale(1.35) rotate(-8 200 200)"><circle cx="200" cy="38" r="46" fill="none" stroke="url(#argent)" stroke-width="12"/><rect x="188" y="70" width="24" height="30" rx="6" fill="url(#argent)"/><g fill="#2a6fd6" fill-opacity=".92"><rect x="60" y="80" width="280" height="280" rx="46"/></g><g clip-path="url(#ck01)"><g transform="translate(40 60) scale(.8)"><polygon points="200.0,81.3 229.1,160.0 312.9,163.3 247.0,215.3 269.8,296.0 200.0,249.4 130.2,296.0 153.0,215.3 87.1,163.3 170.9,160.0" fill="#fff"/></g><path d="M60 80 L200 80 L60 220 Z" fill="#fff" fill-opacity=".22"/></g><g fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4"><rect x="60" y="80" width="280" height="280" rx="46"/></g></g>
+</svg>

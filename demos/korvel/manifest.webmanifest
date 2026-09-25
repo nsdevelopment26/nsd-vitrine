@@ -1,0 +1,15 @@
+{
+  "name": "KORVEL atelier d'impression",
+  "short_name": "KORVEL",
+  "description": "Exemple fictif NS Development : boutique, configurateur textile et catalogue print.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f4f5",
+  "theme_color": "#0b0d0f",
+  "lang": "fr",
+  "icons": [
+    {"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
