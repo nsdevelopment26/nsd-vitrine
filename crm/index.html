@@ -730,24 +730,55 @@ function rendreFiche(edition) {
 const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['refus'], ['note']];
 const MOTIFS_RAPPEL = [['pas_repondu', 'Pas de réponse'], ['absent', 'Gérant absent'], ['rappel', 'Convenu avec lui']];
 const boutonDe = res => MOTIFS_RAPPEL.some(([k]) => k === res) ? 'rappel' : res;
-// Le lendemain à la même heure (à 5 min près). Le dimanche saute au lundi.
+// Plages d'appel (règles de Nelson du 26/09/2026) : lundi-jeudi 9 h-20 h,
+// vendredi 9 h-12 h (tournage l'après-midi), samedi 9 h-12 h, dimanche 14 h-20 h.
+// Trous : Sam 15 h 55-16 h 05 (post Instagram), Nelson 12 h-13 h 30 (repas).
+const PLAGES = { 0: ['14:00', '20:00'], 1: ['09:00', '20:00'], 2: ['09:00', '20:00'], 3: ['09:00', '20:00'],
+  4: ['09:00', '20:00'], 5: ['09:00', '12:00'], 6: ['09:00', '12:00'] };
+const TROUS = { Sam: [['15:55', '16:05']], Nelson: [['12:00', '13:30']] };
+const hmDe = d => fmt(d).slice(11, 16);
+function regler(d, hm) { const [h, m] = hm.split(':').map(Number); d.setHours(h, m, 0, 0); }
+// Le premier moment d'appel à partir de d : dans la plage du jour, hors des trous
+// de celui qui est connecté. Hors plage : le jour suivant, à la même heure. Une
+// heure qui n'est dans aucune plage (après 20 h) : l'ouverture du jour même.
+function recalerAppel(d) {
+  const depart = new Date(d), voulu = hmDe(d);
+  const caler = x => {
+    const [debut, fin] = PLAGES[x.getDay()];
+    if (hmDe(x) < debut) regler(x, debut);
+    (TROUS[S.moi && S.moi.nom] || []).forEach(([a, b]) => { if (hmDe(x) >= a && hmDe(x) < b) regler(x, b); });
+    return hmDe(x) < fin;
+  };
+  for (let i = 0; i < 7; i++) {
+    if (caler(d)) return d;
+    d.setDate(d.getDate() + 1); regler(d, voulu);
+  }
+  regler(depart, '00:00'); caler(depart);
+  return depart;
+}
+// Le prochain jour d'appel, à la même heure (à 5 min près), recalé dans ses plages.
 function demainMemeHeure() {
   const d = new Date(); d.setDate(d.getDate() + 1);
-  if (d.getDay() === 0) d.setDate(d.getDate() + 1);
   d.setMinutes(Math.round(d.getMinutes() / 5) * 5, 0, 0);
-  return fmt(d);
+  return fmt(recalerAppel(d));
 }
 
 function optionsDates() {
   const o = [], now = new Date();
   const dans = h => { const d = new Date(now.getTime() + h * 36e5); d.setMinutes(d.getMinutes() < 30 ? 30 : 60, 0, 0); return d; };
   const a = (jPlus, h, m) => { const d = new Date(now); d.setDate(d.getDate() + jPlus); d.setHours(h, m || 0, 0, 0); return d; };
-  o.push(['Demain même heure', null]);
+  o.push(['Prochain jour, même heure', null]);
   o.push(['Dans 1 h', dans(1)], ['Dans 2 h', dans(2)]);
-  if (now.getHours() < 15) o.push(['Auj. 16 h', a(0, 16)]);
+  if (now.getHours() < 15) o.push(S.moi && S.moi.nom === 'Sam' ? ['Auj. 16 h 10', a(0, 16, 10)] : ['Auj. 16 h', a(0, 16)]);
   o.push(['Demain 10 h', a(1, 10)], ['Demain 15 h', a(1, 15)]);
   const lundi = a(((8 - now.getDay()) % 7) || 7, 10); o.push(['Lundi 10 h', lundi]);
   return o.map(([l, d]) => [l, d ? fmt(d) : demainMemeHeure()]);
+}
+// Les deux derniers appels (hors notes et messages) sont des « Pas de réponse ».
+function troisiemeSansReponse(p) {
+  if (!p || !['a_appeler', 'rappel', 'sans_reponse'].includes(cle(p))) return false;
+  const appels = historique(p.id).filter(e => RES_APPEL().includes(e.resultat)).slice(0, 2);
+  return appels.length === 2 && appels.every(e => e.resultat === 'Pas de réponse');
 }
 function zoneResultat() {
   const def = S.data.resultats[CHOIX.res]; if (!def) return '';
@@ -760,6 +791,7 @@ function zoneResultat() {
   return `${motif ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">Pourquoi ?</div>
     <div class="dates">${MOTIFS_RAPPEL.map(([k, l]) => `<button data-motif="${k}" class="${CHOIX.res === k ? 'choisi' : ''}">${l}</button>`).join('')}</div>` : ''}
     ${garderRdv ? '<div class="sous" style="margin-top:10px">Le RDV reste à sa date, l’appel est noté dans l’historique.</div>' : ''}
+    ${CHOIX.res === 'pas_repondu' && troisiemeSansReponse(p) ? '<div class="sous" style="margin-top:10px;color:var(--danger)"><b>3e appel sans réponse : il passera en Perdu.</b></div>' : ''}
     ${avecDate && !garderRdv ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">${titreDate}${def.rappelObligatoire ? ' *' : ''}</div>
     <div class="dates">${optionsDates().map(([l, v]) => `<button data-date="${v}" class="${CHOIX.rappel === v ? 'choisi' : ''}">${l}</button>`).join('')}</div>
     <label class="champ">Ou une date précise<input type="datetime-local" id="date-precise" value="${CHOIX.rappel ? CHOIX.rappel.replace(' ', 'T') : ''}"></label>` : ''}
@@ -932,8 +964,9 @@ async function envoyerApres(canal) {
   if (APRES.v.date !== APRES.dateCrm) {
     try {
       const maj = await appel('api_modifier', S.pin, p.id, { rappel: APRES.v.date });
+      const agenda = maj._agenda || '';
       majLocale(maj); APRES.dateCrm = APRES.v.date; rendre();
-      toast('Rappel déplacé au ' + dateMessage(APRES.v.date) + '.' + (maj._agenda ? ' ' + maj._agenda + '.' : ''));
+      toast('Rappel déplacé au ' + dateMessage(APRES.v.date) + '.' + (agenda ? ' ' + agenda + '.' : ''));
     } catch (e) { return toast(e.message || String(e), true); }
   }
   const txt = document.getElementById('msg-texte').value;
@@ -964,15 +997,17 @@ async function enregistrer(btn) {
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   try {
     const p = await appel('api_logger', S.pin, S.ouvert, res, note, rappel, S.par, res === 'rdv' ? CHOIX.duree : null);
-    majLocale(p, { resultat: def.label, note, rappel });
-    toast('« ' + def.label + ' » enregistré.' + (p._agenda ? ' ' + p._agenda + '.' : ''), /NON/.test(p._agenda || ''));
+    // majLocale efface les champs _ : on les lit avant.
+    const perdu = p._perdu, agenda = p._agenda || '';
+    majLocale(p, { resultat: def.label, note: perdu ? [note, '3e appel sans réponse : passé en Perdu'].filter(Boolean).join(' · ') : note, rappel: perdu ? '' : rappel });
+    toast(perdu ? '3e appel sans réponse : passé en Perdu.' : '« ' + def.label + ' » enregistré.' + (agenda ? ' ' + agenda + '.' : ''), /NON/.test(agenda));
     rendre();
     if (!ouvrirMessageApres(res)) fermerFiche();
   } catch (e) { btn.disabled = false; btn.textContent = 'Réessayer'; toast(e.message || String(e), true); }
 }
 
 function majLocale(p, entree) {
-  delete p._ligne; delete p._agenda;
+  delete p._ligne; delete p._agenda; delete p._perdu;
   const i = S.data.prospects.findIndex(x => x.id === p.id);
   const ancien = S.data.prospects[i] || {};
   const neuf = Object.assign({}, ancien, p); delete neuf._metier;
@@ -995,7 +1030,8 @@ async function sauverEdition(form) {
   const btn = form.querySelector('[type=submit]'); btn.disabled = true;
   try {
     const p = await appel('api_modifier', S.pin, S.ouvert, champs);
-    majLocale(p); toast('Fiche mise à jour.' + (p._agenda ? ' ' + p._agenda + '.' : '')); rendreFiche(); rendre();
+    const agenda = p._agenda || '';
+    majLocale(p); toast('Fiche mise à jour.' + (agenda ? ' ' + agenda + '.' : '')); rendreFiche(); rendre();
   } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
 }
 
