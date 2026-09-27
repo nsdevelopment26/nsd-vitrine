@@ -174,6 +174,11 @@
     border: 1px solid var(--ligne); border-radius: 12px; text-decoration: none; font-size: 12px; font-weight: 600; }
   .actions .ico { font-size: 20px; }
   .actions .inactif { opacity: .35; pointer-events: none; }
+  .actions .pret { background: #25d366; border-color: #25d366; color: #fff; }
+  .msg-haut { margin: 8px 0 4px; }
+  .msg-haut .tete { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--doux); margin-bottom: 4px; }
+  .msg-haut input { flex: 1; min-width: 0; font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid var(--ligne); border-radius: 8px; }
+  .msg-haut textarea { width: 100%; box-sizing: border-box; height: 118px; font: inherit; font-size: 13px; line-height: 1.35; padding: 8px 10px; border: 1px solid var(--ligne); border-radius: 10px; resize: vertical; }
   .btn.inactif { opacity: .35; pointer-events: none; }
   .actions .principal { background: var(--noir); color: #fff; border-color: var(--noir); }
   .bloc { background: var(--carte); border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 14px; margin-top: 12px; }
@@ -691,6 +696,7 @@ function rendreFiche(edition) {
         <button data-action="msg" data-canal="sms" class="${wa ? '' : 'inactif'}"><span class="ico">✉︎</span>SMS</button>
         <button data-action="msg" data-canal="mail" class="${p.email ? '' : 'inactif'}"><span class="ico">@</span>Mail</button>
       </div>
+      <div id="msg-haut" class="msg-haut"></div>
     </div>
 
     ${edition ? formEdition(p) : `
@@ -723,6 +729,7 @@ function rendreFiche(edition) {
       `<li><b>${esc(e.resultat)}</b>${e.rappel ? ' → ' + esc(dateCourte(e.rappel)) : ''}${e.note ? '<br>' + esc(e.note) : ''}<div class="d">${esc(dateCourte(e.date))}</div></li>`).join('')}</ul>`
       : '<div class="sous">Aucun contact enregistré dans l’appli.</div>'}</div>`}
   </div>`;
+  if (!edition) rendreMessageHaut();
 }
 
 // Cinq boutons (décision du 24/09/2026). « Rappel » regroupe trois motifs, qui
@@ -799,24 +806,29 @@ function zoneResultat() {
     <div class="dates">${(S.data.rdvDurees || [30, 60, 90]).map(m => `<button data-duree="${m}" class="${CHOIX.duree === m ? 'choisi' : ''}">${m < 60 ? m + ' min' : (m / 60 + ' h').replace('.5 h', ' h 30')}</button>`).join('')}</div>` : ''}
     <label class="champ">${CHOIX.res === 'note' ? 'Note' : 'Ce qui s’est dit (facultatif)'}<textarea id="note-res" placeholder="Nom de la personne, objection, heure qui l’arrange…"></textarea></label>
     ${motif && CHOIX.res !== 'rappel' ? '<div class="sous" style="margin-top:6px">Un texte au client ? Choisis « Convenu avec lui ».</div>' : ''}
-    ${blocMessage(p)}
-    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(motif ? 'Rappel · ' + def.label.replace('Rappel convenu', 'convenu') : def.label)} »${APRES.modele ? ' puis envoyer' : ''}</button>`;
+    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(motif ? 'Rappel · ' + def.label.replace('Rappel convenu', 'convenu') : def.label)} »${modeleApres(CHOIX.res, p) ? ' sans message' : ''}</button>`;
 }
 
-// Rappel convenu, RDV obtenu, Lien envoyé : le texte au client s'affiche dès le
-// bouton touché, et suit la date choisie au-dessus. Envoyé après l'enregistrement.
-function blocMessage(p) {
-  const modele = modeleApres(CHOIX.res, p);
-  if (!modele) { APRES.modele = null; return ''; }
+// Rappel convenu, RDV obtenu, Lien envoyé : le texte au client s'écrit en haut
+// de la fiche, sous WhatsApp, dès le bouton touché, et suit la date choisie.
+// WhatsApp (ou SMS, Mail) enregistre le résultat et ouvre le message tout prêt.
+function rendreMessageHaut() {
+  const el = document.getElementById('msg-haut'); if (!el) return;
+  const p = trouver(S.ouvert), modele = modeleApres(CHOIX.res, p);
+  document.querySelectorAll('.actions [data-action="msg"]').forEach(b => b.classList.toggle('pret', !!modele && !b.classList.contains('inactif')));
+  if (!modele) { APRES.modele = null; el.innerHTML = ''; return; }
+  const ancien = document.getElementById('bloc-msg'); if (ancien) ancien.remove();
   const m = metierDe(p), garde = APRES.modele && APRES.id === p.id;
   APRES.id = p.id; APRES.modele = modele;
-  APRES.v = { nom: garde ? APRES.v.nom : nomCourt(p.gerant), date: CHOIX.rappel || '',
+  APRES.v = { nom: garde ? APRES.v.nom : nomCourt(p.gerant), date: dateChoisie(),
     lien: garde ? APRES.v.lien : (m ? m.lien : ''), attendue: CHOIX.res !== 'lien' };
   APRES.genere = remplir(modele.texte, p, APRES.v);
-  return `<div class="bloc" style="margin-top:12px"><h3>Message au client</h3>
-    <label class="champ">Nom de la personne<input id="apres-nom" value="${esc(APRES.v.nom)}" placeholder="Vide : « Bonjour, »"></label>
-    ${/{lien}/.test(modele.texte) ? `<label class="champ">Lien<input id="apres-lien" value="${esc(APRES.v.lien)}"></label>` : ''}
-    <label class="champ">Texte (modifiable)<textarea id="msg-texte" style="min-height:210px">${esc(APRES.genere)}</textarea></label></div>`;
+  el.innerHTML = `<div class="tete"><b>Message « ${esc(modele.titre)} »</b><input id="apres-nom" value="${esc(APRES.v.nom)}" placeholder="Nom (vide : « Bonjour, »)" aria-label="Nom de la personne"></div>
+    <textarea id="msg-texte" aria-label="Message">${esc(APRES.genere)}</textarea>`;
+}
+function dateChoisie() {
+  const precise = document.getElementById('date-precise');
+  return (precise && precise.value ? precise.value.replace('T', ' ') : CHOIX.rappel) || '';
 }
 function modeleApres(res, p) {
   if (!p || !(telInternational(p.telephone) || p.email)) return null;
@@ -926,48 +938,14 @@ function envoyer(canal) {
 // --- Message d'après-appel ------------------------------------------------
 // Rappel convenu, RDV obtenu, Lien envoyé : chacun son texte (onglet Messages,
 // colonne APRÈS). Sam ajuste le nom et l'heure, le texte suit.
-const APRES = { modele: null, v: null, genere: '', dateCrm: '' };
-
-// pret : le texte préparé (et peut-être retouché) avant l'enregistrement.
-function ouvrirMessageApres(res, pret) {
-  const p = trouver(S.ouvert);
-  const modele = modeleApres(res, p);
-  if (!modele) return false;
-  const m = metierDe(p);
-  APRES.modele = modele; APRES.dateCrm = p.rappel || '';
-  APRES.v = { nom: pret ? pret.v.nom : nomCourt(p.gerant), date: p.rappel || '', lien: pret ? pret.v.lien : (m ? m.lien : '') };
-  APRES.genere = remplir(modele.texte, p, APRES.v);
-  if (pret) APRES.genere = pret.texte.split('[date à choisir]').join(dateMessage(APRES.v.date)); // déjà remplacée si la date a été choisie
-  const wa = telInternational(p.telephone);
-  const avecLien = /{lien}/.test(modele.texte);
-  document.getElementById('feuille').innerHTML = `<div class="feuille-tete"><div class="poignee"></div>
-      <div class="ligne1"><div><h1>${esc(p.entreprise)}</h1>
-        <div class="sous">« ${esc(S.data.resultats[res].label)} » enregistré. Le message à lui envoyer :</div></div>
-        <button class="fermer" data-action="fermer" aria-label="Fermer">✕</button></div></div>
-    <div class="bloc" id="bloc-apres"><h3>${esc(modele.titre)}</h3>
-      <label class="champ">Nom de la personne<input id="apres-nom" value="${esc(APRES.v.nom)}" placeholder="Laisser vide : « Bonjour, »"></label>
-      <label class="champ">${res === 'rdv' ? 'Date du rendez-vous' : res === 'lien' ? 'Je rappelle le… (vide : pas de phrase de rappel)' : 'Je rappelle le…'}
-        <input type="datetime-local" id="apres-date" value="${esc(APRES.v.date.replace(' ', 'T'))}"></label>
-      ${avecLien ? `<label class="champ">Lien envoyé<input id="apres-lien" value="${esc(APRES.v.lien)}"></label>` : ''}
-      <label class="champ">Message<textarea id="msg-texte" style="min-height:230px">${esc(APRES.genere)}</textarea></label>
-      <div class="sous" id="apres-avert"></div>
-      <div style="display:grid;grid-template-columns:${p.email ? '1fr 1fr 1fr' : '1fr 1fr'};gap:8px;margin-top:10px">
-        <button class="btn ${wa ? '' : 'inactif'}" data-action="apres-envoyer" data-canal="whatsapp">WhatsApp</button>
-        <button class="btn clair ${wa ? '' : 'inactif'}" data-action="apres-envoyer" data-canal="sms">SMS</button>
-        ${p.email ? '<button class="btn clair" data-action="apres-envoyer" data-canal="mail">Mail</button>' : ''}</div>
-      <button class="btn clair large" style="margin-top:8px" data-action="fermer">Pas de message</button>
-    </div>`;
-  document.getElementById('feuille').scrollTo({ top: 0 });
-  return true;
-}
+const APRES = { modele: null, v: null, genere: '', id: '' };
 
 // Nom, date ou lien changé : on remplace dans le texte, sans perdre ce que Sam a retouché à la main.
 function majMessageApres() {
   const p = trouver(S.ouvert), zone = document.getElementById('msg-texte');
   const lienEl = document.getElementById('apres-lien');
-  const dateEl = document.getElementById('apres-date') || document.getElementById('date-precise');
   const v = { nom: document.getElementById('apres-nom').value.trim(),
-    date: dateEl ? dateEl.value.replace('T', ' ') : '',
+    date: dateChoisie(),
     lien: lienEl ? lienEl.value.trim() : APRES.v.lien, attendue: APRES.v.attendue };
   if (!zone) return;
   const neuf = remplir(APRES.modele.texte, p, v);
@@ -984,48 +962,38 @@ function majMessageApres() {
     zone.value = t;
   }
   APRES.v = v; APRES.genere = neuf;
-  const avert = document.getElementById('apres-avert');
-  if (avert) avert.textContent = v.date !== APRES.dateCrm
-    ? (v.date ? 'À l’envoi, le rappel du CRM et l’agenda passent aussi au ' + dateMessage(v.date) + '.' : 'À l’envoi, la date prévue dans le CRM est retirée.')
-    : '';
 }
 
-async function envoyerApres(canal) {
-  const p = trouver(S.ouvert);
-  // La date écrite au client fait foi : le CRM et l'agenda s'alignent dessus.
-  if (APRES.v.date !== APRES.dateCrm) {
-    try {
-      const maj = await appel('api_modifier', S.pin, p.id, { rappel: APRES.v.date });
-      const agenda = maj._agenda || '';
-      majLocale(maj); APRES.dateCrm = APRES.v.date; rendre();
-      toast('Rappel déplacé au ' + dateMessage(APRES.v.date) + '.' + (agenda ? ' ' + agenda + '.' : ''));
-    } catch (e) { return toast(e.message || String(e), true); }
-  }
+function urlMessage(canal, p, txt, titre) {
+  if (canal === 'whatsapp') return 'https://wa.me/' + telInternational(p.telephone) + '?text=' + encodeURIComponent(txt);
+  if (canal === 'sms') return 'sms:+' + telInternational(p.telephone) + '?&body=' + encodeURIComponent(txt);
+  // Un mail porte toujours la signature complète de celui qui l'envoie, à la place du « Prénom, NS Development ».
+  const corps = txt.replace(new RegExp('\\n*' + signataire().prenom + ', NS Development\\s*$'), '') + '\n\n' + signataire().texte;
+  return 'mailto:' + encodeURIComponent(p.email) + '?subject=' + encodeURIComponent(p.entreprise + ' : ' + titre.toLowerCase()) + '&body=' + encodeURIComponent(corps);
+}
+
+// WhatsApp touché avec un message prêt : on ouvre tout de suite (sinon le
+// téléphone bloque l'ouverture), puis le résultat s'enregistre avec la trace du message.
+function envoyerDirect(canal) {
+  const res = CHOIX.res, def = S.data.resultats[res], p = trouver(S.ouvert);
   const txt = document.getElementById('msg-texte').value;
-  let url;
-  if (canal === 'whatsapp') url = 'https://wa.me/' + telInternational(p.telephone) + '?text=' + encodeURIComponent(txt);
-  else if (canal === 'sms') url = 'sms:+' + telInternational(p.telephone) + '?&body=' + encodeURIComponent(txt);
-  else {
-    // Un mail porte toujours la signature complète de celui qui l'envoie, à la place du « Samir, NS Development ».
-    const corps = txt.replace(new RegExp('\\n*' + signataire().prenom + ', NS Development\\s*$'), '') + '\n\n' + signataire().texte;
-    url = 'mailto:' + encodeURIComponent(p.email) + '?subject=' + encodeURIComponent(p.entreprise + ' : ' + APRES.modele.titre.toLowerCase()) + '&body=' + encodeURIComponent(corps);
+  if ((def.rappelObligatoire && !dateChoisie()) || txt.includes('[date à choisir]')) {
+    toast('Choisis d’abord la date, elle s’écrit dans le message.', true);
+    const z = document.getElementById('zone-res'); if (z) z.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
   }
-  window.open(url, '_blank');
-  document.getElementById('bloc-apres').innerHTML = `<h3>Message parti ?</h3><p class="sous">Note-le pour garder la trace dans l’historique.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-    <button class="btn clair" data-action="fermer">Pas envoyé</button>
-    <button class="btn" data-action="noter-apres" data-titre="${esc(canal + ' : ' + APRES.modele.titre)}">Oui, noter</button></div>`;
+  window.open(urlMessage(canal, p, txt, APRES.modele.titre), '_blank');
+  enregistrer(document.querySelector('[data-action="enregistrer"]'), (canal === 'sms' ? 'SMS' : canal === 'mail' ? 'Mail' : 'WhatsApp') + ' envoyé : ' + APRES.modele.titre);
 }
 
-// --- Actions serveur ------------------------------------------------------
-async function enregistrer(btn) {
+async function enregistrer(btn, message) {
   const res = CHOIX.res, def = S.data.resultats[res];
   const precise = document.getElementById('date-precise');
   const rappel = (precise && precise.value ? precise.value.replace('T', ' ') : CHOIX.rappel) || '';
   const pr = trouver(S.ouvert);
   const garderRdv = pr && cle(pr) === 'rdv' && (res === 'pas_repondu' || res === 'absent');
   if (def.rappelObligatoire && !rappel && !garderRdv) return toast('Choisis une date.', true);
-  const note = (document.getElementById('note-res') || {}).value || '';
+  const note = [(document.getElementById('note-res') || {}).value || '', message || ''].filter(Boolean).join(' · ');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   try {
     const p = await appel('api_logger', S.pin, S.ouvert, res, note, rappel, S.par, res === 'rdv' ? CHOIX.duree : null);
@@ -1034,9 +1002,7 @@ async function enregistrer(btn) {
     majLocale(p, { resultat: def.label, note: perdu ? [note, '3e appel sans réponse : passé en Perdu'].filter(Boolean).join(' · ') : note, rappel: perdu ? '' : rappel });
     toast(perdu ? '3e appel sans réponse : passé en Perdu.' : '« ' + def.label + ' » enregistré.' + (agenda ? ' ' + agenda + '.' : ''), /NON/.test(agenda));
     rendre();
-    const zone = document.getElementById('msg-texte');
-    const pret = zone && APRES.modele ? { texte: zone.value, v: APRES.v } : null;
-    if (!pret || perdu || !ouvrirMessageApres(res, pret)) fermerFiche();
+    fermerFiche();
   } catch (e) { btn.disabled = false; btn.textContent = 'Réessayer'; toast(e.message || String(e), true); }
 }
 
@@ -1111,12 +1077,12 @@ document.addEventListener('click', e => {
     // Un rappel part par défaut le lendemain à la même heure : un tap et c'est posé.
     CHOIX.rappel = r.dataset.res === 'rappel' ? demainMemeHeure() : '';
     document.querySelectorAll('[data-res]').forEach(b => b.classList.toggle('choisi', b === r));
-    const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat(); z.classList.remove('cache'); z.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+    const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat(); rendreMessageHaut(); z.classList.remove('cache'); z.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
   const mo = e.target.closest('[data-motif]');
   if (mo) { CHOIX.res = mo.dataset.motif;
     const note = (document.getElementById('note-res') || {}).value || '', pr = (document.getElementById('date-precise') || {}).value || '';
     if (pr) CHOIX.rappel = pr.replace('T', ' ');
-    const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat();
+    const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat(); rendreMessageHaut();
     const n = document.getElementById('note-res'); if (n) n.value = note; return; }
   const du = e.target.closest('[data-duree]');
   if (du) { CHOIX.duree = Number(du.dataset.duree); document.querySelectorAll('[data-duree]').forEach(b => b.classList.toggle('choisi', b === du)); return; }
@@ -1140,12 +1106,10 @@ document.addEventListener('click', e => {
   else if (act === 'editer') rendreFiche(true);
   else if (act === 'devis') { const p = trouver(S.ouvert); fermerFiche(); Factu.nouveauDevis(p); }
   else if (act === 'annuler-edit') rendreFiche();
-  else if (act === 'msg') ouvrirMessages(a.dataset.canal);
+  else if (act === 'msg') { if (APRES.modele && document.getElementById('apres-nom')) envoyerDirect(a.dataset.canal); else ouvrirMessages(a.dataset.canal); }
   else if (act === 'envoyer') envoyer(a.dataset.canal);
   else if (act === 'fermer-msg') document.getElementById('bloc-msg').remove();
   else if (act === 'noter-msg') noterMessage(a.dataset.titre);
-  else if (act === 'apres-envoyer') { if (!a.classList.contains('inactif')) envoyerApres(a.dataset.canal); }
-  else if (act === 'noter-apres') noterMessage(a.dataset.titre).then(ok => { if (ok) fermerFiche(); });
   else if (act === 'forcer-ajout') ajouter(document.getElementById('form-ajout'), true);
 });
 document.addEventListener('submit', e => {
@@ -1154,7 +1118,7 @@ document.addEventListener('submit', e => {
   if (e.target.id === 'form-ajout') ajouter(e.target);
 });
 document.addEventListener('input', e => {
-  if (['apres-nom', 'apres-date', 'apres-lien'].includes(e.target.id)) majMessageApres();
+  if (e.target.id === 'apres-nom') majMessageApres();
   if (e.target.id === 'date-precise' && document.getElementById('apres-nom')) majMessageApres();
 });
 document.addEventListener('change', e => {
