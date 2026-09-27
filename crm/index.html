@@ -656,7 +656,7 @@ function vueStats() {
 const CHOIX = { res: '', rappel: '', duree: 60 };
 
 function ouvrirFiche(id) {
-  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60;
+  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60; APRES.modele = null;
   rendreFiche();
   document.getElementById('fiche').classList.remove('cache');
   document.body.style.overflow = 'hidden';
@@ -798,7 +798,29 @@ function zoneResultat() {
     ${CHOIX.res === 'rdv' ? `<div style="font-size:13px;color:var(--doux)">Durée dans l’agenda</div>
     <div class="dates">${(S.data.rdvDurees || [30, 60, 90]).map(m => `<button data-duree="${m}" class="${CHOIX.duree === m ? 'choisi' : ''}">${m < 60 ? m + ' min' : (m / 60 + ' h').replace('.5 h', ' h 30')}</button>`).join('')}</div>` : ''}
     <label class="champ">${CHOIX.res === 'note' ? 'Note' : 'Ce qui s’est dit (facultatif)'}<textarea id="note-res" placeholder="Nom de la personne, objection, heure qui l’arrange…"></textarea></label>
-    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(motif ? 'Rappel · ' + def.label.replace('Rappel convenu', 'convenu') : def.label)} »</button>`;
+    ${motif && CHOIX.res !== 'rappel' ? '<div class="sous" style="margin-top:6px">Un texte au client ? Choisis « Convenu avec lui ».</div>' : ''}
+    ${blocMessage(p)}
+    <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(motif ? 'Rappel · ' + def.label.replace('Rappel convenu', 'convenu') : def.label)} »${APRES.modele ? ' puis envoyer' : ''}</button>`;
+}
+
+// Rappel convenu, RDV obtenu, Lien envoyé : le texte au client s'affiche dès le
+// bouton touché, et suit la date choisie au-dessus. Envoyé après l'enregistrement.
+function blocMessage(p) {
+  const modele = modeleApres(CHOIX.res, p);
+  if (!modele) { APRES.modele = null; return ''; }
+  const m = metierDe(p), garde = APRES.modele && APRES.id === p.id;
+  APRES.id = p.id; APRES.modele = modele;
+  APRES.v = { nom: garde ? APRES.v.nom : nomCourt(p.gerant), date: CHOIX.rappel || '',
+    lien: garde ? APRES.v.lien : (m ? m.lien : ''), attendue: CHOIX.res !== 'lien' };
+  APRES.genere = remplir(modele.texte, p, APRES.v);
+  return `<div class="bloc" style="margin-top:12px"><h3>Message au client</h3>
+    <label class="champ">Nom de la personne<input id="apres-nom" value="${esc(APRES.v.nom)}" placeholder="Vide : « Bonjour, »"></label>
+    ${/{lien}/.test(modele.texte) ? `<label class="champ">Lien<input id="apres-lien" value="${esc(APRES.v.lien)}"></label>` : ''}
+    <label class="champ">Texte (modifiable)<textarea id="msg-texte" style="min-height:210px">${esc(APRES.genere)}</textarea></label></div>`;
+}
+function modeleApres(res, p) {
+  if (!p || !(telInternational(p.telephone) || p.email)) return null;
+  return (S.data.messages || []).find(m => m.apres === res) || null;
 }
 
 function formEdition(p) {
@@ -826,7 +848,8 @@ function remplir(txt, p, v) {
   const lien = v.lien !== undefined ? v.lien : (m ? m.lien : '');
   let t = String(txt);
   // Pas de date : la phrase qui l'annonce disparaît (un lien sans relance prévue).
-  if (!date) t = t.split('\n').filter(l => !/{date}/.test(l)).join('\n').replace(/\n{3,}/g, '\n\n');
+  if (!date && v.attendue) t = t.replace(/{date}/g, '[date à choisir]');
+  else if (!date) t = t.split('\n').filter(l => !/{date}/.test(l)).join('\n').replace(/\n{3,}/g, '\n\n');
   return t
     .replace(/ ?{nom}/g, nom ? ' ' + nom : '')
     .replace(/{date}/g, date ? dateMessage(date) : '')
@@ -905,14 +928,16 @@ function envoyer(canal) {
 // colonne APRÈS). Sam ajuste le nom et l'heure, le texte suit.
 const APRES = { modele: null, v: null, genere: '', dateCrm: '' };
 
-function ouvrirMessageApres(res) {
+// pret : le texte préparé (et peut-être retouché) avant l'enregistrement.
+function ouvrirMessageApres(res, pret) {
   const p = trouver(S.ouvert);
-  const modele = p && (S.data.messages || []).find(m => m.apres === res);
-  if (!modele || !(telInternational(p.telephone) || p.email)) return false;
+  const modele = modeleApres(res, p);
+  if (!modele) return false;
   const m = metierDe(p);
   APRES.modele = modele; APRES.dateCrm = p.rappel || '';
-  APRES.v = { nom: nomCourt(p.gerant), date: p.rappel || '', lien: m ? m.lien : '' };
+  APRES.v = { nom: pret ? pret.v.nom : nomCourt(p.gerant), date: p.rappel || '', lien: pret ? pret.v.lien : (m ? m.lien : '') };
   APRES.genere = remplir(modele.texte, p, APRES.v);
+  if (pret) APRES.genere = pret.texte.split('[date à choisir]').join(dateMessage(APRES.v.date)); // déjà remplacée si la date a été choisie
   const wa = telInternational(p.telephone);
   const avecLien = /{lien}/.test(modele.texte);
   document.getElementById('feuille').innerHTML = `<div class="feuille-tete"><div class="poignee"></div>
@@ -940,20 +965,27 @@ function ouvrirMessageApres(res) {
 function majMessageApres() {
   const p = trouver(S.ouvert), zone = document.getElementById('msg-texte');
   const lienEl = document.getElementById('apres-lien');
+  const dateEl = document.getElementById('apres-date') || document.getElementById('date-precise');
   const v = { nom: document.getElementById('apres-nom').value.trim(),
-    date: document.getElementById('apres-date').value.replace('T', ' '),
-    lien: lienEl ? lienEl.value.trim() : APRES.v.lien };
+    date: dateEl ? dateEl.value.replace('T', ' ') : '',
+    lien: lienEl ? lienEl.value.trim() : APRES.v.lien, attendue: APRES.v.attendue };
+  if (!zone) return;
   const neuf = remplir(APRES.modele.texte, p, v);
   if (zone.value === APRES.genere) zone.value = neuf;
   else {
     let t = zone.value;
     if (APRES.v.nom !== v.nom) t = t.replace('Bonjour' + (APRES.v.nom ? ' ' + APRES.v.nom : '') + ',', 'Bonjour' + (v.nom ? ' ' + v.nom : '') + ',');
-    if (APRES.v.date && v.date && APRES.v.date !== v.date) t = t.split(dateMessage(APRES.v.date)).join(dateMessage(v.date));
+    if (APRES.v.date !== v.date) {
+      const avant = APRES.v.date ? dateMessage(APRES.v.date) : (APRES.v.attendue ? '[date à choisir]' : '');
+      if (avant && v.date) t = t.split(avant).join(dateMessage(v.date));
+      else if (!avant || !v.date) t = neuf; // la phrase de relance apparaît ou disparaît : on repart du modèle
+    }
     if (APRES.v.lien && APRES.v.lien !== v.lien) t = t.split(APRES.v.lien).join(v.lien);
     zone.value = t;
   }
   APRES.v = v; APRES.genere = neuf;
-  document.getElementById('apres-avert').textContent = v.date !== APRES.dateCrm
+  const avert = document.getElementById('apres-avert');
+  if (avert) avert.textContent = v.date !== APRES.dateCrm
     ? (v.date ? 'À l’envoi, le rappel du CRM et l’agenda passent aussi au ' + dateMessage(v.date) + '.' : 'À l’envoi, la date prévue dans le CRM est retirée.')
     : '';
 }
@@ -1002,7 +1034,9 @@ async function enregistrer(btn) {
     majLocale(p, { resultat: def.label, note: perdu ? [note, '3e appel sans réponse : passé en Perdu'].filter(Boolean).join(' · ') : note, rappel: perdu ? '' : rappel });
     toast(perdu ? '3e appel sans réponse : passé en Perdu.' : '« ' + def.label + ' » enregistré.' + (agenda ? ' ' + agenda + '.' : ''), /NON/.test(agenda));
     rendre();
-    if (!ouvrirMessageApres(res)) fermerFiche();
+    const zone = document.getElementById('msg-texte');
+    const pret = zone && APRES.modele ? { texte: zone.value, v: APRES.v } : null;
+    if (!pret || perdu || !ouvrirMessageApres(res, pret)) fermerFiche();
   } catch (e) { btn.disabled = false; btn.textContent = 'Réessayer'; toast(e.message || String(e), true); }
 }
 
@@ -1088,7 +1122,8 @@ document.addEventListener('click', e => {
   if (du) { CHOIX.duree = Number(du.dataset.duree); document.querySelectorAll('[data-duree]').forEach(b => b.classList.toggle('choisi', b === du)); return; }
   const d = e.target.closest('[data-date]');
   if (d) { CHOIX.rappel = d.dataset.date; document.querySelectorAll('[data-date]').forEach(b => b.classList.toggle('choisi', b === d));
-    const p = document.getElementById('date-precise'); if (p) p.value = d.dataset.date.replace(' ', 'T'); return; }
+    const p = document.getElementById('date-precise'); if (p) p.value = d.dataset.date.replace(' ', 'T');
+    if (document.getElementById('apres-nom')) majMessageApres(); return; }
   const es = e.target.closest('[data-espace]');
   if (es) { S.espace = es.dataset.espace; stocker('espace', S.espace); S.plusJour = 25; window.scrollTo(0, 0); rendre(); return; }
   const a = e.target.closest('[data-action]'); if (!a) return;
@@ -1120,6 +1155,7 @@ document.addEventListener('submit', e => {
 });
 document.addEventListener('input', e => {
   if (['apres-nom', 'apres-date', 'apres-lien'].includes(e.target.id)) majMessageApres();
+  if (e.target.id === 'date-precise' && document.getElementById('apres-nom')) majMessageApres();
 });
 document.addEventListener('change', e => {
   if (e.target.id === 'filtre-secteur') { S.filtreSecteur = e.target.value; rendre(); }
