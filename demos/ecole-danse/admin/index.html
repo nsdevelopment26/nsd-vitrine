@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maison Volte · Espace de gestion</title>
+<meta name="description" content="Démonstration NS Development : l'espace de gestion d'une école de cours à Luxembourg. Inscriptions au trimestre ou au semestre, fiches élèves, factures, cours et professeurs.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Maison Volte · Espace de gestion">
+<meta property="og:description" content="Inscriptions, élèves, factures, cours et professeurs, au même endroit.">
+<meta property="og:image" content="../og.jpg">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Charte Maison Volte (reprise du site public) :
+   noir profond, craie, un seul accent terre. L'espace de gestion
+   garde la même identité pour que la cliente reconnaisse « son » outil. */
+:root{
+  --noir:#0b0b0a; --encre:#161513; --graphite:#1c1b19; --graphite-2:#262521;
+  --craie:#f7f4ef; --blanc:#fffdfa; --lin:#e4dcd0; --trait:#e7e1d8;
+  --gris:#645e56; --gris-clair:#b6afa5;
+  --terre:#a85b3e; --terre-fonce:#8d4a31; --terre-clair:#d98f70; --terre-voile:#f3e4dc;
+  --vert:#2f6b4f; --vert-voile:#e3efe7; --ambre:#8a5a00; --ambre-voile:#f6ecd6; --rouge:#a4342a; --rouge-voile:#f7e2df;
+  --display:'Bodoni Moda','Didot','Times New Roman',serif;
+  --sans:'Jost',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--craie);color:var(--encre);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--terre);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Bandeau démo ---------- */
+.demo-bar{position:fixed;inset:0 0 auto 0;z-index:90;height:34px;display:flex;align-items:center;justify-content:center;gap:14px;background:var(--terre);color:#fff;font-size:12.5px;letter-spacing:.02em;padding:0 12px}
+.demo-bar b{font-weight:600}
+.demo-bar button{color:#fff;text-decoration:underline;text-underline-offset:3px;font-size:12.5px}
+@media (max-width:640px){.demo-bar .long{display:none}}
+
+/* ---------- Connexion ---------- */
+.login{position:fixed;inset:34px 0 0 0;z-index:80;display:grid;grid-template-columns:1.1fr 1fr;background:var(--noir);transition:opacity .7s var(--ease),visibility .7s}
+.login.out{opacity:0;visibility:hidden}
+.login-visuel{position:relative;overflow:hidden}
+.login-visuel img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);animation:lent 14s var(--ease) forwards;filter:brightness(.72)}
+@keyframes lent{to{transform:scale(1)}}
+.login-visuel .cit{position:absolute;left:48px;bottom:48px;right:48px;color:var(--craie);font-family:var(--display);font-size:clamp(28px,3.4vw,46px);line-height:1.08;letter-spacing:-.01em}
+.login-visuel .cit span{display:block;font-family:var(--sans);font-size:14px;letter-spacing:.04em;margin-top:16px;color:rgba(247,244,239,.82)}
+.login-form{display:flex;flex-direction:column;justify-content:center;padding:56px clamp(28px,6vw,88px);background:var(--craie)}
+.logo{font-family:var(--display);font-size:28px;letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px}
+.logo small{font-family:var(--sans);font-size:12px;letter-spacing:.08em;color:var(--gris);text-transform:uppercase}
+.login-form h1{font-family:var(--display);font-weight:500;font-size:clamp(34px,4vw,50px);line-height:1.02;margin:48px 0 10px;letter-spacing:-.015em}
+.login-form p.sub{color:var(--gris);margin-bottom:34px;max-width:36ch}
+.champ{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.champ label{font-size:13px;font-weight:500;color:var(--encre)}
+.champ input,.champ select,.champ textarea{width:100%;border:1px solid var(--lin);background:var(--blanc);border-radius:10px;padding:12px 14px;font-size:15px;transition:border-color .3s,box-shadow .3s}
+.champ input:focus,.champ select:focus,.champ textarea:focus{outline:none;border-color:var(--terre);box-shadow:0 0 0 4px rgba(168,91,62,.12)}
+.btn-entrer{margin-top:12px;display:inline-flex;align-items:center;justify-content:space-between;gap:18px;background:var(--noir);color:var(--craie);padding:16px 20px 16px 24px;border-radius:0;font-weight:500;letter-spacing:.02em;max-width:320px;transition:background .4s var(--ease)}
+.btn-entrer .rond{width:34px;height:34px;border-radius:50%;background:var(--terre);display:grid;place-items:center;transition:transform .5s var(--ease)}
+.btn-entrer:hover{background:var(--graphite)}
+.btn-entrer:hover .rond{transform:translateX(6px) rotate(-45deg)}
+.login-note{margin-top:28px;font-size:13px;color:var(--gris)}
+@media (max-width:860px){.login{grid-template-columns:1fr}.login-visuel{display:none}}
+
+/* ---------- Structure ---------- */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh;padding-top:34px}
+.side{position:sticky;top:34px;height:calc(100vh - 34px);background:var(--noir);color:var(--craie);display:flex;flex-direction:column;padding:26px 16px 20px}
+.side .logo{color:var(--craie);padding:0 10px 26px;font-size:23px;white-space:nowrap}
+.side .logo small{color:var(--gris-clair)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{position:relative;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:rgba(247,244,239,.78);font-size:14.5px;text-align:left;transition:color .3s,background .3s}
+.nav button:hover{color:var(--craie);background:rgba(255,255,255,.04)}
+.nav button[aria-current="page"]{color:var(--craie);background:var(--graphite-2)}
+.nav button[aria-current="page"]::before{content:"";position:absolute;left:-16px;top:10px;bottom:10px;width:3px;background:var(--terre);border-radius:0 3px 3px 0}
+.nav .badge{margin-left:auto;background:var(--terre);color:#fff;font-size:11.5px;font-weight:600;border-radius:99px;padding:1px 8px;min-width:22px;text-align:center}
+.side-bas{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.voir-site{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid rgba(247,244,239,.16);border-radius:10px;font-size:14px;text-decoration:none;color:var(--craie);transition:border-color .3s}
+.voir-site:hover{border-color:var(--terre-clair)}
+.voir-site svg{margin-left:auto}
+.moi{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:13.5px;color:rgba(247,244,239,.82)}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--terre);color:#fff;font-weight:600;font-size:13px;flex:none;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.signe{font-size:12px;color:rgba(247,244,239,.6);padding:0 12px}
+
+.main{min-width:0;padding:0 clamp(16px,3vw,44px) 60px}
+.top{position:sticky;top:34px;z-index:20;display:flex;align-items:center;gap:14px;padding:18px 0;background:linear-gradient(var(--craie) 72%,rgba(247,244,239,0))}
+.top h2{font-family:var(--display);font-weight:500;font-size:clamp(28px,3vw,40px);letter-spacing:-.015em;line-height:1}
+.periode{margin-left:auto;display:flex;background:var(--blanc);border:1px solid var(--lin);border-radius:99px;padding:3px}
+.periode button{padding:7px 14px;border-radius:99px;font-size:13.5px;color:var(--gris);transition:background .35s var(--ease),color .35s}
+.periode button[aria-pressed="true"]{background:var(--noir);color:var(--craie)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;transition:transform .35s var(--ease),background .3s,border-color .3s,color .3s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-plein{background:var(--terre);color:#fff}
+.btn-plein:hover{background:var(--terre-fonce)}
+.btn-noir{background:var(--noir);color:var(--craie)}
+.btn-noir:hover{background:var(--graphite)}
+.btn-trait{border:1px solid var(--lin);background:var(--blanc)}
+.btn-trait:hover{border-color:var(--encre)}
+.btn-lien{padding:6px 4px;color:var(--terre-fonce);font-weight:500}
+.btn-lien:hover{text-decoration:underline;text-underline-offset:3px}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:8px}
+
+/* ---------- Vues ---------- */
+.vue{display:none}
+.vue.on{display:block;animation:entre .6s var(--ease)}
+@keyframes entre{from{opacity:0;transform:translateY(14px)}}
+.st>*{opacity:0;transform:translateY(16px);animation:monte .7s var(--ease) forwards}
+.st>*:nth-child(1){animation-delay:.04s}.st>*:nth-child(2){animation-delay:.1s}.st>*:nth-child(3){animation-delay:.16s}.st>*:nth-child(4){animation-delay:.22s}.st>*:nth-child(5){animation-delay:.28s}.st>*:nth-child(6){animation-delay:.34s}.st>*:nth-child(n+7){animation-delay:.4s}
+@keyframes monte{to{opacity:1;transform:none}}
+
+.carte{background:var(--blanc);border:1px solid var(--trait);border-radius:var(--r);padding:22px}
+.carte h3{font-family:var(--display);font-weight:500;font-size:22px;letter-spacing:-.01em;margin-bottom:4px}
+.carte .aide{color:var(--gris);font-size:13.5px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.kpi{position:relative;overflow:hidden;background:var(--blanc);border:1px solid var(--trait);border-radius:var(--r);padding:20px 20px 18px;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(22,21,19,.35)}
+.kpi .lib{font-size:13.5px;color:var(--gris)}
+.kpi .val{font-family:var(--display);font-size:40px;line-height:1.05;margin-top:8px;letter-spacing:-.02em}
+.kpi .sous{font-size:13px;color:var(--gris);margin-top:6px}
+.kpi.sombre{background:var(--noir);color:var(--craie);border-color:var(--noir)}
+.kpi.sombre .lib,.kpi.sombre .sous{color:rgba(247,244,239,.72)}
+.kpi.sombre::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(168,91,62,.55),transparent 70%)}
+.hausse{color:var(--vert);font-weight:500}
+.kpi.sombre .hausse{color:#8fd1ae}
+
+.grille-2{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:14px}
+.barres{display:flex;flex-direction:column;gap:13px;margin-top:18px}
+.barre{display:grid;grid-template-columns:minmax(0,190px) 1fr 54px;align-items:center;gap:14px;font-size:14px}
+.barre .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barre .n small{color:var(--gris);font-size:12.5px;display:block}
+.piste{height:9px;background:var(--craie);border-radius:99px;overflow:hidden}
+.piste i{display:block;height:100%;width:0;background:var(--encre);border-radius:99px;transition:width 1.3s var(--ease)}
+.piste i.plein{background:var(--terre)}
+.barre .p{text-align:right;font-variant-numeric:tabular-nums;color:var(--gris);font-size:13.5px}
+
+.fil{display:flex;flex-direction:column;margin-top:10px}
+.fil-l{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--trait);font-size:14px}
+.fil-l:last-child{border-bottom:0}
+.fil-l .t{flex:1;min-width:0}
+.fil-l .t b{font-weight:500}
+.fil-l .t small{display:block;color:var(--gris);font-size:13px}
+.fil-l time{font-size:12.5px;color:var(--gris);white-space:nowrap}
+.fil-l.neuf{animation:flash 2.4s var(--ease)}
+@keyframes flash{0%{background:var(--terre-voile)}100%{background:transparent}}
+
+.alertes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.alerte{display:flex;gap:14px;align-items:flex-start;background:var(--blanc);border:1px solid var(--trait);border-radius:var(--r);padding:18px;font-size:14px}
+.alerte .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.alerte b{display:block;font-weight:500;margin-bottom:2px}
+.alerte span{color:var(--gris);font-size:13.5px}
+
+/* Listes */
+.outils{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.recherche{position:relative;flex:1;min-width:220px;max-width:380px}
+.recherche svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gris)}
+.recherche input{width:100%;padding:11px 14px 11px 40px;border:1px solid var(--lin);border-radius:10px;background:var(--blanc);font-size:14.5px}
+.recherche input:focus{outline:none;border-color:var(--terre)}
+.filtres{display:flex;gap:6px;flex-wrap:wrap}
+.filtre{padding:8px 13px;border-radius:99px;border:1px solid var(--lin);background:var(--blanc);font-size:13.5px;color:var(--gris);transition:all .3s}
+.filtre[aria-pressed="true"]{background:var(--encre);color:var(--craie);border-color:var(--encre)}
+.liste{background:var(--blanc);border:1px solid var(--trait);border-radius:var(--r);overflow:hidden}
+.ligne{display:grid;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--trait);font-size:14px;transition:background .25s}
+.ligne:last-child{border-bottom:0}
+.ligne.tete{font-size:12.5px;font-weight:500;color:var(--gris);background:var(--craie);padding-top:10px;padding-bottom:10px}
+.ligne.clic{cursor:pointer}
+.ligne.clic:hover{background:#fbf8f3}
+.ligne .qui{display:flex;align-items:center;gap:12px;min-width:0}
+.ligne .qui .t{min-width:0}
+.ligne .qui b{font-weight:500;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ligne .qui small{color:var(--gris);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ligne .num{font-variant-numeric:tabular-nums}
+.ligne .d{color:var(--gris);font-size:13.5px}
+.l-ins{grid-template-columns:minmax(0,1.5fr) minmax(0,1.4fr) 110px 110px 120px}
+.l-el{grid-template-columns:minmax(0,1.6fr) minmax(0,1.4fr) 90px 120px 24px}
+.l-fac{grid-template-columns:130px minmax(0,1.5fr) 100px 110px 120px minmax(0,150px)}
+.vide{padding:40px;text-align:center;color:var(--gris)}
+
+.pastille{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:12.5px;font-weight:500;white-space:nowrap}
+.pastille::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--vert-voile);color:var(--vert)}
+.p-att{background:var(--ambre-voile);color:var(--ambre)}
+.p-ret{background:var(--rouge-voile);color:var(--rouge)}
+.p-neutre{background:var(--craie);color:var(--gris)}
+.tag{display:inline-block;padding:3px 9px;border-radius:6px;background:var(--craie);font-size:12.5px;color:var(--encre)}
+
+/* Cours */
+.jours{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.jour h4{font-family:var(--display);font-weight:500;font-size:20px;margin-bottom:10px}
+.cours{background:var(--blanc);border:1px solid var(--trait);border-radius:12px;padding:15px 16px;margin-bottom:10px;transition:border-color .3s,transform .5s var(--ease)}
+.cours:hover{border-color:var(--gris-clair)}
+.cours .h{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--gris)}
+.cours .nom{font-weight:500;font-size:15.5px;margin:3px 0 10px}
+.cours .prof-sel{display:flex;align-items:center;gap:10px}
+.cours .prof-sel .av{width:30px;height:30px}
+.cours select{flex:1;min-width:0;border:1px solid var(--lin);border-radius:8px;padding:7px 9px;background:var(--craie);font-size:13.5px}
+.jauge{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12.5px;color:var(--gris)}
+.jauge .piste{flex:1;height:6px}
+.cours.change{animation:pulse 1.4s var(--ease)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(168,91,62,.45)}100%{box-shadow:0 0 0 14px rgba(168,91,62,0)}}
+
+/* Professeurs */
+.profs-g{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.profs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.prof{background:var(--blanc);border:1px solid var(--trait);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.prof:hover{transform:translateY(-4px);box-shadow:0 22px 44px -28px rgba(22,21,19,.45)}
+.prof .ph{aspect-ratio:4/3;background:var(--lin);position:relative;overflow:hidden}
+.prof .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.prof:hover .ph img{transform:scale(1.05)}
+.prof .ph .ini{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:52px;color:var(--gris)}
+.prof.cache .ph{filter:grayscale(1) opacity(.55)}
+.prof .corps{padding:16px;display:flex;flex-direction:column;gap:4px;flex:1}
+.prof .corps b{font-weight:500;font-size:16px}
+.prof .corps small{color:var(--gris);font-size:13.5px}
+.prof .corps .nb{font-size:13px;color:var(--gris);margin-top:6px}
+.prof .act{display:flex;gap:6px;padding:0 16px 16px;flex-wrap:wrap}
+.bascule{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--gris);margin-top:8px}
+.bascule input{appearance:none;width:34px;height:20px;border-radius:99px;background:var(--lin);position:relative;cursor:pointer;transition:background .3s}
+.bascule input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .35s var(--ease);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.bascule input:checked{background:var(--vert)}
+.bascule input:checked::after{transform:translateX(14px)}
+.ajout{border:1.5px dashed var(--gris-clair);border-radius:var(--r);display:grid;place-items:center;min-height:260px;color:var(--gris);text-align:center;gap:6px;transition:border-color .3s,color .3s,background .3s}
+.ajout:hover{border-color:var(--terre);color:var(--terre-fonce);background:var(--blanc)}
+.ajout .plus{width:48px;height:48px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;margin:0 auto 8px}
+.apercu{position:sticky;top:110px;background:var(--noir);color:var(--craie);border-radius:var(--r);padding:20px;overflow:hidden}
+.apercu .navig{display:flex;gap:6px;margin-bottom:16px}
+.apercu .navig i{width:9px;height:9px;border-radius:50%;background:var(--graphite-2)}
+.apercu h5{font-family:var(--display);font-weight:500;font-size:24px;margin-bottom:4px}
+.apercu p{font-size:13px;color:rgba(247,244,239,.72);margin-bottom:14px}
+.ap-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ap-c{border-radius:8px;overflow:hidden;background:var(--graphite);animation:monte .6s var(--ease) both}
+.ap-c .im{aspect-ratio:3/4;background:var(--graphite-2);overflow:hidden;display:grid;place-items:center;font-family:var(--display);font-size:30px;color:var(--gris-clair)}
+.ap-c .im img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) sepia(.12)}
+.ap-c b{display:block;font-weight:500;font-size:12.5px;padding:8px 8px 0}
+.ap-c small{display:block;font-size:11.5px;color:rgba(247,244,239,.7);padding:0 8px 9px}
+.apercu .note{font-size:12.5px;color:rgba(247,244,239,.7);margin-top:14px;display:flex;gap:8px;align-items:center}
+.apercu .note .pt{width:7px;height:7px;border-radius:50%;background:#6fd39c}
+@keyframes vit{70%{box-shadow:0 0 0 8px rgba(111,211,156,0)}100%{box-shadow:0 0 0 0 rgba(111,211,156,0)}}
+
+/* ---------- Panneaux ---------- */
+.voile{position:fixed;inset:0;z-index:60;background:rgba(11,11,10,.45);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s}
+.voile.on{opacity:1;visibility:visible}
+.tiroir{position:fixed;top:34px;right:0;bottom:0;z-index:70;width:min(520px,100%);background:var(--craie);transform:translateX(100%);visibility:hidden;transition:transform .6s var(--ease),visibility .6s;display:flex;flex-direction:column;box-shadow:-30px 0 60px -30px rgba(0,0,0,.4)}
+.tiroir.on{transform:none;visibility:visible}
+.tiroir-t{display:flex;align-items:center;gap:14px;padding:22px 24px;border-bottom:1px solid var(--trait);background:var(--blanc)}
+.tiroir-t .av{width:52px;height:52px;font-size:17px}
+.tiroir-t h3{font-family:var(--display);font-weight:500;font-size:26px;line-height:1.1}
+.tiroir-t small{color:var(--gris);font-size:13.5px}
+.fermer{margin-left:auto;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--lin);transition:transform .5s var(--ease),border-color .3s;flex:none}
+.fermer:hover{transform:rotate(90deg);border-color:var(--encre)}
+.tiroir-c{overflow:auto;padding:22px 24px 40px;display:flex;flex-direction:column;gap:14px}
+.bloc{background:var(--blanc);border:1px solid var(--trait);border-radius:12px;padding:16px 18px}
+.bloc h4{font-size:13px;font-weight:500;color:var(--gris);margin-bottom:10px}
+.dl{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:14px}
+.dl dt{color:var(--gris)}
+.dl a{color:var(--terre-fonce);text-decoration:none}
+.dl a:hover{text-decoration:underline}
+.mini{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--trait);font-size:14px}
+.mini:last-child{border-bottom:0}
+.mini small{display:block;color:var(--gris);font-size:13px}
+.bloc textarea{width:100%;min-height:80px;border:1px solid var(--lin);border-radius:8px;padding:10px 12px;background:var(--craie);resize:vertical;font-size:14px}
+
+.modale{position:fixed;left:50%;top:calc(50% + 17px);z-index:75;width:min(760px,calc(100% - 24px));max-height:calc(100vh - 70px);overflow:auto;background:var(--craie);border-radius:18px;transform:translate(-50%,-46%) scale(.97);opacity:0;visibility:hidden;transition:transform .55s var(--ease),opacity .4s,visibility .55s;box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+.modale.on{transform:translate(-50%,-50%);opacity:1;visibility:visible}
+.modale-t{display:flex;align-items:center;gap:12px;padding:20px 24px;border-bottom:1px solid var(--trait)}
+.modale-t h3{font-family:var(--display);font-weight:500;font-size:26px;line-height:1.1}
+.modale-t small{display:block;color:var(--gris);font-size:13.5px;font-family:var(--sans)}
+.modale-c{padding:22px 24px 26px}
+.form-g{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.form-g .large{grid-column:1/-1}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.choix label{position:relative;border:1px solid var(--lin);background:var(--blanc);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .3s,box-shadow .3s}
+.choix input{position:absolute;opacity:0}
+.choix label:has(input:checked){border-color:var(--terre);box-shadow:0 0 0 3px rgba(168,91,62,.14)}
+.choix label:has(input:focus-visible){outline:2px solid var(--terre);outline-offset:2px}
+.choix b{display:block;font-weight:500}
+.choix span{font-size:13.5px;color:var(--gris)}
+.choix .prix{font-family:var(--display);font-size:24px;color:var(--encre);margin-top:4px;display:block}
+.case{display:flex;align-items:center;gap:10px;font-size:14px;margin:4px 0 14px;cursor:pointer}
+.case input{width:18px;height:18px;accent-color:var(--terre)}
+.enfant{display:none}
+.enfant.on{display:block;animation:entre .5s var(--ease)}
+.pied-form{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px;padding-top:18px;border-top:1px solid var(--trait)}
+.pied-form .total{font-size:14px;color:var(--gris)}
+.pied-form .total b{font-family:var(--display);font-size:28px;color:var(--encre);font-weight:500;margin-left:6px}
+.erreur{color:var(--rouge);font-size:13px;margin-top:-8px;margin-bottom:10px;display:none}
+.erreur.on{display:block}
+
+.etapes{display:flex;flex-direction:column;gap:4px;margin:6px 0 18px}
+.etape{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:15px;opacity:.35;transition:opacity .4s}
+.etape.fait{opacity:1}
+.etape .rond{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--lin);display:grid;place-items:center;transition:all .45s var(--ease);flex:none}
+.etape.fait .rond{background:var(--vert);border-color:var(--vert);color:#fff;transform:scale(1.06)}
+.etape .rond svg{width:14px;height:14px;opacity:0;transition:opacity .3s .1s}
+.etape.fait .rond svg{opacity:1}
+.mails{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mail{background:var(--blanc);border:1px solid var(--trait);border-radius:12px;overflow:hidden;font-size:13.5px;animation:monte .7s var(--ease) both}
+.mail:nth-child(2){animation-delay:.15s}
+.mail .en{padding:12px 14px;background:var(--craie);border-bottom:1px solid var(--trait);font-size:12.5px;color:var(--gris);line-height:1.6}
+.mail .en b{color:var(--encre);font-weight:500}
+.mail .co{padding:16px 14px}
+.mail .co .marque{font-family:var(--display);font-size:20px;margin-bottom:10px}
+.mail .co p{margin-bottom:8px}
+.mail .recap{background:var(--craie);border-radius:8px;padding:10px 12px;margin:10px 0;line-height:1.7}
+.mail .recap b{font-weight:500}
+.mail .qui-l{font-size:12.5px;font-weight:600;color:var(--terre-fonce);margin-bottom:6px;display:block}
+
+/* Facture */
+.facture{background:#fff;border:1px solid var(--trait);border-radius:4px;padding:34px;font-size:14px}
+.fac-t{display:flex;justify-content:space-between;gap:20px;margin-bottom:30px}
+.fac-t .logo{font-size:26px}
+.fac-t .droite{text-align:right;font-size:13px;color:var(--gris)}
+.fac-t .droite b{display:block;font-family:var(--display);font-size:24px;color:var(--encre);font-weight:500}
+.fac-p{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:26px;font-size:13.5px}
+.fac-p span{display:block;color:var(--gris);font-size:12.5px;margin-bottom:4px}
+.fac-l{width:100%;border-collapse:collapse;margin-bottom:20px}
+.fac-l th{text-align:left;font-size:12.5px;font-weight:500;color:var(--gris);border-bottom:1px solid var(--encre);padding:8px 0}
+.fac-l td{padding:12px 0;border-bottom:1px solid var(--trait);vertical-align:top}
+.fac-l td:last-child,.fac-l th:last-child{text-align:right}
+.fac-tot{display:flex;justify-content:flex-end;gap:30px;font-size:15px;align-items:baseline}
+.fac-tot b{font-family:var(--display);font-size:30px;font-weight:500}
+.fac-pied{margin-top:30px;padding-top:16px;border-top:1px solid var(--trait);font-size:12.5px;color:var(--gris);line-height:1.7}
+
+/* Toast */
+.toasts{position:fixed;right:20px;bottom:20px;z-index:95;display:flex;flex-direction:column;gap:10px;align-items:flex-end;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;background:var(--noir);color:var(--craie);padding:12px 16px 12px 14px;border-radius:12px;font-size:14px;box-shadow:0 18px 40px -18px rgba(0,0,0,.5);animation:tin .55s var(--ease)}
+.toast .ok{width:22px;height:22px;border-radius:50%;background:var(--vert);display:grid;place-items:center}
+.toast .ok svg{width:12px;height:12px;color:#fff}
+.toast.sort{animation:tout .4s var(--ease) forwards}
+@keyframes tin{from{opacity:0;transform:translateY(16px) scale(.96)}}
+@keyframes tout{to{opacity:0;transform:translateX(30px)}}
+
+/* ---------- Mobile ---------- */
+.nav-mob{display:none}
+@media (max-width:1100px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grille-2,.profs-g{grid-template-columns:1fr}
+  .alertes{grid-template-columns:1fr}
+  .jours{grid-template-columns:repeat(2,1fr)}
+  .apercu{position:static}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{display:none}
+  .main{padding-bottom:100px}
+  .nav-mob{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:50;background:var(--noir);border-radius:18px;padding:6px;justify-content:space-between;box-shadow:0 18px 40px -16px rgba(0,0,0,.55);padding-bottom:max(6px,env(safe-area-inset-bottom))}
+  .nav-mob button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:12px;color:rgba(247,244,239,.72);font-size:11px;position:relative}
+  .nav-mob button[aria-current="page"]{background:var(--graphite-2);color:var(--craie)}
+  .nav-mob .badge{position:absolute;top:3px;right:calc(50% - 20px);background:var(--terre);color:#fff;font-size:10.5px;border-radius:99px;padding:0 5px;min-width:17px}
+  .top{flex-wrap:wrap}
+  .top .periode{order:3;margin-left:0}
+  .top .btn-plein{margin-left:auto}
+  .ligne.tete{display:none}
+  .l-ins,.l-el,.l-fac{grid-template-columns:1fr auto;row-gap:6px}
+  .ligne .cache-m{display:none}
+  .form-g,.mails,.choix{grid-template-columns:1fr}
+  .fac-p{grid-template-columns:1fr}
+  .facture{padding:20px}
+}
+@media (max-width:560px){
+  .jours{grid-template-columns:1fr}
+  .kpi .val{font-size:32px}
+  .barre{grid-template-columns:minmax(0,110px) 1fr 44px}
+  .top .btn-plein .txt{display:none}
+  .dl{grid-template-columns:1fr;gap:2px}
+  .dl dd{margin-bottom:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+  .st>*{opacity:1;transform:none}
+}
+@media print{
+  body *{visibility:hidden}
+  #facture-zone,#facture-zone *{visibility:visible}
+  #facture-zone{position:absolute;left:0;top:0;width:100%}
+  .facture{border:0}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar" role="note">
+  <span><b>Démonstration NS Development</b><span class="long"> · école fictive, données inventées, aucun mail n'est réellement envoyé</span></span>
+  <button type="button" id="reset">Réinitialiser</button>
+</div>
+
+<!-- Connexion -->
+<section class="login" id="login" aria-label="Connexion">
+  <div class="login-visuel">
+    <img src="../photos/espace.webp" alt="">
+    <p class="cit">Vos inscriptions, vos élèves, vos factures.<br>Au même endroit.<span>Espace de gestion · Maison Volte</span></p>
+  </div>
+  <form class="login-form" id="login-form">
+    <div class="logo">Maison Volte <small>Gestion</small></div>
+    <h1>Bonsoir.</h1>
+    <p class="sub">Connectez-vous pour retrouver les inscriptions du trimestre et suivre vos paiements.</p>
+    <div class="champ"><label for="l-mail">Adresse mail</label><input id="l-mail" type="email" value="direction@maisonvolte.lu" autocomplete="off"></div>
+    <div class="champ"><label for="l-mdp">Mot de passe</label><input id="l-mdp" type="password" value="demonstration" autocomplete="off"></div>
+    <button class="btn-entrer" type="submit">Entrer dans l'espace <span class="rond"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+    <p class="login-note">Démonstration : les identifiants sont déjà remplis.</p>
+  </form>
+</section>
+
+<div class="app">
+  <aside class="side" aria-label="Navigation principale">
+    <div class="logo">Maison Volte <small>Gestion</small></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-bas">
+      <a class="voir-site" href="../" target="_blank" rel="noopener">Voir le site public <svg class="i" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+      <div class="moi"><span class="av">MV</span><span>Direction<br><span style="opacity:.7">direction@maisonvolte.lu</span></span></div>
+      <p class="signe">Réalisé par NS Development</p>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="top">
+      <h2 id="titre">Tableau de bord</h2>
+      <div class="periode" role="group" aria-label="Période affichée">
+        <button type="button" data-per="tout" aria-pressed="true">Tout</button>
+        <button type="button" data-per="T1" aria-pressed="false">Trimestre</button>
+        <button type="button" data-per="S1" aria-pressed="false">Semestre</button>
+      </div>
+      <button class="btn btn-plein" type="button" id="simuler"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="txt">Simuler une inscription</span></button>
+    </div>
+
+    <section class="vue" id="v-accueil" aria-labelledby="titre"></section>
+    <section class="vue" id="v-inscriptions"></section>
+    <section class="vue" id="v-eleves"></section>
+    <section class="vue" id="v-factures"></section>
+    <section class="vue" id="v-cours"></section>
+    <section class="vue" id="v-profs"></section>
+  </main>
+</div>
+
+<nav class="nav-mob" id="nav-mob" aria-label="Navigation"></nav>
+
+<div class="voile" id="voile"></div>
+<aside class="tiroir" id="tiroir" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tiroir-titre"></aside>
+<div class="modale" id="modale" aria-hidden="true" role="dialog" aria-modal="true"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =================== Icônes =================== */
+const I = {
+  accueil:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/>',
+  inscriptions:'<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 2v4M16 2v4M4 10h16M9 15l2 2 4-4"/>',
+  eleves:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.8.8 3 2.6 3.5 5.2"/>',
+  factures:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  cours:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  profs:'<circle cx="12" cy="7.5" r="3.5"/><path d="M5 21c.9-4 3.6-6.5 7-6.5s6.1 2.5 7 6.5"/>',
+  check:'<path d="M5 12.5 10 17 19 7"/>',
+  chev:'<path d="m9 6 6 6-6 6"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  loupe:'<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/>',
+  alerte:'<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.5"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  euro:'<path d="M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  photo:'<rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/>',
+  print:'<path d="M7 9V3h10v6M7 17H4v-7h16v7h-3"/><rect x="7" y="14" width="10" height="7"/>'
+};
+const ic = (n, c='i') => `<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
+
+/* =================== Données fictives =================== */
+const PERIODES = {
+  T1:{id:'T1', nom:'Trimestre 1', type:'Trimestre', dates:'du 14 sept. au 19 déc. 2026', prix:195},
+  S1:{id:'S1', nom:'Semestre 1', type:'Semestre', dates:'du 14 sept. 2026 au 13 févr. 2027', prix:360}
+};
+
+function seed(){
+  const profs = [
+    {id:'lea', nom:'Léa Vandermeulen', spec:'Contemporain & création', bio:"Elle enseigne le poids, le souffle et l'écoute avant la figure.", photo:'../photos/prof-contemporain.webp', visible:true},
+    {id:'yanis', nom:'Yanis Berrada', spec:'Hip-Hop & Street Dance', bio:'Il transmet le groove, le freestyle et la culture qui va avec.', photo:'../photos/prof-hip-hop.webp', visible:true},
+    {id:'camille', nom:'Camille Roth', spec:'Classique & éveil', bio:'Vingt ans de barre, et une patience rare avec les plus jeunes.', photo:'../photos/prof-classique.webp', visible:true},
+    {id:'nour', nom:'Nour Haddad', spec:'Jazz, Modern Jazz & Dancehall', bio:'Ses cours sont exigeants et joyeux, dans cet ordre.', photo:'../photos/prof-jazz.webp', visible:true}
+  ];
+  const C = (id,jour,h,f,nom,niv,age,prof,cap=12) => ({id,jour,h,f,nom,niv,age,prof,cap});
+  const cours = [
+    C('c1','Lundi','16:30','17:15','Baby Dance','Éveil','3 – 5 ans','camille',8),
+    C('c2','Lundi','17:30','18:30','Classique','Débutant','6 – 9 ans','camille'),
+    C('c3','Lundi','18:45','20:15','Contemporain','Intermédiaire','Ados & adultes','lea'),
+    C('c4','Lundi','20:15','21:30','Hip-Hop','Tous niveaux','Adultes','yanis'),
+    C('c5','Mardi','17:00','18:00','Modern Jazz','Débutant','10 – 13 ans','nour'),
+    C('c6','Mardi','18:15','19:30','Jazz','Intermédiaire','Ados','nour'),
+    C('c7','Mardi','19:45','21:00','Street Dance','Tous niveaux','Adultes','yanis'),
+    C('c8','Mercredi','14:00','14:45','Baby Dance','Éveil','3 – 5 ans','camille',8),
+    C('c9','Mercredi','15:00','16:00','Hip-Hop Kids','Débutant','8 – 11 ans','yanis'),
+    C('c10','Mercredi','17:45','19:00','Contemporain','Débutant','Ados','lea'),
+    C('c11','Jeudi','18:00','19:15','Dancehall','Tous niveaux','Ados & adultes','nour'),
+    C('c12','Jeudi','19:30','21:00','Contemporain','Avancé','Adultes','lea'),
+    C('c13','Vendredi','20:00','21:15','Classique','Débutant','Adultes','camille'),
+    C('c14','Samedi','10:00','10:45','Baby Dance','Éveil','3 – 5 ans','camille',8),
+    C('c15','Samedi','11:00','12:15','Street Dance','Débutant','12 – 16 ans','yanis')
+  ];
+  // Élèves : prénoms et noms inventés. Téléphones et mails de démonstration.
+  const PRE = ['Inès','Louis','Sofia','Noah','Clara','Mila','Hugo','Lena','Emma','Rafael','Zoé','Adam','Maëlle','Jonas','Lucia','Elsa','Nina','Théo','Alba','Liam','Jade','Victor','Chloé','Maya','Sacha','Iris','Lou','Gabriel','Ava','Nathan','Léonie','Tiago','Rose','Elias','Anna','Milo'];
+  const NOM = ['Marchetti','Kremer','Almeida','Weber','Hoffmann','Schmit','Delvaux','Muller','Reuter','Costa','Lambert','Thill','Faber','Wagner','Ferreira','Hansen','Becker','Martin','Rossi','Scholtes','Nilles','Duarte','Klein','Olinger','Braun','Lentz','Pereira','Kieffer','Moreau','Hermes','Da Silva','Majerus','Petit','Bertrand','Wolff','Gomes'];
+  const PAR = ['Paula','Tom','Anne','Marc','Ana','Sarah','Rui','Julie','Eva','Paul','Lisa','Carla','David','Nadia'];
+  const noms = PRE.map((p,i) => { const enf = i%5===1 || i%5===3 || i%7===0; return [p, NOM[i], enf?1:0, enf ? PAR[i%PAR.length]+' '+NOM[i] : undefined]; })
+    .concat(PRE.slice(0,26).map((p,i) => { const enf = i%3===0; return [PRE[(i*7+5)%PRE.length], NOM[(i*5+11)%NOM.length], enf?1:0, enf ? PAR[(i+3)%PAR.length]+' '+NOM[(i*5+11)%NOM.length] : undefined]; }));
+  let s = 7; const rnd = () => (s = (s*9301+49297)%233280)/233280;
+  const eleves = noms.map((n,i) => {
+    const id = 'e'+(i+1);
+    const mail = (n[3] ? n[3].split(' ')[0] : n[0]).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')+'.'+n[1].toLowerCase().replace(/ /g,'')+'@exemple.lu';
+    return {id, prenom:n[0], nom:n[1], enfant:!!n[2], parent:n[3]||'', email:mail,
+      tel:'621 00 '+String(10+i).padStart(2,'0')+' '+String(20+((i*7)%70)).padStart(2,'0'),
+      adresse:(3+i*2)+', rue de l’Exemple, L-'+(1111+i*13)+' Luxembourg', note:'', cree:'2026-09-'+String(1+(i%12)).padStart(2,'0')};
+  });
+  const coursDe0 = id => cours.find(c => c.id===id);
+  const enfantsCours = ['c1','c2','c5','c8','c9','c14','c15','c6','c10'];
+  const adultesCours = ['c3','c4','c7','c11','c12','c13','c6','c10'];
+  const inscriptions = []; const factures = []; let nf = 1;
+  const plein = id => inscriptions.filter(x => x.cours===id).length;
+  const bonus = {c11:.35, c1:.3, c3:.15, c9:.1};
+  eleves.forEach((e,i) => {
+    const pool = e.enfant ? enfantsCours : adultesCours;
+    const n = 1 + (rnd() < .55 ? 1 : 0) + (rnd() < .2 ? 1 : 0);
+    const per = rnd() < .38 ? 'S1' : 'T1';
+    const ids = [];
+    for (let k=0;k<n;k++){
+      const dispo = pool.filter(c => !ids.some(x => inscriptions.find(y => y.id===x).cours===c) && plein(c) < coursDe0(c).cap - (c==='c11'?1:0))
+        .map(c => ({c, sc: plein(c)/coursDe0(c).cap - (bonus[c]||0) + rnd()*.25})).sort((a,b) => a.sc-b.sc);
+      if (!dispo.length) break;
+      const iid = 'i'+(inscriptions.length+1);
+      inscriptions.push({id:iid, eleve:e.id, cours:dispo[0].c, per, date:e.cree+'T1'+k+':2'+(i%6)+':00'});
+      ids.push(iid);
+    }
+    const r = rnd();
+    const statut = r < .72 ? 'payee' : (r < .9 ? 'attente' : 'retard');
+    factures.push({num:'FAC-2026-'+String(40+nf++).padStart(4,'0'), eleve:e.id, ins:ids, per,
+      montant:ids.length*PERIODES[per].prix, date:e.cree, statut, mode: statut==='payee' ? (rnd()<.6?'Virement':'Carte') : ''});
+  });
+  return {profs, cours, eleves, inscriptions, factures, notifs:0};
+}
+
+const CLE = 'nsd-demo-maison-volte-admin-v4';
+let D;
+try { D = JSON.parse(localStorage.getItem(CLE)) || seed(); } catch(e){ D = seed(); }
+const sauve = () => { try { localStorage.setItem(CLE, JSON.stringify(D)); } catch(e){} };
+
+let per = 'tout';
+let vue = 'accueil';
+
+/* =================== Aides =================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:0}) + ' €';
+const dateFr = d => new Date(d).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+const heureFr = d => { const x = new Date(d); return x.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})+' · '+x.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); };
+const eleve = id => D.eleves.find(e => e.id===id);
+const coursDe = id => D.cours.find(c => c.id===id);
+const prof = id => D.profs.find(p => p.id===id);
+const ini = (a,b) => ((a||'')[0]||'').toUpperCase()+((b||'')[0]||'').toUpperCase();
+const nomEl = e => e.prenom+' '+e.nom;
+const insPer = () => D.inscriptions.filter(i => per==='tout' || i.per===per);
+const facPer = () => D.factures.filter(f => per==='tout' || f.per===per);
+const remplis = c => D.inscriptions.filter(i => i.cours===c.id).length;
+const statutFac = s => s==='payee' ? '<span class="pastille p-ok">Payée</span>' : s==='attente' ? '<span class="pastille p-att">En attente</span>' : '<span class="pastille p-ret">En retard</span>';
+const avProf = p => p && p.photo ? `<span class="av"><img src="${esc(p.photo)}" alt=""></span>` : `<span class="av">${p?ini(...p.nom.split(' ')):'?'}</span>`;
+
+function toast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="ok">${ic('check')}</span>${esc(msg)}`;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('sort'); setTimeout(() => t.remove(), 420); }, 3200);
+}
+
+function compte(el){
+  const fin = +el.dataset.n, suf = el.dataset.s || '';
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduit){ el.textContent = fin.toLocaleString('fr-FR')+suf; return; }
+  const t0 = performance.now(), dur = 1100;
+  const pas = t => { const p = Math.min(1,(t-t0)/dur), v = Math.round(fin*(1-Math.pow(1-p,4)));
+    el.textContent = v.toLocaleString('fr-FR')+suf; if (p<1) requestAnimationFrame(pas); };
+  requestAnimationFrame(pas);
+}
+function anime(root){
+  root.querySelectorAll('[data-n]').forEach(compte);
+  requestAnimationFrame(() => requestAnimationFrame(() => root.querySelectorAll('.piste i[data-w]').forEach(b => b.style.width = b.dataset.w+'%')));
+}
+
+/* =================== Navigation =================== */
+const VUES = [
+  ['accueil','Tableau de bord','Accueil'],['inscriptions','Inscriptions','Inscrits'],['eleves','Élèves','Élèves'],
+  ['factures','Factures','Factures'],['cours','Cours & planning','Cours'],['profs','Professeurs','Profs']
+];
+function nav(){
+  const badge = D.notifs ? `<span class="badge">${D.notifs}</span>` : '';
+  $('#nav').innerHTML = VUES.map(([k,l]) => `<button type="button" data-v="${k}" ${k===vue?'aria-current="page"':''}>${ic(k)}${l}${k==='inscriptions'?badge:''}</button>`).join('');
+  $('#nav-mob').innerHTML = VUES.map(([k,,c]) => `<button type="button" data-v="${k}" ${k===vue?'aria-current="page"':''}>${ic(k)}${c}${k==='inscriptions'&&D.notifs?`<span class="badge">${D.notifs}</span>`:''}</button>`).join('');
+}
+function va(k){
+  vue = k;
+  if (k==='inscriptions' && D.notifs){ D.notifs = 0; sauve(); }
+  document.querySelectorAll('.vue').forEach(v => v.classList.toggle('on', v.id==='v-'+k));
+  $('#titre').textContent = VUES.find(v => v[0]===k)[1];
+  $('.periode').style.visibility = (k==='cours'||k==='profs') ? 'hidden' : '';
+  nav(); rendre(); window.scrollTo({top:0,behavior:'smooth'});
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (b) va(b.dataset.v); });
+document.querySelectorAll('[data-per]').forEach(b => b.addEventListener('click', () => {
+  per = b.dataset.per;
+  document.querySelectorAll('[data-per]').forEach(x => x.setAttribute('aria-pressed', x===b));
+  rendre();
+}));
+
+function rendre(){
+  ({accueil:vAccueil, inscriptions:vIns, eleves:vEleves, factures:vFac, cours:vCours, profs:vProfs})[vue]();
+}
+
+/* =================== Tableau de bord =================== */
+function vAccueil(){
+  const ins = insPer(), fac = facPer();
+  const elevesActifs = new Set(ins.map(i => i.eleve)).size;
+  const enc = fac.filter(f => f.statut==='payee').reduce((a,f) => a+f.montant,0);
+  const att = fac.filter(f => f.statut!=='payee').reduce((a,f) => a+f.montant,0);
+  const retards = fac.filter(f => f.statut==='retard');
+  const places = D.cours.reduce((a,c) => a+c.cap,0), prises = D.cours.reduce((a,c) => a+Math.min(c.cap,remplis(c)),0);
+  const top = [...D.cours].sort((a,b) => remplis(b)/b.cap - remplis(a)/a.cap).slice(0,6);
+  const presquePleins = D.cours.filter(c => c.cap-remplis(c) <= 2);
+  const recents = [...D.inscriptions].sort((a,b) => b.date.localeCompare(a.date)).slice(0,6);
+  const lib = per==='tout' ? 'toutes périodes' : PERIODES[per].nom.toLowerCase();
+  $('#v-accueil').innerHTML = `
+    <div class="kpis st">
+      <div class="kpi sombre"><div class="lib">Élèves inscrits</div><div class="val" data-n="${elevesActifs}">0</div><div class="sous"><span class="hausse">+${Math.min(6,elevesActifs)}</span> cette semaine · ${lib}</div></div>
+      <div class="kpi"><div class="lib">Encaissé</div><div class="val" data-n="${enc}" data-s=" €">0</div><div class="sous">${fac.filter(f=>f.statut==='payee').length} factures payées</div></div>
+      <div class="kpi"><div class="lib">Reste à encaisser</div><div class="val" data-n="${att}" data-s=" €">0</div><div class="sous">dont ${euro(retards.reduce((a,f)=>a+f.montant,0))} en retard</div></div>
+      <div class="kpi"><div class="lib">Remplissage des cours</div><div class="val" data-n="${Math.round(prises/places*100)}" data-s=" %">0</div><div class="sous">${prises} places prises sur ${places}</div></div>
+    </div>
+    <div class="grille-2 st">
+      <div class="carte"><h3>Les cours les plus demandés</h3><p class="aide">Places prises sur la capacité de chaque cours.</p>
+        <div class="barres">${top.map(c => { const r = remplis(c), pc = Math.min(100,Math.round(r/c.cap*100));
+          return `<div class="barre"><span class="n">${esc(c.nom)}<small>${c.jour} ${c.h} · ${esc(prof(c.prof)?.nom||'Sans professeur')}</small></span><span class="piste"><i data-w="${pc}" class="${pc>=85?'plein':''}"></i></span><span class="p">${Math.min(r,c.cap)}/${c.cap}</span></div>`; }).join('')}</div>
+      </div>
+      <div class="carte"><h3>Dernières inscriptions</h3><p class="aide">En direct depuis le site.</p>
+        <div class="fil" id="fil">${recents.map(i => { const e = eleve(i.eleve), c = coursDe(i.cours);
+          return `<div class="fil-l ${i.neuf?'neuf':''}"><span class="av">${ini(e.prenom,e.nom)}</span><span class="t"><b>${esc(nomEl(e))}</b><small>${esc(c.nom)} · ${PERIODES[i.per].type}</small></span><time>${heureFr(i.date)}</time></div>`; }).join('')}</div>
+        <button type="button" class="btn btn-lien" data-v="inscriptions">Toutes les inscriptions →</button>
+      </div>
+    </div>
+    <div class="alertes st">
+      <div class="alerte"><span class="ic" style="background:var(--rouge-voile);color:var(--rouge)">${ic('euro')}</span><div><b>${retards.length} facture${retards.length>1?'s':''} en retard</b><span>Une relance par mail se prépare en un clic.</span><br><button type="button" class="btn btn-lien" data-v="factures">Voir les factures →</button></div></div>
+      <div class="alerte"><span class="ic" style="background:var(--ambre-voile);color:var(--ambre)">${ic('alerte')}</span><div><b>${presquePleins.length} cours presque complet${presquePleins.length>1?'s':''}</b><span>${presquePleins.map(c=>esc(c.nom)+' ('+c.jour.toLowerCase()+')').join(', ')||'Aucun pour l’instant.'}</span></div></div>
+      <div class="alerte"><span class="ic" style="background:var(--vert-voile);color:var(--vert)">${ic('mail')}</span><div><b>Confirmations automatiques</b><span>Chaque inscription envoie un mail à l'élève et à l'école. Rien à faire à la main.</span></div></div>
+    </div>`;
+  anime($('#v-accueil'));
+}
+
+/* =================== Inscriptions =================== */
+let fIns = {q:'', cours:''};
+function vIns(){
+  const liste = insPer().filter(i => {
+    const e = eleve(i.eleve), c = coursDe(i.cours);
+    return (!fIns.q || (nomEl(e)+' '+c.nom).toLowerCase().includes(fIns.q)) && (!fIns.cours || c.nom===fIns.cours);
+  }).sort((a,b) => b.date.localeCompare(a.date));
+  const noms = [...new Set(D.cours.map(c => c.nom))];
+  $('#v-inscriptions').innerHTML = `
+    <div class="outils">
+      <label class="recherche"><span class="sr">Rechercher</span>${ic('loupe')}<input id="q-ins" type="search" placeholder="Rechercher un élève ou un cours" value="${esc(fIns.q)}"></label>
+      <div class="filtres"><button type="button" class="filtre" data-fc="" aria-pressed="${!fIns.cours}">Tous</button>${noms.map(n => `<button type="button" class="filtre" data-fc="${esc(n)}" aria-pressed="${fIns.cours===n}">${esc(n)}</button>`).join('')}</div>
+    </div>
+    <div class="liste st" style="--x:0">
+      <div class="ligne tete l-ins"><span>Élève</span><span>Cours</span><span>Formule</span><span>Paiement</span><span>Reçue le</span></div>
+      ${liste.map(i => { const e = eleve(i.eleve), c = coursDe(i.cours), f = D.factures.find(f => f.ins.includes(i.id));
+        return `<div class="ligne l-ins clic ${i.neuf?'neuf':''}" data-el="${e.id}" tabindex="0" role="button" aria-label="Ouvrir la fiche de ${esc(nomEl(e))}">
+          <span class="qui"><span class="av">${ini(e.prenom,e.nom)}</span><span class="t"><b>${esc(nomEl(e))}</b><small>${e.enfant?'Enfant · '+esc(e.parent):'Adulte'}</small></span></span>
+          <span class="cache-m"><b style="font-weight:500">${esc(c.nom)}</b> <span class="d">· ${c.jour} ${c.h}</span></span>
+          <span><span class="tag">${PERIODES[i.per].type}</span></span>
+          <span class="cache-m">${f?statutFac(f.statut):''}</span>
+          <span class="d cache-m">${dateFr(i.date)}</span></div>`; }).join('') || '<p class="vide">Aucune inscription ne correspond.</p>'}
+    </div>`;
+  const q = $('#q-ins'); q.addEventListener('input', () => { fIns.q = q.value.toLowerCase(); vIns(); const n = $('#q-ins'); n.focus(); n.setSelectionRange(n.value.length,n.value.length); });
+  document.querySelectorAll('[data-fc]').forEach(b => b.addEventListener('click', () => { fIns.cours = b.dataset.fc; vIns(); }));
+}
+
+/* =================== Élèves =================== */
+let fEl = {q:'', t:''};
+function vEleves(){
+  const liste = D.eleves.filter(e => {
+    const fs = D.factures.filter(f => f.eleve===e.id);
+    const ok = !fEl.t || (fEl.t==='enfant' && e.enfant) || (fEl.t==='adulte' && !e.enfant) || (fEl.t==='impaye' && fs.some(f => f.statut!=='payee'));
+    return ok && (!fEl.q || (nomEl(e)+' '+e.email+' '+e.parent).toLowerCase().includes(fEl.q));
+  }).sort((a,b) => a.nom.localeCompare(b.nom));
+  $('#v-eleves').innerHTML = `
+    <div class="outils">
+      <label class="recherche"><span class="sr">Rechercher</span>${ic('loupe')}<input id="q-el" type="search" placeholder="Nom, mail, parent…" value="${esc(fEl.q)}"></label>
+      <div class="filtres">${[['','Tous'],['enfant','Enfants'],['adulte','Adultes'],['impaye','Paiement en attente']].map(([k,l]) => `<button type="button" class="filtre" data-ft="${k}" aria-pressed="${fEl.t===k}">${l}</button>`).join('')}</div>
+      <span class="d" style="margin-left:auto;color:var(--gris);font-size:13.5px">${liste.length} élève${liste.length>1?'s':''}</span>
+    </div>
+    <div class="liste">
+      <div class="ligne tete l-el"><span>Élève</span><span>Contact</span><span>Cours</span><span>Paiement</span><span></span></div>
+      ${liste.map(e => { const fs = D.factures.filter(f => f.eleve===e.id); const nb = D.inscriptions.filter(i => i.eleve===e.id).length;
+        const st = fs.some(f => f.statut==='retard') ? 'retard' : fs.some(f => f.statut==='attente') ? 'attente' : 'payee';
+        return `<div class="ligne l-el clic" data-el="${e.id}" tabindex="0" role="button" aria-label="Ouvrir la fiche de ${esc(nomEl(e))}">
+          <span class="qui"><span class="av">${ini(e.prenom,e.nom)}</span><span class="t"><b>${esc(nomEl(e))}</b><small>${e.enfant?'Enfant · parent : '+esc(e.parent):'Adulte'}</small></span></span>
+          <span class="qui cache-m"><span class="t"><b style="font-weight:400">${esc(e.email)}</b><small>${esc(e.tel)}</small></span></span>
+          <span class="cache-m">${nb} cours</span>
+          <span>${statutFac(st)}</span>
+          <span class="cache-m" style="color:var(--gris)">${ic('chev')}</span></div>`; }).join('') || '<p class="vide">Aucun élève ne correspond.</p>'}
+    </div>`;
+  const q = $('#q-el'); q.addEventListener('input', () => { fEl.q = q.value.toLowerCase(); vEleves(); const n = $('#q-el'); n.focus(); n.setSelectionRange(n.value.length,n.value.length); });
+  document.querySelectorAll('[data-ft]').forEach(b => b.addEventListener('click', () => { fEl.t = b.dataset.ft; vEleves(); }));
+}
+
+/* Fiche élève (tiroir) */
+function ouvre(el){ el.scrollTop = 0; const c = el.querySelector('.tiroir-c'); if (c) c.scrollTop = 0; $('#voile').classList.add('on'); el.classList.add('on'); el.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+function fermeTout(){
+  ['#tiroir','#modale'].forEach(s => { $(s).classList.remove('on'); $(s).setAttribute('aria-hidden','true'); });
+  $('#voile').classList.remove('on'); document.body.style.overflow='';
+}
+$('#voile').addEventListener('click', fermeTout);
+document.addEventListener('keydown', e => { if (e.key==='Escape') fermeTout();
+  if ((e.key==='Enter'||e.key===' ') && e.target.matches('[data-el]')){ e.preventDefault(); fiche(e.target.dataset.el); } });
+document.addEventListener('click', e => { const l = e.target.closest('[data-el]'); if (l) fiche(l.dataset.el); if (e.target.closest('[data-ferme]')) fermeTout(); });
+
+function fiche(id){
+  const e = eleve(id); if (!e) return;
+  const ins = D.inscriptions.filter(i => i.eleve===id), fs = D.factures.filter(f => f.eleve===id);
+  const t = $('#tiroir');
+  t.innerHTML = `
+    <div class="tiroir-t"><span class="av">${ini(e.prenom,e.nom)}</span><div><h3 id="tiroir-titre">${esc(nomEl(e))}</h3><small>${e.enfant?'Enfant':'Adulte'} · élève depuis le ${dateFr(e.cree)}</small></div>
+      <button type="button" class="fermer" data-ferme aria-label="Fermer">${ic('x')}</button></div>
+    <div class="tiroir-c st">
+      <div class="bloc"><h4>Coordonnées</h4><dl class="dl">
+        ${e.enfant?`<dt>Responsable</dt><dd>${esc(e.parent)}</dd>`:''}
+        <dt>Mail</dt><dd><a href="mailto:${esc(e.email)}">${esc(e.email)}</a></dd>
+        <dt>Téléphone</dt><dd><a href="tel:+352${esc(e.tel.replace(/\s/g,''))}">${esc(e.tel)}</a></dd>
+        <dt>Adresse</dt><dd>${esc(e.adresse)}</dd></dl></div>
+      <div class="bloc"><h4>Cours suivis</h4>${ins.map(i => { const c = coursDe(i.cours), p = prof(c.prof);
+        return `<div class="mini"><span><b style="font-weight:500">${esc(c.nom)}</b> · ${esc(c.niv)}<small>${c.jour} ${c.h}–${c.f} · ${esc(p?.nom||'Sans professeur')}</small></span><span class="tag">${PERIODES[i.per].type}</span></div>`; }).join('') || '<p class="aide">Aucun cours.</p>'}</div>
+      <div class="bloc"><h4>Factures</h4>${fs.map(f => `<div class="mini"><span><b style="font-weight:500">${f.num}</b><small>${dateFr(f.date)} · ${euro(f.montant)}</small></span><span style="display:flex;gap:8px;align-items:center">${statutFac(f.statut)}<button type="button" class="btn btn-trait btn-sm" data-fac="${f.num}">Voir</button></span></div>`).join('') || '<p class="aide">Aucune facture.</p>'}</div>
+      <div class="bloc"><h4>Notes privées</h4><label class="sr" for="note">Notes</label><textarea id="note" placeholder="Allergie, contre-indication, remarque du parent…">${esc(e.note)}</textarea></div>
+    </div>`;
+  ouvre(t);
+  $('#note').addEventListener('input', ev => { e.note = ev.target.value; sauve(); });
+  setTimeout(() => t.querySelector('.fermer').focus(), 50);
+}
+
+/* =================== Factures =================== */
+let fFac = '';
+function vFac(){
+  const toutes = facPer();
+  const liste = toutes.filter(f => !fFac || f.statut===fFac).sort((a,b) => b.num.localeCompare(a.num));
+  const som = s => toutes.filter(f => f.statut===s).reduce((a,f) => a+f.montant,0);
+  $('#v-factures').innerHTML = `
+    <div class="kpis st" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi"><div class="lib">Payées</div><div class="val" data-n="${som('payee')}" data-s=" €">0</div></div>
+      <div class="kpi"><div class="lib">En attente</div><div class="val" data-n="${som('attente')}" data-s=" €">0</div></div>
+      <div class="kpi sombre"><div class="lib">En retard</div><div class="val" data-n="${som('retard')}" data-s=" €">0</div></div>
+    </div>
+    <div class="outils"><div class="filtres">${[['','Toutes'],['payee','Payées'],['attente','En attente'],['retard','En retard']].map(([k,l]) => `<button type="button" class="filtre" data-ff="${k}" aria-pressed="${fFac===k}">${l}</button>`).join('')}</div></div>
+    <div class="liste">
+      <div class="ligne tete l-fac"><span>Numéro</span><span>Élève</span><span>Montant</span><span>Émise le</span><span>Statut</span><span></span></div>
+      ${liste.map(f => { const e = eleve(f.eleve);
+        return `<div class="ligne l-fac"><span class="num"><b style="font-weight:500">${f.num}</b></span>
+          <span class="qui cache-m"><span class="t"><b>${esc(nomEl(e))}</b><small>${PERIODES[f.per].nom}</small></span></span>
+          <span class="num">${euro(f.montant)}</span><span class="d cache-m">${dateFr(f.date)}</span><span>${statutFac(f.statut)}</span>
+          <span style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">${f.statut!=='payee'?`<button type="button" class="btn btn-trait btn-sm" data-paye="${f.num}">Marquer payée</button>`:''}<button type="button" class="btn btn-trait btn-sm" data-fac="${f.num}">Voir</button></span></div>`; }).join('')}
+    </div>`;
+  anime($('#v-factures'));
+  document.querySelectorAll('[data-ff]').forEach(b => b.addEventListener('click', () => { fFac = b.dataset.ff; vFac(); }));
+}
+document.addEventListener('click', e => {
+  const p = e.target.closest('[data-paye]');
+  if (p){ const f = D.factures.find(f => f.num===p.dataset.paye); f.statut='payee'; f.mode='Virement'; sauve(); toast(f.num+' marquée payée'); rendre(); }
+  const v = e.target.closest('[data-fac]'); if (v) voirFacture(v.dataset.fac);
+  const r = e.target.closest('[data-relance]'); if (r){ toast('Relance envoyée à '+r.dataset.relance); }
+});
+
+function voirFacture(num){
+  const f = D.factures.find(f => f.num===num), e = eleve(f.eleve);
+  const m = $('#modale');
+  m.setAttribute('aria-label','Facture '+num);
+  m.innerHTML = `
+    <div class="modale-t"><h3>${num}<small>${statutFac(f.statut)}</small></h3>
+      <span style="margin-left:auto;display:flex;gap:8px">${f.statut!=='payee'?`<button type="button" class="btn btn-trait btn-sm" data-relance="${esc(e.email)}">${ic('mail')}Relancer</button>`:''}<button type="button" class="btn btn-noir btn-sm" id="imprimer">${ic('print')}PDF</button>
+      <button type="button" class="fermer" data-ferme aria-label="Fermer">${ic('x')}</button></span></div>
+    <div class="modale-c" id="facture-zone"><div class="facture">
+      <div class="fac-t"><div><div class="logo">Maison Volte</div><p style="font-size:13px;color:var(--gris);margin-top:6px">12, rue des Ateliers · L-1112 Luxembourg<br>bonjour@maisonvolte.lu · +352 26 00 00 00</p></div>
+        <div class="droite"><b>Facture</b>${num}<br>Émise le ${dateFr(f.date)}</div></div>
+      <div class="fac-p"><div><span>Facturé à</span><b style="font-weight:500">${esc(e.enfant?e.parent:nomEl(e))}</b><br>${esc(e.adresse)}<br>${esc(e.email)}</div>
+        <div><span>Élève</span>${esc(nomEl(e))}<br><span style="margin-top:10px">Période</span>${PERIODES[f.per].nom}, ${PERIODES[f.per].dates}</div></div>
+      <table class="fac-l"><thead><tr><th>Désignation</th><th>Montant</th></tr></thead><tbody>
+        ${f.ins.map(id => { const i = D.inscriptions.find(x => x.id===id); const c = coursDe(i.cours);
+          return `<tr><td><b style="font-weight:500">${esc(c.nom)} · ${esc(c.niv)}</b><br><span style="color:var(--gris);font-size:13px">${c.jour} ${c.h}–${c.f} · ${PERIODES[f.per].type.toLowerCase()}</span></td><td>${euro(PERIODES[f.per].prix)}</td></tr>`; }).join('')}
+      </tbody></table>
+      <div class="fac-tot"><span>Total à régler</span><b>${euro(f.montant)}</b></div>
+      <div class="fac-pied">${f.statut==='payee'?`Réglée par ${f.mode.toLowerCase()}. Merci.`:`À régler sous 14 jours par virement : IBAN LU00 0000 0000 0000 0000 (démonstration), communication ${num}.`}<br>Mentions légales (RCS, TVA ou exonération) : à compléter selon le statut de l'école.</div>
+    </div></div>`;
+  $('#tiroir').classList.remove('on');
+  ouvre(m);
+  $('#imprimer').addEventListener('click', () => window.print());
+}
+
+/* =================== Cours =================== */
+function vCours(){
+  const jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  $('#v-cours').innerHTML = `
+    <p class="aide" style="color:var(--gris);margin:-4px 0 16px;max-width:70ch">Changez le professeur d'un cours : le planning du site public se met à jour immédiatement, et les élèves inscrits le voient dans leur mail de rappel.</p>
+    <div class="jours st">${jours.map(j => `<div class="jour"><h4>${j}</h4>${D.cours.filter(c => c.jour===j).map(c => {
+      const r = Math.min(remplis(c),c.cap), pc = Math.round(r/c.cap*100), p = prof(c.prof);
+      return `<div class="cours" id="co-${c.id}"><div class="h"><span>${c.h} – ${c.f}</span><span>${esc(c.age)}</span></div>
+        <div class="nom">${esc(c.nom)} <span style="color:var(--gris);font-weight:400;font-size:13.5px">· ${esc(c.niv)}</span></div>
+        <div class="prof-sel">${avProf(p)}<label class="sr" for="s-${c.id}">Professeur de ${esc(c.nom)}</label>
+          <select id="s-${c.id}" data-co="${c.id}">${D.profs.map(x => `<option value="${x.id}" ${x.id===c.prof?'selected':''}>${esc(x.nom)}</option>`).join('')}<option value="" ${!c.prof?'selected':''}>À attribuer</option></select></div>
+        <div class="jauge"><span class="piste"><i data-w="${pc}" class="${pc>=85?'plein':''}"></i></span><span>${r}/${c.cap} places</span></div></div>`; }).join('') || '<p class="aide" style="color:var(--gris)">Pas de cours.</p>'}</div>`).join('')}</div>`;
+  anime($('#v-cours'));
+  document.querySelectorAll('[data-co]').forEach(s => s.addEventListener('change', () => {
+    const c = coursDe(s.dataset.co); c.prof = s.value; sauve();
+    const p = prof(c.prof);
+    toast(p ? `${c.nom} du ${c.jour.toLowerCase()} : ${p.nom}, site mis à jour` : `${c.nom} : professeur à attribuer`);
+    vCours(); const el = $('#co-'+c.id); el.classList.add('change');
+  }));
+}
+
+/* =================== Professeurs =================== */
+function vProfs(){
+  $('#v-profs').innerHTML = `
+    <div class="profs-g">
+      <div class="profs st">
+        ${D.profs.map(p => { const nb = D.cours.filter(c => c.prof===p.id).length;
+          return `<article class="prof ${p.visible?'':'cache'}"><div class="ph">${p.photo?`<img src="${esc(p.photo)}" alt="Portrait de ${esc(p.nom)}">`:`<span class="ini">${ini(...p.nom.split(' '))}</span>`}</div>
+            <div class="corps"><b>${esc(p.nom)}</b><small>${esc(p.spec)}</small><span class="nb">${nb} cours cette saison</span>
+              <label class="bascule"><input type="checkbox" data-vis="${p.id}" ${p.visible?'checked':''}> ${p.visible?'Affiché sur le site':'Masqué du site'}</label></div>
+            <div class="act"><button type="button" class="btn btn-trait btn-sm" data-edit="${p.id}">Modifier</button><button type="button" class="btn btn-trait btn-sm" data-rempl="${p.id}">Remplacer</button></div></article>`; }).join('')}
+        <button type="button" class="ajout" data-edit=""><span><span class="plus">${ic('plus')}</span><b style="font-weight:500;display:block">Ajouter un professeur</b><span style="font-size:13.5px">Photo, spécialité, présentation</span></span></button>
+      </div>
+      <aside class="apercu" aria-label="Aperçu du site public"><div class="navig"><i></i><i></i><i></i></div>
+        <h5>Nos professeurs</h5><p>Ce que voient vos élèves sur le site, en ce moment.</p>
+        <div class="ap-g">${D.profs.filter(p => p.visible).map((p,k) => `<div class="ap-c" style="animation-delay:${k*.07}s"><div class="im">${p.photo?`<img src="${esc(p.photo)}" alt="">`:ini(...p.nom.split(' '))}</div><b>${esc(p.nom)}</b><small>${esc(p.spec)}</small></div>`).join('')}</div>
+        <p class="note"><span class="pt"></span>Synchronisé avec le site public</p></aside>
+    </div>`;
+  document.querySelectorAll('[data-vis]').forEach(x => x.addEventListener('change', () => {
+    const p = prof(x.dataset.vis); p.visible = x.checked; sauve();
+    toast(p.nom + (p.visible ? ' est de nouveau sur le site' : ' est masqué du site')); vProfs();
+  }));
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-edit]'); if (b) editeProf(b.dataset.edit);
+  const r = e.target.closest('[data-rempl]'); if (r) remplace(r.dataset.rempl);
+});
+
+function editeProf(id){
+  const p = id ? prof(id) : {id:'', nom:'', spec:'', bio:'', photo:'', visible:true};
+  let photo = p.photo;
+  const m = $('#modale');
+  m.setAttribute('aria-label', id ? 'Modifier '+p.nom : 'Ajouter un professeur');
+  m.innerHTML = `
+    <div class="modale-t"><h3>${id?'Modifier le professeur':'Nouveau professeur'}<small>Les changements apparaissent sur le site dès l'enregistrement.</small></h3>
+      <button type="button" class="fermer" data-ferme aria-label="Fermer" style="margin-left:auto">${ic('x')}</button></div>
+    <form class="modale-c" id="f-prof">
+      <div style="display:flex;gap:18px;align-items:center;margin-bottom:18px">
+        <div id="ph-ap" style="width:96px;height:96px;border-radius:50%;overflow:hidden;background:var(--lin);display:grid;place-items:center;flex:none;color:var(--gris)">${photo?`<img src="${esc(photo)}" alt="" style="width:100%;height:100%;object-fit:cover">`:ic('photo')}</div>
+        <div><label class="btn btn-trait" for="ph-in" style="cursor:pointer">${ic('photo')}Choisir une photo</label><input id="ph-in" type="file" accept="image/*" class="sr"><p style="font-size:13px;color:var(--gris);margin-top:6px">Depuis le téléphone ou l'ordinateur.</p></div>
+      </div>
+      <div class="form-g">
+        <div class="champ"><label for="p-nom">Prénom et nom</label><input id="p-nom" required value="${esc(p.nom)}" placeholder="Ex. Alix Moreau"></div>
+        <div class="champ"><label for="p-spec">Spécialité</label><input id="p-spec" required value="${esc(p.spec)}" placeholder="Ex. Salsa & bachata"></div>
+        <div class="champ large"><label for="p-bio">Présentation (une phrase)</label><textarea id="p-bio" rows="3" placeholder="Ce que les élèves doivent savoir de ce professeur.">${esc(p.bio)}</textarea></div>
+      </div>
+      <label class="case"><input type="checkbox" id="p-vis" ${p.visible?'checked':''}> Afficher sur le site</label>
+      <div class="pied-form"><span class="total">${id?'':'Il pourra ensuite être attribué à un cours.'}</span><button class="btn btn-plein" type="submit">${id?'Enregistrer':'Ajouter le professeur'}</button></div>
+    </form>`;
+  $('#tiroir').classList.remove('on'); ouvre(m);
+  setTimeout(() => $('#p-nom').focus(), 60);
+  $('#ph-in').addEventListener('change', ev => {
+    const f = ev.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { // réduit l'image pour la démo
+      const img = new Image(); img.onload = () => {
+        const cv = document.createElement('canvas'), t = 360, k = Math.max(t/img.width, t/img.height);
+        cv.width = t; cv.height = t; const x = cv.getContext('2d');
+        x.drawImage(img,(t-img.width*k)/2,(t-img.height*k)/2,img.width*k,img.height*k);
+        photo = cv.toDataURL('image/jpeg',.82);
+        $('#ph-ap').innerHTML = `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+      }; img.src = r.result;
+    }; r.readAsDataURL(f);
+  });
+  $('#f-prof').addEventListener('submit', ev => {
+    ev.preventDefault();
+    const v = {nom:$('#p-nom').value.trim(), spec:$('#p-spec').value.trim(), bio:$('#p-bio').value.trim(), photo, visible:$('#p-vis').checked};
+    if (id) Object.assign(p, v); else D.profs.push({id:'p'+Date.now(), ...v});
+    sauve(); fermeTout(); toast(id ? v.nom+' mis à jour sur le site' : v.nom+' ajouté à l’équipe'); vProfs();
+  });
+}
+
+function remplace(id){
+  const p = prof(id), cs = D.cours.filter(c => c.prof===id);
+  const autres = D.profs.filter(x => x.id!==id);
+  const m = $('#modale');
+  m.setAttribute('aria-label','Remplacer '+p.nom);
+  m.innerHTML = `
+    <div class="modale-t"><h3>Remplacer ${esc(p.nom)}<small>Absence, départ, remplacement ponctuel.</small></h3>
+      <button type="button" class="fermer" data-ferme aria-label="Fermer" style="margin-left:auto">${ic('x')}</button></div>
+    <form class="modale-c" id="f-rempl">
+      ${cs.length ? `<p style="margin-bottom:14px">${cs.length} cours sont donnés par ${esc(p.nom.split(' ')[0])} :</p>
+        <div class="bloc" style="margin-bottom:16px">${cs.map(c => `<div class="mini"><span>${esc(c.nom)}<small>${c.jour} ${c.h}</small></span><span class="tag">${c.cap} places</span></div>`).join('')}</div>
+        <div class="champ"><label for="r-qui">Les confier à</label><select id="r-qui">${autres.map(x => `<option value="${x.id}">${esc(x.nom)}</option>`).join('')}</select></div>
+        <label class="case"><input type="checkbox" id="r-mail" checked> Prévenir les élèves concernés par mail</label>
+        <label class="case"><input type="checkbox" id="r-cache"> Masquer ${esc(p.nom.split(' ')[0])} du site</label>
+        <div class="pied-form"><span class="total">${D.inscriptions.filter(i => cs.some(c => c.id===i.cours)).length} élèves concernés</span><button class="btn btn-plein" type="submit">Confirmer le remplacement</button></div>`
+      : `<p>${esc(p.nom)} n'a aucun cours attribué pour le moment.</p>`}
+    </form>`;
+  $('#tiroir').classList.remove('on'); ouvre(m);
+  const f = $('#f-rempl');
+  f.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const n = $('#r-qui').value, np = prof(n);
+    cs.forEach(c => c.prof = n);
+    if ($('#r-cache').checked) p.visible = false;
+    sauve(); fermeTout();
+    toast(`${cs.length} cours confiés à ${np.nom}`);
+    if ($('#r-mail') && $('#r-mail').checked) setTimeout(() => toast('Mails de changement envoyés aux élèves'), 700);
+    vProfs();
+  });
+}
+
+/* =================== Simulation d'une inscription (côté site) =================== */
+$('#simuler').addEventListener('click', () => {
+  const m = $('#modale');
+  m.setAttribute('aria-label','Inscription en ligne');
+  const opts = D.cours.map(c => { const lib = c.cap - remplis(c);
+    return `<option value="${c.id}" ${lib<=0?'disabled':''}>${esc(c.nom)} · ${esc(c.niv)} · ${c.jour} ${c.h} ${lib<=0?'(complet)':lib<=2?'('+lib+' place'+(lib>1?'s':'')+')':''}</option>`; }).join('');
+  m.innerHTML = `
+    <div class="modale-t"><h3>Inscription en ligne<small>Ce formulaire est celui du site public. Remplissez-le comme un élève.</small></h3>
+      <button type="button" class="fermer" data-ferme aria-label="Fermer" style="margin-left:auto">${ic('x')}</button></div>
+    <form class="modale-c" id="f-ins" novalidate>
+      <div class="champ"><label for="i-cours">Cours</label><select id="i-cours">${opts}</select></div>
+      <div class="choix" role="radiogroup" aria-label="Formule">
+        <label><input type="radio" name="per" value="T1" checked><b>Trimestre</b><span>${PERIODES.T1.dates}</span><span class="prix">${euro(PERIODES.T1.prix)}</span></label>
+        <label><input type="radio" name="per" value="S1"><b>Semestre</b><span>${PERIODES.S1.dates}</span><span class="prix">${euro(PERIODES.S1.prix)}</span></label>
+      </div>
+      <label class="case"><input type="checkbox" id="i-enf"> J'inscris mon enfant</label>
+      <div class="form-g">
+        <div class="champ"><label for="i-pre">Prénom de l'élève</label><input id="i-pre" autocomplete="off" placeholder="Ex. Lina"></div>
+        <div class="champ"><label for="i-nom">Nom</label><input id="i-nom" autocomplete="off" placeholder="Ex. Hermann"></div>
+        <div class="champ large enfant" id="bloc-par"><label for="i-par">Prénom et nom du parent</label><input id="i-par" autocomplete="off"></div>
+        <div class="champ"><label for="i-mail">Mail</label><input id="i-mail" type="email" autocomplete="off" placeholder="lina@exemple.lu"></div>
+        <div class="champ"><label for="i-tel">Téléphone</label><input id="i-tel" type="tel" autocomplete="off" placeholder="621 00 00 00"></div>
+      </div>
+      <p class="erreur" id="i-err">Merci de remplir le prénom, le nom et un mail valide.</p>
+      <label class="case"><input type="checkbox" id="i-cgv" checked> J'accepte le règlement de l'école et la politique de confidentialité</label>
+      <div class="pied-form"><span class="total">Total<b id="i-tot">${euro(PERIODES.T1.prix)}</b></span><button class="btn btn-plein" type="submit">Confirmer l'inscription</button></div>
+    </form>`;
+  $('#tiroir').classList.remove('on'); ouvre(m);
+  setTimeout(() => $('#i-cours').focus(), 60);
+  m.querySelectorAll('[name=per]').forEach(r => r.addEventListener('change', () => $('#i-tot').textContent = euro(PERIODES[r.value].prix)));
+  $('#i-enf').addEventListener('change', ev => $('#bloc-par').classList.toggle('on', ev.target.checked));
+  $('#f-ins').addEventListener('submit', ev => {
+    ev.preventDefault();
+    const pre = $('#i-pre').value.trim(), nom = $('#i-nom').value.trim(), mail = $('#i-mail').value.trim();
+    if (!pre || !nom || !/^\S+@\S+\.\S+$/.test(mail)){ $('#i-err').classList.add('on'); return; }
+    const enf = $('#i-enf').checked;
+    const pv = m.querySelector('[name=per]:checked').value;
+    const c = coursDe($('#i-cours').value);
+    const e = {id:'e'+Date.now(), prenom:pre, nom, enfant:enf, parent:enf?($('#i-par').value.trim()||'à compléter'):'', email:mail,
+      tel:$('#i-tel').value.trim()||'à compléter', adresse:'à compléter', note:'', cree:new Date().toISOString().slice(0,10)};
+    const i = {id:'i'+Date.now(), eleve:e.id, cours:c.id, per:pv, date:new Date().toISOString(), neuf:true};
+    const max = Math.max(...D.factures.map(f => +f.num.slice(-4)));
+    const f = {num:'FAC-2026-'+String(max+1).padStart(4,'0'), eleve:e.id, ins:[i.id], per:pv, montant:PERIODES[pv].prix, date:e.cree, statut:'attente', mode:''};
+    D.inscriptions.forEach(x => delete x.neuf);
+    D.eleves.push(e); D.inscriptions.push(i); D.factures.push(f); D.notifs = (D.notifs||0)+1; sauve();
+    confirmation(e,c,pv,f);
+  });
+});
+
+function confirmation(e,c,pv,f){
+  const p = prof(c.prof), P = PERIODES[pv];
+  const m = $('#modale');
+  const etapes = ['Place réservée dans le cours','Fiche élève créée dans l’espace de gestion','Facture '+f.num+' générée','Mail de confirmation envoyé à l’élève','Mail d’alerte envoyé à l’école'];
+  m.innerHTML = `
+    <div class="modale-t"><h3>Inscription reçue<small>Voici ce qui se passe automatiquement, en quelques secondes.</small></h3>
+      <button type="button" class="fermer" data-ferme aria-label="Fermer" style="margin-left:auto">${ic('x')}</button></div>
+    <div class="modale-c">
+      <div class="etapes">${etapes.map(t => `<div class="etape"><span class="rond">${ic('check')}</span>${esc(t)}</div>`).join('')}</div>
+      <div class="mails" id="mails" hidden>
+        <div class="mail"><div class="en"><span class="qui-l">Reçu par l'élève</span><b>De :</b> Maison Volte<br><b>À :</b> ${esc(e.email)}<br><b>Objet :</b> Votre inscription est confirmée</div>
+          <div class="co"><div class="marque">Maison Volte</div><p>Bonjour ${esc(e.enfant && e.parent!=='à compléter' ? e.parent.split(' ')[0] : e.prenom)},</p><p>${e.enfant?'L’inscription de '+esc(e.prenom)+' est confirmée':'Votre inscription est confirmée'}. À très vite au studio.</p>
+            <div class="recap"><b>${esc(c.nom)}</b> · ${esc(c.niv)}<br>${c.jour} de ${c.h} à ${c.f}<br>Avec ${esc(p?.nom||'votre professeur')}<br>${P.nom}, ${P.dates}</div>
+            <p>Votre facture ${f.num} (${euro(f.montant)}) est jointe à ce mail.</p></div></div>
+        <div class="mail"><div class="en"><span class="qui-l">Reçu par l'école</span><b>De :</b> Espace de gestion<br><b>À :</b> direction@maisonvolte.lu<br><b>Objet :</b> Nouvelle inscription · ${esc(c.nom)}</div>
+          <div class="co"><div class="marque">Nouvelle inscription</div>
+            <div class="recap"><b>${esc(e.prenom+' '+e.nom)}</b>${e.enfant?' (enfant)':''}<br>${esc(e.email)} · ${esc(e.tel)}<br>${esc(c.nom)}, ${c.jour} ${c.h} · ${P.type}<br>Places restantes : ${Math.max(0,c.cap-remplis(c))} sur ${c.cap}</div>
+            <p>Facture ${f.num} émise, en attente de paiement.</p></div></div>
+      </div>
+      <div class="pied-form" id="fin" hidden><span class="total">L'élève apparaît déjà dans vos listes.</span><button type="button" class="btn btn-noir" id="voir-el">Ouvrir sa fiche</button></div>
+    </div>`;
+  m.scrollTop = 0;
+  const els = m.querySelectorAll('.etape');
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  els.forEach((el,k) => setTimeout(() => el.classList.add('fait'), reduit ? 0 : 350+k*420));
+  setTimeout(() => { $('#mails').hidden = false; $('#fin').hidden = false; nav(); rendre(); toast('Nouvelle inscription : '+e.prenom+' '+e.nom); }, reduit ? 0 : 350+els.length*420);
+  m.addEventListener('click', function h(ev){ if (ev.target.closest('#voir-el')){ m.removeEventListener('click',h); fermeTout(); setTimeout(() => fiche(e.id), 250); } });
+}
+
+/* =================== Démarrage =================== */
+$('#login-form').addEventListener('submit', ev => {
+  ev.preventDefault(); $('#login').classList.add('out');
+  try { sessionStorage.setItem(CLE+'-in','1'); } catch(e){}
+  va('accueil');
+});
+try { if (sessionStorage.getItem(CLE+'-in')) $('#login').classList.add('out'); } catch(e){}
+$('#reset').addEventListener('click', () => {
+  if (!confirm('Remettre la démonstration à zéro ?')) return;
+  try { localStorage.removeItem(CLE); } catch(e){}
+  D = seed(); per='tout'; document.querySelectorAll('[data-per]').forEach(x => x.setAttribute('aria-pressed', x.dataset.per==='tout'));
+  fermeTout(); va('accueil'); toast('Démonstration réinitialisée');
+});
+const h = new Date().getHours();
+document.querySelector('.login-form h1').textContent = h < 18 ? 'Bonjour.' : 'Bonsoir.';
+va('accueil');
+})();
+</script>
+</body>
+</html>
