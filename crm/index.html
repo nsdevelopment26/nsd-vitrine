@@ -1200,8 +1200,10 @@ var NSDocs = (function () {
       { n: 'Essentiel', pu: 1350, desc: '1 page, présentation essentielle, responsive, formulaire contact, Maps, mise en ligne.' },
       { n: 'Vitrine', pu: 2625, desc: '4 à 5 pages, galerie photos, services / menu, formulaire, SEO local de base.' },
       { n: 'Pro', pu: 3750, desc: '8 à 10 pages, configuration bilingue, formulaires avancés, SEO renforcé.' },
-      { n: 'Boutique', pu: 3750, desc: 'E-commerce jusqu’à 50 produits, gestion panier, paiement sécurisé.' },
-      { n: 'Signature', pu: 6000, desc: 'Sur-mesure (catalogue immobilier / autos), haut de gamme, développements spécifiques.' },
+      { n: 'Boutique', pu: 3750, desc: 'E-commerce jusqu’à 50 produits, gestion panier, paiement sécurisé.',
+        inclus: ['Intégration d’un module de paiement en ligne (Stripe / PayPal / SumUp)'] },
+      { n: 'Signature', pu: 6000, desc: 'Sur-mesure (catalogue immobilier / autos), haut de gamme, développements spécifiques.',
+        inclus: ['Catalogue métier dynamique (Biens immobiliers / Véhicules d’occasion)'] },
     ],
     // court : l'étiquette du bouton dans l'appli. qte : option vendue à l'unité.
     OPTIONS: [
@@ -1230,6 +1232,9 @@ var NSDocs = (function () {
     PREFIXE_MTN: 'Maintenance, hébergement & sécurité',
   };
   const C = CATALOGUE;
+  // Options déjà comprises dans une formule (inclus) : cochées d'office, jamais facturées
+  // en plus (Nelson, 28/09/2026). Sam ne peut pas revendre ce que le client a déjà.
+  const optionsIncluses = formule => { const f = C.FORMULES.find(x => x.n === formule); return (f && f.inclus) || []; };
   const cleNom = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
   const estMaintenance = l => String(l.designation || '').startsWith(C.PREFIXE_MTN);
   // Ligne de maintenance d'un devis : « Maintenance, hébergement & sécurité · Pro / Boutique · annuelle (11 mois + 1 offert) ».
@@ -1361,7 +1366,10 @@ var NSDocs = (function () {
 
     const formules = C.FORMULES.map(f => { const on = a.formule === f.n;
       return '<div class="row' + (on ? ' on' : ' off') + '">' + cb(on) + '<div class="d"><div class="nm">' + f.n + '</div><div class="ds">' + esc(f.desc) + '</div></div><div class="p">' + m(f.pu) + '</div></div>'; }).join('');
+    const inclus = optionsIncluses(a.formule);
     const options = C.OPTIONS.map(o => { const q = a.options[o.n], on = Boolean(q);
+      if (inclus.includes(o.n)) return '<div class="row on">' + cb(true) + '<div class="d"><span class="nm">' + esc(o.n) + '</span></div>'
+        + '<div class="p"><span class="u">compris dans ' + esc(a.formule) + '</span>inclus</div></div>';
       return '<div class="row' + (on ? ' on' : ' off') + '">' + cb(on) + '<div class="d"><span class="nm">' + esc(o.n) + '</span>'
         + (o.qte ? '<span class="q">x <b>' + (on ? eur(q).replace(/,00$/, '') : '&nbsp;&nbsp;') + '</b></span>' : '') + '</div>'
         + '<div class="p">' + (o.qte ? '<span class="u">l’unité</span>' : '') + m(o.pu) + (on && o.qte && q !== 1 ? '<span class="tot">= ' + m(o.pu * q) + '</span>' : '') + '</div></div>'; }).join('')
@@ -1448,7 +1456,7 @@ var NSDocs = (function () {
   }
 
   return {
-    CATALOGUE, ligneMaintenance, lireMaintenance, estMaintenance, decompte, analyser, objetFacture,
+    CATALOGUE, optionsIncluses, ligneMaintenance, lireMaintenance, estMaintenance, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
     devis(d, lignes, c, options) { regler(options); return docDevisHTML(d, lignes || [], c || {}); },
     facture(f, lignes, c, options) { regler(options); return docFactureHTML(f, lignes || [], c || {}); },
@@ -1475,6 +1483,8 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-chips button b { display: block; font-size: 12px; color: var(--doux); font-weight: 600; }
   .fx-chips button.on { background: var(--noir); color: #fff; border-color: var(--noir); }
   .fx-chips button.on b { color: #cfcfcf; }
+  .fx-chips button.inclus { background: #2e7d32; border-color: #2e7d32; color: #fff; cursor: default; }
+  .fx-chips button.inclus b { color: #d7ecd8; }
   .fx-qte { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; font-size: 14px; }
   .fx-qte b { display: block; font-size: 12px; color: var(--doux); font-weight: 600; }
   .fx-qte input { width: 70px; border: 1px solid var(--ligne); border-radius: 8px; padding: 8px; font-size: 15px; text-align: center; background: #fff; }
@@ -1665,7 +1675,10 @@ const Factu = (() => {
     document.getElementById('fx-inclus').innerHTML = encartInclus();
     document.getElementById('fx-qtes').innerHTML = OPTIONS.filter(o => o.qte).map(o => `<div class="fx-qte"><span>${esc(o.court)}<b>${eur(o.pu)} € l’unité</b></span>
       <input type="number" min="0" step="1" inputmode="numeric" data-fx-qte="${esc(o.n)}" value="${D.opts[o.n] || 0}" aria-label="Quantité ${esc(o.court)}"></div>`).join('');
-    document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => chip('data-fx-opt', o.n, o.court, eur(o.pu) + ' €', D.opts[o.n])).join('');
+    const inclus = NSDocs.optionsIncluses(D.base);
+    document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => inclus.includes(o.n)
+      ? `<button type="button" class="inclus" disabled aria-disabled="true">✓ ${esc(o.court)}<b>Inclus dans ${esc(D.base)}</b></button>`
+      : chip('data-fx-opt', o.n, o.court, eur(o.pu) + ' €', D.opts[o.n])).join('');
     document.getElementById('fx-mtn-cat').innerHTML = MAINTENANCE.map(m => chip('data-fx-mtn', m.cat, m.cat, eur(m.trim) + ' € / trim.', D.mtnCat === m.cat)).join('');
     const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
     document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'trim', 'Trimestrielle (3 mois)', eur(m.trim) + ' € HT / trim.', !D.annuel)
@@ -1886,7 +1899,7 @@ const Factu = (() => {
     const t = e.target;
     const dv = t.closest('[data-fx-devis]'); if (dv) return ouvrirDevis(dv.dataset.fxDevis);
     const fc = t.closest('[data-fx-facture]'); if (fc) return ouvrirFacture(fc.dataset.fxFacture);
-    const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) D.mtnCat = catDe(D.base); dessinerChoix(); return calculer(); }
+    const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) { D.mtnCat = catDe(D.base); NSDocs.optionsIncluses(D.base).forEach(n => delete D.opts[n]); } dessinerChoix(); return calculer(); }
     const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true; dessinerChoix(); return calculer(); }
     const mc = t.closest('[data-fx-mtn]'); if (mc) { D.mtnCat = mc.dataset.fxMtn; dessinerChoix(); return calculer(); }
     const pe = t.closest('[data-fx-per]'); if (pe) { D.annuel = pe.dataset.fxPer === 'an'; dessinerChoix(); return calculer(); }
