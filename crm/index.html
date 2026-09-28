@@ -1490,6 +1490,12 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-doc .outils { display: flex; gap: 8px; padding: 10px 12px; background: var(--noir); }
   .fx-doc .outils .btn { flex: 1; padding: 11px 10px; }
   .fx-doc iframe { flex: 1; border: 0; width: 100%; background: #eceef2; }
+  .fx-inclus { background: #f3f8f0; border: 1px solid #cfe3c4; border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
+  .fx-inclus h4 { margin: 0 0 6px; font-size: 13px; }
+  .fx-inclus ul { margin: 0; padding-left: 18px; }
+  .fx-inclus li { margin: 2px 0; }
+  .fx-inclus .fx-pas { margin-top: 8px; color: #8a4b00; }
+  .fx-inclus .fx-mtn { margin-top: 8px; color: var(--doux); }
   .fx-alerte { background: #fdecea; border: 1px solid #f5c2bd; border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
 </style>
 
@@ -1599,6 +1605,28 @@ const Factu = (() => {
   const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false };
   const catDe = formule => { const m = MAINTENANCE.find(x => x.formules.includes(formule)); return m ? m.cat : null; };
 
+  // Ce que chaque formule comprend déjà, affiché sous les formules dès qu'on en choisit
+  // une (Nelson, 28/09/2026) : Sam voit ce qu'il ne doit pas revendre en option.
+  // Source : manuel du commercial § 05 et grille tarifaire (entreprise/tarifs/).
+  const INCLUS = {
+    Essentiel: { liste: ['Site d’une page (one-page)', 'S’adapte au téléphone (responsive)', 'Formulaire de contact', 'Google Maps', 'Mise en ligne'] },
+    Vitrine: { liste: ['4 à 5 pages', 'Galerie photo', 'Page menu / services', 'Formulaire de contact', 'Google Maps', 'Réseaux sociaux intégrés', 'Référencement local de base', 'Mise en ligne'] },
+    Pro: { liste: ['8 à 10 pages', 'Site bilingue (2 langues)', 'Formulaires avancés (devis, candidature)', 'Référencement renforcé', 'Mise en ligne'],
+      pas: 'Langue supplémentaire seulement à partir de la 3e langue : les deux premières sont comprises.' },
+    Boutique: { liste: ['Vente en ligne jusqu’à 50 produits', 'Panier', 'Paiement en ligne', 'Gestion des commandes', 'Mise en ligne'],
+      pas: 'Ne pas rajouter « Paiement en ligne », il est compris. Au-delà de 50 produits, tailles et couleurs, plusieurs livraisons ou synchro caisse : devis sur mesure.' },
+    Signature: { liste: ['Entièrement sur mesure', 'Catalogue de biens ou de véhicules avec filtres', 'Design haut de gamme', 'Développements spécifiques'],
+      pas: 'Ne jamais rajouter « Catalogue métier » : il est compris.' },
+  };
+  const MTN_INCLUS = 'Hébergement au Luxembourg, nom de domaine, 1 boîte mail, maintenance technique, mises à jour, sécurité, sauvegardes, support, petites modifications.';
+  function encartInclus() {
+    const i = INCLUS[D.base]; if (!i) return '';
+    return `<div class="fx-inclus"><h4>Déjà inclus dans ${esc(D.base)}</h4>
+      <ul>${i.liste.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+      ${i.pas ? `<div class="fx-pas">${esc(i.pas)}</div>` : ''}
+      <div class="fx-mtn">Avec la maintenance (partie 3) : ${esc(MTN_INCLUS)}</div></div>`;
+  }
+
   function nouveauDevis(prospect) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
@@ -1614,7 +1642,7 @@ const Factu = (() => {
         <div class="sous" style="margin-bottom:10px">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div>`}
         <label class="champ">Adresse<input name="adresse" value="${esc(cc.adresse || '')}" placeholder="N°, rue, code postal, localité"></label>
         <label class="champ">N° TVA client<input name="tva_intra" value="${esc(cc.tva_intra || '')}" placeholder="LU12345678, si société"></label></div>
-      <div class="bloc"><h3>1 · Formule de base</h3><div class="fx-chips" id="fx-bases"></div></div>
+      <div class="bloc"><h3>1 · Formule de base</h3><div class="fx-chips" id="fx-bases"></div><div id="fx-inclus"></div></div>
       <div class="bloc"><h3>2 · Options complémentaires</h3><div id="fx-qtes"></div><div class="fx-chips" id="fx-opts"></div></div>
       <div class="bloc"><h3>Lignes sur mesure</h3><div id="fx-lignes"></div>
         <button type="button" class="btn clair large" data-fx="ajout-ligne">＋ Ajouter une ligne</button></div>
@@ -1634,6 +1662,7 @@ const Factu = (() => {
   function dessinerChoix() {
     const chip = (attr, cle, n, prix, on) => `<button type="button" ${attr}="${esc(cle)}" class="${on ? 'on' : ''}">${esc(n)}<b>${prix}</b></button>`;
     document.getElementById('fx-bases').innerHTML = FORMULES.map(b => chip('data-fx-base', b.n, b.n, eur(b.pu) + ' €', D.base === b.n)).join('');
+    document.getElementById('fx-inclus').innerHTML = encartInclus();
     document.getElementById('fx-qtes').innerHTML = OPTIONS.filter(o => o.qte).map(o => `<div class="fx-qte"><span>${esc(o.court)}<b>${eur(o.pu)} € l’unité</b></span>
       <input type="number" min="0" step="1" inputmode="numeric" data-fx-qte="${esc(o.n)}" value="${D.opts[o.n] || 0}" aria-label="Quantité ${esc(o.court)}"></div>`).join('');
     document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => chip('data-fx-opt', o.n, o.court, eur(o.pu) + ' €', D.opts[o.n])).join('');
