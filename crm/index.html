@@ -679,7 +679,7 @@ function rendreFiche(edition) {
   const st = statut(p.statut);
   const hist = historique(p.id);
   const res = S.data.resultats;
-  const couleurRes = { rappel: 'rappel', lien: 'lien', rdv: 'rdv', refus: 'perdu', note: 'a_appeler' };
+  const couleurRes = { rappel: 'rappel', lien: 'lien', rdv: 'rdv', negociation: 'negociation', refus: 'perdu', note: 'a_appeler' };
   const creneau = m && m.creneaux ? (dansCreneau(p) ? 'dans son créneau maintenant' : 'hors créneau (' + m.creneaux + ')') : '';
 
   const f = document.getElementById('fiche');
@@ -732,9 +732,10 @@ function rendreFiche(edition) {
   if (!edition) rendreMessageHaut();
 }
 
-// Cinq boutons (décision du 24/09/2026). « Rappel » regroupe trois motifs, qui
-// restent distincts dans le Journal : c'est ce qui garde le suivi des appels.
-const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['refus'], ['note']];
+// Cinq boutons (décision du 24/09/2026), plus « En cours » pour une négociation
+// ouverte (Nelson, 28/09/2026). « Rappel » regroupe trois motifs, qui restent
+// distincts dans le Journal : c'est ce qui garde le suivi des appels.
+const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['negociation'], ['refus'], ['note']];
 const MOTIFS_RAPPEL = [['pas_repondu', 'Pas de réponse'], ['absent', 'Gérant absent'], ['rappel', 'Convenu avec lui']];
 const boutonDe = res => MOTIFS_RAPPEL.some(([k]) => k === res) ? 'rappel' : res;
 // Plages d'appel (règles de Nelson du 26/09/2026) : lundi-jeudi 9 h-20 h,
@@ -794,7 +795,8 @@ function zoneResultat() {
   const p = trouver(S.ouvert);
   // Un RDV qui ne décroche pas garde sa date : pas de rappel à choisir.
   const garderRdv = p && cle(p) === 'rdv' && (CHOIX.res === 'pas_repondu' || CHOIX.res === 'absent');
-  const titreDate = CHOIX.res === 'rdv' ? 'Date du rendez-vous' : CHOIX.res === 'lien' ? 'Relancer le… (facultatif)' : 'Rappeler le…';
+  const titreDate = CHOIX.res === 'rdv' ? 'Date du rendez-vous' : CHOIX.res === 'lien' ? 'Relancer le… (facultatif)'
+    : CHOIX.res === 'negociation' ? 'Prochain point le… (facultatif)' : 'Rappeler le…';
   return `${motif ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">Pourquoi ?</div>
     <div class="dates">${MOTIFS_RAPPEL.map(([k, l]) => `<button data-motif="${k}" class="${CHOIX.res === k ? 'choisi' : ''}">${l}</button>`).join('')}</div>` : ''}
     ${garderRdv ? '<div class="sous" style="margin-top:10px">Le RDV reste à sa date, l’appel est noté dans l’historique.</div>' : ''}
