@@ -839,7 +839,14 @@ function dateChoisie() {
 }
 function modeleApres(res, p) {
   if (!p || !(telInternational(p.telephone) || p.email)) return null;
-  return (S.data.messages || []).find(m => m.apres === res) || null;
+  const msgs = S.data.messages || [];
+  // Nelson prospecte par WhatsApp sans appel : un premier « Lien envoyé » part
+  // avec le modèle « Premier contact », pas avec le « suite à notre appel » de Sam.
+  if (res === 'lien' && S.moi && S.moi.nom === 'Nelson' && !(+p.nb)) {
+    const premier = msgs.find(m => /premier contact/i.test(m.titre) && m.canal.toLowerCase().trim() === 'whatsapp');
+    if (premier) return premier;
+  }
+  return msgs.find(m => m.apres === res) || null;
 }
 
 function formEdition(p) {
@@ -875,6 +882,7 @@ function remplir(txt, p, v) {
     .replace(/{bonjour}/g, 'Bonjour')
     .replace(/{gerant}/g, p.gerant || '')
     .replace(/{entreprise}/g, p.entreprise || '')
+    .replace(/{constat}/g, p.mauvais || '[constat à écrire]')
     .replace(/{metier}/g, m ? m.metier.toLowerCase() : 'votre métier')
     .replace(/{lien}/g, lien)
     .replace(/{rdv}/g, p.rappel ? dateLongue(p.rappel) : '[date du RDV]')
@@ -906,6 +914,8 @@ function signataire() { return SIGNATURES[S.moi && S.moi.nom] || SIGNATURES.Sam;
 function ouvrirMessages(canal) {
   const p = trouver(S.ouvert);
   const modeles = S.data.messages.filter(m => m.canal.toLowerCase().trim() === canal);
+  // Prospect jamais contacté, Nelson connecté : le « Premier contact » vient en tête.
+  if (S.moi && S.moi.nom === 'Nelson' && !(+p.nb)) modeles.sort((a, b) => /premier contact/i.test(b.titre) - /premier contact/i.test(a.titre));
   const zone = document.createElement('div');
   zone.className = 'bloc'; zone.id = 'bloc-msg';
   zone.innerHTML = `<h3>${canal === 'mail' ? 'Mail' : canal === 'sms' ? 'SMS' : 'WhatsApp'} à ${esc(p.entreprise)}</h3>
