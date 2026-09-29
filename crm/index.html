@@ -258,7 +258,7 @@
 // Un code par personne depuis le 26/09/2026 : le serveur dit qui est connecté
 // (S.moi). S.espace = ce qu'on regarde : son espace, celui de l'autre, ou Équipe.
 const S = { pin: '', par: '', moi: null, espace: '', data: null, vue: 'jour', recherche: '', filtreSecteur: '', ouvert: null, plusJour: 25,
-  jour: '', journeesChargees: {} };
+  jour: '', journeesChargees: {}, ecritures: 0 };
 
 function stocker(k, v) { try { localStorage.setItem('crmnsd_' + k, v); } catch (e) {} }
 function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } catch (e) { return ''; } }
@@ -266,16 +266,61 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 // Deux façons de parler au Sheets, même code serveur derrière :
 // - ouverte depuis script.google.com : google.script.run ;
 // - installée sur le téléphone (nsd-vitrine/crm/) : l'API JSON de l'Apps Script.
-function appel(fn, ...args) {
+// Fiabilité (29/09/2026, « le CRM beug souvent ») :
+// - l'iPhone coupe les requêtes quand Sam part sur WhatsApp ou le téléphone : une écriture
+//   porte un identifiant unique (rid) et se relance seule, le serveur ne l'applique qu'une
+//   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
+// - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
+// - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
+const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter'];
+const attendreVisible = () => document.hidden ? new Promise(ok => {
+  const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
+  document.addEventListener('visibilitychange', f);
+}) : Promise.resolve();
+const pause = ms => new Promise(ok => setTimeout(ok, ms));
+function appelUnique(corps) {
+  const ctrl = window.AbortController ? new AbortController() : null;
+  const minuteur = setTimeout(() => ctrl && ctrl.abort(), 30000);
+  return fetch(window.CRM_API, { method: 'POST', body: JSON.stringify(corps), signal: ctrl ? ctrl.signal : undefined })
+    .then(r => { if (!r.ok) throw Object.assign(new Error('Serveur injoignable (' + r.status + ').'), { reseau: true }); return r.text(); },
+      e => { throw Object.assign(new Error(e && e.name === 'AbortError' ? 'Le serveur ne répond pas.' : 'Connexion perdue.'), { reseau: true }); })
+    // Google renvoie parfois une page HTML au lieu de la réponse (mesuré le 29/09/2026) : on relance.
+    .then(t => { try { return JSON.parse(t); } catch (e) { throw Object.assign(new Error('Réponse illisible de Google.'), { reseau: true }); } })
+    .finally(() => clearTimeout(minuteur));
+}
+async function appel(fn, ...args) {
+  const ecriture = ECRITURES.includes(fn);
+  if (ecriture) S.ecritures++;
   if (window.google && google.script && google.script.run) {
     return new Promise((ok, ko) => {
       google.script.run.withSuccessHandler(ok).withFailureHandler(e => ko(e))[fn](...args);
     });
   }
-  return fetch(window.CRM_API, { method: 'POST', body: JSON.stringify({ fn, args }) })
-    .then(r => { if (!r.ok) throw new Error('Serveur injoignable (' + r.status + '). Réessaie.'); return r.json(); })
-    .then(r => { if (r.erreur) throw new Error(r.erreur); return r.resultat; });
+  const corps = { fn, args };
+  if (ecriture) corps.rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  let r;
+  try {
+    for (let essai = 1; ; essai++) {
+      try { r = await appelUnique(corps); break; }
+      catch (e) {
+        if (!e.reseau || essai >= 6) { signalerErreur('appel ' + fn + ' : ' + e.message); throw new Error(e.message + ' Réessaie.'); }
+        await attendreVisible(); await pause(essai * 700);
+      }
+    }
+  } finally { if (ecriture) S.ecritures++; }
+  if (r.erreur) { if (fn !== 'api_charger' || !/Code/.test(r.erreur)) signalerErreur(fn + ' : ' + r.erreur); throw new Error(r.erreur); }
+  return r.resultat;
 }
+
+// Les erreurs de l'appli partent dans l'onglet « Erreurs » du Sheets : on voit ce que Sam a vu.
+let erreursEnvoyees = 0;
+function signalerErreur(msg) {
+  if (!window.CRM_API || !S.pin || erreursEnvoyees >= 20) return;
+  erreursEnvoyees++;
+  try { fetch(window.CRM_API, { method: 'POST', body: JSON.stringify({ fn: 'api_erreur', args: [S.pin, String(msg).slice(0, 500), (S.vue || '') + ' · ' + navigator.userAgent.slice(0, 120)] }) }).catch(() => {}); } catch (e) {}
+}
+window.addEventListener('error', e => signalerErreur('JS : ' + (e.message || '') + ' @' + (e.lineno || '')));
+window.addEventListener('unhandledrejection', e => signalerErreur('Promesse : ' + ((e.reason && e.reason.message) || e.reason)));
 
 function toast(msg, erreur) {
   const t = document.getElementById('toast');
@@ -1155,8 +1200,18 @@ async function connexion() {
   catch (e) { toast(e.message || String(e), true); }
 }
 
-async function charger() {
-  S.data = await appel('api_charger', S.pin);
+let chargementEnCours = null;
+function charger() {
+  // Un seul rechargement à la fois ; celui qui revient après une écriture est périmé.
+  if (chargementEnCours) return chargementEnCours;
+  const avant = S.ecritures;
+  chargementEnCours = appel('api_charger', S.pin).then(d => {
+    if (S.data && S.ecritures !== avant) return;
+    S.data = d; appliquerDonnees();
+  }).finally(() => { chargementEnCours = null; });
+  return chargementEnCours;
+}
+function appliquerDonnees() {
   S.data.prospects.forEach(p => delete p._ligne);
   S.moi = S.data.moi; S.par = S.moi.nom;
   // On arrive toujours sur son propre espace, sauf si on en a choisi un autre.
@@ -1560,6 +1615,13 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-geste .fx-chips button { padding: 8px 12px; }
   .fx-geste-effet { margin-top: 8px; font-size: 14px; color: #1f7a3a; font-weight: 650; }
   .fx-totaux div.fx-remise span { color: #8ee3a8; }
+  .fx-carte .fx-coche { width: 24px; height: 24px; border-radius: 7px; border: 2px solid var(--ligne); flex: none; display: grid; place-items: center; font-size: 15px; color: #fff; }
+  .fx-carte.choisie { border-color: #c62828; background: #fdecea; }
+  .fx-carte.choisie .fx-coche { background: #c62828; border-color: #c62828; }
+  .fx-carte.bloquee { opacity: .45; cursor: default; }
+  .fx-menage { position: sticky; bottom: 10px; z-index: 5; display: flex; gap: 8px; background: var(--noir); padding: 10px; border-radius: var(--rayon); margin-top: 12px; }
+  .fx-menage .btn { flex: 1; }
+  .btn.danger { background: #c62828; color: #fff; }
   .fx-alerte { background: #fdecea; border: 1px solid #f5c2bd; border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
 </style>
 
@@ -1571,7 +1633,7 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
 // Logique et documents repris de sites-web/ns-development/espace-client-admin.html.
 // ===========================================================================
 const Factu = (() => {
-  const F = { sb: null, session: null, clients: [], devis: [], factures: [], pret: false, erreur: '' };
+  const F = { sb: null, session: null, clients: [], devis: [], factures: [], pret: false, erreur: '', menage: false, choix: new Set() };
 
   // Catalogue : celui du devis validé (commercial/devis-modeles/devis-NSD.pdf), tenu dans Documents.html.
   const { FORMULES, OPTIONS, MAINTENANCE } = NSDocs.CATALOGUE;
@@ -1627,12 +1689,18 @@ const Factu = (() => {
     const impayees = F.factures.filter(f => f.statut === 'envoyée' || f.statut === 'en_retard');
     const enAttente = F.devis.filter(d => d.statut === 'envoyé');
     const du = impayees.reduce((s, f) => s + (Number(f.total_ttc) || 0) - (Number(f.montant_paye) || 0), 0);
-    const carteDevis = d => `<div class="fx-carte" data-fx-devis="${d.id}"><div class="corps"><div class="nom">${esc(d.clients ? d.clients.nom_etablissement : '?')}</div>
+    const coche = (type, id) => { if (!F.menage) return ''; const ok = type === 'devis' ? devisSupprimable(id) : factureSupprimable(id);
+      return ok ? `<span class="fx-coche">${F.choix.has(type + ':' + id) ? '✓' : ''}</span>` : ''; };
+    const attrs = (type, id) => { if (!F.menage) return `data-fx-${type}="${id}"`;
+      const ok = type === 'devis' ? devisSupprimable(id) : factureSupprimable(id);
+      return ok ? `data-fx-choix="${type}:${id}"` : 'data-fx-bloque="1"'; };
+    const etat = (type, id) => F.menage ? (F.choix.has(type + ':' + id) ? ' choisie' : ((type === 'devis' ? devisSupprimable(id) : factureSupprimable(id)) ? '' : ' bloquee')) : '';
+    const carteDevis = d => `<div class="fx-carte${etat('devis', d.id)}" ${attrs('devis', d.id)}>${coche('devis', d.id)}<div class="corps"><div class="nom">${esc(d.clients ? d.clients.nom_etablissement : '?')}</div>
       <div class="meta">${d.numero ? esc(d.numero) : 'Brouillon'} · ${fmtDate(d.date_emission)} <span class="fx-st ${cls(d.statut)}">${esc(d.statut)}</span></div></div>
       <div class="mt">${eur(d.total_ttc)} €</div></div>`;
     const carteFacture = f => {
       const retard = f.statut === 'envoyée' && f.date_echeance && f.date_echeance < auj;
-      return `<div class="fx-carte" data-fx-facture="${f.id}"><div class="corps"><div class="nom">${esc(f.clients ? f.clients.nom_etablissement : '?')}</div>
+      return `<div class="fx-carte${etat('facture', f.id)}" ${attrs('facture', f.id)}>${coche('facture', f.id)}<div class="corps"><div class="nom">${esc(f.clients ? f.clients.nom_etablissement : '?')}</div>
       <div class="meta">${f.numero ? esc(f.numero) : 'Brouillon'} · échéance ${fmtDate(f.date_echeance)} <span class="fx-st ${retard ? 'retard' : cls(f.statut)}">${retard ? 'en retard' : esc(f.statut)}</span></div></div>
       <div class="mt">${eur(f.total_ttc)} €${Number(f.montant_paye) ? `<div class="meta">payé ${eur(f.montant_paye)} €</div>` : ''}</div></div>`;
     };
@@ -1641,12 +1709,43 @@ const Factu = (() => {
       <div class="grille" style="margin-bottom:6px">
         <div class="kpi"><div class="v">${eur(du)} €</div><div class="l">à encaisser TTC</div></div>
         <div class="kpi"><div class="v">${enAttente.length}</div><div class="l">devis en attente de réponse</div></div></div>
-      <div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button></div>
+      ${F.menage ? `<div class="fx-alerte" style="background:#fff8e1;border-color:#f3d98b">Touche les devis et factures à supprimer. Une facture émise (avec numéro FAC) ne se supprime pas : c'est un document légal. Un devis déjà facturé non plus.</div>`
+        : `<div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button><button class="btn clair" data-fx="menage">Supprimer…</button></div>`}
       ${aEmettre.length ? section('Factures à émettre', 'brouillons sans numéro', aEmettre.map(carteFacture).join('')) : ''}
       ${impayees.length ? section('Factures à encaisser', impayees.length + '', impayees.map(carteFacture).join('')) : ''}
       ${section('Devis', F.devis.length + '', F.devis.length ? F.devis.map(carteDevis).join('') : '<div class="vide">Aucun devis. Ouvre la fiche d’un prospect et touche « Faire un devis ».</div>')}
       ${section('Toutes les factures', F.factures.length + '', F.factures.length ? F.factures.map(carteFacture).join('') : '<div class="vide">Aucune facture. Une facture se crée depuis un devis accepté.</div>')}
-      <p style="margin-top:18px"><button class="btn clair large" data-fx="deconnexion">Se déconnecter de la facturation</button></p>`;
+      ${F.menage ? `<div class="fx-menage"><button class="btn clair" data-fx="menage-fin">Annuler</button>
+        <button class="btn danger" data-fx="menage-go" ${F.choix.size ? '' : 'disabled'}>Supprimer${F.choix.size ? ' (' + F.choix.size + ')' : ''}</button></div>`
+        : `<p style="margin-top:18px"><button class="btn clair large" data-fx="deconnexion">Se déconnecter de la facturation</button></p>`}`;
+  }
+
+  // ------------------------------------------------------------------ suppression
+  // Brouillons et devis sans facture émise seulement (Nelson, 29/09/2026 : Sam avait des
+  // devis de test qu'il ne pouvait pas effacer). Une facture numérotée est un document
+  // légal : la numérotation FAC doit rester continue, elle ne se supprime jamais.
+  const factureSupprimable = id => { const f = F.factures.find(x => x.id === id); return !!f && f.statut === 'brouillon' && !f.numero && !(Number(f.montant_paye) > 0); };
+  const devisSupprimable = id => !!F.devis.find(x => x.id === id) && !F.factures.some(f => f.devis_id === id && (f.numero || f.statut !== 'brouillon'));
+
+  async function supprimer(elements) {
+    const devis = elements.filter(e => e.type === 'devis' && devisSupprimable(e.id)).map(e => e.id);
+    const facs = elements.filter(e => e.type === 'facture' && factureSupprimable(e.id)).map(e => e.id);
+    // Les factures brouillon d'un devis supprimé partent avec lui.
+    F.factures.forEach(f => { if (devis.includes(f.devis_id) && factureSupprimable(f.id) && !facs.includes(f.id)) facs.push(f.id); });
+    if (!devis.length && !facs.length) return toast('Rien à supprimer.', true);
+    const numerotes = devis.map(id => F.devis.find(x => x.id === id)).filter(d => d.numero).map(d => d.numero);
+    const texte = 'Supprimer définitivement ' + [devis.length ? devis.length + ' devis' : '', facs.length ? facs.length + ' facture(s) brouillon' : ''].filter(Boolean).join(' et ') + ' ?'
+      + (numerotes.length ? '\n\nDevis déjà numérotés : ' + numerotes.join(', ') + '. Leur numéro ne sera pas réattribué.' : '') + '\n\nC’est irréversible.';
+    if (!confirm(texte)) return false;
+    try {
+      if (facs.length) { const { data, error } = await F.sb.from('factures').delete().in('id', facs).is('numero', null).select('id');
+        if (error) throw error; if ((data || []).length !== facs.length) throw new Error('Une facture n’a pas pu être supprimée (déjà émise ?).'); }
+      if (devis.length) { const { data, error } = await F.sb.from('devis').delete().in('id', devis).select('id');
+        if (error) throw error; if ((data || []).length !== devis.length) throw new Error('Un devis n’a pas pu être supprimé.'); }
+      toast('Supprimé : ' + [devis.length ? devis.length + ' devis' : '', facs.length ? facs.length + ' facture(s)' : ''].filter(Boolean).join(', ') + '.');
+      return true;
+    } catch (e) { toast('Suppression : ' + (e.message || e), true); return false; }
+    finally { await charger(); }
   }
 
   // ------------------------------------------------------------------ feuille
@@ -1868,6 +1967,7 @@ const Factu = (() => {
     }
     const libelle = { acompte: 'd’acompte', solde: 'de solde', unique: '' };
     facs.forEach((f, i) => act.push('<button class="btn clair large" data-fx-facture="' + f.id + '">Voir la facture ' + libelle[objets[i]] + ' ' + esc(f.numero || 'brouillon') + '</button>'));
+    if (devisSupprimable(id)) act.push('<button class="btn danger large" data-fx="suppr-devis" data-id="' + id + '">Supprimer ce devis</button>');
     feuille(tete(d.numero ? esc(d.numero) : 'Devis brouillon', esc(d.clients ? d.clients.nom_etablissement : '') + ' · <span class="fx-st ' + cls(d.statut) + '">' + esc(d.statut) + '</span>')
       + `<div class="bloc"><dl class="infos"><dt>Émis le</dt><dd>${fmtDate(d.date_emission)}</dd><dt>Valable jusqu’au</dt><dd>${fmtDate(d.date_validite)}</dd>
          <dt>Total HT</dt><dd>${eur(d.total_ht)} €</dd><dt>Total TTC</dt><dd><b>${eur(d.total_ttc)} €</b></dd></dl></div>
@@ -1924,6 +2024,7 @@ const Factu = (() => {
     const reste = (Number(f.total_ttc) || 0) - (Number(f.montant_paye) || 0);
     const act = ['<button class="btn large" data-fx="voir-facture" data-id="' + id + '">Voir la facture (PDF)</button>'];
     if (f.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="emettre" data-id="' + id + '">Émettre : attribuer le numéro légal</button>');
+    if (factureSupprimable(id)) act.push('<button class="btn danger large" data-fx="suppr-facture" data-id="' + id + '">Supprimer ce brouillon</button>');
     const paiement = (f.statut === 'envoyée' || f.statut === 'en_retard') ? `<form class="bloc" id="fx-paiement" data-id="${id}"><h3>Enregistrer un paiement</h3>
       <div class="fx-deux"><label class="champ">Montant<input name="montant" type="number" step="0.01" min="0" value="${Math.round(reste * 100) / 100}"></label>
       <label class="champ">Date<input name="date" type="date" value="${isoJour(new Date())}"></label></div>
@@ -1976,6 +2077,8 @@ const Factu = (() => {
   // ------------------------------------------------------------------ événements
   document.addEventListener('click', e => {
     const t = e.target;
+    const ch = t.closest('[data-fx-choix]'); if (ch) { const k = ch.dataset.fxChoix; if (F.choix.has(k)) F.choix.delete(k); else F.choix.add(k); return rendre(); }
+    if (t.closest('[data-fx-bloque]')) return toast('Facture émise ou devis déjà facturé : ne se supprime pas.', true);
     const dv = t.closest('[data-fx-devis]'); if (dv) return ouvrirDevis(dv.dataset.fxDevis);
     const fc = t.closest('[data-fx-facture]'); if (fc) return ouvrirFacture(fc.dataset.fxFacture);
     const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) { D.mtnCat = catDe(D.base); NSDocs.optionsIncluses(D.base).forEach(n => delete D.opts[n]); } dessinerChoix(); return calculer(); }
@@ -1987,6 +2090,12 @@ const Factu = (() => {
     const act = a.dataset.fx, id = a.dataset.id;
     if (act === 'fermer') fermer();
     else if (act === 'nouveau-devis') nouveauDevis(null);
+    else if (act === 'menage') { F.menage = true; F.choix.clear(); rendre(); }
+    else if (act === 'menage-fin') { F.menage = false; F.choix.clear(); rendre(); }
+    else if (act === 'menage-go') { const el = [...F.choix].map(k => ({ type: k.split(':')[0], id: k.split(':')[1] }));
+      a.disabled = true; supprimer(el).then(ok => { if (ok) { F.menage = false; F.choix.clear(); } rendre(); }); }
+    else if (act === 'suppr-devis') supprimer([{ type: 'devis', id }]).then(ok => ok && fermer());
+    else if (act === 'suppr-facture') supprimer([{ type: 'facture', id }]).then(ok => ok && fermer());
     else if (act === 'deconnexion') F.sb.auth.signOut().then(() => { F.session = null; rendre(); });
     else if (act === 'ajout-ligne') { D.lignes.push({ designation: '', quantite: 1, pu: '' }); dessinerChoix(); calculer(); }
     else if (act === 'ajout-frais') { D.frais.push({ designation: '', pu: '' }); dessinerChoix(); calculer(); }
