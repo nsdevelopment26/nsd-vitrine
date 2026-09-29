@@ -1,6 +1,6 @@
 /* ============================================================================
    NS Development — Module de réservation en ligne
-   Moteur générique, identique chez tous les clients. Version 1.2
+   Moteur générique, identique chez tous les clients. Version 1.3
    ----------------------------------------------------------------------------
    Ce fichier ne contient AUCUNE information propre à un client : pas de nom,
    pas d'horaire, pas de prestation, pas de couleur. Tout cela vit dans
@@ -74,6 +74,8 @@
     prestations: [],
     ouvertures: {},
     fermetures: [],
+    // Mode local : fermetures d'une partie de journée, { jour, debut, fin }.
+    fermeturesPartielles: [],
 
     // Habillage : c'est ici que le client « adapte à son goût ».
     textes: {
@@ -180,6 +182,7 @@
       envoi: 'Envoi en cours…',
 
       recapPrestation: 'Prestation',
+      recapCouverts: 'Couverts', couverts: 'couverts',
       recapDate: 'Date',
       recapHeure: 'Heure',
       recapDuree: 'Durée',
@@ -249,6 +252,7 @@
       envoi: 'Gëtt geschéckt…',
 
       recapPrestation: 'Leeschtung',
+      recapCouverts: 'Couverten', couverts: 'Couverten',
       recapDate: 'Datum',
       recapHeure: 'Auer',
       recapDuree: 'Dauer',
@@ -336,6 +340,15 @@
      Sert aux maquettes de prospection. Aucun rendez-vous ne quitte le poste
      du visiteur, et c'est dit noir sur blanc dans le bandeau de démonstration.
      ========================================================================= */
+  /* Référence d'une réservation de démonstration : même allure qu'une vraie
+     (« MV-7K2QD »), stable d'un chargement à l'autre, identique côté site et
+     côté espace pro. */
+  function refDemo(prefixe, i) {
+    var A = '23456789ABCDEFGHJKMNPQRSTUVWXYZ', x = (i + 1) * 7919, s = '';
+    for (var k = 0; k < 5; k++) { s += A[x % A.length]; x = Math.floor(x / A.length) + (k + 3) * 131; }
+    return (prefixe || 'RDV') + '-' + s;
+  }
+
   function AdaptateurLocal(cfg) {
     var CLE = 'nsr.' + (cfg.slug || 'demo') + '.v1';
 
@@ -366,10 +379,11 @@
         var p = prestationParCode(cfg, f.prestation);
         if (!p) return;
         liste.push({
-          reference: 'DEMO-' + i, jour: cle(d), debut: f.debut,
+          reference: refDemo(cfg.prefixeReference, i), jour: cle(d), debut: f.debut,
           fin: min2str(str2min(f.debut) + p.duree),
           prestation: p.code, prestationNom: p.nom, duree: p.duree,
-          nom: f.nom, statut: 'confirme', demo: true
+          nom: f.nom, telephone: f.telephone || '', note: f.note || '',
+          statut: f.statut || 'confirme', source: f.source || 'site', demo: true
         });
       });
       ecrire(liste);
@@ -385,7 +399,12 @@
           .filter(function (r) {
             return r.statut !== 'annule' && r.jour >= du && r.jour <= au;
           })
-          .map(function (r) { return { jour: r.jour, debut: r.debut, fin: r.fin }; }));
+          .map(function (r) { return { jour: r.jour, debut: r.debut, fin: r.fin }; })
+          // Fermetures partielles (« fermé samedi soir ») : comme en production,
+          // elles arrivent avec les créneaux occupés, mais bloquent toute la salle.
+          .concat((cfg.fermeturesPartielles || [])
+            .filter(function (f) { return f.jour >= du && f.jour <= au; })
+            .map(function (f) { return { jour: f.jour, debut: f.debut, fin: f.fin, plein: true }; })));
       },
 
       joursFermes: function () { return Promise.resolve(cfg.fermetures.slice()); },
@@ -403,16 +422,21 @@
 
         var ref = (cfg.prefixeReference || 'RDV') + '-' +
                   Math.random().toString(36).slice(2, 7).toUpperCase();
+        // Comme en production : un établissement qui valide lui-même ses
+        // réservations reçoit une demande, pas un rendez-vous confirmé.
+        var statut = cfg.etablissement.modeValidation === 'manuel' ? 'en_attente' : 'confirme';
         liste.push({
           reference: ref, jour: d.jour, debut: d.debut, fin: min2str(fin),
           prestation: d.prestation, prestationNom: d.prestationObj.nom,
           duree: d.prestationObj.duree,
-          nom: d.prenom + ' ' + d.nom, telephone: d.telephone, email: d.email,
-          note: d.note, statut: 'confirme', cree: new Date().toISOString()
+          nom: d.prenom + ' ' + d.nom, prenom: d.prenom, nomFamille: d.nom,
+          telephone: d.telephone, email: d.email,
+          note: d.note, premiere: !!d.premiere, statut: statut,
+          source: 'site', cree: new Date().toISOString()
         });
         ecrire(liste);
         return Promise.resolve({
-          ok: true, reference: ref, statut: 'confirme',
+          ok: true, reference: ref, statut: statut,
           jour: d.jour, debut: d.debut, fin: min2str(fin),
           prestation: d.prestationObj.nom, duree: d.prestationObj.duree
         });
@@ -570,7 +594,8 @@
         var passe = quand < limite;
         var pris = 0;
         occupes.forEach(function (o) {
-          if (t < str2min(o.fin) && (t + prestation.duree) > str2min(o.debut)) pris++;
+          // Une fermeture partielle occupe toutes les places d'un coup.
+          if (t < str2min(o.fin) && (t + prestation.duree) > str2min(o.debut)) pris += o.plein ? places : 1;
         });
         var chevauche = pris >= places;
 
@@ -1054,7 +1079,8 @@
         return '<button type="button" class="nsr__choice" data-choice="' + txt(p.code) + '">' +
           '<b>' + txt(p.nom) + '</b>' +
           (p.description ? '<span>' + txt(p.description) + '</span>' : '') +
-          '<span class="nsr__dur">' + p.duree + ' ' + txt(L.minCourt) +
+          // Une table se choisit au nombre de couverts, pas à la durée.
+          '<span class="nsr__dur">' + (p.couverts ? p.couverts + ' ' + txt(L.couverts) : p.duree + ' ' + txt(L.minCourt)) +
           (p.prix != null ? ' · ' + Number(p.prix).toFixed(2).replace('.', ',') + ' €' : '') +
           '</span></button>';
       }).join('');
@@ -1218,11 +1244,14 @@
       var lieu = aDomicile ? T.lieuDomicile : cfg.etablissement.adresse;
 
       $('[data-recap]').innerHTML =
-        ligne(L.recapPrestation, etat.prestation.nom) +
+        ligne(T.recapPrestation || L.recapPrestation, etat.prestation.nom) +
         ligne(L.recapDate, joli(d)) +
-        ligne(L.recapHeure, etat.creneau.heure + ' → ' +
-              min2str(str2min(etat.creneau.heure) + etat.prestation.duree)) +
-        ligne(L.recapDuree, etat.prestation.duree + ' ' + L.minutes) +
+        (etat.prestation.couverts
+          ? ligne(L.recapHeure, etat.creneau.heure) +
+            ligne(L.recapCouverts, etat.prestation.couverts)
+          : ligne(L.recapHeure, etat.creneau.heure + ' → ' +
+                  min2str(str2min(etat.creneau.heure) + etat.prestation.duree)) +
+            ligne(L.recapDuree, etat.prestation.duree + ' ' + L.minutes)) +
         (lieu ? ligne(L.recapLieu, lieu) : '');
     }
 
@@ -1336,7 +1365,7 @@
 
       $('[data-done-recap]').innerHTML =
         ligne(L.recapReference, r.reference) +
-        ligne(L.recapPrestation, r.prestation) +
+        ligne(T.recapPrestation || L.recapPrestation, r.prestation) +
         ligne(L.recapDate, joli(d)) +
         ligne(L.recapHeure, r.debut) +
         ligne(L.recapAuNom, form.prenom.value.trim() + ' ' + form.nom.value.trim());
