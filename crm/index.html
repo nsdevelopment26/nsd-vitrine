@@ -1245,6 +1245,12 @@ var NSDocs = (function () {
     ],
     INCLUS: 'Hébergement localisé au Luxembourg, nom de domaine, boîte email professionnelle, maintenance technique continue, sauvegardes journalières & mises à jour.',
     PREFIXE_MTN: 'Maintenance, hébergement & sécurité',
+    // Frais hors forfait possibles pendant la maintenance : annoncés sur le devis, jamais
+    // comptés dans ses totaux (Nelson, 29/09/2026). Rangés en lignes à montant nul.
+    PREFIXE_FRAIS: 'Frais supplémentaires éventuels',
+    FRAIS_MENTION: 'Des frais supplémentaires, hors forfait, peuvent s’appliquer (travaux ou ajouts non compris dans la maintenance). Ils sont toujours annoncés et acceptés par le client avant d’être facturés.',
+    // Remise en % sur la création du site, jamais sur la maintenance : une ligne négative.
+    PREFIXE_GESTE: 'Geste commercial',
   };
   const C = CATALOGUE;
   // Options déjà comprises dans une formule (inclus) : cochées d'office, jamais facturées
@@ -1252,6 +1258,18 @@ var NSDocs = (function () {
   const optionsIncluses = formule => { const f = C.FORMULES.find(x => x.n === formule); return (f && f.inclus) || []; };
   const cleNom = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
   const estMaintenance = l => String(l.designation || '').startsWith(C.PREFIXE_MTN);
+  const estFrais = l => String(l.designation || '').startsWith(C.PREFIXE_FRAIS);
+  const estGeste = l => String(l.designation || '').startsWith(C.PREFIXE_GESTE);
+  // « Geste commercial · 10 % sur la création du site », montant négatif, calculé sur le site hors geste.
+  function ligneGeste(pct, siteBrut) {
+    const p = arr(pct), mt = -arr(siteBrut * p / 100);
+    return { designation: C.PREFIXE_GESTE + ' · ' + String(p).replace('.', ',') + ' % sur la création du site', quantite: 1, prix_unitaire_ht: mt, montant_ht: mt };
+  }
+  // « Frais supplémentaires éventuels · Boîte mail en plus », prix indicatif gardé en PU, montant nul.
+  function ligneFrais(designation, pu) {
+    return { designation: C.PREFIXE_FRAIS + ' · ' + String(designation).trim(), quantite: 0, prix_unitaire_ht: arr(pu), montant_ht: 0 };
+  }
+  const libelleFrais = l => String(l.designation).slice(C.PREFIXE_FRAIS.length).replace(/^\s*·\s*/, '');
   // Ligne de maintenance d'un devis : « Maintenance, hébergement & sécurité · Pro / Boutique · annuelle (11 mois + 1 offert) ».
   function ligneMaintenance(cat, annuel) {
     const m = C.MAINTENANCE.find(x => x.cat === cat); if (!m) return null;
@@ -1265,9 +1283,11 @@ var NSDocs = (function () {
   }
   // Répartit les lignes d'un devis entre le catalogue (cases à cocher) et le reste.
   function analyser(lignes, c) {
-    const r = { formule: null, options: {}, libres: [], mtn: null, site: 0, maintenance: 0 };
+    const r = { formule: null, options: {}, libres: [], mtn: null, site: 0, maintenance: 0, frais: [], geste: null };
     lignes.forEach(l => {
       const mt = Number(l.montant_ht) || 0;
+      if (estFrais(l)) { r.frais.push({ libelle: libelleFrais(l), pu: Number(l.prix_unitaire_ht) || 0 }); return; }
+      if (estGeste(l)) { const p = /([\d.,]+)\s*%/.exec(l.designation); r.geste = { pct: p ? Number(p[1].replace(',', '.')) : 0, montant: mt }; r.site += mt; return; }
       if (estMaintenance(l)) { r.mtn = lireMaintenance(l) || { cat: '', annuel: false, montant: mt, libre: l.designation }; r.maintenance += mt; return; }
       r.site += mt;
       const f = C.FORMULES.find(x => cleNom(x.n) === cleNom(l.designation));
@@ -1310,6 +1330,8 @@ var NSDocs = (function () {
     + '.row.off .nm,.row.off .p{color:var(--ink-soft);font-weight:600}.row.on{background:var(--accent-wash);margin:0 -8px;padding:5px 8px;border-radius:4px}.row .tot{font-size:11.5px;color:var(--accent);margin-left:8px;font-weight:600}'
     + '.inclus{font-size:11.5px;color:var(--muted);margin:6px 0 10px}'
     + '.mtn{width:100%;border-collapse:collapse}.mtn th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 0 7px;border-bottom:1px solid var(--line-strong)}.mtn td{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}.mtn td.cat{font-weight:700}.mtn .opt{display:flex;gap:9px;align-items:flex-start}.mtn .opt b{font-variant-numeric:tabular-nums}.mtn .opt span{color:var(--muted)}.mtn .eco{display:block;font-size:11px;color:var(--accent)}.mtn td.on .opt{color:var(--ink)}'
+    + '.frais{margin-top:10px;border:1px dashed var(--line-strong);border-radius:6px;padding:8px 12px}.frais .ft{font-size:12px;font-weight:700}.frais .fm{font-size:11px;color:var(--muted);margin:2px 0 4px}.frais .fl{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--line)}.frais .fl:last-child{border-bottom:0}.frais .fl b{font-variant-numeric:tabular-nums;white-space:nowrap}.frais .vide{height:22px;border-bottom:1px dotted var(--line-strong)}'
+    + '.recap .r.geste .rl,.recap .r.geste .rv{color:#1f7a3a;font-weight:700}'
     + '.bas{margin-top:14px;font-size:11px;color:var(--muted)}'
     + '.page2{display:grid;grid-template-columns:1fr 300px;gap:32px;margin-top:6px}.cond p{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px}.cond b{color:var(--ink)}'
     + '.recap{border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;align-self:start}.recap .r{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 14px;font-size:13px;border-bottom:1px solid var(--line)}.recap .r .rl{color:var(--ink-soft)}.recap .r .rv{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}'
@@ -1329,9 +1351,10 @@ var NSDocs = (function () {
     + 'section{margin-top:11px}.sec{padding-bottom:4px;margin-bottom:3px}.sec .t{font-size:14.5px}.sec .no{width:19px;height:19px;font-size:10px}'
     + '.row{padding:2px 0}.row.on{padding:2px 8px}.row .nm,.row .p{font-size:11.5px}.row .ds{font-size:9.5px;line-height:1.3}.cb{width:11px;height:11px;margin-top:2px}.cb.on::after{left:3px;top:0;width:3px;height:7px}'
     + '.row .d .nm{display:inline}.row .ds{display:inline;margin-left:8px}'
+    + '.frais{margin-top:5px;padding:4px 10px}.frais .ft{font-size:10.5px}.frais .fm{font-size:9.5px;margin:1px 0 2px}.frais .fl{font-size:11px;padding:1px 0}.frais .vide{height:15px}'
     + '.inclus{font-size:10px;margin:3px 0 5px}.mtn th{font-size:8.5px;padding-bottom:5px}.mtn td{padding:4px 0;font-size:11.5px}.mtn .eco{display:inline;margin-left:8px;font-size:9.5px}.bas{margin-top:8px;font-size:9.5px}'
     + '.cond p{font-size:11.5px}.recap .r{padding:7px 12px;font-size:12px}.sign{margin-top:24px}footer{margin-top:24px}.detail td{padding:6px 0;font-size:11.5px}'
-    + '.recap,.sign,footer,.modal,tr,.row{break-inside:avoid}.cb,.cb.on,.row.on,.sec .no,.recap .r.total,.modal,.doc-meta .v,.champ-c{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+    + '.recap,.sign,footer,.modal,.frais,tr,.row{break-inside:avoid}.cb,.cb.on,.row.on,.sec .no,.recap .r.total,.modal,.doc-meta .v,.champ-c{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
 
   const cb = on => '<span class="cb' + (on ? ' on' : '') + '"></span>';
   const sec = (no, t, sub) => '<div class="sec"><span class="no">' + no + '</span><span class="t">' + t + '</span><span class="sub">' + sub + '</span></div>';
@@ -1404,7 +1427,10 @@ var NSDocs = (function () {
       + '<section>' + sec(2, 'Options complémentaires', 'options retenues, prix unit. HT') + options + '</section>'
       + '<section>' + sec(3, 'Maintenance, hébergement &amp; sécurité', 'obligatoire, ligne retenue cochée')
       + '<div class="inclus">Inclus : ' + C.INCLUS + '</div>'
-      + '<table class="mtn"><thead><tr><th>Catégorie de formule</th><th>Option trimestrielle (3 mois)</th><th>Option annuelle (11 mois + 1 offert)</th></tr></thead><tbody>' + maintenance + '</tbody></table></section>'
+      + '<table class="mtn"><thead><tr><th>Catégorie de formule</th><th>Option trimestrielle (3 mois)</th><th>Option annuelle (11 mois + 1 offert)</th></tr></thead><tbody>' + maintenance + '</tbody></table>'
+      + '<div class="frais"><div class="ft">Frais supplémentaires éventuels (hors forfait)</div><div class="fm">' + esc(C.FRAIS_MENTION) + '</div>'
+      + (a.frais.length ? a.frais.map(f => '<div class="fl"><span>' + esc(f.libelle) + '</span><b>' + (f.pu ? m(f.pu) + ' HT' : 'sur devis') + '</b></div>').join('')
+        : '<div class="vide"></div><div class="vide"></div>') + '</div></section>'
       + '<div class="bas">NS Development SARL-S · devis ' + esc(num) + ' · page 1 / 2 · le décompte financier est en page 2</div></div>';
 
     const page2 = '<div class="sheet">' + tete('DEVIS', [['Page', '2 / 2'], ['N°', num]])
@@ -1414,7 +1440,11 @@ var NSDocs = (function () {
       + '<p><b>Solde final :</b> les 50 % HT restants du site web sont exigibles à la livraison clés en main, avant la mise en ligne publique.</p>'
       + '<p><b>Facturation :</b> une facture d’acompte est émise à la signature. La facture de solde sera émise lors de la validation finale.</p>'
       + (d.notes ? '<p><b>Notes :</b><br><span style="white-space:pre-wrap">' + esc(d.notes) + '</span></p>' : '') + '</div>'
-      + '<div class="recap"><div class="r"><span class="rl">Total Création Site (HT)</span><span class="rv">' + m(t.site) + '</span></div>'
+      + '<div class="recap">' + (a.geste
+        ? '<div class="r"><span class="rl">Création Site (HT)</span><span class="rv">' + m(t.site - a.geste.montant) + '</span></div>'
+          + '<div class="r geste"><span class="rl">Geste commercial (' + eur(a.geste.pct).replace(/,00$/, '') + ' %)</span><span class="rv">' + m(a.geste.montant) + '</span></div>'
+          + '<div class="r"><span class="rl">Total Création Site (HT)</span><span class="rv">' + m(t.site) + '</span></div>'
+        : '<div class="r"><span class="rl">Total Création Site (HT)</span><span class="rv">' + m(t.site) + '</span></div>')
       + '<div class="r"><span class="rl">Total Maintenance (HT)</span><span class="rv">' + m(t.maintenance) + '</span></div>'
       + '<div class="r"><span class="rl"><b>Total HT Global</b></span><span class="rv">' + m(t.ht) + '</span></div>'
       + '<div class="r"><span class="rl">TVA (' + eur(taux).replace(/,00$/, '') + ' %)</span><span class="rv">' + m(t.tva) + '</span></div>'
@@ -1439,6 +1469,7 @@ var NSDocs = (function () {
 
   function docFactureHTML(f, lignes, c) {
     const E = EMETTEUR();
+    lignes = lignes.filter(l => !estFrais(l));
     const m = n => eur(n) + ' €';
     const taux = Number(f.tva_taux) || 0;
     const site = arr(lignes.filter(l => !estMaintenance(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
@@ -1471,7 +1502,7 @@ var NSDocs = (function () {
   }
 
   return {
-    CATALOGUE, optionsIncluses, ligneMaintenance, lireMaintenance, estMaintenance, decompte, analyser, objetFacture,
+    CATALOGUE, optionsIncluses, ligneMaintenance, lireMaintenance, estMaintenance, estFrais, estGeste, ligneGeste, ligneFrais, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
     devis(d, lignes, c, options) { regler(options); return docDevisHTML(d, lignes || [], c || {}); },
     facture(f, lignes, c, options) { regler(options); return docFactureHTML(f, lignes || [], c || {}); },
@@ -1521,6 +1552,14 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-inclus li { margin: 2px 0; }
   .fx-inclus .fx-pas { margin-top: 8px; color: #8a4b00; }
   .fx-inclus .fx-mtn { margin-top: 8px; color: var(--doux); }
+  .fx-frais { display: grid; grid-template-columns: 1fr 84px 30px; gap: 6px; margin-bottom: 6px; }
+  .fx-frais input { border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 15px; width: 100%; background: #fff; }
+  .fx-frais button { border: 0; background: none; font-size: 20px; color: var(--doux); }
+  .fx-geste { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fx-geste input { width: 80px; border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 16px; text-align: center; background: #fff; }
+  .fx-geste .fx-chips button { padding: 8px 12px; }
+  .fx-geste-effet { margin-top: 8px; font-size: 14px; color: #1f7a3a; font-weight: 650; }
+  .fx-totaux div.fx-remise span { color: #8ee3a8; }
   .fx-alerte { background: #fdecea; border: 1px solid #f5c2bd; border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
 </style>
 
@@ -1627,7 +1666,8 @@ const Factu = (() => {
   // ------------------------------------------------------------------ devis : composition
   // Même déroulé que le devis validé : 1 formule, 2 options, 3 maintenance
   // (obligatoire), 4 décompte avec acompte et solde.
-  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false };
+  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false, frais: [], geste: 0 };
+  const GESTES = [5, 10, 15, 20];
   const catDe = formule => { const m = MAINTENANCE.find(x => x.formules.includes(formule)); return m ? m.cat : null; };
 
   // Ce que chaque formule comprend déjà, affiché sous les formules dès qu'on en choisit
@@ -1655,7 +1695,7 @@ const Factu = (() => {
   function nouveauDevis(prospect) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
-    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false;
+    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false; D.frais = []; D.geste = 0;
     const dans30 = new Date(Date.now() + 30 * 864e5);
     const nomClient = prospect ? prospect.entreprise : '';
     const cc = F.clients.find(c => c.id === D.clientId) || {};
@@ -1673,7 +1713,16 @@ const Factu = (() => {
         <button type="button" class="btn clair large" data-fx="ajout-ligne">＋ Ajouter une ligne</button></div>
       <div class="bloc"><h3>3 · Maintenance, hébergement &amp; sécurité</h3>
         <div class="sous" style="margin:0 0 8px">Obligatoire. Catégorie reprise de la formule, modifiable.</div>
-        <div class="fx-chips" id="fx-mtn-cat"></div><div class="fx-chips" id="fx-mtn-per" style="margin-top:8px"></div></div>
+        <div class="fx-chips" id="fx-mtn-cat"></div><div class="fx-chips" id="fx-mtn-per" style="margin-top:8px"></div>
+        <h3 style="margin-top:14px">Frais supplémentaires éventuels</h3>
+        <div class="sous" style="margin:0 0 8px">Hors forfait, annoncés sur le devis mais <b>pas comptés dans le prix</b>. Le devis prévient toujours que des frais peuvent s’ajouter ; écris ici ceux déjà connus (prix facultatif).</div>
+        <div id="fx-frais"></div>
+        <button type="button" class="btn clair large" data-fx="ajout-frais">＋ Ajouter des frais</button></div>
+      <div class="bloc"><h3>Geste commercial</h3>
+        <div class="sous" style="margin:0 0 8px">Remise en % sur la création du site (pas sur la maintenance). Le prix se recalcule en direct.</div>
+        <div class="fx-geste"><input name="geste" type="number" min="0" max="100" step="0.5" inputmode="decimal" value="0" aria-label="Geste commercial en pourcentage"> <b>%</b>
+          <div class="fx-chips" id="fx-gestes"></div></div>
+        <div class="fx-geste-effet" id="fx-geste-effet"></div></div>
       <div class="bloc"><div class="fx-deux">
           <label class="champ">TVA %<input name="tva" type="number" value="17" min="0" step="0.01"></label>
           <label class="champ">Valable jusqu’au<input name="validite" type="date" value="${isoJour(dans30)}"></label></div>
@@ -1698,6 +1747,10 @@ const Factu = (() => {
     const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
     document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'trim', 'Trimestrielle (3 mois)', eur(m.trim) + ' € HT / trim.', !D.annuel)
       + chip('data-fx-per', 'an', 'Annuelle (11 mois + 1 offert)', eur(m.an) + ' € HT / an · éco. ' + eur(m.trim * 4 - m.an) + ' €', D.annuel) : '<div class="sous">Choisis la formule, ou une catégorie.</div>';
+    document.getElementById('fx-frais').innerHTML = D.frais.map((l, i) => `<div class="fx-frais" data-i="${i}">
+      <input data-k="designation" placeholder="Ex. boîte mail supplémentaire" value="${esc(l.designation)}"><input data-k="pu" type="number" min="0" step="0.01" placeholder="Prix HT" value="${l.pu}">
+      <button type="button" data-fx="suppr-frais" data-i="${i}" aria-label="Retirer">×</button></div>`).join('');
+    document.getElementById('fx-gestes').innerHTML = [0, ...GESTES].map(g => `<button type="button" data-fx-geste="${g}" class="${D.geste === g ? 'on' : ''}">${g ? g + ' %' : 'Aucun'}</button>`).join('');
     document.getElementById('fx-lignes').innerHTML = D.lignes.map((l, i) => `<div class="fx-ligne" data-i="${i}">
       <input data-k="designation" placeholder="Désignation" value="${esc(l.designation)}"><input data-k="quantite" type="number" min="0" value="${l.quantite}">
       <input data-k="pu" type="number" min="0" step="0.01" placeholder="PU HT" value="${l.pu}"><button type="button" data-fx="suppr-ligne" data-i="${i}">×</button></div>`).join('');
@@ -1711,8 +1764,12 @@ const Factu = (() => {
     OPTIONS.forEach(o => { const q = Number(D.opts[o.n]) || 0; if (q > 0) L.push({ designation: o.n, quantite: q, prix_unitaire_ht: o.pu, montant_ht: Math.round(q * o.pu * 100) / 100 }); });
     D.lignes.forEach(l => { if (!String(l.designation).trim()) return; const q = Number(l.quantite) || 0, pu = Number(l.pu) || 0;
       L.push({ designation: l.designation.trim(), quantite: q, prix_unitaire_ht: pu, montant_ht: Math.round(q * pu * 100) / 100 }); });
+    // Geste commercial : sur le site seulement, calculé avant la maintenance.
+    const siteBrut = L.reduce((s, l) => s + l.montant_ht, 0);
+    if (D.geste > 0 && siteBrut > 0) L.push(NSDocs.ligneGeste(D.geste, siteBrut));
     const mtn = D.mtnCat && NSDocs.ligneMaintenance(D.mtnCat, D.annuel);
     if (mtn) L.push(mtn);
+    D.frais.forEach(f => { if (String(f.designation).trim()) L.push(NSDocs.ligneFrais(f.designation, Number(f.pu) || 0)); });
     return L.map((l, i) => Object.assign(l, { ordre: i }));
   }
 
@@ -1726,7 +1783,13 @@ const Factu = (() => {
   function calculer() {
     const form = document.getElementById('fx-devis'); if (!form) return;
     const t = totaux(), taux = Number(form.tva.value) || 0;
-    document.getElementById('fx-totaux').innerHTML = `<div><span>Total création site HT</span><span>${eur(t.site)} €</span></div>
+    const g = lignesDevis().find(NSDocs.estGeste), remise = g ? -g.montant_ht : 0;
+    document.getElementById('fx-geste-effet').textContent = g
+      ? `− ${eur(remise)} € HT sur le site (${eur(t.site + remise)} € → ${eur(t.site)} €), soit − ${eur(remise * (1 + taux / 100))} € TTC pour le client.`
+      : (D.geste > 0 ? 'Choisis d’abord une formule ou une option : le geste porte sur le prix du site.' : '');
+    document.getElementById('fx-totaux').innerHTML = (g ? `<div><span>Création site HT</span><span>${eur(t.site + remise)} €</span></div>
+      <div class="fx-remise"><span>Geste commercial ${eur(D.geste)} %</span><span>− ${eur(remise)} €</span></div>` : '')
+      + `<div><span>Total création site HT</span><span>${eur(t.site)} €</span></div>
       <div><span>Total maintenance HT</span><span>${eur(t.maintenance)} €</span></div>
       <div><span>Total HT global</span><span>${eur(t.ht)} €</span></div>
       <div><span>TVA ${eur(taux)} %</span><span>${eur(t.tva)} €</span></div><div class="gros"><span>Total TTC</span><span>${eur(t.ttc)} €</span></div>
@@ -1737,7 +1800,8 @@ const Factu = (() => {
 
   async function enregistrerDevis(form) {
     const lignes = lignesDevis();
-    if (!lignes.some(l => !NSDocs.estMaintenance(l))) return toast('Choisis au moins une formule, une option ou une ligne.', true);
+    if (D.geste < 0 || D.geste >= 100) return toast('Le geste commercial doit être entre 0 et 99 %.', true);
+    if (!lignes.some(l => !NSDocs.estMaintenance(l) && !NSDocs.estFrais(l) && !NSDocs.estGeste(l))) return toast('Choisis au moins une formule, une option ou une ligne.', true);
     if (!D.mtnCat) return toast('La maintenance est obligatoire : choisis sa catégorie.', true);
     const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
     const echec = m => { btn.disabled = false; btn.textContent = 'Enregistrer le devis'; toast(m, true); };
@@ -1832,7 +1896,7 @@ const Factu = (() => {
     const dev = F.devis.find(x => x.id === devisId);
     const { data: lignes, error: e0 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', devisId).order('ordre');
     if (e0) return toast(e0.message, true);
-    const L = lignes || [], ref = dev.numero ? ' (devis ' + dev.numero + ')' : '';
+    const L = (lignes || []).filter(l => !NSDocs.estFrais(l)), ref = dev.numero ? ' (devis ' + dev.numero + ')' : '';
     const site = Math.round(L.filter(l => !NSDocs.estMaintenance(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0) * 100) / 100;
     const moitie = Math.round(site / 2 * 100) / 100;
     const mtn = L.filter(NSDocs.estMaintenance).map(l => ({ designation: l.designation, quantite: l.quantite, prix_unitaire_ht: l.prix_unitaire_ht, montant_ht: l.montant_ht }));
@@ -1917,6 +1981,7 @@ const Factu = (() => {
     const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) { D.mtnCat = catDe(D.base); NSDocs.optionsIncluses(D.base).forEach(n => delete D.opts[n]); } dessinerChoix(); return calculer(); }
     const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true; dessinerChoix(); return calculer(); }
     const mc = t.closest('[data-fx-mtn]'); if (mc) { D.mtnCat = mc.dataset.fxMtn; dessinerChoix(); return calculer(); }
+    const ge = t.closest('[data-fx-geste]'); if (ge) { D.geste = Number(ge.dataset.fxGeste); const i = document.querySelector('#fx-devis [name=geste]'); if (i) i.value = D.geste; dessinerChoix(); return calculer(); }
     const pe = t.closest('[data-fx-per]'); if (pe) { D.annuel = pe.dataset.fxPer === 'an'; dessinerChoix(); return calculer(); }
     const a = t.closest('[data-fx]'); if (!a) return;
     const act = a.dataset.fx, id = a.dataset.id;
@@ -1924,6 +1989,8 @@ const Factu = (() => {
     else if (act === 'nouveau-devis') nouveauDevis(null);
     else if (act === 'deconnexion') F.sb.auth.signOut().then(() => { F.session = null; rendre(); });
     else if (act === 'ajout-ligne') { D.lignes.push({ designation: '', quantite: 1, pu: '' }); dessinerChoix(); calculer(); }
+    else if (act === 'ajout-frais') { D.frais.push({ designation: '', pu: '' }); dessinerChoix(); calculer(); }
+    else if (act === 'suppr-frais') { D.frais.splice(Number(a.dataset.i), 1); dessinerChoix(); calculer(); }
     else if (act === 'suppr-ligne') { D.lignes.splice(Number(a.dataset.i), 1); dessinerChoix(); calculer(); }
     else if (act === 'voir-devis') voir('devis', id);
     else if (act === 'voir-facture') voir('facture', id);
@@ -1937,6 +2004,13 @@ const Factu = (() => {
   document.addEventListener('input', e => {
     const l = e.target.closest('.fx-ligne');
     if (l) { D.lignes[Number(l.dataset.i)][e.target.dataset.k] = e.target.value; return calculer(); }
+    const fr = e.target.closest('.fx-frais');
+    if (fr) { D.frais[Number(fr.dataset.i)][e.target.dataset.k] = e.target.value; return calculer(); }
+    if (e.target.name === 'geste' && e.target.closest('#fx-devis')) {
+      D.geste = Math.max(0, Number(String(e.target.value).replace(',', '.')) || 0);
+      document.querySelectorAll('[data-fx-geste]').forEach(b => b.classList.toggle('on', Number(b.dataset.fxGeste) === D.geste));
+      return calculer();
+    }
     const q = e.target.closest('[data-fx-qte]');
     if (q) { const n = Math.max(0, Math.floor(Number(q.value) || 0)); if (n) D.opts[q.dataset.fxQte] = n; else delete D.opts[q.dataset.fxQte]; return calculer(); }
     if (e.target.closest('#fx-devis')) calculer();
