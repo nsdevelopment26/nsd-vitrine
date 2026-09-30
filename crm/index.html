@@ -476,8 +476,24 @@ function section(titre, info, html) {
   return `<h2 class="section">${titre}${info ? `<small>${info}</small>` : ''}</h2>${html}`;
 }
 
+// Le formulaire « Ajouter » survit aux redessins automatiques (toutes les 60 s, et au retour sur
+// l'appli après un passage dans une autre) : sans ça, tout ce que Sam avait tapé disparaissait.
+function garderSaisie() {
+  const f = document.getElementById('form-ajout'); if (!f) return null;
+  const a = document.activeElement, z = document.getElementById('zone-doublons');
+  return { valeurs: [...f.elements].filter(e => e.name).map(e => [e.name, e.value]), doublons: z ? z.innerHTML : '',
+    focus: a && f.contains(a) ? a.name : '' };
+}
+function remettreSaisie(s) {
+  const f = document.getElementById('form-ajout'); if (!s || !f) return;
+  s.valeurs.forEach(([n, v]) => { if (f.elements[n]) f.elements[n].value = v; });
+  const z = document.getElementById('zone-doublons'); if (z && s.doublons) z.innerHTML = s.doublons;
+  if (s.focus && f.elements[s.focus]) f.elements[s.focus].focus({ preventScroll: true });
+}
+
 function rendre() {
   if (!S.data) return;
+  const saisie = garderSaisie();
   rendreEspaces();
   document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', b.dataset.vue === S.vue));
   document.body.dataset.vue = S.recherche ? 'recherche' : S.vue;
@@ -488,6 +504,7 @@ function rendre() {
   else if (S.vue === 'ajouter') v.innerHTML = vueAjouter();
   else if (S.vue === 'factu') v.innerHTML = Factu.vue();
   else v.innerHTML = vueStats();
+  remettreSaisie(saisie);
 }
 
 // ---------------------------------------------------------------------------
@@ -1232,7 +1249,7 @@ async function demarrer() {
 
 // Recharge les données quand Sam revient sur l'appli (après un appel par exemple).
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.pin && S.data && !S.ouvert) charger().catch(() => {}); });
-setInterval(() => { if (S.data && !S.ouvert && !document.hidden) rendre(); }, 60000);
+setInterval(() => { if (S.data && !S.ouvert && !document.hidden && S.vue !== 'ajouter') rendre(); }, 60000);
 
 // Ouverte depuis script.google.com (et non la version installable) : on guide vers la bonne adresse.
 if (!window.CRM_API) document.getElementById('bandeau-installer').classList.remove('cache');
@@ -1850,17 +1867,27 @@ const Factu = (() => {
       <div class="fx-mtn">Avec la maintenance (partie 3) : ${esc(MTN_INCLUS)}</div></div>`;
   }
 
-  function nouveauDevis(prospect) {
+  // edit : { devis, a (lignes analysées), client } pour reprendre un brouillon existant.
+  function nouveauDevis(prospect, edit) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
-    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false; D.frais = FRAIS_DEFAUT(); D.geste = 0; D.rec = {};
+    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false; D.frais = FRAIS_DEFAUT(); D.geste = 0; D.rec = {}; D.editId = null;
+    if (edit) {
+      const a = edit.a; D.prospect = null; D.editId = edit.devis.id; D.clientId = edit.devis.client_id;
+      D.base = a.formule; D.opts = Object.assign({}, a.options);
+      D.lignes = a.libres.map(l => ({ designation: l.designation, quantite: Number(l.quantite) || 0, pu: Number(l.prix_unitaire_ht) || 0 }));
+      D.mtnCat = a.mtn && a.mtn.cat ? a.mtn.cat : (a.formule ? catDe(a.formule) : null); D.annuel = !!(a.mtn && a.mtn.annuel);
+      a.recurrentes.forEach(r => { const x = RECURRENTES.find(y => r.libelle.startsWith(y.n)); if (x) D.rec[x.id] = true; });
+      D.frais = a.frais.map(f => ({ designation: f.libelle, pu: f.pu || '' }));
+      D.geste = a.geste ? a.geste.pct : 0;
+    }
     const dans30 = new Date(Date.now() + 30 * 864e5);
-    const nomClient = prospect ? prospect.entreprise : '';
     const cc = F.clients.find(c => c.id === D.clientId) || {};
-    feuille(tete('Nouveau devis', nomClient ? esc(nomClient) + (D.clientId ? '' : ' · la fiche client sera créée') : '') + `
+    const nomClient = prospect ? prospect.entreprise : (edit ? cc.nom_etablissement || '' : '');
+    feuille(tete(edit ? 'Modifier le brouillon' : 'Nouveau devis', nomClient ? esc(nomClient) + (D.clientId ? '' : ' · la fiche client sera créée') : '') + `
       <form id="fx-devis">
       <div class="bloc"><h3>Client &amp; références</h3>
-      ${prospect ? '' : `<label class="champ">Client<select name="client" required><option value="">Choisir un client…</option>
+      ${prospect || edit ? '' : `<label class="champ">Client<select name="client" required><option value="">Choisir un client…</option>
         ${F.clients.map(c => `<option value="${c.id}">${esc(c.nom_etablissement)}</option>`).join('')}</select></label>
         <div class="sous" style="margin-bottom:10px">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div>`}
         <label class="champ">Adresse<input name="adresse" value="${esc(cc.adresse || '')}" placeholder="N°, rue, code postal, localité"></label>
@@ -1892,7 +1919,24 @@ const Factu = (() => {
         <label class="champ">Enregistrer comme<select name="statut"><option value="brouillon">Brouillon, sans numéro</option><option value="envoyé">Envoyé : reçoit son numéro DEV</option></select></label></div>
       <div class="fx-totaux" id="fx-totaux"></div>
       <p><button class="btn large" type="submit">Enregistrer le devis</button></p></form>`);
+    if (edit) {
+      const f = document.getElementById('fx-devis'), d = edit.devis;
+      f.notes.value = d.notes || ''; f.tva.value = d.tva_taux != null ? d.tva_taux : 17; f.geste.value = D.geste;
+      if (d.date_validite) f.validite.value = String(d.date_validite).slice(0, 10);
+      f.querySelector('[type=submit]').textContent = 'Enregistrer les modifications';
+      if (edit.a.mtn && !edit.a.mtn.cat) toast('Ancienne maintenance non reconnue : choisis-la de nouveau (partie 3).', true);
+    }
     dessinerChoix(); calculer();
+  }
+
+  // Un brouillon (sans numéro) se reprend en entier : mêmes écrans que pour un nouveau devis.
+  async function modifierDevis(id) {
+    const d = F.devis.find(x => x.id === id);
+    if (!d || d.statut !== 'brouillon' || d.numero) return toast('Seul un devis brouillon, sans numéro, se modifie.', true);
+    const { data: lignes, error } = await F.sb.from('devis_lignes').select('*').eq('devis_id', id).order('ordre');
+    if (error) return toast(error.message, true);
+    const client = F.clients.find(c => c.id === d.client_id) || {};
+    nouveauDevis(null, { devis: d, a: NSDocs.analyser(lignes || [], client), client });
   }
 
   function dessinerChoix() {
@@ -1992,14 +2036,28 @@ const Factu = (() => {
       }
       if (!clientId) return echec('Choisis un client.');
       const t = totaux(), taux = Number(form.tva.value) || 0;
-      const { data: dev, error: e1 } = await F.sb.from('devis').insert({
-        client_id: clientId, date_emission: isoJour(new Date()), date_validite: form.validite.value || null,
-        statut: form.statut.value, tva_taux: taux, total_ht: t.ht, total_ttc: t.ttc,
-        notes: form.notes.value.trim() || null,
-      }).select('id').single();
-      if (e1) return echec('Devis : ' + e1.message);
-      const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: dev.id })));
-      if (e2) return echec('Devis créé, mais erreur sur les lignes : ' + e2.message);
+      const champs = { date_validite: form.validite.value || null, statut: form.statut.value, tva_taux: taux, total_ht: t.ht, total_ttc: t.ttc,
+        notes: form.notes.value.trim() || null };
+      let dev;
+      if (D.editId) {
+        // Brouillon modifié : les nouvelles lignes d'abord, les anciennes ensuite, pour ne jamais laisser un devis vide.
+        const { data: anciennes, error: e0 } = await F.sb.from('devis_lignes').select('id').eq('devis_id', D.editId);
+        if (e0) return echec('Devis : ' + e0.message);
+        const { data: maj, error: e1 } = await F.sb.from('devis').update(champs).eq('id', D.editId).eq('statut', 'brouillon').select('id');
+        if (e1) return echec('Devis : ' + e1.message);
+        if (!maj || !maj.length) return echec('Ce devis n’est plus un brouillon : il ne se modifie plus.');
+        dev = { id: D.editId };
+        const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: dev.id })));
+        if (e2) return echec('Erreur sur les lignes, le devis garde ses anciennes lignes : ' + e2.message);
+        const ids = (anciennes || []).map(l => l.id);
+        if (ids.length) { const { error: e3 } = await F.sb.from('devis_lignes').delete().in('id', ids); if (e3) return echec('Nouvelles lignes posées, mais les anciennes restent : ' + e3.message); }
+      } else {
+        const { data: cree, error: e1 } = await F.sb.from('devis').insert(Object.assign({ client_id: clientId, date_emission: isoJour(new Date()) }, champs)).select('id').single();
+        if (e1) return echec('Devis : ' + e1.message);
+        dev = cree;
+        const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: dev.id })));
+        if (e2) return echec('Devis créé, mais erreur sur les lignes : ' + e2.message);
+      }
       // La fiche client suit le devis : formule, forfait trimestriel de référence, périodicité.
       // Référence trimestrielle de la fiche client : forfait + modules + options récurrentes.
       const m = MAINTENANCE.find(x => x.cat === D.mtnCat), recs = RECURRENTES.filter(r => D.rec[r.id]);
@@ -2016,7 +2074,7 @@ const Factu = (() => {
         const { error: e3 } = await F.sb.from('clients').update({ adresse: adresse || null, tva_intra: tvaIntra || null }).eq('id', clientId);
         if (e3) toast('Devis enregistré, mais l’adresse et le n° TVA n’ont pas pu être gardés : ' + e3.message, true);
       }
-      toast(form.statut.value === 'envoyé' ? 'Devis enregistré avec son numéro.' : 'Devis enregistré en brouillon.');
+      toast((D.editId ? 'Devis modifié' : 'Devis enregistré') + (form.statut.value === 'envoyé' ? ' avec son numéro.' : ' en brouillon.'));
       await charger(); ouvrirDevis(dev.id);
     } catch (e) { echec(e.message || String(e)); }
   }
@@ -2030,6 +2088,7 @@ const Factu = (() => {
     const objets = facs.map(f => NSDocs.objetFacture(f.factures_lignes || []));
     const act = [];
     act.push('<button class="btn large" data-fx="voir-devis" data-id="' + id + '">Voir le devis (PDF)</button>');
+    if (d.statut === 'brouillon' && !d.numero) act.push('<button class="btn large" data-fx="modifier-devis" data-id="' + id + '">Modifier le devis</button>');
     if (d.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="statut-devis" data-st="envoyé" data-id="' + id + '">Marquer envoyé (attribue le numéro)</button>');
     if (d.statut === 'envoyé') act.push('<div class="fx-deux"><button class="btn" data-fx="statut-devis" data-st="accepté" data-id="' + id + '">Accepté</button><button class="btn clair" data-fx="statut-devis" data-st="refusé" data-id="' + id + '">Refusé</button></div>');
     // Modèle validé : facture d'acompte à la signature, facture de solde à la livraison.
@@ -2176,6 +2235,7 @@ const Factu = (() => {
     else if (act === 'suppr-frais') { D.frais.splice(Number(a.dataset.i), 1); dessinerChoix(); calculer(); }
     else if (act === 'suppr-ligne') { D.lignes.splice(Number(a.dataset.i), 1); dessinerChoix(); calculer(); }
     else if (act === 'voir-devis') voir('devis', id);
+    else if (act === 'modifier-devis') modifierDevis(id);
     else if (act === 'voir-facture') voir('facture', id);
     else if (act === 'statut-devis') changerStatutDevis(id, a.dataset.st);
     else if (act === 'facturer') facturer(id, a.dataset.objet);
