@@ -325,6 +325,7 @@ const NS_I18N = {
   "Boutique": {lb:"Buttek", de:"Shop", en:"Shop", pt:"Loja"},
   "Vente en ligne jusqu'à 50 produits": {lb:"Online-Verkaf bis 50 Produkter", de:"Onlineverkauf bis 50 Produkte", en:"Online sales up to 50 products", pt:"Venda online até 50 produtos"},
   "Signature": {lb:"Signature", de:"Signature", en:"Signature", pt:"Signature"},
+  "Sur-mesure, haut de gamme, 3 langues": {lb:"Op Mooss, haut de gamme, 3 Sproochen", de:"Maßgeschneidert, Premium, 3 Sprachen", en:"Bespoke, high-end, 3 languages", pt:"À medida, topo de gama, 3 línguas"},
   "Sur-mesure, catalogue, haut de gamme": {lb:"Op Mooss, Katalog, haut de gamme", de:"Maßgeschneidert, Katalog, Premium", en:"Bespoke, catalogue, high-end", pt:"À medida, catálogo, topo de gama"},
   "Langue supplémentaire": {lb:"Zousätzlech Sprooch", de:"Zusätzliche Sprache", en:"Additional language", pt:"Idioma adicional"},
   "Traduction comprise": {lb:"Iwwersetzung abegraff", de:"Übersetzung inklusive", en:"Translation included", pt:"Tradução incluída"},
