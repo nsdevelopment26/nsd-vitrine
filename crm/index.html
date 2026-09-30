@@ -1251,9 +1251,9 @@ else document.getElementById('ecran-connexion').classList.remove('cache');
 //     sites-web/clients/<client>/devis et /factures.
 // Le devis suit le modèle validé commercial/devis-modeles/devis-NSD.pdf
 // (généré par commercial/facturation/generer-modeles.py) : page 1 l'offre
-// (formule, options, maintenance, cases cochées), page 2 le décompte, l'acompte,
-// le solde et les signatures. Le CATALOGUE ci-dessous est le même que celui du
-// modèle (_charte_pdf.py) : un prix qui change se change aux deux endroits.
+// (formule, options retenues, maintenance, cases cochées), page 2 le décompte,
+// l'acompte, le solde et les signatures. Le CATALOGUE ci-dessous est la grille du
+// 30/09/2026 ; commercial/facturation/_charte_pdf.py doit dire la même chose.
 // ===========================================================================
 var NSDocs = (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1264,42 +1264,73 @@ var NSDocs = (function () {
   const fmtDate = s => { if (!s) return '—'; const p = String(s).slice(0, 10).split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
   const arr = n => Math.round((Number(n) || 0) * 100) / 100;
 
-  // ------------------------------------------------------------------ catalogue (modèle validé)
+  // ------------------------------------------------------------------ catalogue
+  // Grille validée par Nelson et Sam le 30/09/2026 (entreprise/tarifs/proposition-prix-2026-10.html).
+  // Quatre familles : formules, modules (+45 € / trim. de maintenance chacun), services, récurrent.
   const CATALOGUE = {
     FORMULES: [
-      { n: 'Essentiel', pu: 1350, desc: '1 page, présentation essentielle, responsive, formulaire contact, Maps, mise en ligne.' },
-      { n: 'Vitrine', pu: 2625, desc: '4 à 5 pages, galerie photos, services / menu, formulaire, SEO local de base.' },
-      { n: 'Pro', pu: 3750, desc: '8 à 10 pages, configuration bilingue, formulaires avancés, SEO renforcé.' },
-      { n: 'Boutique', pu: 3750, desc: 'E-commerce jusqu’à 50 produits, gestion panier, paiement sécurisé.',
-        inclus: ['Intégration d’un module de paiement en ligne (Stripe / PayPal / SumUp)'] },
-      { n: 'Signature', pu: 6000, desc: 'Sur-mesure (catalogue immobilier / autos), haut de gamme, développements spécifiques.',
-        inclus: ['Catalogue métier dynamique (Biens immobiliers / Véhicules d’occasion)'] },
+      { n: 'Essentiel', pu: 990, desc: '1 page adaptée au téléphone, animations, formulaire de contact, Google Maps, référencement de base, mise en ligne.' },
+      { n: 'Vitrine', pu: 1990, desc: 'Jusqu’à 5 pages, galerie photos, services / menu, formulaire, référencement local de base, fiche Google Business.',
+        inclus: ['Création et optimisation de la fiche Google Business Profile'] },
+      { n: 'Pro', pu: 3290, desc: 'Jusqu’à 10 pages, 2 langues, formulaires avancés, espace de modification du site.',
+        inclus: ['Création et optimisation de la fiche Google Business Profile', 'Espace de modification du site (textes, photos, horaires, prix)'] },
+      { n: 'Boutique', pu: 3790, desc: 'Vente en ligne jusqu’à 50 produits, panier, paiement sécurisé, gestion des produits et des commandes.',
+        inclus: ['Création et optimisation de la fiche Google Business Profile', 'Espace de modification du site (textes, photos, horaires, prix)',
+          'Paiement en ligne simple (acompte, bon cadeau, prestation payée d’avance)'] },
+      { n: 'Signature', pu: 5990, desc: 'Jusqu’à 15 pages, direction artistique propre, animations avancées, 3 langues, rédaction des textes, référencement local avancé, espace de modification.',
+        inclus: ['Création et optimisation de la fiche Google Business Profile', 'Espace de modification du site (textes, photos, horaires, prix)',
+          'Référencement local avancé (pages par commune, données structurées)'] },
     ],
-    // court : l'étiquette du bouton dans l'appli. qte : option vendue à l'unité.
+    // court : l'étiquette du bouton dans l'appli. qte : vendu à l'unité. module : fonction qui tourne
+    // sur le site, ajoute MODULE à la maintenance. alerte : à dire à Sam avant de le vendre.
     OPTIONS: [
-      { n: 'Langue(s) supplémentaire(s)', court: 'Langue supplémentaire', pu: 450, qte: true },
+      { n: 'Langue(s) supplémentaire(s), traduction comprise', court: 'Langue supplémentaire', pu: 450, qte: true },
       { n: 'Page(s) supplémentaire(s)', court: 'Page supplémentaire', pu: 150, qte: true },
-      { n: 'Pack Photos / Visuels professionnels libres de droits', court: 'Pack photos', pu: 15, qte: true },
-      { n: 'SEO local avancé & Optimisation complète du référencement Google', court: 'SEO local avancé', pu: 350 },
-      { n: 'Système de prise de rendez-vous en ligne / Module de réservation', court: 'Rendez-vous en ligne', pu: 300 },
-      { n: 'Système de rendez-vous sur-mesure (agenda propre + espace praticien)', court: 'Rendez-vous sur-mesure', pu: 1200 },
-      { n: 'Espace de gestion sur-mesure (inscriptions en ligne + CRM clients + facturation)', court: 'Espace de gestion (CRM)', pu: 800 },
-      { n: 'Création et optimisation intégrale de la Fiche Google Business Profile', court: 'Fiche Google Business', pu: 90 },
-      { n: 'Intégration d’un module de paiement en ligne (Stripe / PayPal / SumUp)', court: 'Paiement en ligne', pu: 900 },
-      { n: 'Mise en place d’un Blog / Section Actualités avec gestion d’articles', court: 'Blog / actualités', pu: 250 },
-      { n: 'Catalogue métier dynamique (Biens immobiliers / Véhicules d’occasion)', court: 'Catalogue métier', pu: 900 },
-      { n: 'Galerie photos interactive avancée / Portfolio de réalisations', court: 'Galerie avancée', pu: 150 },
-      { n: 'Rédaction professionnelle des textes et contenus structurés (5 pages)', court: 'Rédaction des textes', pu: 300 },
-      { n: 'Création du Logo d’entreprise & conception de la Charte Graphique', court: 'Logo et charte', pu: 350 },
+      { n: 'Rédaction des textes, par page', court: 'Rédaction (par page)', pu: 60, qte: true },
+      { n: 'Photos libres de droits, par image', court: 'Photo libre de droits', pu: 15, qte: true },
+      { n: 'Agenda supplémentaire (praticien, salle ou établissement)', court: 'Agenda en plus', pu: 290, qte: true },
+      { n: 'Tranche de 50 produits supplémentaires', court: '50 produits en plus', pu: 290, qte: true },
+      { n: 'Rendez-vous NSD : agenda propre, espace du professionnel, confirmations par e-mail', court: 'Rendez-vous NSD', pu: 990, module: true },
+      { n: 'Espace inscriptions et élèves (inscriptions en ligne, fiches clients, factures)', court: 'Inscriptions (CRM)', pu: 990, module: true },
+      { n: 'Catalogue géré (biens ou véhicules, jusqu’à 100 fiches, filtres)', court: 'Catalogue géré', pu: 990, module: true,
+        alerte: 'L’espace où le client ajoute ses fiches est à construire : en attendant, c’est nous qui les mettons à jour.' },
+      { n: 'Espace de modification du site (textes, photos, horaires, prix)', court: 'Espace de modification', pu: 490, module: true,
+        alerte: 'À construire : Nelson confirme le délai avant que tu l’annonces.' },
+      { n: 'Assistant de chat pour les visiteurs (questions fréquentes, à toute heure)', court: 'Assistant de chat', pu: 390, module: true,
+        alerte: 'Journal des conversations et limite d’usage à finir avant le premier client.' },
+      { n: 'Paiement en ligne simple (acompte, bon cadeau, prestation payée d’avance)', court: 'Paiement simple', pu: 490, module: true,
+        alerte: 'À construire : Nelson confirme le délai avant que tu l’annonces.' },
+      { n: 'Blog / actualités publiés par le client', court: 'Blog / actualités', pu: 390, module: true },
+      { n: 'Raccordement d’un outil de réservation existant (Doctena, Salonkee, TheFork, Calendly…)', court: 'Raccordement réservation', pu: 290 },
+      { n: 'Référencement local avancé (pages par commune, données structurées)', court: 'SEO local avancé', pu: 490 },
+      { n: 'Création et optimisation de la fiche Google Business Profile', court: 'Fiche Google Business', pu: 90 },
+      { n: 'Galerie photos avancée / portfolio avec filtres', court: 'Galerie avancée', pu: 150 },
+      { n: 'Logo (fichiers pour le web et l’impression)', court: 'Logo', pu: 390 },
+      { n: 'Identité complète (logo, couleurs, polices, carte de visite)', court: 'Identité complète', pu: 890 },
+      { n: 'Séance photo sur place (demi-journée, 20 photos retouchées)', court: 'Séance photo', pu: 490,
+        alerte: 'Qui fait la séance : à confirmer avec Nelson avant de la vendre.' },
+      { n: 'Reprise d’un site existant (vérification et migration vers l’hébergement luxembourgeois)', court: 'Reprise de site', pu: 290 },
     ],
     // Trimestriel ou annuel (11 mois payés, 1 offert). Plus de paiement au mois.
     MAINTENANCE: [
-      { cat: 'Essentiel / Vitrine', formules: ['Essentiel', 'Vitrine'], trim: 150, an: 550 },
-      { cat: 'Pro / Boutique', formules: ['Pro', 'Boutique'], trim: 225, an: 825 },
-      { cat: 'Signature', formules: ['Signature'], trim: 300, an: 1100 },
+      { cat: 'Essentiel', formules: ['Essentiel'], trim: 120, an: 440 },
+      { cat: 'Vitrine', formules: ['Vitrine'], trim: 150, an: 550 },
+      { cat: 'Pro / Boutique', formules: ['Pro', 'Boutique'], trim: 195, an: 715 },
+      { cat: 'Signature', formules: ['Signature'], trim: 270, an: 990 },
     ],
-    INCLUS: 'Hébergement localisé au Luxembourg, nom de domaine, boîte email professionnelle, maintenance technique continue, sauvegardes journalières & mises à jour.',
+    // Chaque module vendu en option (pas ceux compris dans la formule) ajoute ce montant à la maintenance.
+    MODULE: { trim: 45, an: 165 },
+    // Options récurrentes : même rythme que la maintenance, comptées avec elle (acompte à 100 %).
+    RECURRENTES: [
+      { id: 'mail', n: 'Boîte mail supplémentaire', trim: 15, an: 55 },
+      { id: 'domaine', n: 'Nom de domaine supplémentaire', trim: 15, an: 55 },
+      { id: 'seo', n: 'Suivi du référencement (rapport, 1 h d’ajustements, avis Google)', court: 'Suivi du référencement', trim: 75, an: 275 },
+      { id: 'prio', n: 'Modifications prioritaires (1 h de plus par trimestre, sous 48 h ouvrées)', court: 'Modifications prioritaires', trim: 75, an: 275 },
+    ],
+    TAUX_HORAIRE: 70,
+    INCLUS: 'Hébergement au Luxembourg, nom de domaine, 1 boîte mail pro, mises à jour, sécurité, sauvegardes, support, 1 h de petites modifications par trimestre et espace client.',
     PREFIXE_MTN: 'Maintenance, hébergement & sécurité',
+    PREFIXE_REC: 'Option récurrente',
     // Frais hors forfait possibles pendant la maintenance : annoncés sur le devis, jamais
     // comptés dans ses totaux (Nelson, 29/09/2026). Rangés en lignes à montant nul.
     PREFIXE_FRAIS: 'Frais supplémentaires éventuels',
@@ -1312,7 +1343,9 @@ var NSDocs = (function () {
   // en plus (Nelson, 28/09/2026). Sam ne peut pas revendre ce que le client a déjà.
   const optionsIncluses = formule => { const f = C.FORMULES.find(x => x.n === formule); return (f && f.inclus) || []; };
   const cleNom = s => String(s || '').toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
-  const estMaintenance = l => String(l.designation || '').startsWith(C.PREFIXE_MTN);
+  // Les options récurrentes comptent avec la maintenance (acompte à 100 %, facture de maintenance).
+  const estRecurrente = l => String(l.designation || '').startsWith(C.PREFIXE_REC);
+  const estMaintenance = l => String(l.designation || '').startsWith(C.PREFIXE_MTN) || estRecurrente(l);
   const estFrais = l => String(l.designation || '').startsWith(C.PREFIXE_FRAIS);
   const estGeste = l => String(l.designation || '').startsWith(C.PREFIXE_GESTE);
   // « Geste commercial · 10 % sur la création du site », montant négatif, calculé sur le site hors geste.
@@ -1325,24 +1358,37 @@ var NSDocs = (function () {
     return { designation: C.PREFIXE_FRAIS + ' · ' + String(designation).trim(), quantite: 0, prix_unitaire_ht: arr(pu), montant_ht: 0 };
   }
   const libelleFrais = l => String(l.designation).slice(C.PREFIXE_FRAIS.length).replace(/^\s*·\s*/, '');
-  // Ligne de maintenance d'un devis : « Maintenance, hébergement & sécurité · Pro / Boutique · annuelle (11 mois + 1 offert) ».
-  function ligneMaintenance(cat, annuel) {
+  // Modules vendus en option (ceux compris dans la formule sont couverts par sa maintenance).
+  const modulesVendus = (opts, formule) => C.OPTIONS.filter(o => o.module && opts[o.n] && !optionsIncluses(formule).includes(o.n));
+  // Ligne de maintenance d'un devis : « Maintenance, hébergement & sécurité · Vitrine · trimestrielle (3 mois) · + 2 modules (45 € chacun) ».
+  function ligneMaintenance(cat, annuel, modules) {
     const m = C.MAINTENANCE.find(x => x.cat === cat); if (!m) return null;
-    return { designation: C.PREFIXE_MTN + ' · ' + m.cat + ' · ' + (annuel ? 'annuelle (11 mois + 1 offert)' : 'trimestrielle (3 mois)'),
-      quantite: 1, prix_unitaire_ht: annuel ? m.an : m.trim, montant_ht: annuel ? m.an : m.trim };
+    const n = Math.max(0, Number(modules) || 0), sup = annuel ? C.MODULE.an : C.MODULE.trim, mt = (annuel ? m.an : m.trim) + n * sup;
+    return { designation: C.PREFIXE_MTN + ' · ' + m.cat + ' · ' + (annuel ? 'annuelle (11 mois + 1 offert)' : 'trimestrielle (3 mois)')
+      + (n ? ' · + ' + n + ' module' + (n > 1 ? 's' : '') + ' (' + sup + ' € chacun)' : ''),
+      quantite: 1, prix_unitaire_ht: mt, montant_ht: mt };
   }
   function lireMaintenance(l) {
     if (!l) return null;
     const m = C.MAINTENANCE.find(x => l.designation.indexOf('· ' + x.cat + ' ·') > 0);
-    return m ? { cat: m.cat, annuel: /annuelle/.test(l.designation), montant: Number(l.montant_ht) || 0 } : null;
+    const n = /· \+ (\d+) module/.exec(l.designation);
+    return m ? { cat: m.cat, annuel: /annuelle/.test(l.designation), montant: Number(l.montant_ht) || 0, modules: n ? Number(n[1]) : 0 } : null;
   }
+  // « Option récurrente · Boîte mail supplémentaire · trimestrielle », au rythme de la maintenance.
+  function ligneRecurrente(id, annuel) {
+    const r = C.RECURRENTES.find(x => x.id === id); if (!r) return null;
+    const mt = annuel ? r.an : r.trim;
+    return { designation: C.PREFIXE_REC + ' · ' + r.n + ' · ' + (annuel ? 'annuelle' : 'trimestrielle'), quantite: 1, prix_unitaire_ht: mt, montant_ht: mt };
+  }
+  const libelleRecurrente = l => String(l.designation).slice(C.PREFIXE_REC.length).replace(/^\s*·\s*/, '');
   // Répartit les lignes d'un devis entre le catalogue (cases à cocher) et le reste.
   function analyser(lignes, c) {
-    const r = { formule: null, options: {}, libres: [], mtn: null, site: 0, maintenance: 0, frais: [], geste: null };
+    const r = { formule: null, options: {}, libres: [], mtn: null, site: 0, maintenance: 0, frais: [], geste: null, recurrentes: [] };
     lignes.forEach(l => {
       const mt = Number(l.montant_ht) || 0;
       if (estFrais(l)) { r.frais.push({ libelle: libelleFrais(l), pu: Number(l.prix_unitaire_ht) || 0 }); return; }
       if (estGeste(l)) { const p = /([\d.,]+)\s*%/.exec(l.designation); r.geste = { pct: p ? Number(p[1].replace(',', '.')) : 0, montant: mt }; r.site += mt; return; }
+      if (estRecurrente(l)) { r.recurrentes.push({ libelle: libelleRecurrente(l), montant: mt }); r.maintenance += mt; return; }
       if (estMaintenance(l)) { r.mtn = lireMaintenance(l) || { cat: '', annuel: false, montant: mt, libre: l.designation }; r.maintenance += mt; return; }
       r.site += mt;
       const f = C.FORMULES.find(x => cleNom(x.n) === cleNom(l.designation));
@@ -1460,7 +1506,9 @@ var NSDocs = (function () {
     const formules = C.FORMULES.map(f => { const on = a.formule === f.n;
       return '<div class="row' + (on ? ' on' : ' off') + '">' + cb(on) + '<div class="d"><div class="nm">' + f.n + '</div><div class="ds">' + esc(f.desc) + '</div></div><div class="p">' + m(f.pu) + '</div></div>'; }).join('');
     const inclus = optionsIncluses(a.formule);
-    const options = C.OPTIONS.map(o => { const q = a.options[o.n], on = Boolean(q);
+    // Seules les options retenues (et celles comprises dans la formule) sont listées : le catalogue
+    // complet ne tient plus sur la page 1 depuis la grille du 30/09/2026.
+    const options = C.OPTIONS.filter(o => a.options[o.n] || inclus.includes(o.n)).map(o => { const q = a.options[o.n], on = Boolean(q);
       if (inclus.includes(o.n)) return '<div class="row on">' + cb(true) + '<div class="d"><span class="nm">' + esc(o.n) + '</span></div>'
         + '<div class="p"><span class="u">compris dans ' + esc(a.formule) + '</span>inclus</div></div>';
       return '<div class="row' + (on ? ' on' : ' off') + '">' + cb(on) + '<div class="d"><span class="nm">' + esc(o.n) + '</span>'
@@ -1468,13 +1516,18 @@ var NSDocs = (function () {
         + '<div class="p">' + (o.qte ? '<span class="u">l’unité</span>' : '') + m(o.pu) + (on && o.qte && q !== 1 ? '<span class="tot">= ' + m(o.pu * q) + '</span>' : '') + '</div></div>'; }).join('')
       + a.libres.map(l => '<div class="row on">' + cb(true) + '<div class="d"><span class="nm">' + esc(l.designation) + '</span>'
         + (Number(l.quantite) !== 1 ? '<span class="q">x <b>' + eur(l.quantite).replace(/,00$/, '') + '</b></span>' : '') + '</div>'
-        + '<div class="p">' + (Number(l.quantite) !== 1 ? '<span class="u">l’unité</span>' + m(l.prix_unitaire_ht) + '<span class="tot">= ' + m(l.montant_ht) + '</span>' : m(l.montant_ht)) + '</div></div>').join('');
-    const mtn = a.mtn;
+        + '<div class="p">' + (Number(l.quantite) !== 1 ? '<span class="u">l’unité</span>' + m(l.prix_unitaire_ht) + '<span class="tot">= ' + m(l.montant_ht) + '</span>' : m(l.montant_ht)) + '</div></div>').join('')
+      || '<div class="row off"><div class="d"><span class="ds">Aucune option retenue.</span></div></div>';
+    const mtn = a.mtn, nMod = mtn && mtn.modules || 0;
     const maintenance = C.MAINTENANCE.map(x => {
       const onT = mtn && mtn.cat === x.cat && !mtn.annuel, onA = mtn && mtn.cat === x.cat && mtn.annuel;
       return '<tr><td class="cat">' + x.cat + '</td><td class="' + (onT ? 'on' : '') + '"><div class="opt">' + cb(onT) + '<div><b>' + m(x.trim) + '</b> <span>HT / trim.</span></div></div></td>'
         + '<td class="' + (onA ? 'on' : '') + '"><div class="opt">' + cb(onA) + '<div><b>' + m(x.an) + '</b> <span>HT / an</span><span class="eco">Éco. ' + eur(x.trim / 3 * 12 - x.an).replace(/,00$/, '') + ' €</span></div></div></td></tr>';
-    }).join('') + (mtn && !mtn.cat ? '<tr><td class="cat">Forfait convenu</td><td colspan="2" class="on"><div class="opt">' + cb(true) + '<div><b>' + m(mtn.montant) + '</b> <span>HT / ' + (mtn.annuel ? 'an' : 'trim.') + '</span></div></div></td></tr>' : '');
+    }).join('')
+      + '<tr><td class="cat">+ par module' + (nMod ? ' (× ' + nMod + ')' : '') + '</td>'
+      + '<td class="' + (nMod && !mtn.annuel ? 'on' : '') + '"><div class="opt">' + cb(nMod && !mtn.annuel) + '<div><b>' + m(C.MODULE.trim) + '</b> <span>HT / trim.</span>' + (nMod && !mtn.annuel ? '<span class="eco">= ' + m(C.MODULE.trim * nMod) + '</span>' : '') + '</div></div></td>'
+      + '<td class="' + (nMod && mtn.annuel ? 'on' : '') + '"><div class="opt">' + cb(nMod && mtn.annuel) + '<div><b>' + m(C.MODULE.an) + '</b> <span>HT / an</span>' + (nMod && mtn.annuel ? '<span class="eco">= ' + m(C.MODULE.an * nMod) + '</span>' : '') + '</div></div></td></tr>'
+      + a.recurrentes.map(r => '<tr><td class="cat" colspan="2">' + esc(r.libelle) + '</td><td class="on"><div class="opt">' + cb(true) + '<div><b>' + m(r.montant) + '</b> <span>HT</span></div></div></td></tr>').join('') + (mtn && !mtn.cat ? '<tr><td class="cat">Forfait convenu</td><td colspan="2" class="on"><div class="opt">' + cb(true) + '<div><b>' + m(mtn.montant) + '</b> <span>HT / ' + (mtn.annuel ? 'an' : 'trim.') + '</span></div></div></td></tr>' : '');
 
     const page1 = '<div class="sheet">' + tete('DEVIS', [['Devis N°', num], ['Date', fmtDate(d.date_emission)], ['Validité', d.date_validite ? 'jusqu’au ' + fmtDate(d.date_validite) : '30 jours']])
       + parties(c, 'Client &amp; références')
@@ -1482,6 +1535,7 @@ var NSDocs = (function () {
       + '<section>' + sec(2, 'Options complémentaires', 'options retenues, prix unit. HT') + options + '</section>'
       + '<section>' + sec(3, 'Maintenance, hébergement &amp; sécurité', 'obligatoire, ligne retenue cochée')
       + '<div class="inclus">Inclus : ' + C.INCLUS + '</div>'
+      + '<div class="inclus">Chaque module (rendez-vous, inscriptions, catalogue, espace de modification, chat, paiement, blog) ajouté en option se surveille et se sauvegarde : il ajoute ' + m(C.MODULE.trim) + ' HT par trimestre, ou ' + m(C.MODULE.an) + ' HT par an.</div>'
       + '<table class="mtn"><thead><tr><th>Catégorie de formule</th><th>Option trimestrielle (3 mois)</th><th>Option annuelle (11 mois + 1 offert)</th></tr></thead><tbody>' + maintenance + '</tbody></table>'
       + '<div class="frais"><div class="ft">Frais supplémentaires éventuels (hors forfait)</div><div class="fm">' + esc(C.FRAIS_MENTION) + '</div>'
       + (a.frais.length ? a.frais.map(f => '<div class="fl"><span>' + esc(f.libelle) + '</span><b>' + (f.pu ? m(f.pu) + ' HT' : 'sur devis') + '</b></div>').join('')
@@ -1557,7 +1611,7 @@ var NSDocs = (function () {
   }
 
   return {
-    CATALOGUE, optionsIncluses, ligneMaintenance, lireMaintenance, estMaintenance, estFrais, estGeste, ligneGeste, ligneFrais, decompte, analyser, objetFacture,
+    CATALOGUE, optionsIncluses, modulesVendus, ligneMaintenance, lireMaintenance, ligneRecurrente, estRecurrente, estMaintenance, estFrais, estGeste, ligneGeste, ligneFrais, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
     devis(d, lignes, c, options) { regler(options); return docDevisHTML(d, lignes || [], c || {}); },
     facture(f, lignes, c, options) { regler(options); return docFactureHTML(f, lignes || [], c || {}); },
@@ -1606,6 +1660,7 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-inclus ul { margin: 0; padding-left: 18px; }
   .fx-inclus li { margin: 2px 0; }
   .fx-inclus .fx-pas { margin-top: 8px; color: #8a4b00; }
+  #fx-opts .fx-pas { flex-basis: 100%; margin-top: 6px; color: #8a4b00; font-size: 13px; }
   .fx-inclus .fx-mtn { margin-top: 8px; color: var(--doux); }
   .fx-frais { display: grid; grid-template-columns: 1fr 84px 30px; gap: 6px; margin-bottom: 6px; }
   .fx-frais input { border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 15px; width: 100%; background: #fff; }
@@ -1635,8 +1690,8 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
 const Factu = (() => {
   const F = { sb: null, session: null, clients: [], devis: [], factures: [], pret: false, erreur: '', menage: false, choix: new Set() };
 
-  // Catalogue : celui du devis validé (commercial/devis-modeles/devis-NSD.pdf), tenu dans Documents.html.
-  const { FORMULES, OPTIONS, MAINTENANCE } = NSDocs.CATALOGUE;
+  // Catalogue : la grille du 30/09/2026, tenue dans Documents.html.
+  const { FORMULES, OPTIONS, MAINTENANCE, MODULE, RECURRENTES } = NSDocs.CATALOGUE;
   // 2 625 € pour un montant rond, 2 597,40 € dès qu'il y a des centimes (jamais « 2 597,4 »).
   const eur = n => { n = Math.round((Number(n) || 0) * 100) / 100; return n.toLocaleString('fr-FR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
   const isoJour = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1765,7 +1820,10 @@ const Factu = (() => {
   // ------------------------------------------------------------------ devis : composition
   // Même déroulé que le devis validé : 1 formule, 2 options, 3 maintenance
   // (obligatoire), 4 décompte avec acompte et solde.
-  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false, frais: [], geste: 0 };
+  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false, frais: [], geste: 0, rec: {} };
+  // L'heure hors forfait est annoncée sur chaque devis (grille du 30/09/2026), Sam peut la retirer.
+  const FRAIS_DEFAUT = () => [{ designation: 'Heure de travail hors forfait, au-delà de l’heure de petites modifications comprise chaque trimestre', pu: NSDocs.CATALOGUE.TAUX_HORAIRE }];
+  const nbModules = () => NSDocs.modulesVendus(D.opts, D.base).length;
   const GESTES = [5, 10, 15, 20];
   const catDe = formule => { const m = MAINTENANCE.find(x => x.formules.includes(formule)); return m ? m.cat : null; };
 
@@ -1773,16 +1831,17 @@ const Factu = (() => {
   // une (Nelson, 28/09/2026) : Sam voit ce qu'il ne doit pas revendre en option.
   // Source : manuel du commercial § 05 et grille tarifaire (entreprise/tarifs/).
   const INCLUS = {
-    Essentiel: { liste: ['Site d’une page (one-page)', 'S’adapte au téléphone (responsive)', 'Formulaire de contact', 'Google Maps', 'Mise en ligne'] },
-    Vitrine: { liste: ['4 à 5 pages', 'Galerie photo', 'Page menu / services', 'Formulaire de contact', 'Google Maps', 'Réseaux sociaux intégrés', 'Référencement local de base', 'Mise en ligne'] },
-    Pro: { liste: ['8 à 10 pages', 'Site bilingue (2 langues)', 'Formulaires avancés (devis, candidature)', 'Référencement renforcé', 'Mise en ligne'],
-      pas: 'Langue supplémentaire seulement à partir de la 3e langue : les deux premières sont comprises.' },
-    Boutique: { liste: ['Vente en ligne jusqu’à 50 produits', 'Panier', 'Paiement en ligne', 'Gestion des commandes', 'Mise en ligne'],
-      pas: 'Ne pas rajouter « Paiement en ligne », il est compris. Au-delà de 50 produits, tailles et couleurs, plusieurs livraisons ou synchro caisse : devis sur mesure.' },
-    Signature: { liste: ['Entièrement sur mesure', 'Catalogue de biens ou de véhicules avec filtres', 'Design haut de gamme', 'Développements spécifiques'],
-      pas: 'Ne jamais rajouter « Catalogue métier » : il est compris.' },
+    Essentiel: { liste: ['1 page adaptée au téléphone', 'Animations', 'Formulaire de contact', 'Google Maps', 'Référencement de base', 'Mise en ligne'],
+      pas: 'Plus d’une page : passe en Vitrine (1 990 €), c’est plus avantageux que d’ajouter des pages.' },
+    Vitrine: { liste: ['Jusqu’à 5 pages', 'Galerie photo', 'Page menu / services', 'Formulaire de contact', 'Google Maps', 'Référencement local de base', 'Fiche Google Business', 'Mise en ligne'] },
+    Pro: { liste: ['Jusqu’à 10 pages', 'Site en 2 langues', 'Formulaires avancés (devis, candidature)', 'Espace de modification du site', 'Fiche Google Business', 'Mise en ligne'],
+      pas: 'Langue supplémentaire seulement à partir de la 3e langue. L’espace de modification est compris : ne le rajoute pas.' },
+    Boutique: { liste: ['Vente en ligne jusqu’à 50 produits', 'Panier', 'Paiement en ligne', 'Gestion des produits et des commandes', 'Espace de modification du site', 'Fiche Google Business', 'Mise en ligne'],
+      pas: 'Paiement et espace de modification compris. Au-delà de 50 produits : « 50 produits en plus ». Tailles et couleurs, plusieurs livraisons ou synchro caisse : ligne sur mesure.' },
+    Signature: { liste: ['Jusqu’à 15 pages', 'Direction artistique propre, animations avancées', 'Site en 3 langues', 'Rédaction des textes', 'Référencement local avancé', 'Espace de modification du site', 'Fiche Google Business'],
+      pas: 'Aucun module compris : catalogue, rendez-vous ou inscriptions s’ajoutent comme pour les autres formules. Langue supplémentaire à partir de la 4e.' },
   };
-  const MTN_INCLUS = 'Hébergement au Luxembourg, nom de domaine, 1 boîte mail, maintenance technique, mises à jour, sécurité, sauvegardes, support, petites modifications.';
+  const MTN_INCLUS = NSDocs.CATALOGUE.INCLUS;
   function encartInclus() {
     const i = INCLUS[D.base]; if (!i) return '';
     return `<div class="fx-inclus"><h4>Déjà inclus dans ${esc(D.base)}</h4>
@@ -1794,7 +1853,7 @@ const Factu = (() => {
   function nouveauDevis(prospect) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
-    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false; D.frais = []; D.geste = 0;
+    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false; D.frais = FRAIS_DEFAUT(); D.geste = 0; D.rec = {};
     const dans30 = new Date(Date.now() + 30 * 864e5);
     const nomClient = prospect ? prospect.entreprise : '';
     const cc = F.clients.find(c => c.id === D.clientId) || {};
@@ -1813,6 +1872,10 @@ const Factu = (() => {
       <div class="bloc"><h3>3 · Maintenance, hébergement &amp; sécurité</h3>
         <div class="sous" style="margin:0 0 8px">Obligatoire. Catégorie reprise de la formule, modifiable.</div>
         <div class="fx-chips" id="fx-mtn-cat"></div><div class="fx-chips" id="fx-mtn-per" style="margin-top:8px"></div>
+        <div class="sous" id="fx-mtn-mod" style="margin:8px 0 0"></div>
+        <h3 style="margin-top:14px">Options récurrentes</h3>
+        <div class="sous" style="margin:0 0 8px">Au même rythme que la maintenance, payées avec elle.</div>
+        <div class="fx-chips" id="fx-rec"></div>
         <h3 style="margin-top:14px">Frais supplémentaires éventuels</h3>
         <div class="sous" style="margin:0 0 8px">Hors forfait, annoncés sur le devis mais <b>pas comptés dans le prix</b>. Le devis prévient toujours que des frais peuvent s’ajouter ; écris ici ceux déjà connus (prix facultatif).</div>
         <div id="fx-frais"></div>
@@ -1841,8 +1904,14 @@ const Factu = (() => {
     const inclus = NSDocs.optionsIncluses(D.base);
     document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => inclus.includes(o.n)
       ? `<button type="button" class="inclus" disabled aria-disabled="true">✓ ${esc(o.court)}<b>Inclus dans ${esc(D.base)}</b></button>`
-      : chip('data-fx-opt', o.n, o.court, eur(o.pu) + ' €', D.opts[o.n])).join('');
+      : chip('data-fx-opt', o.n, o.court + (o.alerte ? ' ⚠' : ''), eur(o.pu) + ' €' + (o.module ? ' + ' + MODULE.trim + ' €/trim.' : ''), D.opts[o.n])).join('')
+      + OPTIONS.filter(o => o.alerte && D.opts[o.n]).map(o => `<div class="fx-pas">⚠ ${esc(o.court)} : ${esc(o.alerte)}</div>`).join('');
     document.getElementById('fx-mtn-cat').innerHTML = MAINTENANCE.map(m => chip('data-fx-mtn', m.cat, m.cat, eur(m.trim) + ' € / trim.', D.mtnCat === m.cat)).join('');
+    const nm = nbModules();
+    document.getElementById('fx-mtn-mod').innerHTML = nm
+      ? `Modules en option : <b>${nm}</b> × ${eur(D.annuel ? MODULE.an : MODULE.trim)} € = <b>${eur(nm * (D.annuel ? MODULE.an : MODULE.trim))} € HT ${D.annuel ? 'par an' : 'par trimestre'}</b>, ajoutés à la maintenance.`
+      : 'Aucun module en option : pas de supplément.';
+    document.getElementById('fx-rec').innerHTML = RECURRENTES.map(r => chip('data-fx-rec', r.id, r.court || r.n, '+ ' + eur(D.annuel ? r.an : r.trim) + ' € ' + (D.annuel ? '/ an' : '/ trim.'), D.rec[r.id])).join('');
     const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
     document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'trim', 'Trimestrielle (3 mois)', eur(m.trim) + ' € HT / trim.', !D.annuel)
       + chip('data-fx-per', 'an', 'Annuelle (11 mois + 1 offert)', eur(m.an) + ' € HT / an · éco. ' + eur(m.trim * 4 - m.an) + ' €', D.annuel) : '<div class="sous">Choisis la formule, ou une catégorie.</div>';
@@ -1866,8 +1935,9 @@ const Factu = (() => {
     // Geste commercial : sur le site seulement, calculé avant la maintenance.
     const siteBrut = L.reduce((s, l) => s + l.montant_ht, 0);
     if (D.geste > 0 && siteBrut > 0) L.push(NSDocs.ligneGeste(D.geste, siteBrut));
-    const mtn = D.mtnCat && NSDocs.ligneMaintenance(D.mtnCat, D.annuel);
+    const mtn = D.mtnCat && NSDocs.ligneMaintenance(D.mtnCat, D.annuel, nbModules());
     if (mtn) L.push(mtn);
+    if (mtn) RECURRENTES.forEach(r => { if (D.rec[r.id]) L.push(NSDocs.ligneRecurrente(r.id, D.annuel)); });
     D.frais.forEach(f => { if (String(f.designation).trim()) L.push(NSDocs.ligneFrais(f.designation, Number(f.pu) || 0)); });
     return L.map((l, i) => Object.assign(l, { ordre: i }));
   }
@@ -1931,8 +2001,11 @@ const Factu = (() => {
       const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: dev.id })));
       if (e2) return echec('Devis créé, mais erreur sur les lignes : ' + e2.message);
       // La fiche client suit le devis : formule, forfait trimestriel de référence, périodicité.
-      const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
-      const majClient = { abonnement_mensuel: m.trim, abonnement_periodicite: D.annuel ? 'annuel' : 'trimestriel' };
+      // Référence trimestrielle de la fiche client : forfait + modules + options récurrentes.
+      const m = MAINTENANCE.find(x => x.cat === D.mtnCat), recs = RECURRENTES.filter(r => D.rec[r.id]);
+      const trimRef = m.trim + nbModules() * MODULE.trim + recs.reduce((t, r) => t + r.trim, 0);
+      const anRef = m.an + nbModules() * MODULE.an + recs.reduce((t, r) => t + r.an, 0);
+      const majClient = { abonnement_mensuel: trimRef, abonnement_montant_standard: D.annuel ? anRef : trimRef, abonnement_periodicite: D.annuel ? 'annuel' : 'trimestriel' };
       if (D.base) majClient.formule = D.base;
       const cc = F.clients.find(c => c.id === clientId);
       if (!cc || !cc.abonnement_moyen) majClient.abonnement_moyen = D.annuel ? 'virement' : 'sepa';
@@ -2084,6 +2157,7 @@ const Factu = (() => {
     const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) { D.mtnCat = catDe(D.base); NSDocs.optionsIncluses(D.base).forEach(n => delete D.opts[n]); } dessinerChoix(); return calculer(); }
     const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true; dessinerChoix(); return calculer(); }
     const mc = t.closest('[data-fx-mtn]'); if (mc) { D.mtnCat = mc.dataset.fxMtn; dessinerChoix(); return calculer(); }
+    const rc = t.closest('[data-fx-rec]'); if (rc) { const k = rc.dataset.fxRec; if (D.rec[k]) delete D.rec[k]; else D.rec[k] = true; dessinerChoix(); return calculer(); }
     const ge = t.closest('[data-fx-geste]'); if (ge) { D.geste = Number(ge.dataset.fxGeste); const i = document.querySelector('#fx-devis [name=geste]'); if (i) i.value = D.geste; dessinerChoix(); return calculer(); }
     const pe = t.closest('[data-fx-per]'); if (pe) { D.annuel = pe.dataset.fxPer === 'an'; dessinerChoix(); return calculer(); }
     const a = t.closest('[data-fx]'); if (!a) return;
