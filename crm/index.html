@@ -2004,8 +2004,8 @@ const Factu = (() => {
       // Référence trimestrielle de la fiche client : forfait + modules + options récurrentes.
       const m = MAINTENANCE.find(x => x.cat === D.mtnCat), recs = RECURRENTES.filter(r => D.rec[r.id]);
       const trimRef = m.trim + nbModules() * MODULE.trim + recs.reduce((t, r) => t + r.trim, 0);
-      const anRef = m.an + nbModules() * MODULE.an + recs.reduce((t, r) => t + r.an, 0);
-      const majClient = { abonnement_mensuel: trimRef, abonnement_montant_standard: D.annuel ? anRef : trimRef, abonnement_periodicite: D.annuel ? 'annuel' : 'trimestriel' };
+      // abonnement_montant_standard se calcule dans la base (colonne générée) : ne jamais l'écrire.
+      const majClient = { abonnement_mensuel: trimRef, abonnement_periodicite: D.annuel ? 'annuel' : 'trimestriel' };
       if (D.base) majClient.formule = D.base;
       const cc = F.clients.find(c => c.id === clientId);
       if (!cc || !cc.abonnement_moyen) majClient.abonnement_moyen = D.annuel ? 'virement' : 'sepa';
