@@ -801,10 +801,10 @@ const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['negociation'], [
 const MOTIFS_RAPPEL = [['pas_repondu', 'Pas de réponse'], ['absent', 'Gérant absent'], ['rappel', 'Convenu avec lui']];
 const boutonDe = res => MOTIFS_RAPPEL.some(([k]) => k === res) ? 'rappel' : res;
 // Plages d'appel par personne (règles de Nelson du 28/09/2026). Sam : lun-jeu
-// 10 h-12 h et 15 h-18 h, ven et sam 10 h-12 h, dim 14 h-17 h. Nelson : 9 h-12 h
+// 10 h-12 h et 14 h-18 h (14 h depuis le 08/10/2026), ven et sam 10 h-12 h, dim 14 h-17 h. Nelson : 9 h-12 h
 // et 13 h 30-20 h tous les jours, sauf le vendredi 9 h-12 h (tournage l'après-midi).
 // Trou : Sam 15 h 55-16 h 05 (post Instagram). Vue Équipe : les plages de Sam.
-const MATIN_SAM = [['10:00', '12:00']], SEMAINE_SAM = [['10:00', '12:00'], ['15:00', '18:00']];
+const MATIN_SAM = [['10:00', '12:00']], SEMAINE_SAM = [['10:00', '12:00'], ['14:00', '18:00']];
 const JOUR_NELSON = [['09:00', '12:00'], ['13:30', '20:00']], MATIN_NELSON = [['09:00', '12:00']];
 const PLAGES = {
   Sam: { 0: [['14:00', '17:00']], 1: SEMAINE_SAM, 2: SEMAINE_SAM, 3: SEMAINE_SAM, 4: SEMAINE_SAM, 5: MATIN_SAM, 6: MATIN_SAM },
