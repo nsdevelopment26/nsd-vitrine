@@ -845,7 +845,10 @@ function optionsDates() {
   o.push(['Prochain jour, même heure', null]);
   o.push(['Dans 1 h', dans(1)], ['Dans 2 h', dans(2)]);
   if (now.getHours() < 15) o.push(S.moi && S.moi.nom === 'Sam' ? ['Auj. 16 h 10', a(0, 16, 10)] : ['Auj. 16 h', a(0, 16)]);
-  o.push(['Demain 10 h', a(1, 10)], ['Demain 15 h', a(1, 15)]);
+  o.push(['Demain 10 h', a(1, 10)]);
+  // Sam : « Demain 14 h », seulement si demain a une plage à 14 h (donc jamais quand demain est un vendredi ou un samedi).
+  if (S.moi && S.moi.nom === 'Sam') { const d = a(1, 14); if (fmt(recalerAppel(new Date(d))) === fmt(d)) o.push(['Demain 14 h', d]); }
+  else o.push(['Demain 15 h', a(1, 15)]);
   const lundi = a(((8 - now.getDay()) % 7) || 7, 10); o.push(['Lundi 10 h', lundi]);
   return o.map(([l, d]) => [l, d ? fmt(d) : demainMemeHeure()]);
 }
