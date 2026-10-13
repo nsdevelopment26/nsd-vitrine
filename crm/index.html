@@ -911,6 +911,11 @@ function modeleApres(res, p) {
     const premier = msgs.find(m => /premier contact/i.test(m.titre) && m.canal.toLowerCase().trim() === 'whatsapp');
     if (premier) return premier;
   }
+  // Lien resté sans réponse : « Rappel » puis WhatsApp envoie la relance et décale la date en un geste.
+  if ((res === 'pas_repondu' || res === 'absent') && cle(p) === 'lien' && +p.nb) {
+    const relance = msgs.find(m => /relance/i.test(m.titre) && m.canal.toLowerCase().trim() === 'whatsapp');
+    if (relance) return relance;
+  }
   return msgs.find(m => m.apres === res) || null;
 }
 
@@ -1106,6 +1111,9 @@ function majLocale(p, entree) {
 }
 
 async function noterMessage(titre) {
+  // Un résultat est déjà choisi (Rappel, RDV…) : le message l'enregistre avec, la fiche se range au bon endroit.
+  const btn = document.querySelector('[data-action="enregistrer"]');
+  if (CHOIX.res && btn) return enregistrer(btn, titre);
   try {
     const p = await appel('api_logger', S.pin, S.ouvert, 'message', titre, '', S.par, null);
     majLocale(p, { resultat: 'Message envoyé', note: titre, rappel: '' });
