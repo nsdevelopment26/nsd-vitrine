@@ -951,8 +951,14 @@ function remplir(txt, p, v) {
     .replace(/{metier}/g, m ? m.metier.toLowerCase() : 'votre métier')
     .replace(/{lien}/g, lien)
     .replace(/{rdv}/g, p.rappel ? dateLongue(p.rappel) : '[date du RDV]')
+    .replace(/{envoi}/g, dateEnvoi(p.dernier))
     .replace(/\bSamir\b/g, signataire().prenom)
     .replace(/{signature}/g, signataire().texte);
+}
+// {envoi} : le jour du dernier message, « le 29 septembre », pour la relance.
+function dateEnvoi(s) {
+  const d = s ? new Date(String(s).replace(' ', 'T')) : null;
+  return d && !isNaN(d) ? 'le ' + (d.getDate() === 1 ? '1er' : d.getDate()) + ' ' + MOIS[d.getMonth()] : 'il y a quelques jours';
 }
 // « Jean-Marc DUPONT » → « Jean-Marc Dupont ». Sam le change en « Monsieur Dupont » s'il veut.
 function nomCourt(g) {
@@ -979,8 +985,10 @@ function signataire() { return SIGNATURES[S.moi && S.moi.nom] || SIGNATURES.Sam;
 function ouvrirMessages(canal) {
   const p = trouver(S.ouvert);
   const modeles = S.data.messages.filter(m => m.canal.toLowerCase().trim() === canal);
+  // Lien déjà parti, resté sans réponse : la relance vient en tête, pas le « suite à notre appel ».
+  if (cle(p) === 'lien' && +p.nb) modeles.sort((a, b) => /relance/i.test(b.titre) - /relance/i.test(a.titre));
   // Prospect jamais contacté, Nelson connecté : le « Premier contact » vient en tête.
-  if (S.moi && S.moi.nom === 'Nelson' && !(+p.nb)) modeles.sort((a, b) => /premier contact/i.test(b.titre) - /premier contact/i.test(a.titre));
+  else if (S.moi && S.moi.nom === 'Nelson' && !(+p.nb)) modeles.sort((a, b) => /premier contact/i.test(b.titre) - /premier contact/i.test(a.titre));
   const zone = document.createElement('div');
   zone.className = 'bloc'; zone.id = 'bloc-msg';
   zone.innerHTML = `<h3>${canal === 'mail' ? 'Mail' : canal === 'sms' ? 'SMS' : 'WhatsApp'} à ${esc(p.entreprise)}</h3>
