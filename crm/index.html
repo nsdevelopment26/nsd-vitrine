@@ -731,16 +731,28 @@ function reelChoisi() { const r = reelsTries(); return r.find(x => x.id === S.re
 function metiersDuReel(r) { return String(r.metiers || '').split(',').map(x => x.trim()).filter(Boolean); }
 // Tout le monde qui peut recevoir un Reel : les prospects du CRM qui ont un Instagram
 // (ceux en cours d'abord, jamais Perdu ni Client signé), puis l'audience repérée à part.
-const ORDRE_CHAUD = { negociation: 0, rdv: 1, lien: 2, rappel: 3, sans_reponse: 4, a_appeler: 5 };
+const ORDRE_CHAUD = { negociation: 0, rdv: 1, lien: 2, rappel: 3, sans_reponse: 4, a_appeler: 5, perdu: 6 };
+// Un Perdu reçoit les Reels s'il n'a jamais dit non : passé en Perdu par « Pas de réponse »
+// (décision de Nelson du 13/10/2026). Dans l'onglet Audience, Tom ne lie que des Perdu sans
+// réponse ; un Perdu lié qui a refusé depuis (« Pas intéressé ») sort quand même.
+function aRefuse(p) {
+  if (cle(p) !== 'perdu') return false;
+  const h = historique(p.id).find(e => e.statut === 'Perdu' && RES_APPEL().includes(e.resultat));
+  return !h || h.resultat !== S.data.resultats.pas_repondu.label;
+}
+function refusAuJournal(p) {
+  const h = historique(p.id).find(e => e.statut === 'Perdu' && RES_APPEL().includes(e.resultat));
+  return cle(p) === 'perdu' && !!h && h.resultat !== S.data.resultats.pas_repondu.label;
+}
 function audienceReels() {
   const vus = new Set(), liste = [];
-  S.data.prospects.filter(p => !['perdu', 'signe'].includes(cle(p)) && pseudoInsta(p.instagram))
+  S.data.prospects.filter(p => cle(p) !== 'signe' && !aRefuse(p) && pseudoInsta(p.instagram))
     .sort((a, b) => (ORDRE_CHAUD[cle(a)] ?? 9) - (ORDRE_CHAUD[cle(b)] ?? 9))
     .forEach(p => { const ps = pseudoInsta(p.instagram); if (vus.has(ps)) return; vus.add(ps);
       const m = metierDe(p); liste.push({ cible: p.id, entreprise: p.entreprise, metier: m ? m.metier : '', commune: p.commune, pseudo: ps, prospect: p }); });
   (S.data.audience || []).forEach(a => { const ps = pseudoInsta(a.instagram); if (!ps || vus.has(ps)) return; vus.add(ps);
     const lie = a.prospect && trouver(a.prospect);
-    if (lie && ['perdu', 'signe'].includes(cle(lie))) return;
+    if (lie && (cle(lie) === 'signe' || refusAuJournal(lie))) return;
     const m = metierDe(a._p || (a._p = { secteur: a.metier, entreprise: a.entreprise }));
     liste.push({ cible: a.id, entreprise: a.entreprise, metier: m ? m.metier : a.metier, commune: a.commune, pseudo: ps, prospect: lie || null }); });
   return liste;
@@ -799,7 +811,7 @@ function vueReels() {
   const audience = audienceReels();
   const tete = `<h2 class="section">Partager un Reel<small>compte Instagram NSD</small></h2>`;
   const formAud = `<details class="bloc"><summary>Audience · ${audience.length} comptes Instagram</summary>
-    <p class="sous">Les prospects du CRM qui ont un Instagram (sauf Perdu et Client signé), plus les commerces repérés à part (onglet Audience du Sheets, rempli par Tom).</p>
+    <p class="sous">Les prospects du CRM qui ont un Instagram (sauf Client signé et ceux qui ont dit non ; un Perdu « sans réponse » reste), plus les commerces repérés à part (onglet Audience du Sheets, rempli par Tom).</p>
     <form id="form-audience" autocomplete="off">
       <label class="champ">Commerce *<input name="entreprise" required></label>
       <label class="champ">Instagram *<input name="instagram" placeholder="@nom ou lien du compte" required></label>
