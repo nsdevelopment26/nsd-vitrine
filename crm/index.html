@@ -358,6 +358,11 @@ function dateLongue(s) { const d = versDate(s); return d ? JOURS_LONG[d.getDay()
 // Métiers, statuts, téléphones
 // ---------------------------------------------------------------------------
 function sansAccent(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+// Un mot-clé court (bar, pub, spa, gym) doit être un mot entier : « barber » n'est pas un bar,
+// « espace » n'est pas un spa. Les plus longs restent des débuts de mot (coiff, boulang…).
+function contientMot(txt, k) {
+  return k.length > 3 ? txt.includes(k) : new RegExp('(^|[^a-z0-9])' + k + '([^a-z0-9]|$)').test(txt);
+}
 function metierDe(p) {
   if (p._metier !== undefined) return p._metier;
   const txt = sansAccent(p.secteur + ' ' + p.entreprise);
@@ -366,7 +371,7 @@ function metierDe(p) {
   // Le secteur prime sur le nom : « Café » dans un nom de restaurant ne doit pas gagner.
   for (const pass of [sect, txt]) {
     if (!pass.trim()) continue;
-    trouve = S.data.metiers.find(m => m.motsCles.split(',').map(x => sansAccent(x).trim()).some(k => k && k !== '*' && pass.includes(k)));
+    trouve = S.data.metiers.find(m => m.motsCles.split(',').map(x => sansAccent(x).trim()).some(k => k && k !== '*' && contientMot(pass, k)));
     if (trouve) break;
   }
   trouve = trouve || S.data.metiers.find(m => m.motsCles.trim() === '*') || null;
