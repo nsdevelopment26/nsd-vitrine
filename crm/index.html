@@ -105,7 +105,7 @@
   .plus { width: 100%; background: transparent; border: 1px solid var(--ligne); border-radius: 10px; padding: 10px; color: var(--doux); }
 
   nav.onglets { position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; background: #fff; border-top: 1px solid var(--ligne);
-    display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom); }
+    display: grid; grid-template-columns: repeat(6, 1fr); padding-bottom: env(safe-area-inset-bottom); }
   nav.onglets button { border: 0; background: none; padding: 10px 4px 12px; font-size: 12px; color: var(--doux);
     display: flex; flex-direction: column; align-items: center; gap: 3px; }
   nav.onglets button .ico { font-size: 20px; line-height: 1; }
@@ -203,6 +203,28 @@
   .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--noir); color: #fff;
     padding: 11px 16px; border-radius: 12px; z-index: 20; font-size: 14px; max-width: 90vw; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
   .toast.erreur { background: var(--danger); }
+  /* Reels */
+  .rc { background: var(--carte); border: 1px solid var(--ligne); border-left: 6px solid var(--statut, #c13584); border-radius: var(--rayon);
+    padding: 12px 14px 10px; margin-bottom: 8px; }
+  .rc.fait { opacity: .55; }
+  .rc-tete { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+  .rc-nom { font-weight: 750; font-size: 16px; line-height: 1.25; }
+  .rc-pseudo { font-size: 13px; font-weight: 650; color: #8a2a5c; text-decoration: none; white-space: nowrap; }
+  .rc-sous { color: var(--doux); font-size: 13px; margin-top: 1px; }
+  .rc-actions { display: grid; grid-template-columns: 1.6fr 1fr; gap: 6px; margin-top: 10px; }
+  .rc-actions a, .rc-actions button { display: flex; align-items: center; justify-content: center; border-radius: 10px; padding: 10px 6px;
+    font-size: 13px; font-weight: 700; text-decoration: none; border: 1px solid var(--ligne); background: #fff; text-align: center; }
+  .rc-actions .insta { background: var(--noir); color: #fff; border-color: var(--noir); }
+  .rc-actions .envoye { background: #2e7d32; color: #fff; border-color: #2e7d32; }
+  .rc-petit { margin-top: 6px; display: flex; gap: 14px; font-size: 12px; }
+  .rc-petit button { border: 0; background: none; padding: 2px 0; color: var(--doux); text-decoration: underline; font-size: 12px; }
+  .reel-choix { display: flex; gap: 8px; margin-bottom: 8px; }
+  .reel-choix select { flex: 1; min-width: 0; border: 1px solid var(--ligne); background: #fff; border-radius: 10px; padding: 10px; }
+  .reel-texte { white-space: pre-wrap; font-size: 13px; background: #fff; border: 1px solid var(--ligne); border-radius: 12px; padding: 10px 12px; margin-top: 8px; }
+  .metiers-choix { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 12px; }
+  .metiers-choix label { display: inline-flex; align-items: center; gap: 5px; background: #fff; border: 1px solid var(--ligne); border-radius: 99px;
+    padding: 6px 11px; font-size: 13px; color: var(--encre); }
+  details.bloc summary { font-weight: 700; font-size: 14px; cursor: pointer; }
   .chargement { text-align: center; padding: 60px 20px; color: var(--doux); }
 
   /* Connexion */
@@ -244,6 +266,7 @@
     <button data-vue="pipeline"><span class="ico">▦</span>Pipeline</button>
     <button data-vue="ajouter"><span class="ico">＋</span>Ajouter</button>
     <button data-vue="factu"><span class="ico">€</span>Factu</button>
+    <button data-vue="reels"><span class="ico">▶︎</span>Reels</button>
     <button data-vue="stats"><span class="ico">↗︎</span>Stats</button>
   </nav>
 </div>
@@ -272,7 +295,7 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 //   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
 // - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
 // - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
-const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter'];
+const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter'];
 const attendreVisible = () => document.hidden ? new Promise(ok => {
   const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
   document.addEventListener('visibilitychange', f);
@@ -483,15 +506,16 @@ function section(titre, info, html) {
 
 // Le formulaire « Ajouter » survit aux redessins automatiques (toutes les 60 s, et au retour sur
 // l'appli après un passage dans une autre) : sans ça, tout ce que Sam avait tapé disparaissait.
+const FORMS_GARDES = ['form-ajout', 'form-reel', 'form-audience'];
 function garderSaisie() {
-  const f = document.getElementById('form-ajout'); if (!f) return null;
+  const f = FORMS_GARDES.map(id => document.getElementById(id)).find(Boolean); if (!f) return null;
   const a = document.activeElement, z = document.getElementById('zone-doublons');
-  return { valeurs: [...f.elements].filter(e => e.name).map(e => [e.name, e.value]), doublons: z ? z.innerHTML : '',
+  return { form: f.id, valeurs: [...f.elements].filter(e => e.name).map(e => [e.name, e.type === 'checkbox' ? e.checked : e.value]), doublons: z ? z.innerHTML : '',
     focus: a && f.contains(a) ? a.name : '' };
 }
 function remettreSaisie(s) {
-  const f = document.getElementById('form-ajout'); if (!s || !f) return;
-  s.valeurs.forEach(([n, v]) => { if (f.elements[n]) f.elements[n].value = v; });
+  const f = s && document.getElementById(s.form); if (!f) return;
+  s.valeurs.forEach(([n, v]) => { const e = f.elements[n]; if (!e) return; if (e.type === 'checkbox') e.checked = v; else e.value = v; });
   const z = document.getElementById('zone-doublons'); if (z && s.doublons) z.innerHTML = s.doublons;
   if (s.focus && f.elements[s.focus]) f.elements[s.focus].focus({ preventScroll: true });
 }
@@ -508,6 +532,7 @@ function rendre() {
   else if (S.vue === 'pipeline') v.innerHTML = vuePipeline();
   else if (S.vue === 'ajouter') v.innerHTML = vueAjouter();
   else if (S.vue === 'factu') v.innerHTML = Factu.vue();
+  else if (S.vue === 'reels') v.innerHTML = vueReels();
   else v.innerHTML = vueStats();
   remettreSaisie(saisie);
 }
@@ -680,6 +705,177 @@ function vueAjouter(doublons) {
     <label class="champ">Notes<textarea name="notes" placeholder="Repéré où, ce qu'on a vu, à qui parler…"></textarea></label>
     <button class="btn large" type="submit">Ajouter au Sheets</button>
   </form>`;
+}
+
+// ---------------------------------------------------------------------------
+// Reels : partager un Reel du compte NSD en message privé, par lots (13/10/2026)
+// ---------------------------------------------------------------------------
+// L'appli choisit les commerces et prépare le texte ; l'envoi se fait à la main dans
+// Instagram. Un lot par jour (S.data.partage.lotParJour) pour ne pas faire bloquer le
+// compte, et jamais deux Reels au même commerce à moins de joursEntreDeux jours.
+const MESSAGE_REEL_DEFAUT = 'Bonjour\n\n'
+  + 'C’est {prenom} de NS Development, on crée des sites internet pour les commerces du Luxembourg.\n\n'
+  + 'On vient de publier cette vidéo et on a tout de suite pensé à {entreprise}\n\n'
+  + '{lien}\n\n'
+  + 'Si ça vous parle, on vous montre en cinq minutes ce que ça donnerait pour vous. Sinon aucun souci, bonne continuation';
+function pseudoInsta(s) {
+  s = String(s || '').trim(); if (!s) return '';
+  const m = s.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  if (m) return ['reel', 'reels', 'p', 'stories', 'explore'].includes(m[1].toLowerCase()) ? '' : m[1].toLowerCase();
+  if (/[\/:]/.test(s)) return '';
+  const nu = s.replace(/^@/, '');
+  return /^[A-Za-z0-9._]{2,30}$/.test(nu) ? nu.toLowerCase() : '';
+}
+function reelsTries() { return (S.data.reels || []).slice().sort((a, b) => b.date.localeCompare(a.date)); }
+function reelChoisi() { const r = reelsTries(); return r.find(x => x.id === S.reel) || r[0] || null; }
+function metiersDuReel(r) { return String(r.metiers || '').split(',').map(x => x.trim()).filter(Boolean); }
+// Tout le monde qui peut recevoir un Reel : les prospects du CRM qui ont un Instagram
+// (ceux en cours d'abord, jamais Perdu ni Client signé), puis l'audience repérée à part.
+const ORDRE_CHAUD = { negociation: 0, rdv: 1, lien: 2, rappel: 3, sans_reponse: 4, a_appeler: 5 };
+function audienceReels() {
+  const vus = new Set(), liste = [];
+  S.data.prospects.filter(p => !['perdu', 'signe'].includes(cle(p)) && pseudoInsta(p.instagram))
+    .sort((a, b) => (ORDRE_CHAUD[cle(a)] ?? 9) - (ORDRE_CHAUD[cle(b)] ?? 9))
+    .forEach(p => { const ps = pseudoInsta(p.instagram); if (vus.has(ps)) return; vus.add(ps);
+      const m = metierDe(p); liste.push({ cible: p.id, entreprise: p.entreprise, metier: m ? m.metier : '', commune: p.commune, pseudo: ps, prospect: p }); });
+  (S.data.audience || []).forEach(a => { const ps = pseudoInsta(a.instagram); if (!ps || vus.has(ps)) return; vus.add(ps);
+    const lie = a.prospect && trouver(a.prospect);
+    if (lie && ['perdu', 'signe'].includes(cle(lie))) return;
+    const m = metierDe(a._p || (a._p = { secteur: a.metier, entreprise: a.entreprise }));
+    liste.push({ cible: a.id, entreprise: a.entreprise, metier: m ? m.metier : a.metier, commune: a.commune, pseudo: ps, prospect: lie || null }); });
+  return liste;
+}
+function partagesDe(pseudo) { return (S.data.partages || []).filter(x => pseudoInsta(x.instagram) === pseudo); }
+function envoyesAujourdhui() { return (S.data.partages || []).filter(x => x.resultat === 'Envoyé' && x.date.slice(0, 10) === aujourdhui()).length; }
+function candidatsReel(r) {
+  const vises = metiersDuReel(r), jours = S.data.partage.joursEntreDeux;
+  const limite = fmt(new Date(Date.now() - jours * 864e5));
+  return audienceReels().filter(c => {
+    if (vises.length && !vises.includes(c.metier)) return false;
+    const h = partagesDe(c.pseudo);
+    if (h.some(x => x.reel === r.id || x.resultat === 'Introuvable')) return false;
+    return !h.some(x => x.resultat === 'Envoyé' && x.date >= limite);
+  });
+}
+function texteReel(r, c) {
+  return String(r.message || MESSAGE_REEL_DEFAUT)
+    .replace(/{bonjour}/g, 'Bonjour').replace(/{entreprise}/g, c ? c.entreprise : '[commerce]')
+    .replace(/{metier}/g, c && c.metier ? c.metier.toLowerCase() : 'votre métier')
+    .replace(/{lien}/g, r.lien).replace(/{prenom}/g, signataire().prenom);
+}
+function carteReel(r, c, fait) {
+  const h = partagesDe(c.pseudo).filter(x => x.reel === r.id);
+  const repondu = h.some(x => x.resultat === 'Répondu');
+  const sous = [c.metier, c.commune].filter(Boolean).join(' · ');
+  const statutCrm = c.prospect ? ` · <span class="pastille" style="--statut:${couleur(c.prospect)}">${esc(statut(c.prospect.statut).label)}</span>` : '';
+  const quand = h.length ? dateCourte(h[h.length - 1].date) : '';
+  return `<div class="rc ${fait && !repondu ? 'fait' : ''}" style="--statut:${c.prospect ? couleur(c.prospect) : '#c13584'}">
+    <div class="rc-tete"><div class="rc-nom">${esc(c.entreprise)}</div>
+      <a class="rc-pseudo" href="https://www.instagram.com/${esc(c.pseudo)}/" target="_blank" rel="noopener">@${esc(c.pseudo)}</a></div>
+    <div class="rc-sous">${esc(sous || '—')}${statutCrm}${fait ? ' · ' + esc(repondu ? 'a répondu' : 'envoyé ' + quand) : ''}</div>
+    ${fait ? (repondu ? '' : `<div class="rc-petit"><button data-action="reel-noter" data-pres="Répondu" data-cible="${esc(c.cible)}">Il a répondu → à Sam</button></div>`)
+      : `<div class="rc-actions">
+      <a class="insta" href="https://ig.me/m/${esc(c.pseudo)}" target="_blank" rel="noopener" data-action="reel-ouvrir" data-cible="${esc(c.cible)}">1 · Copier le texte et ouvrir</a>
+      <button class="envoye" data-action="reel-noter" data-pres="Envoyé" data-cible="${esc(c.cible)}">2 · Envoyé ✓</button></div>
+    <div class="rc-petit"><button data-action="reel-noter" data-pres="Introuvable" data-cible="${esc(c.cible)}">Compte introuvable ou messages fermés</button></div>`}
+  </div>`;
+}
+function formReel() {
+  const noms = [...new Set(S.data.metiers.map(m => m.metier))];
+  return `<form id="form-reel" class="bloc" autocomplete="off">
+    <h3>Nouveau Reel</h3>
+    <label class="champ">Lien du Reel *<input name="lien" inputmode="url" placeholder="https://www.instagram.com/reel/…" required></label>
+    <label class="champ">De quoi il parle<input name="titre" placeholder="Ex. Le test du pouce"></label>
+    <div class="champ" style="margin-bottom:0">Métiers à qui l’envoyer (rien coché = tout le monde)</div>
+    <div class="metiers-choix">${noms.map((n, i) => `<label><input type="checkbox" name="m_${i}" value="${esc(n)}"> ${esc(n)}</label>`).join('')}</div>
+    <label class="champ">Texte du message<textarea name="message" rows="9">${esc(MESSAGE_REEL_DEFAUT)}</textarea></label>
+    <p class="sous" style="margin:-6px 0 12px">{entreprise}, {lien}, {metier} et {prenom} se remplissent seuls. Pas de deux-points, une ligne vide entre les paragraphes.</p>
+    <button class="btn large" type="submit">Enregistrer le Reel</button>
+    ${S.data.reels && S.data.reels.length ? '<button class="btn clair large" type="button" data-action="reel-form" style="margin-top:8px">Annuler</button>' : ''}
+  </form>`;
+}
+function vueReels() {
+  const r = reelChoisi(), cfg = S.data.partage;
+  const audience = audienceReels();
+  const tete = `<h2 class="section">Partager un Reel<small>compte Instagram NSD</small></h2>`;
+  const formAud = `<details class="bloc"><summary>Audience · ${audience.length} comptes Instagram</summary>
+    <p class="sous">Les prospects du CRM qui ont un Instagram (sauf Perdu et Client signé), plus les commerces repérés à part (onglet Audience du Sheets, rempli par Tom).</p>
+    <form id="form-audience" autocomplete="off">
+      <label class="champ">Commerce *<input name="entreprise" required></label>
+      <label class="champ">Instagram *<input name="instagram" placeholder="@nom ou lien du compte" required></label>
+      <label class="champ">Métier<input name="metier" list="liste-metiers-reel" placeholder="Restaurant, Garage…"></label>
+      <datalist id="liste-metiers-reel">${[...new Set(S.data.metiers.map(m => m.metier))].map(n => `<option value="${esc(n)}">`).join('')}</datalist>
+      <label class="champ">Commune<input name="commune"></label>
+      <button class="btn clair large" type="submit">Ajouter à l’audience</button>
+    </form></details>`;
+  if (!r || S.formReel) return tete + formReel() + formAud;
+  const envoyesJour = envoyesAujourdhui(), reste = Math.max(0, cfg.lotParJour - envoyesJour);
+  const cand = candidatsReel(r);
+  const dejaFaits = audience.filter(c => partagesDe(c.pseudo).some(x => x.reel === r.id && x.resultat !== 'Introuvable'));
+  const reponses = (S.data.partages || []).filter(x => x.reel === r.id && x.resultat === 'Répondu').length;
+  const vises = metiersDuReel(r);
+  const lot = cand.slice(0, reste);
+  return tete + `<div class="reel-choix">
+      <select id="choix-reel">${reelsTries().map(x => `<option value="${esc(x.id)}" ${x.id === r.id ? 'selected' : ''}>${esc(dateCourte(x.date) + ' · ' + (x.titre || x.id))}</option>`).join('')}</select>
+      <button class="btn clair" data-action="reel-form">＋ Reel</button></div>
+    <div class="sous">${vises.length ? 'Pour ' + esc(vises.join(', ')) : 'Pour tous les métiers'} · <a href="${esc(r.lien)}" target="_blank" rel="noopener">voir le Reel</a></div>
+    <div class="bilan">
+      <div><b>${envoyesJour}/${cfg.lotParJour}</b><span>envoyés aujourd’hui</span></div>
+      <div><b>${dejaFaits.length}</b><span>ont reçu ce Reel</span></div>
+      <div><b>${cand.length}</b><span>restent à toucher</span></div>
+      <div><b>${reponses}</b><span>réponses</span></div>
+    </div>
+    <details class="bloc"><summary>Le texte envoyé</summary><div class="reel-texte">${esc(texteReel(r, null))}</div></details>
+    ${section('Lot du jour', lot.length ? lot.length + ' à envoyer' : '',
+      !reste ? `<div class="vide">Les ${cfg.lotParJour} messages du jour sont partis. Au-delà, Instagram bloque les messages du compte : la suite demain.</div>`
+      : !cand.length ? `<div class="vide">Plus personne à toucher pour ce Reel${vises.length ? ' dans ces métiers' : ''}. Tom peut compléter l’audience.</div>`
+      : `<p class="sous" style="margin:0 0 8px">1 copie le texte et ouvre la conversation : colle, envoie, reviens, puis 2. Un même commerce ne reçoit pas deux Reels à moins de ${cfg.joursEntreDeux} jours.</p>` + grille(lot.map(c => carteReel(r, c, false)).join('')))}
+    ${dejaFaits.length ? section('Déjà envoyé', dejaFaits.length, grille(dejaFaits.map(c => carteReel(r, c, true)).join(''))) : ''}
+    ${formAud}`;
+}
+async function copierTexte(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) {
+    const z = document.createElement('textarea'); z.value = t; z.setAttribute('readonly', ''); z.style.position = 'fixed'; z.style.opacity = '0';
+    document.body.appendChild(z); z.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (x) {} z.remove(); return ok;
+  }
+}
+async function noterPartage(btn, cible, res) {
+  const r = reelChoisi(); if (!r) return;
+  if (res === 'Introuvable' && !confirm('Ce commerce ne recevra plus aucun Reel. Continuer ?')) return;
+  btn.disabled = true;
+  try {
+    const out = await appel('api_partage', S.pin, r.id, cible, res);
+    S.data.partages.push(out.partage);
+    if (out.prospect) {
+      majLocale(out.prospect, { resultat: 'Ajout', note: out.prospect.notes, rappel: '' });
+      const a = S.data.audience.find(x => x.id === cible); if (a) a.prospect = out.prospect.id;
+    }
+    toast(res === 'Répondu' ? (out.prospect ? out.prospect.entreprise + ' ajouté pour ' + out.prospect.responsable + ' (À appeler).' : 'Réponse notée dans le Journal.')
+      : res === 'Envoyé' ? 'Envoi noté.' : 'Écarté.');
+    rendre();
+  } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
+}
+async function enregistrerReel(form) {
+  const f = new FormData(form);
+  const champs = { lien: f.get('lien'), titre: f.get('titre'), message: f.get('message'),
+    metiers: [...form.querySelectorAll('.metiers-choix input:checked')].map(x => x.value).join(', ') };
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const out = await appel('api_reel_ajouter', S.pin, champs);
+    if (!out.deja) S.data.reels.push(out.reel);
+    S.reel = out.reel.id; S.formReel = false;
+    toast(out.deja ? 'Ce Reel était déjà enregistré.' : 'Reel enregistré.'); rendre(); window.scrollTo(0, 0);
+  } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
+}
+async function ajouterAudience(form) {
+  const champs = Object.fromEntries(new FormData(form).entries());
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const out = await appel('api_audience_ajouter', S.pin, champs);
+    S.data.audience.push(out.audience); form.reset();
+    toast(out.audience.entreprise + ' ajouté à l’audience.'); rendre();
+  } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
 }
 
 function vueStats() {
@@ -1214,11 +1410,20 @@ document.addEventListener('click', e => {
   else if (act === 'fermer-msg') document.getElementById('bloc-msg').remove();
   else if (act === 'noter-msg') noterMessage(a.dataset.titre);
   else if (act === 'forcer-ajout') ajouter(document.getElementById('form-ajout'), true);
+  else if (act === 'reel-form') { S.formReel = !S.formReel; rendre(); window.scrollTo(0, 0); }
+  else if (act === 'reel-ouvrir') {
+    // Le lien s'ouvre de lui-même (Instagram) ; le texte part dans le presse-papiers avant.
+    const r = reelChoisi(), c = audienceReels().find(x => x.cible === a.dataset.cible);
+    if (r && c) copierTexte(texteReel(r, c)).then(ok => toast(ok ? 'Texte copié : colle-le dans la conversation.' : 'Copie impossible, ouvre « Le texte envoyé ».', !ok));
+  }
+  else if (act === 'reel-noter') noterPartage(a, a.dataset.cible, a.dataset.pres);
 });
 document.addEventListener('submit', e => {
   e.preventDefault();
   if (e.target.id === 'form-edit') sauverEdition(e.target);
   if (e.target.id === 'form-ajout') ajouter(e.target);
+  if (e.target.id === 'form-reel') enregistrerReel(e.target);
+  if (e.target.id === 'form-audience') ajouterAudience(e.target);
 });
 document.addEventListener('input', e => {
   if (e.target.id === 'apres-nom') majMessageApres();
@@ -1227,6 +1432,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   if (e.target.id === 'filtre-secteur') { S.filtreSecteur = e.target.value; rendre(); }
   if (e.target.id === 'jour-date' && e.target.value) { S.jour = e.target.value; rendre(); }
+  if (e.target.id === 'choix-reel') { S.reel = e.target.value; rendre(); }
 });
 document.getElementById('recherche').addEventListener('input', e => { S.recherche = e.target.value.trim(); rendre(); });
 
@@ -1254,6 +1460,8 @@ function charger() {
 }
 function appliquerDonnees() {
   S.data.prospects.forEach(p => delete p._ligne);
+  ['reels', 'audience', 'partages'].forEach(k => { S.data[k] = S.data[k] || []; });
+  S.data.partage = S.data.partage || { lotParJour: 25, joursEntreDeux: 14 };
   S.moi = S.data.moi; S.par = S.moi.nom;
   // On arrive toujours sur son propre espace, sauf si on en a choisi un autre.
   if (![...S.data.equipe, EQUIPE_VUE].includes(S.espace)) S.espace = S.moi.nom;
