@@ -1013,15 +1013,15 @@ function rendreFiche(edition) {
 const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['negociation'], ['refus'], ['note']];
 const MOTIFS_RAPPEL = [['pas_repondu', 'Pas de réponse'], ['absent', 'Gérant absent'], ['rappel', 'Convenu avec lui']];
 const boutonDe = res => MOTIFS_RAPPEL.some(([k]) => k === res) ? 'rappel' : res;
-// Plages d'appel par personne (règles de Nelson du 28/09/2026). Sam : lun-jeu
-// 10 h-12 h et 14 h-18 h (14 h depuis le 08/10/2026), ven et sam 10 h-12 h, dim 14 h-17 h. Nelson : 9 h-12 h
-// et 13 h 30-20 h tous les jours, sauf le vendredi 9 h-12 h (tournage l'après-midi).
+// Plages d'appel par personne (règles de Nelson du 28/09/2026, tournages déplacés le 14/10/2026).
+// Sam : mar, mer, ven 10 h-12 h et 14 h-18 h ; lun, jeu et sam 10 h-12 h (lundi et jeudi après-midi : tournage) ;
+// dim 14 h-17 h. Nelson : 9 h-12 h et 13 h 30-20 h, sauf le lundi et le jeudi 9 h-12 h (tournage).
 // Trou : Sam 15 h 55-16 h 05 (post Instagram). Vue Équipe : les plages de Sam.
 const MATIN_SAM = [['10:00', '12:00']], SEMAINE_SAM = [['10:00', '12:00'], ['14:00', '18:00']];
 const JOUR_NELSON = [['09:00', '12:00'], ['13:30', '20:00']], MATIN_NELSON = [['09:00', '12:00']];
 const PLAGES = {
-  Sam: { 0: [['14:00', '17:00']], 1: SEMAINE_SAM, 2: SEMAINE_SAM, 3: SEMAINE_SAM, 4: SEMAINE_SAM, 5: MATIN_SAM, 6: MATIN_SAM },
-  Nelson: { 0: JOUR_NELSON, 1: JOUR_NELSON, 2: JOUR_NELSON, 3: JOUR_NELSON, 4: JOUR_NELSON, 5: MATIN_NELSON, 6: JOUR_NELSON }
+  Sam: { 0: [['14:00', '17:00']], 1: MATIN_SAM, 2: SEMAINE_SAM, 3: SEMAINE_SAM, 4: MATIN_SAM, 5: SEMAINE_SAM, 6: MATIN_SAM },
+  Nelson: { 0: JOUR_NELSON, 1: MATIN_NELSON, 2: JOUR_NELSON, 3: JOUR_NELSON, 4: MATIN_NELSON, 5: JOUR_NELSON, 6: JOUR_NELSON }
 };
 const TROUS = { Sam: [['15:55', '16:05']], Nelson: [] };
 const hmDe = d => fmt(d).slice(11, 16);
@@ -1059,7 +1059,7 @@ function optionsDates() {
   o.push(['Dans 1 h', dans(1)], ['Dans 2 h', dans(2)]);
   if (now.getHours() < 15) o.push(S.moi && S.moi.nom === 'Sam' ? ['Auj. 16 h 10', a(0, 16, 10)] : ['Auj. 16 h', a(0, 16)]);
   o.push(['Demain 10 h', a(1, 10)]);
-  // Sam : « Demain 14 h », seulement si demain a une plage à 14 h (donc jamais quand demain est un vendredi ou un samedi).
+  // Sam : « Demain 14 h », seulement si demain a une plage à 14 h (donc jamais quand demain est un lundi, un jeudi ou un samedi).
   if (S.moi && S.moi.nom === 'Sam') { const d = a(1, 14); if (fmt(recalerAppel(new Date(d))) === fmt(d)) o.push(['Demain 14 h', d]); }
   else o.push(['Demain 15 h', a(1, 15)]);
   const lundi = a(((8 - now.getDay()) % 7) || 7, 10); o.push(['Lundi 10 h', lundi]);
@@ -2085,9 +2085,32 @@ const Factu = (() => {
   const cls = s => sansAccent(s || '').replace(/[^a-z]/g, '');
 
   // ------------------------------------------------------------------ données
+  // Erreur « JWT » (Nelson, 14/10/2026) : la base refuse parfois le jeton de connexion.
+  // « JWT expired » : le téléphone est resté en veille, le jeton d'une heure n'a pas été
+  // renouvelé à temps. « JWT issued at future » : jeton tout juste renouvelé, refusé une
+  // seconde ou deux par la base (écart d'horloge, vu aussi sur la synchro du Mac).
+  // On attend, on renouvelle le jeton si besoin, et on rejoue la requête (3 essais).
+  const pause = ms => new Promise(r => setTimeout(r, ms));
+  const erreurJwt = e => /JWT|PGRST30[13]/i.test(String(e && (e.message || e.code) || e || ''));
+  async function fetchJwt(url, opts) {
+    for (let i = 0; ; i++) {
+      const r = await fetch(url, opts);
+      if (r.status !== 401 || i >= 3 || String(url).includes('/auth/v1/')) return r;
+      const txt = await r.clone().text().catch(() => '');
+      if (!erreurJwt(txt)) return r;
+      await pause(1200 * (i + 1));
+      if (/expired|invalid/i.test(txt) && F.sb) {
+        const { data } = await F.sb.auth.refreshSession().catch(() => ({ data: null }));
+        if (!data || !data.session) return r;
+        const h = new Headers(opts && opts.headers); h.set('Authorization', 'Bearer ' + data.session.access_token);
+        opts = Object.assign({}, opts, { headers: h });
+      }
+    }
+  }
+
   async function init() {
     if (F.sb || !window.supabase || !S.data) return;
-    F.sb = window.supabase.createClient(S.data.supabase.url, S.data.supabase.cle, { auth: { persistSession: true, storageKey: 'crmnsd-supabase' } });
+    F.sb = window.supabase.createClient(S.data.supabase.url, S.data.supabase.cle, { auth: { persistSession: true, storageKey: 'crmnsd-supabase' }, global: { fetch: fetchJwt } });
     const { data } = await F.sb.auth.getSession();
     F.session = data.session;
     if (F.session) await charger(); else { F.pret = true; if (S.vue === 'factu') rendre(); }
@@ -2101,6 +2124,12 @@ const Factu = (() => {
       F.sb.from('factures').select('*, clients(nom_etablissement), factures_lignes(designation)').order('created_at', { ascending: false }),
     ]);
     const err = c.error || d.error || f.error;
+    // Toujours refusé après les essais : la session est perdue, on redemande la connexion.
+    if (err && erreurJwt(err)) {
+      await F.sb.auth.signOut().catch(() => {}); F.session = null; F.pret = true;
+      toast('Connexion à la facturation expirée : reconnecte-toi.', true);
+      if (S.vue === 'factu') rendre(); return;
+    }
     if (err) F.erreur = err.message;
     F.clients = c.data || []; F.devis = d.data || []; F.factures = f.data || [];
     F.pret = true;
