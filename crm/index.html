@@ -1860,7 +1860,7 @@ var NSDocs = (function () {
     const table = lignes.length ? lignes.map(l => '<tr><td><div class="nm">' + esc(l.designation) + '</div></td><td class="num">' + eur(l.quantite).replace(/,00$/, '')
       + '</td><td class="num">' + m(l.prix_unitaire_ht) + '</td><td class="num">' + m(l.montant_ht) + '</td></tr>').join('')
       : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucune ligne</td></tr>';
-    const joint = contrat && contrat.devis ? contratCorps(contrat.devis, contrat.lignes || [], c, contrat.signataire) : '';
+    const joint = contrat && contrat.devis ? contratCorps(contrat.devis, contrat.lignes || [], contrat.client || c, contrat.signataire) : '';
     return page('Facture ' + num + (joint ? ' et contrat' : '') + ' · ' + (c.nom_etablissement || ''), '<div class="sheet">' + tete('FACTURE', meta) + parties(c, 'Facturé à')
       + '<section>' + sec(1, 'Objet de la facture', '') + Object.keys(OBJETS).map(k => '<div class="row' + (k === obj ? ' on' : ' off') + '">' + cb(k === obj) + '<div class="d"><span class="nm">' + OBJETS[k] + '</span></div></div>').join('') + '</section>'
       + '<section>' + sec(2, 'Détail', 'repris du devis' + (refDevis ? ' ' + esc(refDevis) : ''))
@@ -1902,7 +1902,8 @@ var NSDocs = (function () {
     const box = on => '<span class="k-box' + (on ? ' k-on' : '') + '"></span>';
     const val = v => v ? '<span class="k-v">' + esc(v) + '</span>' : '';
     const blanc = (v, taille) => v ? '<span class="k-blank k-plein">' + esc(v) + '</span>' : '<span class="k-blank' + (taille ? ' k-' + taille : '') + '"></span>';
-    const contact = [c.contact_prenom, c.contact_nom].filter(Boolean).join(' ');
+    // c.gerant, c.rcs, c.enseigne : repris de la fiche prospect du CRM (Factu.html, ficheContrat).
+    const contact = c.gerant || [c.contact_prenom, c.contact_nom].filter(Boolean).join(' ');
     const qui = SIGNATAIRES[signataire] || SIGNATAIRES.Sam;
     const num = d.numero ? d.numero.replace(/^DEV/, 'CTR') : '';
     const options = C.OPTIONS.filter(o => a.options[o.n]).map(o => o.n + (o.qte && a.options[o.n] !== 1 ? ' × ' + a.options[o.n] : ''))
@@ -1934,9 +1935,9 @@ var NSDocs = (function () {
       + '<p><b>Le Prestataire :</b> NS Development SARL-S, société à responsabilité limitée simplifiée de droit luxembourgeois, siège social 2, rue de la fontaine, L-4988 Sanem, immatriculée au Registre de commerce et des sociétés de Luxembourg sous le n° B310037, TVA LU37686640, représentée par ' + blanc(qui) + ', en qualité de gérant.</p>'
       + '<p><b>Le Client :</b></p><table class="k-field">'
       + '<tr><td>Dénomination et forme juridique</td><td>' + val(c.nom_etablissement) + '</td></tr>'
-      + '<tr><td>Enseigne commerciale (si différente)</td><td></td></tr>'
+      + '<tr><td>Enseigne commerciale (si différente)</td><td>' + val(c.enseigne) + '</td></tr>'
       + '<tr><td>Siège ou adresse professionnelle</td><td>' + val(c.adresse || c.ville) + '</td></tr>'
-      + '<tr><td>N° RCS / N° TVA</td><td>' + '<span class="k-blank k-s"></span> / ' + val(c.tva_intra) + '</td></tr>'
+      + '<tr><td>N° RCS / N° TVA</td><td>' + (c.rcs ? val(c.rcs) : '<span class="k-blank k-s"></span>') + ' / ' + val(c.tva_intra) + '</td></tr>'
       + '<tr><td>Représenté par (nom, qualité)</td><td>' + val(contact) + '</td></tr>'
       + '<tr><td>E-mail pour les notifications du contrat</td><td>' + val(c.email) + '</td></tr>'
       + '<tr><td>Téléphone</td><td>' + val(c.telephone) + '</td></tr></table>'
@@ -2562,6 +2563,18 @@ const Factu = (() => {
 
   // ------------------------------------------------------------------ devis : fiche
   function prospectDuClient(clientId) { return S.data.prospects.find(p => p.client === clientId); }
+  // Le contrat se remplit d'abord avec la fiche du client dans le CRM (Nelson, 14/10/2026) :
+  // le N° RCS, le gérant et l'enseigne n'existent que là. La fiche de facturation complète
+  // ce que la fiche n'a pas (adresse postale, TVA, e-mail et téléphone saisis au devis).
+  function ficheContrat(c, clientId) {
+    const p = prospectDuClient(clientId) || {};
+    const norm = x => sansAccent(x).replace(/\b(s\.?a\.?r\.?l\.?(-s)?|sarl(-s)?|s\.?a\.?|scs|snc)\b/g, '').replace(/[^a-z0-9]/g, '');
+    const enseigne = p.entreprise && norm(p.entreprise) && !norm(c.nom_etablissement).includes(norm(p.entreprise)) ? p.entreprise : '';
+    return Object.assign({}, c, {
+      rcs: String(p.rcs || '').trim(), gerant: String(p.gerant || '').trim(), enseigne,
+      email: c.email || p.email || '', telephone: c.telephone || p.telephone || '', adresse: c.adresse || c.ville || p.commune || '',
+    });
+  }
 
   function ouvrirDevis(id) {
     const d = F.devis.find(x => x.id === id); if (!d) return;
@@ -2684,14 +2697,14 @@ const Factu = (() => {
     const { data: doc, error } = await F.sb.from(table).select(estDevis ? '*, clients(*)' : '*, clients(*), devis(*)').eq('id', id).single();
     if (error) return toast(error.message, true);
     const { data: lignes } = await F.sb.from(table + '_lignes').select('*').eq(estDevis ? 'devis_id' : 'facture_id', id).order('ordre');
-    const c = doc.clients || {}, qui = S.moi && S.moi.nom;
+    const c = doc.clients || {}, qui = S.moi && S.moi.nom, cc = ficheContrat(c, doc.client_id);
     let html;
     if (type === 'devis') html = docDevisHTML(doc, lignes || [], c);
-    else if (type === 'contrat') html = NSDocs.contrat(doc, lignes || [], c, S.data.banque, qui);
+    else if (type === 'contrat') html = NSDocs.contrat(doc, lignes || [], cc, S.data.banque, qui);
     else if (type === 'facture-contrat' && doc.devis) {
       const { data: lignesDevis, error: e2 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', doc.devis.id).order('ordre');
       if (e2) return toast(e2.message, true);
-      html = NSDocs.facture(doc, lignes || [], c, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui });
+      html = NSDocs.facture(doc, lignes || [], c, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc });
     } else html = docFactureHTML(doc, lignes || [], c);
     const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
     v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">Imprimer / PDF</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
