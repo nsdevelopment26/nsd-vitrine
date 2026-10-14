@@ -1761,7 +1761,8 @@ var NSDocs = (function () {
   }
 
   // ------------------------------------------------------------------ devis
-  function docDevisHTML(d, lignes, c) {
+  // signataire : 'Sam' ou 'Nelson'. Un devis numéroté porte le cachet et la signature de NS Development.
+  function docDevisHTML(d, lignes, c, signataire) {
     const E = EMETTEUR();
     const num = d.numero || 'Brouillon';
     const taux = Number(d.tva_taux) || 0;
@@ -1827,10 +1828,10 @@ var NSDocs = (function () {
       + '<div class="r acc"><span class="rl">Acompte TTC à régler</span><span class="rv">' + m(t.acompte) + '</span></div>'
       + '<div class="r"><span class="rl">Solde TTC à la livraison</span><span class="rv">' + m(t.solde) + '</span></div></div></div></section>'
       + '<div class="sign"><div><div class="lbl">Bon pour accord (le client)</div><div class="note">Mention manuscrite « Bon pour accord », date et signature :</div><div class="zone">Date :</div></div>'
-      + '<div><div class="lbl">Cachet et signature · NS Development</div><div class="note">&nbsp;</div><div class="zone"></div></div></div>'
+      + '<div><div class="lbl">Cachet et signature · NS Development</div><div class="note">&nbsp;</div><div class="zone">' + (d.numero && signataire ? signatureNSD(signataire, d.date_emission, 'devis ' + d.numero) : '') + '</div></div></div>'
       + piedLegal(E) + '</div>';
 
-    return page('Devis ' + num + ' · ' + (c.nom_etablissement || ''), page1 + page2);
+    return page('Devis ' + num + ' · ' + (c.nom_etablissement || ''), page1 + page2, d.numero && signataire ? CSS_SIGNE() + '.sign .zone .k-signe{margin-top:6px}' : '');
   }
 
   // ------------------------------------------------------------------ facture
@@ -1843,7 +1844,8 @@ var NSDocs = (function () {
   const OBJETS = { acompte: 'Acompte 50 % à la commande', solde: 'Solde 50 % à la mise en ligne', unique: 'Facture unique (100 %)' };
 
   // contrat : { devis, lignes, signataire } pour joindre le contrat rempli (facture d'acompte ou unique).
-  function docFactureHTML(f, lignes, c, contrat) {
+  // signataireF : 'Sam' ou 'Nelson' pour signer la facture (case cochée dans Factu), sinon rien.
+  function docFactureHTML(f, lignes, c, contrat, signataireF) {
     const E = EMETTEUR();
     lignes = lignes.filter(l => !estFrais(l));
     const m = n => eur(n) + ' €';
@@ -1860,7 +1862,8 @@ var NSDocs = (function () {
     const table = lignes.length ? lignes.map(l => '<tr><td><div class="nm">' + esc(l.designation) + '</div></td><td class="num">' + eur(l.quantite).replace(/,00$/, '')
       + '</td><td class="num">' + m(l.prix_unitaire_ht) + '</td><td class="num">' + m(l.montant_ht) + '</td></tr>').join('')
       : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucune ligne</td></tr>';
-    const joint = contrat && contrat.devis ? contratCorps(contrat.devis, contrat.lignes || [], contrat.client || c, contrat.signataire, f.date_emission) : '';
+    const joint = contrat && contrat.devis ? contratCorps(contrat.devis, contrat.lignes || [], contrat.client || c, contrat.signataire, f.date_emission, contrat.signer) : '';
+    const sigF = signataireF && f.numero ? signatureNSD(signataireF, f.date_emission, 'facture ' + f.numero) : '';
     return page('Facture ' + num + (joint ? ' et contrat' : '') + ' · ' + (c.nom_etablissement || ''), '<div class="sheet">' + tete('FACTURE', meta) + parties(c, 'Facturé à')
       + '<section>' + sec(1, 'Objet de la facture', '') + Object.keys(OBJETS).map(k => '<div class="row' + (k === obj ? ' on' : ' off') + '">' + cb(k === obj) + '<div class="d"><span class="nm">' + OBJETS[k] + '</span></div></div>').join('') + '</section>'
       + '<section>' + sec(2, 'Détail', 'repris du devis' + (refDevis ? ' ' + esc(refDevis) : ''))
@@ -1875,7 +1878,9 @@ var NSDocs = (function () {
       + '<div class="r"><span class="rl">TVA (' + eur(taux).replace(/,00$/, '') + ' %)</span><span class="rv">' + m(tva) + '</span></div>'
       + (paye > 0 ? '<div class="r"><span class="rl">Total TTC</span><span class="rv">' + m(ttc) + '</span></div><div class="r"><span class="rl">Déjà réglé</span><span class="rv">- ' + m(paye) + '</span></div>' : '')
       + '<div class="r total"><span class="rl">NET À PAYER</span><span class="rv">' + m(paye > 0 ? reste : ttc) + '</span></div></div></div></section>'
-      + piedLegal(E) + '</div>' + joint, joint ? CSS_CONTRAT() : '');
+      + (sigF ? '<div class="sign-f"><div class="lbl">Pour NS Development SARL-S</div>' + sigF + '</div>' : '')
+      + piedLegal(E) + '</div>' + joint, (joint ? CSS_CONTRAT() : '')
+      + (sigF ? CSS_SIGNE() + '.sign-f{margin-top:18px;display:flex;flex-direction:column;align-items:flex-end;break-inside:avoid}.sign-f .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}' : ''));
   }
 
   // ------------------------------------------------------------------ contrat
@@ -1895,7 +1900,7 @@ var NSDocs = (function () {
   const ENCRE = '#1f3fbf';
   function cachetSVG(taille) {
     const c = ENCRE, f = 'Helvetica Neue,Helvetica,Arial,sans-serif';
-    return '<svg class="k-cachet" width="' + taille + '" height="' + taille + '" viewBox="0 0 200 200" aria-label="Cachet NS Development SARL-S">'
+    return '<svg xmlns="http://www.w3.org/2000/svg" class="k-cachet" width="' + taille + '" height="' + taille + '" viewBox="0 0 200 200" aria-label="Cachet NS Development SARL-S">'
       + '<defs><path id="k-arc-h" d="M 100,100 m -75,0 a 75,75 0 1,1 150,0"/><path id="k-arc-b" d="M 100,100 m -77,0 a 77,77 0 0,0 154,0"/></defs>'
       + '<circle cx="100" cy="100" r="96" fill="none" stroke="' + c + '" stroke-width="4"/>'
       + '<circle cx="100" cy="100" r="89" fill="none" stroke="' + c + '" stroke-width="1.4"/>'
@@ -1906,18 +1911,22 @@ var NSDocs = (function () {
       + (NSContrat.logo ? '<image href="' + NSContrat.logo + '" x="72" y="60" width="56" height="56"/>' : '')
       + '<text x="100" y="138" text-anchor="middle" font-family="' + f + '" font-weight="700" font-size="10" letter-spacing="1.6" fill="' + c + '">SANEM</text></svg>';
   }
-  function signatureNSD(signataire, date, num) {
+  // ref : « contrat CTR-… » ou « devis DEV-… », affiché dans la mention.
+  function signatureNSD(signataire, date, ref) {
+    if (typeof NSContrat === 'undefined') return '';
     const qui = SIGNATAIRES[signataire] ? signataire : 'Sam';
     return '<div class="k-signe">' + cachetSVG(86) + '<div class="k-signe-t"><div class="k-manuscrit">' + MANUSCRIT[qui] + '</div>'
-      + '<div class="k-mention">Signé électroniquement par ' + SIGNATAIRES[qui] + ', co-gérant<br>le ' + fmtDate(date) + (num ? ' · contrat ' + esc(num) : '') + '</div></div></div>';
+      + '<div class="k-mention">Signé électroniquement par ' + SIGNATAIRES[qui] + ', co-gérant<br>le ' + fmtDate(date) + (ref ? ' · ' + esc(ref) : '') + '</div></div></div>';
   }
+  // Styles de la signature, partagés par le contrat et le devis.
+  const CSS_SIGNE = () => (typeof NSContrat !== 'undefined' && NSContrat.police ? '@font-face{font-family:"NSD Signature";src:url(data:font/woff2;base64,' + NSContrat.police + ') format("woff2")}' : '')
+    + '.k-signe{display:flex;align-items:center;gap:8px}.k-cachet{flex:none;transform:rotate(-9deg);opacity:.93;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.k-manuscrit{font-family:"NSD Signature",cursive;font-size:30px;line-height:1.05;color:#14234f;white-space:nowrap;transform:rotate(-3deg);transform-origin:left bottom;margin:0 0 4px}'
+    + '.k-mention{font-size:7pt;line-height:1.35;color:#45454d}';
   const CSS_CONTRAT = () => (typeof NSContrat === 'undefined' ? '' : NSContrat.css)
     + '.k .k-v{font-weight:600}.k .k-box.k-on{background:var(--k-ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     + '.k .k-blank.k-plein{min-width:0;padding:0 4px;font-weight:600}'
-    + (typeof NSContrat !== 'undefined' && NSContrat.police ? '@font-face{font-family:"NSD Signature";src:url(data:font/woff2;base64,' + NSContrat.police + ') format("woff2")}' : '')
-    + '.k .k-signe{display:flex;align-items:center;gap:8px;margin-top:4px}.k .k-cachet{flex:none;transform:rotate(-9deg);opacity:.93}'
-    + '.k .k-manuscrit{font-family:"NSD Signature",cursive;font-size:30px;line-height:1.05;color:#14234f;white-space:nowrap;transform:rotate(-3deg);transform-origin:left bottom;margin:0 0 4px}'
-    + '.k .k-mention{font-size:7pt;line-height:1.35;color:var(--k-soft)}.k .k-sign .k-signe,.k .k-sign .k-signe div{border:0;padding:0;min-height:0}.k .k-sign .k-signe{margin-top:4px}'
+    + CSS_SIGNE() + '.k .k-sign .k-signe,.k .k-sign .k-signe div{border:0;padding:0;min-height:0}.k .k-sign .k-signe{margin-top:4px}'
     + '@media print{.sheet+.k{break-before:page}.k{background:#fff}.k .k-page{padding:0;max-width:100%}.k .k-cachet{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
   // Domaine du site actuel du client, s'il en a un vrai (pas une page Facebook ou un sous-domaine Wix).
   function domaine(url) {
@@ -1925,7 +1934,8 @@ var NSDocs = (function () {
     return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(h) && !/facebook|instagram|google|wixsite|linktr|tiktok|editus|business\.site|jimdo|webnode/.test(h) ? h : '';
   }
   // date : jour de la signature de NS Development (émission de la facture d'acompte, sinon aujourd'hui).
-  function contratCorps(d, lignes, c, signataire, date) {
+  // signer : false pour un contrat sans la signature de NS Development (case décochée dans Factu).
+  function contratCorps(d, lignes, c, signataire, date, signer) {
     if (typeof NSContrat === 'undefined') return '';
     if (!date) { const t = new Date(); date = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); }
     const a = analyser(lignes, c), t = decompte(a.site, a.maintenance, Number(d.tva_taux) || 0);
@@ -1995,25 +2005,25 @@ var NSDocs = (function () {
       + '<p>Le contrat est formé, par ordre de priorité décroissant, des présentes conditions particulières, du devis de référence, de l’annexe « Traitement des données personnelles » (qui prévaut sur tout autre document pour ce qui concerne les données personnelles) et des conditions générales de prestation, version du ' + NSContrat.version + '. Les conditions générales ou d’achat du Client ne s’appliquent pas.</p>'
       + '<p>' + box(false) + '<b>Le Client reconnaît avoir reçu les conditions générales de prestation et l’annexe « Traitement des données personnelles » avant la signature, en avoir pris connaissance et les accepter sans réserve.</b></p>'
       + '<div class="k-avoid"><p style="margin-top:10px">Fait à <span class="k-blank k-s"></span>, le <span class="k-blank k-s"></span>, en deux exemplaires originaux, un pour chaque partie. Une signature électronique a la même valeur qu’une signature manuscrite.</p>'
-      + '<div class="k-sign"><div><b>Pour le Prestataire</b>NS Development SARL-S<span>Nom et qualité : ' + esc(qui) + ', co-gérant</span><span>Signature :</span>' + signatureNSD(signataire, date, num) + '</div>'
+      + '<div class="k-sign"><div><b>Pour le Prestataire</b>NS Development SARL-S<span>Nom et qualité : ' + esc(qui) + ', co-gérant</span><span>Signature :</span>' + (signer !== false ? signatureNSD(signataire, date, num ? 'contrat ' + num : '') : '') + '</div>'
       + '<div><b>Pour le Client</b>« Lu et approuvé »<span>Nom et qualité : ' + esc(contact) + '</span><span>Signature et cachet :</span></div></div></div></div>';
-    const nsd = '<span>Nom et qualité : ' + esc(qui) + ', co-gérant</span><span>Signature :</span>' + signatureNSD(signataire, date, num);
+    const nsd = '<span>Nom et qualité : ' + esc(qui) + ', co-gérant</span><span>Signature :</span>' + (signer !== false ? signatureNSD(signataire, date, num ? 'contrat ' + num : '') : '');
     return '<div class="k">' + partie1 + NSContrat.suite.replace('{{CLIENT}}', esc(c.nom_etablissement || '')).replace('{{SIGNATURE_NSD}}', nsd) + '</div>';
   }
-  function docContratHTML(d, lignes, c, signataire) {
-    return page('Contrat ' + (d.numero ? d.numero.replace(/^DEV/, 'CTR') : 'brouillon') + ' · ' + (c.nom_etablissement || ''), contratCorps(d, lignes, c, signataire), CSS_CONTRAT());
+  function docContratHTML(d, lignes, c, signataire, signer) {
+    return page('Contrat ' + (d.numero ? d.numero.replace(/^DEV/, 'CTR') : 'brouillon') + ' · ' + (c.nom_etablissement || ''), contratCorps(d, lignes, c, signataire, null, signer), CSS_CONTRAT());
   }
 
   return {
     CATALOGUE, optionsIncluses, modulesVendus, ligneMaintenance, lireMaintenance, ligneRecurrente, estRecurrente, estMaintenance, estFrais, estGeste, ligneGeste, ligneFrais, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
-    devis(d, lignes, c, options) { regler(options); return docDevisHTML(d, lignes || [], c || {}); },
-    facture(f, lignes, c, options, contrat) { regler(options); return docFactureHTML(f, lignes || [], c || {}, contrat); },
+    devis(d, lignes, c, options, signataire) { regler(options); return docDevisHTML(d, lignes || [], c || {}, signataire); },
+    facture(f, lignes, c, options, contrat, signataire) { regler(options); return docFactureHTML(f, lignes || [], c || {}, contrat, signataire); },
     // Le contrat seul, rempli. signataire : 'Sam' ou 'Nelson' (celui qui envoie).
-    contrat(d, lignes, c, options, signataire) { regler(options); return docContratHTML(d, lignes || [], c || {}, signataire); },
+    contrat(d, lignes, c, options, signataire, signer) { regler(options); return docContratHTML(d, lignes || [], c || {}, signataire, signer); },
     contratDisponible: () => typeof NSContrat !== 'undefined',
     // Le cachet et la signature seuls (export PNG dans entreprise/identite-visuelle/signature-contrat/).
-    cachet: taille => cachetSVG(taille || 200), signature: (signataire, date, num) => signatureNSD(signataire, date, num), CSS_CONTRAT: () => CSS_CONTRAT(),
+    cachet: taille => cachetSVG(taille || 200), MANUSCRIT, CSS_SIGNE: () => CSS_SIGNE(), signature: (signataire, date, num) => signatureNSD(signataire, date, num), CSS_CONTRAT: () => CSS_CONTRAT(),
   };
   function regler(o) { Object.keys(o || {}).forEach(k => { if (o[k]) OPTS[k] = o[k]; }); }
 })();
@@ -2098,6 +2108,9 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .sv-filtres button { flex: none; border: 1px solid var(--ligne); background: #fff; border-radius: 999px; padding: 7px 12px; font-size: 13px; }
   .sv-filtres button.on { background: var(--noir); color: #fff; border-color: var(--noir); }
   .sv-carte .meta .fx-st { margin-right: 4px; }
+  .fx-sig-apercu { background: #fff; border: 1px dashed var(--ligne); border-radius: 12px; padding: 12px; overflow: hidden; }
+  .fx-sig-cases { display: flex; gap: 18px; flex-wrap: wrap; font-size: 15px; }
+  .fx-sig-case input { width: 20px; height: 20px; vertical-align: -4px; margin-right: 4px; }
   .sv-carte .reste { color: var(--danger); font-weight: 650; }
 </style>
 
@@ -2225,7 +2238,7 @@ const Factu = (() => {
       ${section('Toutes les factures', F.factures.length + '', F.factures.length ? F.factures.map(carteFacture).join('') : '<div class="vide">Aucune facture. Une facture se crée depuis un devis accepté.</div>')}
       ${F.menage ? `<div class="fx-menage"><button class="btn clair" data-fx="menage-fin">Annuler</button>
         <button class="btn danger" data-fx="menage-go" ${F.choix.size ? '' : 'disabled'}>Supprimer${F.choix.size ? ' (' + F.choix.size + ')' : ''}</button></div>`
-        : `<p style="margin-top:18px"><button class="btn clair large" data-fx="deconnexion">Se déconnecter de la facturation</button></p>`}`;
+        : `${blocSignature()}<p style="margin-top:18px"><button class="btn clair large" data-fx="deconnexion">Se déconnecter de la facturation</button></p>`}`;
   }
 
   // ------------------------------------------------------------------ suivi clients
@@ -2734,11 +2747,11 @@ const Factu = (() => {
     const c = doc.clients || {}, qui = S.moi && S.moi.nom, cc = ficheContrat(c, doc.client_id);
     let html;
     if (type === 'devis') html = docDevisHTML(doc, lignes || [], c);
-    else if (type === 'contrat') html = NSDocs.contrat(doc, lignes || [], cc, S.data.banque, qui);
+    else if (type === 'contrat') html = NSDocs.contrat(doc, lignes || [], cc, S.data.banque, qui, reglageSig().contrat);
     else if (type === 'facture-contrat' && doc.devis) {
       const { data: lignesDevis, error: e2 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', doc.devis.id).order('ordre');
       if (e2) return toast(e2.message, true);
-      html = NSDocs.facture(doc, lignes || [], c, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc });
+      html = NSDocs.facture(doc, lignes || [], c, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc, signer: reglageSig().contrat }, signeur('facture'));
     } else html = docFactureHTML(doc, lignes || [], c);
     const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
     v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">Imprimer / PDF</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
@@ -2747,8 +2760,58 @@ const Factu = (() => {
     v._html = html;
   }
 
-  const docDevisHTML = (d, l, c) => NSDocs.devis(d, l, c, S.data.banque);
-  const docFactureHTML = (f, l, c) => NSDocs.facture(f, l, c, S.data.banque);
+  const docDevisHTML = (d, l, c) => NSDocs.devis(d, l, c, S.data.banque, signeur('devis'));
+  const docFactureHTML = (f, l, c) => NSDocs.facture(f, l, c, S.data.banque, null, signeur('facture'));
+
+  // ------------------------------------------------------------------ ma signature
+  // Nelson, 14/10/2026 : chacun voit sa signature (cachet + nom manuscrit), la télécharge
+  // en PNG, et coche sur quels documents elle se pose quand c'est lui qui les ouvre.
+  // Réglage gardé sur le téléphone, par personne (Sam et Nelson ont chacun le leur).
+  const SIG_DEFAUT = { devis: true, facture: false, contrat: true };
+  const cleSig = () => 'crmnsd-signature-' + ((S.moi && S.moi.nom) || '');
+  function reglageSig() {
+    try { return Object.assign({}, SIG_DEFAUT, JSON.parse(localStorage.getItem(cleSig()) || '{}')); } catch (e) { return Object.assign({}, SIG_DEFAUT); }
+  }
+  function changerSig(k, v) { const r = reglageSig(); r[k] = v; try { localStorage.setItem(cleSig(), JSON.stringify(r)); } catch (e) {} }
+  const quiSigne = () => S.moi && NSDocs.MANUSCRIT && NSDocs.MANUSCRIT[S.moi.nom] ? S.moi.nom : null;
+  const signeur = type => reglageSig()[type] ? quiSigne() : null;
+  function stylesSignature() {
+    if (document.getElementById('fx-sig-css')) return;
+    const st = document.createElement('style'); st.id = 'fx-sig-css'; st.textContent = NSDocs.CSS_SIGNE(); document.head.appendChild(st);
+  }
+  function blocSignature() {
+    const qui = quiSigne(); if (!qui || !NSDocs.contratDisponible()) return '';
+    stylesSignature();
+    const r = reglageSig();
+    const coche = (k, l) => `<label class="fx-sig-case"><input type="checkbox" data-fx-sig="${k}" ${r[k] ? 'checked' : ''}> ${l}</label>`;
+    return section('Ma signature', esc(qui), `<div class="bloc" style="margin-top:0"><div class="fx-sig-apercu">${NSDocs.signature(qui, isoJour(new Date()), '')}</div>
+      <div class="sous" style="margin:10px 0 6px">Posée avec la date du document sur ce que tu ouvres ici. Coche où la mettre :</div>
+      <div class="fx-sig-cases">${coche('devis', 'Devis')}${coche('facture', 'Factures')}${coche('contrat', 'Contrats')}</div>
+      <button class="btn clair large" data-fx="sig-png" style="margin-top:12px">Télécharger ma signature (PNG)</button></div>`);
+  }
+  // PNG 1920 × 640, fond transparent, dessiné dans le téléphone (rien n'est publié en ligne).
+  async function pngSignature(qui) {
+    const cv = document.createElement('canvas'); cv.width = 1920; cv.height = 640; const x = cv.getContext('2d');
+    const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(NSDocs.cachet(560));
+    await img.decode();
+    x.save(); x.translate(320, 320); x.rotate(-9 * Math.PI / 180); x.globalAlpha = .93; x.drawImage(img, -280, -280, 560, 560); x.restore();
+    const ff = new FontFace('NSD Signature PNG', 'url(data:font/woff2;base64,' + NSContrat.police + ')'); await ff.load(); document.fonts.add(ff);
+    const txt = NSDocs.MANUSCRIT[qui]; let taille = 190; x.font = taille + 'px "NSD Signature PNG"';
+    const w = x.measureText(txt).width; if (w > 1180) { taille = Math.floor(taille * 1180 / w); x.font = taille + 'px "NSD Signature PNG"'; }
+    x.fillStyle = '#14234f'; x.save(); x.translate(660, 390); x.rotate(-3 * Math.PI / 180); x.fillText(txt, 0, 0); x.restore();
+    return cv.toDataURL('image/png');
+  }
+  async function telechargerSignature() {
+    const qui = quiSigne(); if (!qui) return;
+    try {
+      const url = await pngSignature(qui);
+      const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
+      v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><a class="btn" style="text-align:center;text-decoration:none" download="signature-nsd-' + qui + '.png" href="' + url + '">Télécharger</a></div>'
+        + '<div style="flex:1;display:grid;place-items:center;padding:16px;overflow:auto"><img alt="Ma signature" src="' + url + '" style="max-width:100%;background:#fff;border-radius:12px"></div>'
+        + '<p class="sous" style="text-align:center;padding:0 16px 18px;margin:0">Sur iPhone : appui long sur l’image, puis « Enregistrer dans Photos ».</p>';
+      document.body.appendChild(v);
+    } catch (e) { toast('Signature : ' + (e.message || e), true); }
+  }
 
   // ------------------------------------------------------------------ événements
   document.addEventListener('click', e => {
@@ -2789,6 +2852,7 @@ const Factu = (() => {
     else if (act === 'facturer') facturer(id, a.dataset.objet);
     else if (act === 'emettre') emettre(id);
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
+    else if (act === 'sig-png') telechargerSignature();
     else if (act === 'imprimer') { const f = document.querySelector('#fx-doc iframe'); f.contentWindow.focus(); f.contentWindow.print(); }
     else if (act === 'onglet') { const u = URL.createObjectURL(new Blob([document.getElementById('fx-doc')._html], { type: 'text/html' })); window.open(u, '_blank'); }
   });
@@ -2805,6 +2869,10 @@ const Factu = (() => {
     const q = e.target.closest('[data-fx-qte]');
     if (q) { const n = Math.max(0, Math.floor(Number(q.value) || 0)); if (n) D.opts[q.dataset.fxQte] = n; else delete D.opts[q.dataset.fxQte]; return calculer(); }
     if (e.target.closest('#fx-devis')) calculer();
+  });
+  document.addEventListener('change', e => {
+    const k = e.target.dataset && e.target.dataset.fxSig;
+    if (k) { changerSig(k, e.target.checked); toast('Signature ' + (e.target.checked ? 'ajoutée sur les ' : 'retirée des ') + { devis: 'devis', facture: 'factures', contrat: 'contrats' }[k] + '.'); }
   });
   document.addEventListener('submit', e => {
     if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
