@@ -629,6 +629,8 @@ function vueAujourdhui() {
   const retard = avecRappel.filter(p => p.rappel < now).sort((a, b) => a.rappel.localeCompare(b.rappel));
   const duJour = avecRappel.filter(p => p.rappel.slice(0, 10) === jour && p.rappel >= now).sort((a, b) => a.rappel.localeCompare(b.rappel));
   const aDater = actifs.filter(p => cle(p) === 'rappel' && !p.rappel);
+  // Devis et négociations sans prochain point (posés avant le 17/10/2026, quand la date était facultative).
+  const negoSansDate = actifs.filter(p => cle(p) === 'negociation' && !p.rappel).sort((a, b) => String(a.dernier).localeCompare(String(b.dernier)));
   const froids = actifs.filter(p => ['a_appeler', 'sans_reponse'].includes(cle(p)) && !p.rappel && !String(p.dernier).startsWith(jour) && p.telephone);
   const libre = p => respDe(p) ? 0 : 1;
   const ordre = (a, b) => (vueEquipe() ? 0 : libre(a) - libre(b)) || (cle(a) === 'a_appeler' ? 0 : 1) - (cle(b) === 'a_appeler' ? 0 : 1) || String(a.dernier).localeCompare(String(b.dernier)) || a.id.localeCompare(b.id);
@@ -640,6 +642,8 @@ function vueAujourdhui() {
   const rdvOuRappel = p => (cle(p) === 'rdv' ? 'RDV ' : '') + dateCourte(p.rappel);
 
   let h = '';
+  if (negoSansDate.length) h += section('Devis en cours sans prochain point', negoSansDate.length + ' à relancer',
+    grille(negoSansDate.map(p => carteRiche(p, droite('à relancer', p.dernier ? 'vu ' + dateCourte(p.dernier) : '', true))).join('')));
   if (retard.length) h += section('En retard', retard.length + ' à replacer', grille(retard.map(p => carteRiche(p, droite(rdvOuRappel(p), 'en retard', true))).join('')));
   h += section('Rappels et RDV du jour', duJour.length ? duJour.length + ' prévus' : '',
     duJour.length ? grille(duJour.map(p => carteRiche(p, droite((cle(p) === 'rdv' ? 'RDV ' : '') + heure(p.rappel)))).join(''))
@@ -1079,7 +1083,7 @@ function zoneResultat() {
   // Un RDV qui ne décroche pas garde sa date : pas de rappel à choisir.
   const garderRdv = p && cle(p) === 'rdv' && (CHOIX.res === 'pas_repondu' || CHOIX.res === 'absent');
   const titreDate = CHOIX.res === 'rdv' ? 'Date du rendez-vous' : CHOIX.res === 'lien' ? 'Relancer le… (facultatif)'
-    : CHOIX.res === 'negociation' ? 'Prochain point le… (facultatif)' : 'Rappeler le…';
+    : CHOIX.res === 'negociation' ? 'Prochain point le…' : 'Rappeler le…';
   return `${motif ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">Pourquoi ?</div>
     <div class="dates">${MOTIFS_RAPPEL.map(([k, l]) => `<button data-motif="${k}" class="${CHOIX.res === k ? 'choisi' : ''}">${l}</button>`).join('')}</div>` : ''}
     ${garderRdv ? '<div class="sous" style="margin-top:10px">Le RDV reste à sa date, l’appel est noté dans l’historique.</div>' : ''}
