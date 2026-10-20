@@ -415,8 +415,63 @@
     .toast { bottom: 28px; margin-left: 116px; }
     .feuille { border-radius: 26px 26px 0 0; }
   }
+
+  /* --- Session d'appels (20/10/2026) --- */
+  .sess { position: relative; overflow: hidden; margin: 10px 0 4px; padding: 16px 16px 14px; border-radius: 20px; background: var(--noir); color: #f2f4f2;
+    background-image: radial-gradient(90% 120% at 100% 0%, rgba(53,210,154,.22), transparent 60%); box-shadow: 0 18px 40px -24px rgba(0,0,0,.6); }
+  .sess-haut { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .sess-titre { font-family: var(--titre); font-size: 20px; font-weight: 700; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; }
+  .sess-sous { font-size: 13px; color: rgba(233,236,234,.72); margin-top: 3px; }
+  .sess-compte { text-align: right; line-height: 1; }
+  .sess-compte b { font-family: var(--titre); font-size: 38px; font-weight: 800; letter-spacing: -.04em; }
+  .sess-compte span { display: block; font-size: 12px; font-weight: 600; color: rgba(233,236,234,.65); margin-top: 3px; }
+  .sess-barre { height: 7px; border-radius: 99px; background: rgba(255,255,255,.1); margin: 12px 0 6px; overflow: hidden; }
+  .sess-barre i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-l)); transition: width 1s var(--ease); }
+  .sess-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .sess-actions .btn { flex: 1; }
+  .btn.sess-go:not(.clair) { background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: var(--noir); box-shadow: 0 10px 24px -12px rgba(53,210,154,.9); }
+  .btn.sess-go:not(.clair):hover { background: linear-gradient(120deg, var(--accent), var(--accent-l)); filter: brightness(1.05); }
+  .sess .btn.clair { background: rgba(255,255,255,.08); color: #f2f4f2; border-color: rgba(255,255,255,.14); }
+  .sess-point { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 rgba(53,210,154,.7); animation: pouls-vert 1.8s infinite; flex: none; display: inline-block; }
+  @keyframes pouls-vert { 70% { box-shadow: 0 0 0 9px rgba(53,210,154,0); } 100% { box-shadow: 0 0 0 0 rgba(53,210,154,0); } }
+  .sess-bandeau { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 8px 8px 12px; border-radius: 14px; background: var(--noir); color: #f2f4f2; font-size: 13px; }
+  .sess-bandeau span { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sess-bandeau button { border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.07); color: #f2f4f2; border-radius: 10px; padding: 7px 11px; font-size: 13px; font-weight: 700; }
+  .sess-bandeau button:first-of-type { background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: var(--noir); border-color: transparent; }
+
+  /* --- Démo ouverte --- */
+  .vu-demo { color: var(--vert-texte); font-weight: 700; }
+  .vu-demo.chaud::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 6px; vertical-align: 1px; animation: pouls-vert 1.8s infinite; }
+  .lp-droite.chaud { color: var(--vert-texte); }
+
+  /* --- Objectif du mois --- */
+  .obj { position: relative; overflow: hidden; border-radius: 22px; padding: 18px; background: var(--noir); color: #f2f4f2;
+    background-image: radial-gradient(80% 110% at 100% 0%, rgba(53,210,154,.24), transparent 60%); box-shadow: 0 20px 44px -26px rgba(0,0,0,.65); }
+  .obj-haut { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .obj-lib { font-size: 13px; color: rgba(233,236,234,.72); font-weight: 600; }
+  .obj-val { font-family: var(--titre); font-size: 40px; font-weight: 800; letter-spacing: -.04em; line-height: 1.05; margin-top: 4px; }
+  .obj-val span { font-size: 18px; font-weight: 600; color: rgba(233,236,234,.6); letter-spacing: -.01em; }
+  .obj-pct { font-family: var(--titre); font-size: 22px; font-weight: 800; color: var(--accent-l); }
+  .obj-barre { display: flex; height: 10px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; margin: 14px 0 8px; }
+  .obj-barre i { display: block; height: 100%; transition: width 1.2s var(--ease); }
+  .obj-barre i.s { background: linear-gradient(90deg, var(--accent), var(--accent-l)); }
+  .obj-barre i.p { background: repeating-linear-gradient(135deg, rgba(127,240,196,.55) 0 6px, rgba(127,240,196,.22) 6px 12px); }
+  .obj-leg { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: rgba(233,236,234,.72); }
+  .obj-leg i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .obj-leg i.s { background: var(--accent); } .obj-leg i.p { background: rgba(127,240,196,.45); }
+  .obj-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .obj-grille div { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 11px 12px; }
+  .obj-grille b { display: block; font-family: var(--titre); font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
+  .obj-grille span { display: block; font-size: 12px; color: rgba(233,236,234,.72); margin-top: 2px; line-height: 1.35; }
+  .obj-note { font-size: 13px; color: rgba(233,236,234,.75); margin-top: 10px; }
+  .obj-calc { margin-top: 12px; font-size: 12.5px; color: rgba(233,236,234,.75); }
+  .obj-calc summary { cursor: pointer; font-weight: 700; color: var(--accent-l); }
+  .obj-calc ul { margin: 8px 0 0; padding-left: 18px; }
+  .obj-calc li { margin-bottom: 3px; }
+  @media (min-width: 1000px) { .obj-grille { grid-template-columns: repeat(4, 1fr); } }
   @media (prefers-reduced-motion: reduce) {
     main.entree > *, .voile, .feuille { animation: none; opacity: 1; transform: none; }
+    .sess-point, .vu-demo.chaud::before { animation: none; }
   }
 </style>
 </head>
@@ -609,6 +664,23 @@ function lienTel(t) { const i = telInternational(t); return i ? 'tel:+' + i : ''
 function lienSite(s) { s = String(s || '').trim(); if (!s || !/[.]/.test(s)) return ''; return /^https?:/i.test(s) ? s : 'https://' + s; }
 function lienInsta(s) { s = String(s || '').trim(); if (!s) return ''; if (/^https?:/i.test(s)) return s; return 'https://instagram.com/' + s.replace(/^@/, ''); }
 function trouver(id) { return S.data.prospects.find(p => p.id === id); }
+// Démo ouverte (20/10/2026) : { n: ouvertures, s: secondes, nbPages, premiere, derniere }.
+const SUIVI_DEPUIS = '2026-10-20'; // avant, les liens partaient sans ?p= : « pas ouverte » ne voudrait rien dire
+function vuesDe(p) { return p && S.data.vues ? S.data.vues[p.id] || null : null; }
+function dureeTxt(s) { s = Math.round(+s || 0); return s < 60 ? s + ' s' : Math.floor(s / 60) + ' min' + (s % 60 >= 5 ? ' ' + pad(s % 60) : ''); }
+function ilYa(s) {
+  const d = versDate(s); if (!d) return '';
+  const m = Math.round((Date.now() - d) / 6e4);
+  if (m < 2) return 'à l’instant'; if (m < 60) return 'il y a ' + m + ' min';
+  return m < 24 * 60 ? 'il y a ' + Math.round(m / 60) + ' h' : dateCourte(s);
+}
+// Chaud : a regardé la démo dans les 3 derniers jours, et personne ne l'a recontacté depuis.
+function chaud(p) {
+  const v = vuesDe(p); if (!v || !v.derniere || cle(p) === 'signe') return false;
+  const d = versDate(v.derniere);
+  return !!d && Date.now() - d < 72 * 36e5 && v.derniere > String(p.dernier || '');
+}
+function vuesTxt(v) { return 'ouverte ' + (v.n > 1 ? v.n + ' fois' : 'une fois') + ' · ' + dureeTxt(v.s) + (v.nbPages > 1 ? ' · ' + v.nbPages + ' pages' : '') + ' · ' + ilYa(v.derniere); }
 function historique(id) { return S.data.journal.filter(j => j.id === id).sort((a, b) => b.date.localeCompare(a.date)); }
 const RES_APPEL = () => Object.values(S.data.resultats).filter(r => r.appel).map(r => r.label);
 
@@ -655,6 +727,7 @@ function carteRiche(p, droite, entree) {
     entree ? ['Résultat', `<span class="lp-resultat" style="--statut:${statut(entree.statut).color}">${esc(entree.resultat)}</span>${entree.rappel ? ' → ' + esc(dateCourte(entree.rappel)) : ''}`] : null,
     entree && entree.note ? ['Dit', esc(entree.note)] : null,
     dernier ? ['Dernier', esc(dernier)] : null,
+    !entree && vuesDe(p) ? ['Démo', `<b class="vu-demo${chaud(p) ? ' chaud' : ''}">${esc(vuesTxt(vuesDe(p)))}</b>`] : null,
     !entree && notes ? ['Notes', esc(notes.length > 160 ? notes.slice(0, 160) + '…' : notes)] : null,
   ].filter(Boolean);
   return `<div class="lp" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
@@ -778,7 +851,8 @@ function vueJour() {
   const j = S.jour, auj = aujourdhui();
   if (j !== auj) return barreJour() + (j < auj ? vueJourPasse(j) : vueJourAVenir(j));
   const entrees = journalDe(j) || [];
-  return barreJour() + bilanJour(entrees.filter(e => e.date.startsWith(j) && entreeVisible(e))) + vueAujourdhui() + sectionAppelsDuJour(j, entrees);
+  const duJour = entrees.filter(e => e.date.startsWith(j) && entreeVisible(e));
+  return barreJour() + carteSession(duJour) + bilanJour(duJour) + vueAujourdhui() + sectionAppelsDuJour(j, entrees);
 }
 
 function vueJourPasse(j) {
@@ -807,7 +881,8 @@ function vueJourAVenir(j) {
       : '<div class="vide">Rien de prévu ce jour-là pour l’instant. Les rappels posés depuis la fiche d’un prospect apparaîtront ici.</div>');
 }
 
-function vueAujourdhui() {
+// Les listes de la journée, dans l'ordre où on les traite. La session d'appels lit les mêmes.
+function listesJour() {
   const now = maintenant(), jour = aujourdhui();
   // Son espace : ses prospects, plus les « À appeler » libres (après les siens).
   const actifs = S.data.prospects.filter(p => !['perdu', 'signe'].includes(cle(p)) && visible(p));
@@ -825,9 +900,21 @@ function vueAujourdhui() {
   const il2j = new Date(); il2j.setDate(il2j.getDate() - 2);
   const relances = actifs.filter(p => cle(p) === 'lien' && !p.rappel && String(p.dernier || '') < fmt(il2j))
     .sort((a, b) => String(a.dernier).localeCompare(String(b.dernier)));
+  const vusDemo = S.data.prospects.filter(p => visible(p) && chaud(p))
+    .sort((a, b) => vuesDe(b).derniere.localeCompare(vuesDe(a).derniere));
+  // Un prospect qui vient d'ouvrir sa démo n'apparaît plus aussi dans les listes froides.
+  const chauds = new Set(vusDemo.map(p => p.id)), froid = l => l.filter(p => !chauds.has(p.id));
+  return { now, jour, negoSansDate, retard, duJour, aDater, maintenantOk: froid(maintenantOk), plusTard: froid(plusTard), relances: froid(relances), vusDemo };
+}
+
+function vueAujourdhui() {
+  const { negoSansDate, retard, duJour, aDater, maintenantOk, plusTard, relances, vusDemo } = listesJour();
   const rdvOuRappel = p => (cle(p) === 'rdv' ? 'RDV ' : '') + dateCourte(p.rappel);
 
   let h = '';
+  // Ils ont ouvert la démo et personne ne les a rappelés depuis : c'est maintenant qu'ils l'ont en tête.
+  if (vusDemo.length) h += section('Ont ouvert la démo', vusDemo.length + ' à rappeler maintenant',
+    grille(vusDemo.map(p => carteRiche(p, `<div class="lp-droite chaud">${esc(ilYa(vuesDe(p).derniere))}<small>${esc(vuesDe(p).n + '× · ' + dureeTxt(vuesDe(p).s))}</small></div>`)).join('')));
   if (negoSansDate.length) h += section('Devis en cours sans prochain point', negoSansDate.length + ' à relancer',
     grille(negoSansDate.map(p => carteRiche(p, droite('à relancer', p.dernier ? 'vu ' + dateCourte(p.dernier) : '', true))).join('')));
   if (retard.length) h += section('En retard', retard.length + ' à replacer', grille(retard.map(p => carteRiche(p, droite(rdvOuRappel(p), 'en retard', true))).join('')));
@@ -844,6 +931,74 @@ function vueAujourdhui() {
   if (plusTard.length) h += section('Plus tard aujourd’hui', plusTard.length + ' prospects',
     grille(plusTard.slice(0, 15).map(p => carteRiche(p, droite('à ' + prochainCreneau(p).replace(':', ' h ')))).join('')));
   return h;
+}
+
+// ---------------------------------------------------------------------------
+// Session d'appels (20/10/2026, demandé par Nelson)
+// ---------------------------------------------------------------------------
+// « Lancer ma session » ouvre le prochain prospect ; dès que l'appel est noté, le suivant
+// s'ouvre tout seul. La file se recalcule à chaque fois, dans l'ordre de la Journée : une
+// démo qui vient d'être ouverte ou un rappel qui arrive à son heure passe devant.
+// Objectif du jour : la grille de Sam, un créneau toutes les 10 minutes (règle du 28/09/2026,
+// rappels compris). Nelson prospecte par WhatsApp sans grille fixe : pas d'objectif chiffré.
+const OBJECTIF_JOUR = { Sam: { 0: 16, 1: 12, 2: 33, 3: 33, 4: 12, 5: 33, 6: 12 } };
+const SESSION = lireSession();
+function lireSession() {
+  try { const x = JSON.parse(lire('session') || 'null'); if (x && x.jour === aujourdhui()) return x; } catch (e) {}
+  return { actif: false, jour: '', debut: '', vus: [], faits: 0, rdv: 0, liens: 0, courant: '' };
+}
+function garderSession() { stocker('session', JSON.stringify(SESSION)); }
+function objectifJour() { const o = OBJECTIF_JOUR[S.espace]; return o ? o[new Date().getDay()] || 0 : 0; }
+// Qui appeler ensuite : avec un numéro, pas encore proposé dans cette session, pas recontacté depuis son début.
+function fileSession(depuis) {
+  const L = listesJour(), dans15 = fmt(new Date(Date.now() + 15 * 6e4)), vus = new Set(SESSION.actif ? SESSION.vus : []);
+  const tous = [...L.vusDemo, ...L.retard, ...L.duJour.filter(p => p.rappel <= dans15), ...L.maintenantOk, ...L.relances, ...L.negoSansDate];
+  return tous.filter((p, i) => tous.indexOf(p) === i && !vus.has(p.id) && telInternational(p.telephone) && String(p.dernier || '') < depuis);
+}
+function carteSession(duJour) {
+  if (vueEquipe()) return '';
+  const n = duJour.filter(e => RES_APPEL().includes(e.resultat)).length, obj = objectifJour();
+  const reste = fileSession(SESSION.actif ? SESSION.debut : maintenant()).length;
+  const min = SESSION.actif ? Math.max(0, Math.round((Date.now() - versDate(SESSION.debut)) / 6e4)) : 0;
+  const sous = SESSION.actif ? `${SESSION.faits} noté${SESSION.faits > 1 ? 's' : ''} en ${min} min${SESSION.rdv ? ' · ' + SESSION.rdv + ' RDV' : ''}${SESSION.liens ? ' · ' + SESSION.liens + ' lien' + (SESSION.liens > 1 ? 's' : '') : ''}`
+    : reste ? reste + ' à appeler, dans l’ordre de la journée' : 'Personne à appeler pour l’instant';
+  return `<div class="sess ${SESSION.actif ? 'en-cours' : ''}">
+    <div class="sess-haut"><div><div class="sess-titre">${SESSION.actif ? '<i class="sess-point"></i>Session en cours' : 'Session d’appels'}</div><div class="sess-sous">${esc(sous)}</div></div>
+      <div class="sess-compte"><b>${n}</b><span>${obj ? '/ ' + obj : 'appels'}</span></div></div>
+    ${obj ? `<div class="sess-barre"><i style="width:${Math.min(100, Math.round(n / obj * 100))}%"></i></div>
+      <div class="sess-sous">${n >= obj ? 'Grille du jour remplie.' : (obj - n) + ' appel' + (obj - n > 1 ? 's' : '') + ' pour remplir la grille du jour'}</div>` : ''}
+    <div class="sess-actions">${SESSION.actif
+      ? `<button class="btn sess-go" data-action="sess-reprendre" ${reste || SESSION.courant ? '' : 'disabled'}>Reprendre${reste ? ' · ' + reste + ' restant' + (reste > 1 ? 's' : '') : ''}</button><button class="btn clair" data-action="sess-fin">Terminer</button>`
+      : `<button class="btn sess-go" data-action="sess-lancer" ${reste ? '' : 'disabled'}>Lancer ma session →</button>`}</div></div>`;
+}
+function lancerSession() {
+  Object.assign(SESSION, { actif: true, jour: aujourdhui(), debut: maintenant(), vus: [], faits: 0, rdv: 0, liens: 0, courant: '' });
+  garderSession(); suivantSession();
+}
+function suivantSession() {
+  const p = fileSession(SESSION.debut)[0];
+  if (!p) return finSession(true);
+  SESSION.courant = p.id; SESSION.vus.push(p.id); garderSession();
+  ouvrirFiche(p.id);
+  const f = document.getElementById('feuille'); if (f) f.scrollTop = 0;
+}
+function reprendreSession() {
+  const c = SESSION.courant && trouver(SESSION.courant);
+  if (c && String(c.dernier || '') < SESSION.debut) ouvrirFiche(c.id); else suivantSession();
+}
+function finSession(vide) {
+  const min = SESSION.debut ? Math.max(0, Math.round((Date.now() - versDate(SESSION.debut)) / 6e4)) : 0;
+  const bilan = SESSION.faits + ' appel' + (SESSION.faits > 1 ? 's' : '') + ' noté' + (SESSION.faits > 1 ? 's' : '') + ' en ' + min + ' min'
+    + (SESSION.rdv ? ', ' + SESSION.rdv + ' RDV' : '') + (SESSION.liens ? ', ' + SESSION.liens + ' lien' + (SESSION.liens > 1 ? 's' : '') : '');
+  SESSION.actif = false; SESSION.courant = ''; garderSession();
+  fermerFiche(); rendre();
+  toast((vide ? 'Plus personne à appeler pour l’instant : ' : 'Session terminée : ') + bilan + '.');
+}
+function bandeauSession(p) {
+  if (!SESSION.actif || SESSION.courant !== p.id) return '';
+  const reste = fileSession(SESSION.debut).length;
+  return `<div class="sess-bandeau"><span><i class="sess-point"></i><b>Session · n° ${SESSION.vus.length}</b>${reste ? ' · encore ' + reste : ' · le dernier'}</span>
+    <button data-action="sess-passer">Passer →</button><button data-action="sess-fin">Terminer</button></div>`;
 }
 
 function vueRecherche() {
@@ -1080,6 +1235,74 @@ async function ajouterAudience(form) {
   } catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
 }
 
+// ---------------------------------------------------------------------------
+// Objectif du mois (20/10/2026, demandé par Nelson)
+// ---------------------------------------------------------------------------
+// Ce qui compte n'est pas le nombre d'appels mais l'argent signé. Les montants viennent
+// de Factu (devis et factures Supabase) ; sans connexion à la facturation, seuls les RDV
+// s'affichent. Tout ce qui est estimé est dit comme tel, avec l'hypothèse utilisée.
+const OBJECTIF_MOIS = 15000; // CA HT visé par mois (context/CONTEXT.md)
+const eur0 = n => Math.round(Number(n) || 0).toLocaleString('fr-FR') + ' €';
+function vueObjectif() {
+  const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
+  const now = new Date(), mois = aujourdhui().slice(0, 7), nomMois = MOIS[now.getMonth()];
+  const finMois = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const joursRestants = finMois.getDate() - now.getDate() + 1;
+  const J = S.data.journal, estAppel = e => RES_APPEL().includes(e.resultat);
+  const rdvMois = J.filter(e => e.date.startsWith(mois) && e.resultat === 'RDV obtenu').length;
+  const il30 = fmt(new Date(Date.now() - 30 * 864e5)).slice(0, 10);
+  const a30 = J.filter(e => e.date.slice(0, 10) >= il30 && estAppel(e)).length, r30 = J.filter(e => e.date.slice(0, 10) >= il30 && e.resultat === 'RDV obtenu').length;
+
+  if (!F || !F.session || !F.pret) {
+    return section('Objectif du mois', nomMois, `<div class="obj">
+      <div class="obj-haut"><div class="obj-lib">RDV obtenus en ${nomMois}</div><div class="obj-val">${rdvMois}</div></div>
+      <div class="obj-note">Connecte la facturation (onglet Factu, une fois sur ce téléphone) pour suivre l’objectif de ${eur0(OBJECTIF_MOIS)} HT en euros signés.</div></div>`);
+  }
+  // Date de signature d'un devis accepté : sa première facture (l'acompte), sinon la date du devis.
+  const dateSigne = d => F.factures.filter(f => f.devis_id === d.id).map(f => String(f.date_emission || '')).filter(Boolean).sort()[0] || String(d.date_emission || '');
+  const acceptes = F.devis.filter(d => d.statut === 'accepté'), refuses = F.devis.filter(d => d.statut === 'refusé');
+  const signesMois = acceptes.filter(d => dateSigne(d).startsWith(mois));
+  const signe = signesMois.reduce((t, d) => t + (Number(d.total_ht) || 0), 0);
+  const attente = F.devis.filter(d => d.statut === 'envoyé' && (!d.date_validite || String(d.date_validite) >= aujourdhui()));
+  const tranches = acceptes.length + refuses.length;
+  const tauxOui = tranches >= 3 ? acceptes.length / tranches : 0.3;
+  const enJeu = attente.reduce((t, d) => t + (Number(d.total_ht) || 0), 0), probable = enJeu * tauxOui;
+  const base = acceptes.length ? acceptes : F.devis.filter(d => d.statut !== 'brouillon');
+  const panier = base.length ? base.reduce((t, d) => t + (Number(d.total_ht) || 0), 0) / base.length : 2000;
+  // RDV → signature, sur 120 jours (le journal chargé) : estimation tant qu'il y a peu de recul.
+  const il120 = fmt(new Date(Date.now() - 120 * 864e5)).slice(0, 10);
+  const rdv120 = J.filter(e => e.date.slice(0, 10) >= il120 && e.resultat === 'RDV obtenu').length;
+  const signes120 = acceptes.filter(d => dateSigne(d) >= il120).length;
+  const tauxRdv = rdv120 >= 5 && signes120 ? Math.min(1, signes120 / rdv120) : 0.33;
+  const reste = Math.max(0, OBJECTIF_MOIS - signe);
+  const manque = Math.max(0, reste - probable);
+  const signatures = manque ? Math.ceil(manque / panier) : 0;
+  const rdvFaut = signatures ? Math.ceil(signatures / tauxRdv) : 0;
+  const appelsParRdv = r30 ? a30 / r30 : 0;
+  const appelsFaut = appelsParRdv ? Math.ceil(rdvFaut * appelsParRdv) : 0;
+  const pSigne = Math.min(100, signe / OBJECTIF_MOIS * 100), pProb = Math.min(100 - pSigne, probable / OBJECTIF_MOIS * 100);
+  const hyp = [
+    tranches >= 3 ? `taux de oui aux devis ${Math.round(tauxOui * 100)} % (${acceptes.length} sur ${tranches} tranchés)` : 'taux de oui aux devis supposé à 30 % (moins de 3 devis tranchés)',
+    acceptes.length ? `panier moyen ${eur0(panier)} HT (${acceptes.length} devis acceptés)` : base.length ? `panier moyen ${eur0(panier)} HT, calculé sur les devis envoyés (aucun accepté encore)` : 'panier moyen supposé à 2 000 € HT (aucun devis)',
+    rdv120 >= 5 && signes120 ? `${Math.round(tauxRdv * 100)} % des RDV signent (${signes120} sur ${rdv120} en 120 jours)` : 'un RDV sur trois signe (supposé, trop peu de recul)',
+    appelsParRdv ? `${Math.round(appelsParRdv)} appels pour un RDV (30 derniers jours)` : 'aucun RDV sur 30 jours : appels nécessaires inconnus',
+  ];
+  return section('Objectif du mois', nomMois + ' · ' + joursRestants + ' j restants', `<div class="obj">
+    <div class="obj-haut"><div><div class="obj-lib">Signé en ${nomMois}, HT</div><div class="obj-val">${eur0(signe)}<span> / ${eur0(OBJECTIF_MOIS)}</span></div></div>
+      <div class="obj-pct">${Math.round(pSigne)} %</div></div>
+    <div class="obj-barre"><i class="s" style="width:${pSigne}%"></i><i class="p" style="width:${pProb}%"></i></div>
+    <div class="obj-leg"><span><i class="s"></i>signé ${signesMois.length ? '(' + signesMois.length + ' devis)' : ''}</span><span><i class="p"></i>probable sur les devis en attente</span></div>
+    <div class="obj-grille">
+      <div><b>${reste ? eur0(reste) : 'Atteint'}</b><span>${reste ? 'reste à signer' : 'objectif du mois'}</span></div>
+      <div><b>${attente.length}</b><span>devis en attente · ${eur0(enJeu)}, ≈ ${eur0(probable)} probables</span></div>
+      <div><b>${signatures || '0'}</b><span>signature${signatures > 1 ? 's' : ''} encore nécessaire${signatures > 1 ? 's' : ''}</span></div>
+      <div><b>${rdvFaut ? '≈ ' + rdvFaut : '0'}</b><span>RDV à obtenir${appelsFaut ? ' · ≈ ' + Math.ceil(appelsFaut / joursRestants) + ' appels par jour d’ici le ' + finMois.getDate() + ' ' + nomMois : ''}</span></div>
+    </div>
+    <details class="obj-calc"><summary>Comment c’est calculé</summary><ul>${hyp.map(h => '<li>' + esc(h) + '</li>').join('')}
+      <li>Signé : devis acceptés, datés de leur première facture (l’acompte), sinon de leur date d’émission. Montants HT, maintenance de la première année comprise.</li></ul></details>
+  </div>`);
+}
+
 function vueStats() {
   const appels = RES_APPEL(), J = S.data.journal.filter(entreeVisible);
   const jour = aujourdhui();
@@ -1097,7 +1320,7 @@ function vueStats() {
   for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = fmt(d).slice(0, 10); jours.push({ k, d, n: J.filter(e => e.date.startsWith(k) && estAppel(e)).length }); }
   const max = Math.max(1, ...jours.map(j => j.n));
 
-  return section('Aujourd’hui', '', `<div class="grille">
+  return vueObjectif() + section('Aujourd’hui', '', `<div class="grille">
       <div class="kpi"><div class="v">${compte(jour, estAppel)}</div><div class="l">appels</div></div>
       <div class="kpi"><div class="v">${compte(jour, rdv)}</div><div class="l">RDV obtenus</div></div></div>`)
     + section('Cette semaine', 'depuis lundi', `<div class="grille">
@@ -1135,6 +1358,7 @@ function fermerFiche() {
   S.ouvert = null;
   document.getElementById('fiche').classList.add('cache');
   document.body.style.overflow = '';
+  if (SESSION.actif && S.data) rendre(); // la carte de session suit (restants, appels notés)
 }
 
 function rendreFiche(edition) {
@@ -1149,7 +1373,7 @@ function rendreFiche(edition) {
 
   const f = document.getElementById('fiche');
   f.innerHTML = `<div class="feuille" id="feuille">
-    <div class="feuille-tete"><div class="poignee"></div>
+    <div class="feuille-tete"><div class="poignee"></div>${bandeauSession(p)}
       <div class="ligne1"><div><h1>${esc(p.entreprise)}</h1>
         <div class="sous"><span class="pastille" style="--statut:${st.color}">${esc(st.label)}</span>
         ${p.rappel ? ' · ' + esc(cle(p) === 'rdv' ? 'RDV ' : 'rappel ') + esc(dateCourte(p.rappel)) : ''}</div>
@@ -1181,6 +1405,8 @@ function rendreFiche(edition) {
       <dt>Instagram</dt><dd>${insta ? `<a href="${esc(insta)}" target="_blank">${esc(p.instagram)}</a>` : '—'}</dd>
       <dt>Constat</dt><dd>${esc(p.mauvais || '—')}</dd>
       <dt>Démo à montrer</dt><dd>${m && m.lien ? `<a href="${esc(m.lien)}" target="_blank">${esc(m.metier)}</a>` : '—'}</dd>
+      <dt>Démo envoyée</dt><dd>${vuesDe(p) ? `<b class="vu-demo${chaud(p) ? ' chaud' : ''}">${esc(vuesTxt(vuesDe(p)))}</b>${vuesDe(p).premiere !== vuesDe(p).derniere ? '<br><small class="sous">première ouverture ' + esc(dateCourte(vuesDe(p).premiere)) + '</small>' : ''}`
+        : cle(p) === 'lien' && String(p.dernier || '') >= SUIVI_DEPUIS ? 'pas encore ouverte' : '—'}</dd>
       <dt>N° RCS</dt><dd>${esc(p.rcs || '—')}</dd>
       <dt>Contacts</dt><dd>${esc(p.nb || '0')}${p.dernier ? ' · dernier ' + esc(dateCourte(p.dernier)) : ''}</dd>
       <dt>Notes</dt><dd style="white-space:pre-wrap">${esc(p.notes || '—')}</dd>
@@ -1358,10 +1584,19 @@ function remplir(txt, p, v) {
     .replace(/{constat}/g, p.mauvais || '[constat à écrire]')
     .replace(/{metier}/g, m ? m.metier.toLowerCase() : 'votre métier')
     .replace(/{lien}/g, lien)
+    .replace(LIEN_VITRINE, u => lienSuivi(u, p))
     .replace(/{rdv}/g, p.rappel ? dateLongue(p.rappel) : '[date du RDV]')
     .replace(/{envoi}/g, dateEnvoi(p.dernier))
     .replace(/\bSamir\b/g, signataire().prenom)
     .replace(/{signature}/g, signataire().texte);
+}
+// Une démo envoyée porte l'ID du prospect (?p=P0412) : la vitrine prévient le CRM quand il
+// l'ouvre (sites-web/ns-development/suivi.js). Un lien vers un autre site ne change pas.
+const LIEN_VITRINE = /https?:\/\/(nsdevelopment26\.github\.io\/nsd-vitrine|(www\.)?nsdevelopment\.lu)[^\s<>"']*[^\s<>"'.,;:!?)]/g;
+function lienSuivi(lien, p) {
+  if (!lien || !p || !p.id || /[?&]p=/.test(lien)) return lien;
+  const [base, ancre] = lien.split('#');
+  return base + (base.includes('?') ? '&' : '?') + 'p=' + encodeURIComponent(p.id) + (ancre ? '#' + ancre : '');
 }
 // {envoi} : le jour du dernier message, « le 29 septembre », pour la relance.
 function dateEnvoi(s) {
@@ -1499,8 +1734,11 @@ async function enregistrer(btn, message) {
     const perdu = p._perdu, agenda = p._agenda || '';
     majLocale(p, { resultat: def.label, note: perdu ? [note, '3e appel sans réponse : passé en Perdu'].filter(Boolean).join(' · ') : note, rappel: perdu ? '' : rappel });
     toast(perdu ? '3e appel sans réponse : passé en Perdu.' : '« ' + def.label + ' » enregistré.' + (agenda ? ' ' + agenda + '.' : ''), /NON/.test(agenda));
-    rendre();
-    fermerFiche();
+    // En session, le prospect suivant s'ouvre tout seul.
+    if (SESSION.actif && pr && SESSION.courant === pr.id) {
+      SESSION.faits++; if (res === 'rdv') SESSION.rdv++; if (res === 'lien') SESSION.liens++; garderSession();
+      rendre(); setTimeout(suivantSession, 350);
+    } else { rendre(); fermerFiche(); }
   } catch (e) { btn.disabled = false; btn.textContent = 'Réessayer'; toast(e.message || String(e), true); }
 }
 
@@ -1600,6 +1838,10 @@ document.addEventListener('click', e => {
     return;
   }
   if (act === 'fermer') fermerFiche();
+  else if (act === 'sess-lancer') lancerSession();
+  else if (act === 'sess-reprendre') reprendreSession();
+  else if (act === 'sess-passer') suivantSession();
+  else if (act === 'sess-fin') finSession(false);
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
   else if (act === 'jour') { S.jour = decalerJour(S.jour || aujourdhui(), Number(a.dataset.n)); rendre(); }
   else if (act === 'jour-auj') { S.jour = aujourdhui(); rendre(); }
@@ -1663,6 +1905,7 @@ function charger() {
 function appliquerDonnees() {
   S.data.prospects.forEach(p => delete p._ligne);
   ['reels', 'audience', 'partages'].forEach(k => { S.data[k] = S.data[k] || []; });
+  S.data.vues = S.data.vues || {};
   S.data.partage = S.data.partage || { lotParJour: 25, joursEntreDeux: 14 };
   S.moi = S.data.moi; S.par = S.moi.nom;
   // On arrive toujours sur son propre espace, sauf si on en a choisi un autre.
@@ -1684,6 +1927,23 @@ async function demarrer() {
 // Recharge les données quand Sam revient sur l'appli (après un appel par exemple).
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.pin && S.data && !S.ouvert) charger().catch(() => {}); });
 setInterval(() => { if (S.data && !S.ouvert && !document.hidden && S.vue !== 'ajouter') rendre(); }, 60000);
+
+// Démo ouverte : toutes les 2 minutes, les vues seules (pas tout le Sheets), et une alerte
+// quand un de ses prospects vient d'ouvrir sa démo. Serveur pas encore à jour : on s'arrête.
+let vuesActives = true;
+async function verifierVues() {
+  if (!vuesActives || !S.data || !S.pin || document.hidden) return;
+  try {
+    const v = await appel('api_vues', S.pin) || {};
+    const avant = S.data.vues || {};
+    const neufs = S.data.prospects.filter(p => visible(p) && v[p.id] && (!avant[p.id] || v[p.id].derniere > avant[p.id].derniere));
+    S.data.vues = v;
+    const chauds = neufs.filter(chaud);
+    if (chauds.length) toast(chauds.length === 1 ? chauds[0].entreprise + ' vient d’ouvrir la démo.' : chauds.length + ' prospects viennent d’ouvrir leur démo.');
+    if (neufs.length && !S.ouvert && S.vue !== 'ajouter') rendre();
+  } catch (e) { if (/inconnue/i.test(e.message || '')) vuesActives = false; }
+}
+setInterval(verifierVues, 120000);
 
 // Ouverte depuis script.google.com (et non la version installable) : on guide vers la bonne adresse.
 if (!window.CRM_API) document.getElementById('bandeau-installer').classList.remove('cache');
@@ -2371,7 +2631,7 @@ const Factu = (() => {
     if (err) F.erreur = err.message;
     F.clients = c.data || []; F.devis = d.data || []; F.factures = f.data || [];
     F.pret = true;
-    if (S.vue === 'factu') rendre();
+    if (S.vue === 'factu' || S.vue === 'stats') rendre();
   }
 
   async function connexion(form) {
@@ -3070,7 +3330,8 @@ const Factu = (() => {
     if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
   });
 
-  return { init, vue, nouveauDevis, recharger: () => F.session && charger() };
+  // donnees : lu par l'objectif du mois (Stats), en lecture seule.
+  return { init, vue, nouveauDevis, recharger: () => F.session && charger(), donnees: () => F };
 })();
 </script>
 

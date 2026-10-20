@@ -1,0 +1,279 @@
+- generic [active] [ref=e1]:
+  - link "Pour avoir le logo NS sur l’écran d’accueil, ouvre l’appli ici puis ajoute-la depuis Safari →" [ref=e2] [cursor=pointer]:
+    - /url: https://nsdevelopment26.github.io/nsd-vitrine/crm/
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - button "Changer de personne" [ref=e7]: Nelson · changer
+        - generic [ref=e8]:
+          - button "Sam" [ref=e9]
+          - button "Nelson (moi)" [ref=e10]
+          - button "Équipe" [ref=e11]
+        - searchbox "Chercher un nom, un numéro, une commune…" [ref=e12]
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - button "Jour précédent" [ref=e15]: ‹
+        - generic [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: mardi 20 octobre
+          - generic [ref=e18]: Aujourd’hui · changer de date
+          - textbox "Choisir une date" [ref=e19]: 2026-10-20
+        - button "Jour suivant" [ref=e20]: ›
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]:
+            - generic [ref=e24]: Session d’appels
+            - generic [ref=e25]: 4 à appeler, dans l’ordre de la journée
+          - generic [ref=e26]:
+            - text: "3"
+            - generic [ref=e27]: appels
+        - button "Lancer ma session →" [ref=e29]
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: "3"
+          - text: appels
+        - generic [ref=e33]:
+          - generic [ref=e34]: "2"
+          - text: décrochés
+        - generic [ref=e35]:
+          - generic [ref=e36]: "0"
+          - text: liens
+        - generic [ref=e37]:
+          - generic [ref=e38]: "0"
+          - text: RDV
+      - heading "Ont ouvert la démo 1 à rappeler maintenant" [level=2] [ref=e39]:
+        - text: Ont ouvert la démo
+        - generic [ref=e40]: 1 à rappeler maintenant
+      - generic [ref=e42] [cursor=pointer]:
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]: Garage Weber
+            - generic [ref=e46]:
+              - text: Garage auto · Mersch ·
+              - generic [ref=e47]: À appeler
+          - generic [ref=e48]:
+            - text: il y a 10 min
+            - generic [ref=e49]: 2× · 2 min 44
+        - generic [ref=e50]:
+          - term [ref=e51]: Gérant
+          - definition [ref=e52]: Tom Weber
+          - term [ref=e53]: Tél.
+          - definition [ref=e54]:
+            - link "621 102 202" [ref=e55]:
+              - /url: tel:+352621102202
+          - term [ref=e56]: Constat
+          - definition [ref=e57]: Site lent, pas adapté au mobile · www.exemple2.lu
+          - term [ref=e58]: Dernier
+          - definition [ref=e59]: auj. 11 h14 · Rappel convenu
+          - term [ref=e60]: Démo
+          - definition [ref=e61]: ouverte 2 fois · 2 min 44 · 3 pages · il y a 10 min
+        - generic [ref=e62]:
+          - link "☎︎ Appeler" [ref=e63]:
+            - /url: tel:+352621102202
+          - button "WhatsApp" [ref=e64]
+          - button "Noter l’appel" [ref=e65]
+      - heading "En retard 1 à replacer" [level=2] [ref=e66]:
+        - text: En retard
+        - generic [ref=e67]: 1 à replacer
+      - generic [ref=e69] [cursor=pointer]:
+        - generic [ref=e70]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: Salon Lumière
+            - generic [ref=e73]:
+              - text: Coiffure · Esch-sur-Alzette ·
+              - generic [ref=e74]: Rappel prévu
+          - generic [ref=e75]:
+            - text: auj. 9 h
+            - generic [ref=e76]: en retard
+        - generic [ref=e77]:
+          - term [ref=e78]: Gérant
+          - definition [ref=e79]: Marie Kayser
+          - term [ref=e80]: Tél.
+          - definition [ref=e81]:
+            - link "27 10 45 60" [ref=e82]:
+              - /url: tel:+35227104560
+          - term [ref=e83]: Constat
+          - definition [ref=e84]: Site lent, pas adapté au mobile · www.exemple0.lu
+          - term [ref=e85]: Dernier
+          - definition [ref=e86]: auj. 9 h · Pas de réponse
+        - generic [ref=e87]:
+          - link "☎︎ Appeler" [ref=e88]:
+            - /url: tel:+35227104560
+          - button "WhatsApp" [ref=e89]
+          - button "Noter l’appel" [ref=e90]
+      - heading "Rappels et RDV du jour 1 prévus" [level=2] [ref=e91]:
+        - text: Rappels et RDV du jour
+        - generic [ref=e92]: 1 prévus
+      - generic [ref=e94] [cursor=pointer]:
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: Boulangerie Hoffmann
+            - generic [ref=e98]:
+              - text: Boulangerie · Dudelange ·
+              - generic [ref=e99]: En cours
+          - generic [ref=e100]: 14 h
+        - generic [ref=e101]:
+          - term [ref=e102]: Gérant
+          - definition [ref=e103]: Luc Hoffmann
+          - term [ref=e104]: Tél.
+          - definition [ref=e105]:
+            - link "621 104 204" [ref=e106]:
+              - /url: tel:+352621104204
+          - term [ref=e107]: Constat
+          - definition [ref=e108]: Site lent, pas adapté au mobile · www.exemple4.lu
+          - term [ref=e109]: Dernier
+          - definition [ref=e110]: auj. 13 h28 · Pas intéressé
+        - generic [ref=e111]:
+          - link "☎︎ Appeler" [ref=e112]:
+            - /url: tel:+352621104204
+          - button "WhatsApp" [ref=e113]
+          - button "Noter l’appel" [ref=e114]
+      - heading "À appeler maintenant 2 dans leur créneau" [level=2] [ref=e115]:
+        - text: À appeler maintenant
+        - generic [ref=e116]: 2 dans leur créneau
+      - generic [ref=e117]:
+        - generic [ref=e118] [cursor=pointer]:
+          - generic [ref=e120]:
+            - generic [ref=e121]: Institut Belle Peau
+            - generic [ref=e122]:
+              - text: Esthétique · Strassen ·
+              - generic [ref=e123]: À appeler
+          - generic [ref=e124]:
+            - term [ref=e125]: Gérant
+            - definition [ref=e126]: Sophie Reuter
+            - term [ref=e127]: Tél.
+            - definition [ref=e128]:
+              - link "27 16 45 66" [ref=e129]:
+                - /url: tel:+35227164566
+            - term [ref=e130]: Constat
+            - definition [ref=e131]: Site lent, pas adapté au mobile · www.exemple6.lu
+            - term [ref=e132]: Dernier
+            - definition [ref=e133]: lun. 19/10 9 h42 · Lien envoyé
+          - generic [ref=e134]:
+            - link "☎︎ Appeler" [ref=e135]:
+              - /url: tel:+35227164566
+            - button "WhatsApp" [ref=e136]
+            - button "Noter l’appel" [ref=e137]
+        - generic [ref=e138] [cursor=pointer]:
+          - generic [ref=e140]:
+            - generic [ref=e141]: Atelier Couture Anna
+            - generic [ref=e142]:
+              - text: Retouche · Luxembourg ·
+              - generic [ref=e143]: À appeler
+          - generic [ref=e144]:
+            - term [ref=e145]: Gérant
+            - definition [ref=e146]: Anna Costa
+            - term [ref=e147]: Tél.
+            - definition [ref=e148]:
+              - link "621 110 210" [ref=e149]:
+                - /url: tel:+352621110210
+            - term [ref=e150]: Constat
+            - definition [ref=e151]: Site lent, pas adapté au mobile · www.exemple10.lu
+            - term [ref=e152]: Dernier
+            - definition [ref=e153]: lun. 19/10 13 h10 · Pas de réponse
+            - term [ref=e154]: Démo
+            - definition [ref=e155]: ouverte une fois · 20 s · sam. 17/10 19 h03
+          - generic [ref=e156]:
+            - link "☎︎ Appeler" [ref=e157]:
+              - /url: tel:+352621110210
+            - button "WhatsApp" [ref=e158]
+            - button "Noter l’appel" [ref=e159]
+      - heading "Appels passés 3 contacts" [level=2] [ref=e160]:
+        - text: Appels passés
+        - generic [ref=e161]: 3 contacts
+      - generic [ref=e162]:
+        - generic [ref=e163] [cursor=pointer]:
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]: Salon Lumière
+              - generic [ref=e167]:
+                - text: Coiffure · Esch-sur-Alzette ·
+                - generic [ref=e168]: Rappel prévu
+            - generic [ref=e169]: 9 h
+          - generic [ref=e170]:
+            - term [ref=e171]: Gérant
+            - definition [ref=e172]: Marie Kayser
+            - term [ref=e173]: Tél.
+            - definition [ref=e174]:
+              - link "27 10 45 60" [ref=e175]:
+                - /url: tel:+35227104560
+            - term [ref=e176]: Constat
+            - definition [ref=e177]: Site lent, pas adapté au mobile · www.exemple0.lu
+            - term [ref=e178]: Résultat
+            - definition [ref=e179]:
+              - generic [ref=e180]: Pas de réponse
+          - generic [ref=e181]:
+            - link "☎︎ Appeler" [ref=e182]:
+              - /url: tel:+35227104560
+            - button "WhatsApp" [ref=e183]
+            - button "Noter l’appel" [ref=e184]
+        - generic [ref=e185] [cursor=pointer]:
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - generic [ref=e188]: Garage Weber
+              - generic [ref=e189]:
+                - text: Garage auto · Mersch ·
+                - generic [ref=e190]: À appeler
+            - generic [ref=e191]: 11 h14
+          - generic [ref=e192]:
+            - term [ref=e193]: Gérant
+            - definition [ref=e194]: Tom Weber
+            - term [ref=e195]: Tél.
+            - definition [ref=e196]:
+              - link "621 102 202" [ref=e197]:
+                - /url: tel:+352621102202
+            - term [ref=e198]: Constat
+            - definition [ref=e199]: Site lent, pas adapté au mobile · www.exemple2.lu
+            - term [ref=e200]: Résultat
+            - definition [ref=e201]:
+              - generic [ref=e202]: Rappel convenu
+          - generic [ref=e203]:
+            - link "☎︎ Appeler" [ref=e204]:
+              - /url: tel:+352621102202
+            - button "WhatsApp" [ref=e205]
+            - button "Noter l’appel" [ref=e206]
+        - generic [ref=e207] [cursor=pointer]:
+          - generic [ref=e208]:
+            - generic [ref=e209]:
+              - generic [ref=e210]: Boulangerie Hoffmann
+              - generic [ref=e211]:
+                - text: Boulangerie · Dudelange ·
+                - generic [ref=e212]: En cours
+            - generic [ref=e213]: 13 h28
+          - generic [ref=e214]:
+            - term [ref=e215]: Gérant
+            - definition [ref=e216]: Luc Hoffmann
+            - term [ref=e217]: Tél.
+            - definition [ref=e218]:
+              - link "621 104 204" [ref=e219]:
+                - /url: tel:+352621104204
+            - term [ref=e220]: Constat
+            - definition [ref=e221]: Site lent, pas adapté au mobile · www.exemple4.lu
+            - term [ref=e222]: Résultat
+            - definition [ref=e223]:
+              - generic [ref=e224]: Pas intéressé
+          - generic [ref=e225]:
+            - link "☎︎ Appeler" [ref=e226]:
+              - /url: tel:+352621104204
+            - button "WhatsApp" [ref=e227]
+            - button "Noter l’appel" [ref=e228]
+    - navigation [ref=e229]:
+      - text: CRM NSD
+      - button "☎︎ Journée" [ref=e230]:
+        - generic [ref=e231]: ☎︎
+        - text: Journée
+      - button "▦ Pipeline" [ref=e232]:
+        - generic [ref=e233]: ▦
+        - text: Pipeline
+      - button "＋ Ajouter" [ref=e234]:
+        - generic [ref=e235]: ＋
+        - text: Ajouter
+      - button "€ Factu" [ref=e236]:
+        - generic [ref=e237]: €
+        - text: Factu
+      - button "▶︎ Reels" [ref=e238]:
+        - generic [ref=e239]: ▶︎
+        - text: Reels
+      - button "↗︎ Stats" [ref=e240]:
+        - generic [ref=e241]: ↗︎
+        - text: Stats
+      - text: Prospection · Sam & Nelson

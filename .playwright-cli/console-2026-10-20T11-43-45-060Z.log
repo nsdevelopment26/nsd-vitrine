@@ -1,0 +1,8 @@
+[     400ms] Uncaught (in promise) Error: supabaseUrl is required.
+    at Un (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js:6:34172)
+    at Qi (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js:10:47265)
+    at $i (https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js:10:50858)
+    at init (http://127.0.0.1:8762/index.html:2623:27)
+    at appliquerDonnees (http://127.0.0.1:8762/index.html:1926:8)
+    at <anonymous> (http://127.0.0.1:8762/index.html:1913:16)
+[     419ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8762/favicon.ico:0

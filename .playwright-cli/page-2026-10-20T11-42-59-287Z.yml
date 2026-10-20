@@ -1,0 +1,394 @@
+- generic [ref=e2]:
+  - link "Aller au contenu" [ref=e3] [cursor=pointer]:
+    - /url: "#carte"
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - link "Maison Vaurenne" [ref=e6] [cursor=pointer]:
+        - /url: "#haut"
+      - navigation [ref=e7]:
+        - link "La maison" [ref=e8] [cursor=pointer]:
+          - /url: "#maison"
+        - link "Les menus" [ref=e9] [cursor=pointer]:
+          - /url: "#menus"
+        - link "La carte" [ref=e10] [cursor=pointer]:
+          - /url: "#carte"
+        - link "La cave" [ref=e11] [cursor=pointer]:
+          - /url: "#cave"
+        - link "Accès" [ref=e12] [cursor=pointer]:
+          - /url: "#acces"
+        - link "Réserver" [ref=e13] [cursor=pointer]:
+          - /url: "#reservation"
+  - main [ref=e14]:
+    - region [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - paragraph [ref=e20]: Table française contemporaine · Luxembourg
+          - heading "Maison Vaurenne" [level=1] [ref=e21]:
+            - generic [ref=e22]: Maison
+            - generic [ref=e24]: Vaurenne
+          - paragraph [ref=e26]: Une cuisine de saison écrite chaque matin, cuite au feu de bois, servie à trente-quatre couverts. Rien de plus que le produit, la cuisson juste et le temps qu’il faut.
+          - generic [ref=e27]:
+            - link "Réserver une table" [ref=e28] [cursor=pointer]:
+              - /url: "#reservation"
+            - link "Voir la carte" [ref=e29] [cursor=pointer]:
+              - /url: "#carte"
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - term [ref=e32]: Déjeuner
+              - definition [ref=e33]: Mardi — vendredi
+            - generic [ref=e34]:
+              - term [ref=e35]: Dîner
+              - definition [ref=e36]: Mardi — samedi
+            - generic [ref=e37]:
+              - term [ref=e38]: Téléphone
+              - definition [ref=e39]:
+                - link "(+352) 00 00 00 00" [ref=e40] [cursor=pointer]:
+                  - /url: tel:+35200000000
+        - generic [ref=e42]:
+          - img "Saint-Jacques snackées, bouillon safrané, servies à la Maison Vaurenne" [ref=e44]
+          - generic [ref=e45]:
+            - paragraph [ref=e46]: I
+            - paragraph [ref=e47]: Saint-Jacques de la baie, bouillon safrané monté au beurre.
+      - generic [ref=e48]:
+        - generic [ref=e49]: 00, rue des Capucins — L-0000 Luxembourg
+        - generic [ref=e50]: Défiler
+    - generic [ref=e52]:
+      - generic [ref=e53]:
+        - paragraph [ref=e54]: Services
+        - paragraph [ref=e55]: Déjeuner & dîner
+      - generic [ref=e56]:
+        - paragraph [ref=e57]: Fermeture
+        - paragraph [ref=e58]: Dimanche & lundi
+      - generic [ref=e59]:
+        - paragraph [ref=e60]: Adresse
+        - paragraph [ref=e61]: 00, rue des Capucins
+      - generic [ref=e62]:
+        - paragraph [ref=e63]: Réservation
+        - link "(+352) 00 00 00 00" [ref=e64] [cursor=pointer]:
+          - /url: tel:+35200000000
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]: I
+          - paragraph [ref=e72]: La maison
+        - heading "Une table de trente-quatre couverts." [level=2] [ref=e73]:
+          - generic [ref=e74]: Une table
+          - generic [ref=e76]: de trente-quatre
+          - generic [ref=e78]: couverts.
+        - generic [ref=e80]:
+          - paragraph [ref=e81]: "La salle tient dans une ancienne maison de ville : des murs de pierre, une vingtaine de mètres de long, et une cuisine ouverte au fond. On y sert deux services, jamais plus, pour que chaque assiette parte au bon moment."
+          - paragraph [ref=e82]: "La carte change toutes les trois semaines. Elle suit les producteurs, pas l’inverse : le maraîcher est à onze kilomètres, l’éleveur à trente-huit, et le poisson arrive le mardi et le vendredi."
+          - paragraph [ref=e83]: Menu végétarien complet sur demande, à préciser à la réservation.
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - definition [ref=e86]:
+              - generic [ref=e87]: "0"
+            - term [ref=e88]: couverts par service
+          - generic [ref=e89]:
+            - definition [ref=e90]:
+              - generic [ref=e91]: "0"
+            - term [ref=e92]: temps au menu dégustation
+          - generic [ref=e93]:
+            - definition [ref=e94]:
+              - generic [ref=e95]: "0"
+              - generic [ref=e96]: km
+            - term [ref=e97]: rayon des producteurs
+          - generic [ref=e98]:
+            - definition [ref=e99]:
+              - generic [ref=e100]: "0"
+            - term [ref=e101]: références à la cave
+      - generic [ref=e102]:
+        - figure "Une table, avant le service du soir" [ref=e103]:
+          - img "Une table dressée dans la salle de la Maison Vaurenne" [ref=e105]
+        - generic [ref=e108]:
+          - figure [ref=e109]:
+            - img "Le chef dresse une assiette au passe" [ref=e111]
+          - figure [ref=e112]:
+            - img "Herbes fraîches triées à la main avant le service" [ref=e114]
+    - generic [ref=e116]:
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - generic [ref=e120]: II
+            - paragraph [ref=e122]: Les menus
+          - heading "Trois façons de passer à table." [level=2] [ref=e123]:
+            - generic [ref=e124]: Trois façons
+            - generic [ref=e126]: de passer à table.
+        - paragraph [ref=e129]: "Les menus sont servis à l’ensemble de la table. Les allergies et régimes se précisent à la réservation : la cuisine adapte, elle ne retire pas."
+      - generic [ref=e130]:
+        - article [ref=e131]:
+          - generic [ref=e132]:
+            - generic [ref=e133]: I
+            - generic [ref=e134]: Trois temps
+          - heading "Le déjeuner" [level=3] [ref=e135]
+          - paragraph [ref=e136]: Un menu court, écrit chaque matin avec ce que le marché a donné. Servi en une heure quinze, montre en main, pour ceux qui déjeunent entre deux rendez-vous.
+          - list [ref=e137]:
+            - listitem [ref=e138]: Entrée, plat, dessert
+            - listitem [ref=e140]: Servi en 1 h 15
+            - listitem [ref=e142]: Du mardi au vendredi
+          - generic [ref=e144]:
+            - paragraph [ref=e145]: 48 €
+            - paragraph [ref=e146]: Accord deux verres — 22 €
+        - article [ref=e147]:
+          - generic [ref=e148]:
+            - generic [ref=e149]: II
+            - generic [ref=e150]: Cinq temps
+          - heading "Le menu dégustation" [level=3] [ref=e151]
+          - paragraph [ref=e152]: Le cœur de la maison. Cinq assiettes qui suivent la saison de près, une cuisson au feu de bois, et un dessert qui ne cherche pas le sucre mais l'équilibre.
+          - list [ref=e153]:
+            - listitem [ref=e154]: Cinq assiettes
+            - listitem [ref=e156]: Servi à toute la table
+            - listitem [ref=e158]: Végétarien sur demande
+          - generic [ref=e160]:
+            - paragraph [ref=e161]: 92 €
+            - paragraph [ref=e162]: Accord mets & vins — 58 €
+        - article [ref=e163]:
+          - generic [ref=e164]:
+            - generic [ref=e165]: III
+            - generic [ref=e166]: Sept temps
+          - heading "La table du chef" [level=3] [ref=e167]
+          - paragraph [ref=e168]: Six places au comptoir, face au passe. Les assiettes sont dressées devant vous et commentées par celui qui les a pensées. Une seule table par service.
+          - list [ref=e169]:
+            - listitem [ref=e170]: Six places au comptoir
+            - listitem [ref=e172]: Un seul service par soir
+            - listitem [ref=e174]: Réservation 72 h à l’avance
+          - generic [ref=e176]:
+            - paragraph [ref=e177]: 134 €
+            - paragraph [ref=e178]: Accord mets & vins — 76 €
+      - paragraph [ref=e180]: Menus et prix donnés à titre d’exemple pour la maquette.
+    - generic [ref=e182]:
+      - generic [ref=e183]:
+        - generic [ref=e184]:
+          - generic [ref=e185]:
+            - generic [ref=e186]: III
+            - paragraph [ref=e188]: La carte
+          - heading "Ce qui sort de la cuisine." [level=2] [ref=e189]:
+            - generic [ref=e190]: Ce qui sort
+            - generic [ref=e192]: de la cuisine.
+        - paragraph [ref=e195]: Une sélection, réécrite toutes les trois semaines. Passez sur un plat pour le voir.
+      - generic [ref=e196]:
+        - figure [ref=e197]:
+          - img "Bœuf taillé au couteau et caviar" [ref=e199]
+        - figure [ref=e200]:
+          - img "Le plat du feu de bois, dressé à l’assiette" [ref=e202]
+        - figure [ref=e203]:
+          - img "Fruits rouges et verveine, sorbet minute" [ref=e205]
+      - generic [ref=e206]:
+        - generic [ref=e207]:
+          - heading "Pour commencer" [level=3] [ref=e209]
+          - generic [ref=e211]:
+            - article [ref=e212]:
+              - generic [ref=e213]:
+                - heading "Bœuf de nos pâturages, caviar" [level=4] [ref=e214]
+                - paragraph [ref=e215]: Taillé au couteau, crème acidulée, herbes du jardin, galette de sarrasin
+              - paragraph [ref=e216]: 32 €
+            - article [ref=e217]:
+              - generic [ref=e218]:
+                - heading "Saint-Jacques de la baie" [level=4] [ref=e219]
+                - paragraph [ref=e220]: Snackées à la poêle, bouillon safrané monté au beurre, agrumes confits
+              - paragraph [ref=e221]: 28 €
+            - article [ref=e222]:
+              - generic [ref=e223]:
+                - heading "Pain de la maison, beurre de baratte végétarien" [level=4] [ref=e224]:
+                  - text: Pain de la maison, beurre de baratte
+                  - generic [ref=e225]: végétarien
+                - paragraph [ref=e226]: Levain de sept jours, beurre fermier fumé au foin, fleur de sel
+              - paragraph [ref=e227]: 9 €
+        - generic [ref=e228]:
+          - heading "Le cœur du repas" [level=3] [ref=e230]
+          - generic [ref=e232]:
+            - article [ref=e233]:
+              - generic [ref=e234]:
+                - heading "Filet de bœuf, pomme fondante" [level=4] [ref=e235]
+                - paragraph [ref=e236]: Saisi à la braise, jus court au poivre long, légumes du maraîcher
+              - paragraph [ref=e237]: 38 €
+            - article [ref=e238]:
+              - generic [ref=e239]:
+                - heading "Le plat du feu de bois" [level=4] [ref=e240]
+                - paragraph [ref=e241]: Selon l'arrivage du jour, cuit à la braise et découpé en salle
+              - paragraph [ref=e242]: 42 €
+            - article [ref=e243]:
+              - generic [ref=e244]:
+                - heading "Légumes de saison, sarriette végétarien" [level=4] [ref=e245]:
+                  - text: Légumes de saison, sarriette
+                  - generic [ref=e246]: végétarien
+                - paragraph [ref=e247]: Racines rôties, condiment noisette, jus de leurs fanes
+              - paragraph [ref=e248]: 29 €
+        - generic [ref=e249]:
+          - heading "Pour finir" [level=3] [ref=e251]
+          - generic [ref=e253]:
+            - article [ref=e254]:
+              - generic [ref=e255]:
+                - heading "Fruits rouges, verveine végétarien" [level=4] [ref=e256]:
+                  - text: Fruits rouges, verveine
+                  - generic [ref=e257]: végétarien
+                - paragraph [ref=e258]: Sorbet minute, pistache torréfiée, jus de leurs sucs
+              - paragraph [ref=e259]: 16 €
+            - article [ref=e260]:
+              - generic [ref=e261]:
+                - heading "Le dessert au chocolat végétarien" [level=4] [ref=e262]:
+                  - text: Le dessert au chocolat
+                  - generic [ref=e263]: végétarien
+                - paragraph [ref=e264]: Ganache noire, sarrasin croustillant, glace au lait ribot
+              - paragraph [ref=e265]: 17 €
+            - article [ref=e266]:
+              - generic [ref=e267]:
+                - heading "Chariot de fromages affinés végétarien" [level=4] [ref=e268]:
+                  - text: Chariot de fromages affinés
+                  - generic [ref=e269]: végétarien
+                - paragraph [ref=e270]: Une sélection de l’affineur, pain aux fruits secs
+              - paragraph [ref=e271]: 18 €
+      - generic [ref=e272]:
+        - paragraph [ref=e273]: Carte et prix donnés à titre d’exemple pour la maquette.
+        - link "Réserver une table" [ref=e274] [cursor=pointer]:
+          - /url: "#reservation"
+    - generic [ref=e277]:
+      - generic [ref=e278]:
+        - figure "La cave, sous la salle" [ref=e280]:
+          - img "La cave voûtée de la Maison Vaurenne" [ref=e282]
+        - generic [ref=e285]:
+          - figure [ref=e286]:
+            - img "Bouteilles rangées en cave" [ref=e288]
+          - figure [ref=e289]:
+            - img "Service du vin à table" [ref=e291]
+      - generic [ref=e292]:
+        - generic [ref=e293]:
+          - generic [ref=e294]: IV
+          - paragraph [ref=e296]: La cave
+        - heading "Une cave qui se visite." [level=2] [ref=e297]:
+          - generic [ref=e298]: Une cave
+          - generic [ref=e300]: qui se visite.
+        - generic [ref=e302]:
+          - paragraph [ref=e303]: "Deux cents ans de pierre sous la salle, une température qui ne bouge pas de l’année, et une sélection construite bouteille par bouteille : Moselle luxembourgeoise, Bourgogne, Rhône, et quelques vignerons qu’on suit depuis leurs premières cuvées."
+          - paragraph [ref=e304]: Le sommelier descend avec vous si vous le souhaitez. C’est souvent là que le repas se décide vraiment.
+        - generic [ref=e305]:
+          - generic [ref=e306]:
+            - generic [ref=e307]: "260"
+            - generic [ref=e308]: références en cave, dont 90 en biodynamie
+          - generic [ref=e309]:
+            - generic [ref=e310]: "14"
+            - generic [ref=e311]: vins servis au verre, changés chaque mois
+          - generic [ref=e312]:
+            - generic [ref=e313]: "2"
+            - generic [ref=e314]: accords proposés sur chaque menu
+    - region [ref=e315]:
+      - generic [ref=e318]:
+        - generic [ref=e319]:
+          - generic [ref=e320]: V
+          - paragraph [ref=e322]: Réserver
+        - heading "Votre table, en une minute." [level=2] [ref=e323]:
+          - generic [ref=e324]: Votre table,
+          - generic [ref=e326]: en une minute.
+        - generic [ref=e328]:
+          - paragraph [ref=e329]: "Les créneaux affichés sont ceux qui restent réellement libres. Un lien dans votre e-mail de confirmation vous permet d’annuler vous-même : la table est aussitôt rendue à la salle."
+          - generic [ref=e330]:
+            - paragraph [ref=e331]: Ou par téléphone
+            - link "(+352) 00 00 00 00" [ref=e332] [cursor=pointer]:
+              - /url: tel:+35200000000
+          - paragraph [ref=e333]: Fermé le dimanche et le lundi. Annulation possible jusqu’à 12 heures avant le service. Au-delà de 8 couverts, un appel vaut mieux qu’un formulaire.
+    - generic [ref=e339]:
+      - generic [ref=e340]:
+        - generic [ref=e341]:
+          - generic [ref=e342]: VI
+          - paragraph [ref=e344]: Infos & accès
+        - heading "Nous trouver." [level=2] [ref=e345]
+        - generic [ref=e348]:
+          - generic [ref=e349]:
+            - paragraph [ref=e350]: Horaires
+            - generic [ref=e351]:
+              - generic [ref=e352]:
+                - term [ref=e353]: Mardi — vendredi
+                - definition [ref=e354]: Déjeuner 12h00 — 14h00
+              - generic [ref=e355]:
+                - term [ref=e356]: Mardi — samedi
+                - definition [ref=e357]: Dîner 19h00 — 21h30
+              - generic [ref=e358]:
+                - term [ref=e359]: Dimanche & lundi
+                - definition [ref=e360]: Fermé
+          - generic [ref=e361]:
+            - paragraph [ref=e362]: Contact
+            - generic [ref=e363]:
+              - paragraph [ref=e364]: 00, rue des Capucins — L-0000 Luxembourg
+              - link "(+352) 00 00 00 00" [ref=e365] [cursor=pointer]:
+                - /url: tel:+35200000000
+              - link "reservation@maison-vaurenne.example" [ref=e366] [cursor=pointer]:
+                - /url: mailto:reservation@maison-vaurenne.example
+            - paragraph [ref=e367]: "Adresse, téléphone et courriel sont fictifs : cette page est une maquette de démonstration."
+      - generic [ref=e368]:
+        - figure "L’entrée de salle" [ref=e369]:
+          - img "L’entrée de salle de la Maison Vaurenne" [ref=e371]
+        - generic [ref=e374]:
+          - generic [ref=e375]:
+            - paragraph [ref=e376]: Parking
+            - paragraph [ref=e377]: Deux parkings publics à moins de 300 mètres.
+          - generic [ref=e378]:
+            - paragraph [ref=e379]: Accès
+            - paragraph [ref=e380]: Salle de plain-pied, accessible en fauteuil.
+          - generic [ref=e381]:
+            - paragraph [ref=e382]: Privatisation
+            - paragraph [ref=e383]: La salle entière se réserve dès 24 couverts.
+  - contentinfo [ref=e384]:
+    - generic [ref=e385]:
+      - generic [ref=e386]:
+        - generic [ref=e387]:
+          - paragraph [ref=e388]: Maison Vaurenne
+          - paragraph [ref=e389]: Table française contemporaine, Luxembourg. Deux services par jour, du mardi au samedi.
+          - link "Réserver une table" [ref=e390] [cursor=pointer]:
+            - /url: "#reservation"
+        - generic [ref=e391]:
+          - paragraph [ref=e392]: La maison
+          - navigation [ref=e393]:
+            - link "La maison" [ref=e394] [cursor=pointer]:
+              - /url: "#maison"
+            - link "Les menus" [ref=e395] [cursor=pointer]:
+              - /url: "#menus"
+            - link "La carte" [ref=e396] [cursor=pointer]:
+              - /url: "#carte"
+            - link "La cave" [ref=e397] [cursor=pointer]:
+              - /url: "#cave"
+            - link "Infos & accès" [ref=e398] [cursor=pointer]:
+              - /url: "#acces"
+        - generic [ref=e399]:
+          - paragraph [ref=e400]: Contact
+          - generic [ref=e401]:
+            - paragraph [ref=e402]: 00, rue des Capucins — L-0000 Luxembourg
+            - link "(+352) 00 00 00 00" [ref=e403] [cursor=pointer]:
+              - /url: tel:+35200000000
+            - link "reservation@maison-vaurenne.example" [ref=e404] [cursor=pointer]:
+              - /url: mailto:reservation@maison-vaurenne.example
+      - generic [ref=e405]:
+        - paragraph [ref=e406]: Photographies
+        - paragraph [ref=e407]:
+          - text: Images de démonstration issues de banques libres.
+          - generic [ref=e408]:
+            - link "DZ6 2642 — An intimate table for two" [ref=e409] [cursor=pointer]:
+              - /url: https://commons.wikimedia.org/wiki/File:DZ6_2642_An_intimate_table_for_two_soft_light_fresh_orchids_and_a_menu_waiting_to_be_opened.jpg
+            - text: — PattayaPatrol, CC BY-SA 4.0 ·
+          - generic [ref=e410]:
+            - link "DZ6 2648 — A cozy candlelit dinner setup" [ref=e411] [cursor=pointer]:
+              - /url: https://commons.wikimedia.org/wiki/File:DZ6_2648_A_cozy_candlelit_dinner_setup_a_delicate_orchid_soft_lamp_glow_and_an_empty_wine_glass_waiting_for_the_evening_to_begin.jpg
+            - text: — PattayaPatrol, CC BY-SA 4.0 ·
+          - generic [ref=e412]:
+            - link "Water Buffalo and Sturgeon Caviar (Onyx)" [ref=e413] [cursor=pointer]:
+              - /url: https://commons.wikimedia.org/wiki/File:Water_Buffalo_and_Sturgeon_Caviar_(41317260975).jpg
+            - text: — Asok5, Budapest, CC BY-SA 2.0 ·
+          - generic [ref=e414]:
+            - link "Scallops dish, Hannover" [ref=e415] [cursor=pointer]:
+              - /url: https://commons.wikimedia.org/wiki/File:Scallops_dish,_Hannover.jpg
+            - text: — Gerda Arendt, CC0 ·
+          - generic [ref=e416]:
+            - link "Delicious gourmet dish served at a restaurant" [ref=e417] [cursor=pointer]:
+              - /url: https://commons.wikimedia.org/wiki/File:Delicious_gourmet_dish_served_at_a_restaurant_highlighting_tender_meat_undefined.jpg
+            - text: — Shixart1985, CC BY 2.0 ·
+          - generic [ref=e418]:
+            - link "Barrels Lamarche Vosne" [ref=e419] [cursor=pointer]:
+              - /url: https://commons.wikimedia.org/wiki/File:Barrels_Lamarche_Vosne_(157453489).jpeg
+            - text: — Cruz Liljegren, CC BY 3.0 ·
+          - generic [ref=e420]:
+            - link "Photographies de plats, de cave et de cuisine" [ref=e421] [cursor=pointer]:
+              - /url: https://www.rawpixel.com/
+            - text: — rawpixel, CC0.
+      - generic [ref=e422]:
+        - paragraph [ref=e423]: "Maquette de démonstration. Maison Vaurenne est un établissement fictif : nom, adresse, équipe, carte et prix ont été inventés pour la présentation."
+        - link "Réalisé par NS Development" [ref=e424] [cursor=pointer]:
+          - /url: https://nsdevelopment26.github.io/nsd-vitrine/
