@@ -14,7 +14,9 @@
 <link rel="apple-touch-icon" href="icones/nsd-vert-180.png">
 <link rel="icon" type="image/png" href="icones/favicon-64.png">
 <script>window.CRM_API = "https://script.google.com/macros/s/AKfycbyiSscsc1tvQiekpyzHl6EvPLnqugkx0TKEkJoQPYsDyHeCqg9HZ5tJSx8OZV7WBnk0/exec";</script>
-<meta name="theme-color" content="#0f0f10">
+<meta name="theme-color" content="#0b0c0b">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"></script>
 <style>
   :root {
@@ -235,6 +237,187 @@
   .connexion h1 { margin: 0 0 6px; }
   .connexion p { color: var(--doux); margin: 0 0 22px; }
   .code { letter-spacing: .4em; text-align: center; font-size: 24px !important; }
+  /* =====================================================================
+     THÈME « NUIT NSD » (20/10/2026, demandé par Nelson : « plus stylé,
+     comme le CRM de Desnos »). Même logique que l'espace Maison Volte :
+     une colonne sombre qui tient l'outil, un fond clair pour lire, un seul
+     accent. Ici l'accent est le vert de l'icône NSD (#35d29a → #7ff0c4).
+     Tout est en surcouche : aucune règle d'origine n'est supprimée, et rien
+     ne touche à la logique (couleurs de statut, boutons, formulaires).
+     ===================================================================== */
+  :root {
+    --fond: #eef0ed; --carte: #ffffff; --encre: #111312; --doux: #5f6662; --ligne: #e1e4df;
+    --noir: #0b0c0b; --noir2: #141615; --noir3: #1d201e; --accent: #35d29a; --accent-l: #7ff0c4; --accent-f: #1f9e70;
+    --danger: #b3261e; --ok: #15784f; --alerte: #a85600; --vert-texte: #11704d;
+    --rayon: 18px; --titre: 'Bricolage Grotesque', -apple-system, 'SF Pro Display', sans-serif;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+    --ombre: 0 1px 2px rgba(17,19,18,.04), 0 10px 30px -18px rgba(17,19,18,.28);
+  }
+  ::selection { background: var(--accent); color: var(--noir); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* --- En-tête : noir mat, halo vert --- */
+  header.barre { background: var(--noir); overflow: hidden;
+    background-image: radial-gradient(120% 140% at 100% 0%, rgba(53,210,154,.20), transparent 55%); }
+  .logo { font-family: var(--titre); font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+  .logo img { border-radius: 10px; box-shadow: 0 0 0 1px rgba(127,240,196,.25), 0 6px 18px -6px rgba(53,210,154,.55); }
+  .moi { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); color: #e9ecea; transition: border-color .3s, background .3s; }
+  .moi:hover { border-color: var(--accent); }
+  .espaces { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 99px; padding: 4px; gap: 4px; }
+  .espaces button { border: 0; background: transparent; color: rgba(233,236,234,.72); border-radius: 99px; padding: 8px 6px;
+    transition: background .45s var(--ease), color .3s; }
+  .espaces button:hover { color: #fff; }
+  .espaces button.actif { background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: var(--noir);
+    box-shadow: 0 6px 20px -8px rgba(53,210,154,.8); }
+  .recherche { background: rgba(255,255,255,.07); color: #f2f4f2; border: 1px solid rgba(255,255,255,.1); border-radius: 14px;
+    padding-left: 40px; transition: border-color .3s, background .3s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%237ff0c4' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m17 17-4.5-4.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: 14px center; }
+  .recherche::placeholder { color: rgba(233,236,234,.55); }
+  .recherche:focus { outline: none; border-color: var(--accent); background-color: rgba(255,255,255,.1); }
+
+  /* --- Titres de section : plus d'étiquette en capitales, un vrai titre --- */
+  h2.section { font-family: var(--titre); font-size: 21px; font-weight: 700; letter-spacing: -.02em; text-transform: none;
+    color: var(--encre); margin: 28px 2px 12px; align-items: center; }
+  h2.section small { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 700; color: var(--vert-texte);
+    background: rgba(53,210,154,.13); padding: 3px 10px; border-radius: 99px; }
+
+  /* --- Bilan du jour : la première tuile en noir avec halo, comme chez Desnos --- */
+  .bilan { gap: 8px; margin-top: 10px; }
+  .bilan div { position: relative; overflow: hidden; border: 1px solid var(--ligne); border-radius: 16px; padding: 12px 12px 10px; box-shadow: var(--ombre); }
+  .bilan b { font-family: var(--titre); font-size: 30px; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+  .bilan span { font-size: 12px; font-weight: 600; }
+  .bilan div:first-child { background: var(--noir); border-color: var(--noir); color: #fff; }
+  .bilan div:first-child span { color: rgba(233,236,234,.7); }
+  .bilan div:first-child::after { content: ""; position: absolute; right: -30px; top: -30px; width: 100px; height: 100px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(53,210,154,.6), transparent 70%); }
+
+  /* --- Sélecteur de journée --- */
+  .jourbar .fleche, .jour-choix { border-radius: 14px; box-shadow: var(--ombre); transition: border-color .3s, transform .3s var(--ease); }
+  .jourbar .fleche:hover, .jour-choix:hover { border-color: var(--accent); }
+  .jourbar .fleche:active { transform: scale(.94); }
+  .jour-choix b { font-family: var(--titre); font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
+  .retour-auj { border-radius: 14px; background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: var(--noir); }
+
+  /* --- Cartes prospect --- */
+  .lp, .pc, .rc, .fx-carte { border-color: var(--ligne); box-shadow: var(--ombre);
+    transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .3s; }
+  .lp { border-left-width: 5px; border-radius: var(--rayon); padding: 14px 16px 12px; margin-bottom: 10px; }
+  .lp:hover, .pc:hover, .fx-carte:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(17,19,18,.05), 0 22px 40px -22px rgba(17,19,18,.42); }
+  .lp-nom, .rc-nom { font-family: var(--titre); font-size: 18px; font-weight: 700; letter-spacing: -.015em; }
+  .pc-nom { font-family: var(--titre); font-weight: 700; letter-spacing: -.01em; }
+  .lp-droite { font-family: var(--titre); font-size: 16px; font-weight: 700; }
+  .pastille, .lp-resultat { border: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.07); padding: 2px 9px; }
+  .qui { background: var(--noir); color: var(--accent-l); }
+  .lp-actions { gap: 8px; }
+  .lp-actions a, .lp-actions button, .rc-actions a, .rc-actions button { border-radius: 12px; padding: 10px 6px; transition: transform .3s var(--ease), border-color .3s, background .3s; }
+  .lp-actions a:hover, .lp-actions button:hover { border-color: var(--encre); }
+  .lp-actions a:active, .lp-actions button:active, .btn:active, .actions a:active, .actions button:active { transform: scale(.96); }
+  .lp-actions .appeler, .actions .principal { background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: var(--noir); border-color: transparent;
+    box-shadow: 0 8px 20px -10px rgba(31,158,112,.9); }
+  .lp-actions .appeler:hover { border-color: transparent; filter: brightness(1.04); }
+  .vide { border-radius: var(--rayon); background: rgba(255,255,255,.6); }
+  .plus { border-radius: 14px; border-style: dashed; font-weight: 600; transition: border-color .3s, color .3s; }
+  .plus:hover { border-color: var(--vert-texte); color: var(--vert-texte); }
+
+  /* --- Boutons et champs --- */
+  .btn { border-radius: 14px; transition: transform .3s var(--ease), background .3s, box-shadow .3s; }
+  .btn:not(.clair):not(.danger) { background: var(--noir); color: #fff; box-shadow: inset 0 0 0 1px rgba(127,240,196,.18); }
+  .btn:not(.clair):not(.danger):hover { background: var(--noir3); }
+  .btn.clair { background: #fff; }
+  label.champ { font-weight: 600; }
+  label.champ input, label.champ select, label.champ textarea, .filtres select, .reel-choix select { border-radius: 12px; transition: border-color .3s, box-shadow .3s; }
+  label.champ input:focus, label.champ select:focus, label.champ textarea:focus, .filtres select:focus, .reel-choix select:focus {
+    outline: none; border-color: var(--accent-f); box-shadow: 0 0 0 4px rgba(53,210,154,.16); }
+
+  /* --- Barre d'onglets : verre sombre flottant sur téléphone --- */
+  nav.onglets { left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); padding: 6px; border: 1px solid rgba(255,255,255,.08);
+    border-radius: 24px; background: rgba(11,12,11,.86); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow: 0 18px 40px -14px rgba(0,0,0,.55); }
+  body { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  nav.onglets button { position: relative; color: rgba(233,236,234,.6); border-radius: 18px; padding: 8px 2px 9px; font-weight: 600; font-size: 11px;
+    transition: color .3s, background .45s var(--ease); }
+  nav.onglets button .ico { font-size: 19px; transition: transform .45s var(--ease); }
+  nav.onglets button.actif { color: var(--accent-l); background: rgba(53,210,154,.13); }
+  nav.onglets button.actif .ico { transform: translateY(-1px) scale(1.08); }
+  .toast { bottom: calc(100px + env(safe-area-inset-bottom)); border-radius: 14px; background: var(--noir); box-shadow: 0 0 0 1px rgba(127,240,196,.22), 0 16px 34px -12px rgba(0,0,0,.5); }
+  .toast.erreur { background: var(--danger); box-shadow: 0 16px 34px -12px rgba(0,0,0,.5); }
+
+  /* --- Pipeline --- */
+  .colonne { background: #e3e7e3; border-radius: 20px; }
+  .colonne h3 { font-family: var(--titre); font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+  .pc { border-radius: 14px; }
+
+  /* --- Stats --- */
+  .kpi { border-radius: var(--rayon); box-shadow: var(--ombre); position: relative; overflow: hidden; }
+  .kpi .v { font-family: var(--titre); font-size: 36px; font-weight: 700; letter-spacing: -.03em; }
+  .grille .kpi:first-child { background: var(--noir); color: #fff; border-color: var(--noir); }
+  .grille .kpi:first-child .l { color: rgba(233,236,234,.7); }
+  .grille .kpi:first-child::after { content: ""; position: absolute; right: -36px; top: -36px; width: 120px; height: 120px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(53,210,154,.55), transparent 70%); }
+  .barres { border-radius: var(--rayon); box-shadow: var(--ombre); }
+  .barre-j { background: linear-gradient(180deg, var(--accent-l), var(--accent-f)); border-radius: 6px 6px 2px 2px; }
+  table.recap { border-radius: var(--rayon); box-shadow: var(--ombre); }
+
+  /* --- Fiche (feuille du bas) --- */
+  .voile { background: rgba(8,10,9,.5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: voile-in .35s ease; }
+  .feuille { border-radius: 26px 26px 0 0; animation: feuille-in .55s var(--ease); }
+  @keyframes voile-in { from { opacity: 0; } }
+  @keyframes feuille-in { from { transform: translateY(40px); opacity: .4; } }
+  .feuille-tete h1 { font-family: var(--titre); font-size: 25px; font-weight: 700; letter-spacing: -.02em; }
+  .fermer { background: var(--noir); color: #fff; transition: transform .35s var(--ease); }
+  .fermer:hover { transform: rotate(90deg); }
+  .actions a, .actions button { border-radius: 16px; box-shadow: var(--ombre); transition: transform .3s var(--ease), border-color .3s; }
+  .bloc { border-radius: var(--rayon); box-shadow: var(--ombre); }
+  .bloc h3, details.bloc summary { font-family: var(--titre); font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .resultats button { border-radius: 14px; transition: transform .3s var(--ease), box-shadow .3s; }
+  .resultats button.choisi { outline: 0; box-shadow: 0 0 0 2px var(--noir), 0 10px 22px -12px rgba(0,0,0,.5); }
+  .dates button { transition: background .3s, color .3s, border-color .3s; }
+  .dates button.choisi { background: var(--noir); color: var(--accent-l); }
+
+  /* --- Entrée en scène : seulement au changement d'onglet, pas à chaque mise à jour --- */
+  main.entree > * { opacity: 0; transform: translateY(14px); animation: monte .6s var(--ease) forwards; }
+  main.entree > *:nth-child(2) { animation-delay: .04s; } main.entree > *:nth-child(3) { animation-delay: .08s; }
+  main.entree > *:nth-child(4) { animation-delay: .12s; } main.entree > *:nth-child(5) { animation-delay: .16s; }
+  main.entree > *:nth-child(6) { animation-delay: .2s; } main.entree > *:nth-child(n+7) { animation-delay: .24s; }
+  @keyframes monte { to { opacity: 1; transform: none; } }
+
+  /* --- Connexion : un écran qu'on a envie d'ouvrir le matin --- */
+  #ecran-connexion:not(.cache) { max-width: none; margin: 0; padding: 32px 28px; align-items: center; color: #f2f4f2; background: var(--noir);
+    background-image: radial-gradient(70% 50% at 50% 0%, rgba(53,210,154,.28), transparent 70%), radial-gradient(60% 40% at 100% 100%, rgba(127,240,196,.12), transparent 70%); }
+  #ecran-connexion > * { width: 100%; max-width: 360px; text-align: center; }
+  #ecran-connexion .logo-connexion { width: 72px; height: 72px; border-radius: 20px; box-shadow: 0 0 0 1px rgba(127,240,196,.3), 0 18px 40px -12px rgba(53,210,154,.7); }
+  #ecran-connexion h1 { font-family: var(--titre); font-size: 44px; font-weight: 800; letter-spacing: -.035em; line-height: 1; }
+  #ecran-connexion p { color: rgba(233,236,234,.68); }
+  #ecran-connexion label.champ { color: rgba(233,236,234,.75); }
+  #ecran-connexion .code { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.14); color: #fff; border-radius: 16px; }
+  #ecran-connexion .code:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(53,210,154,.2); }
+  #ecran-connexion .btn { background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: var(--noir); box-shadow: 0 14px 30px -12px rgba(53,210,154,.8); }
+  #ecran-connexion .btn:hover { background: linear-gradient(120deg, var(--accent), var(--accent-l)); filter: brightness(1.06); }
+
+  /* --- Ordinateur : la barre devient une colonne latérale, comme l'espace Desnos --- */
+  @media (min-width: 1000px) {
+    body { padding-bottom: 0; padding-left: 232px; }
+    nav.onglets { left: 0; right: auto; top: 0; bottom: 0; width: 232px; border-radius: 0; border: 0; border-right: 1px solid rgba(255,255,255,.06);
+      display: flex; flex-direction: column; gap: 4px; padding: 108px 14px 24px; background: var(--noir);
+      background-image: radial-gradient(90% 40% at 0% 0%, rgba(53,210,154,.14), transparent 70%); box-shadow: none; }
+    nav.onglets::before { content: "CRM NSD"; position: absolute; left: 26px; top: 34px; font-family: var(--titre); font-size: 22px; font-weight: 800;
+      letter-spacing: -.02em; color: #fff; }
+    nav.onglets::after { content: "Prospection · Sam & Nelson"; position: absolute; left: 26px; top: 64px; font-size: 12px; color: rgba(233,236,234,.55); }
+    nav.onglets button { flex-direction: row; justify-content: flex-start; gap: 12px; padding: 12px 14px; font-size: 14.5px; border-radius: 12px; }
+    nav.onglets button .ico { width: 22px; text-align: center; font-size: 17px; }
+    nav.onglets button:hover { color: #fff; background: rgba(255,255,255,.04); }
+    nav.onglets button.actif { background: var(--noir3); color: #fff; }
+    nav.onglets button.actif::before { content: ""; position: absolute; left: -14px; top: 10px; bottom: 10px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+    nav.onglets button.actif .ico { color: var(--accent-l); transform: none; }
+    header.barre { padding-left: 24px; padding-right: 24px; }
+    header.barre .logo { visibility: hidden; }
+    .toast { bottom: 28px; margin-left: 116px; }
+    .feuille { border-radius: 26px 26px 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    main.entree > *, .voile, .feuille { animation: none; opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
@@ -527,6 +710,9 @@ function rendre() {
   document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', b.dataset.vue === S.vue));
   document.body.dataset.vue = S.recherche ? 'recherche' : S.vue;
   const v = document.getElementById('vue');
+  // L'entrée en cascade ne joue qu'au changement d'onglet : une carte mise à jour ne doit pas « sauter ».
+  const ecran = S.recherche ? 'recherche' : S.vue;
+  if (v.dataset.ecran !== ecran) { v.dataset.ecran = ecran; v.classList.remove('entree'); void v.offsetWidth; v.classList.add('entree'); clearTimeout(rendre._t); rendre._t = setTimeout(() => v.classList.remove('entree'), 900); }
   if (S.recherche) v.innerHTML = vueRecherche();
   else if (S.vue === 'jour') v.innerHTML = vueJour();
   else if (S.vue === 'pipeline') v.innerHTML = vuePipeline();
