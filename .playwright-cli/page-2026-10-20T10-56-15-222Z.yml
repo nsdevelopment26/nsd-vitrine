@@ -1,0 +1,723 @@
+- generic [active] [ref=f1e1]:
+  - navigation [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - link "MOTORLINE, accueil" [ref=f1e4] [cursor=pointer]:
+        - /url: "#haut"
+        - text: MOTORLINE
+      - generic [ref=f1e7]:
+        - link "Véhicules" [ref=f1e8] [cursor=pointer]:
+          - /url: "#vehicules"
+        - link "L'atelier" [ref=f1e9] [cursor=pointer]:
+          - /url: "#atelier"
+        - link "La garantie" [ref=f1e10] [cursor=pointer]:
+          - /url: "#garantie"
+        - link "Le garage" [ref=f1e11] [cursor=pointer]:
+          - /url: "#garage"
+      - generic [ref=f1e12]:
+        - link "+352 00 00 00" [ref=f1e13] [cursor=pointer]:
+          - /url: tel:+35200000000
+        - link "Prendre rendez-vous" [ref=f1e14] [cursor=pointer]:
+          - /url: "#contact"
+  - banner [ref=f1e15]:
+    - img "Coupé grand tourisme noir photographié de nuit devant l'atelier" [ref=f1e17]
+    - generic [ref=f1e19]:
+      - generic [ref=f1e20]: Automobiles premium & atelier · Luxembourg
+      - heading "La belle voiture, sans la mauvaise surprise." [level=1] [ref=f1e21]:
+        - generic [ref=f1e22]:
+          - generic [ref=f1e23]: La
+          - generic [ref=f1e24]: belle
+          - generic [ref=f1e25]: voiture,
+        - generic [ref=f1e26]:
+          - generic [ref=f1e27]:
+            - generic [ref=f1e28]: sans
+            - generic [ref=f1e29]: la
+          - emphasis [ref=f1e30]: mauvaise
+        - generic [ref=f1e31]: surprise.
+      - paragraph [ref=f1e33]: Quinze véhicules choisis un par un, contrôlés sur 150 points dans notre propre atelier et garantis 24 mois. Et une fois la voiture chez vous, c'est le même atelier qui s'en occupe.
+      - generic [ref=f1e34]:
+        - link "Voir les véhicules →" [ref=f1e35] [cursor=pointer]:
+          - /url: "#vehicules"
+          - text: Voir les véhicules
+          - generic [ref=f1e36]: →
+        - link "ou appelez le +352 00 00 00" [ref=f1e37] [cursor=pointer]:
+          - /url: tel:+35200000000
+    - generic [aria-hidden] [ref=f1e38]: Défiler
+    - generic [ref=f1e40]:
+      - button "SUV coupé V8 biturbo 2022 · 39 500 km · 612 ch 98 500 €" [ref=f1e41] [cursor=pointer]:
+        - generic [ref=f1e43]:
+          - generic [ref=f1e44]: SUV coupé V8 biturbo
+          - generic [ref=f1e45]: 2022 · 39 500 km · 612 ch
+        - generic [ref=f1e46]: 98 500 €
+      - button "SUV grand format V8 2022 · 31 600 km · 650 ch 189 000 €" [ref=f1e47] [cursor=pointer]:
+        - generic [ref=f1e49]:
+          - generic [ref=f1e50]: SUV grand format V8
+          - generic [ref=f1e51]: 2022 · 31 600 km · 650 ch
+        - generic [ref=f1e52]: 189 000 €
+      - button "Coupé GT V8 biturbo 2018 · 38 900 km · 476 ch 112 000 €" [ref=f1e53] [cursor=pointer]:
+        - generic [ref=f1e55]:
+          - generic [ref=f1e56]: Coupé GT V8 biturbo
+          - generic [ref=f1e57]: 2018 · 38 900 km · 476 ch
+        - generic [ref=f1e58]: 112 000 €
+  - generic [ref=f1e60]:
+    - generic [ref=f1e61]: Garantie 24 mois◆
+    - generic [ref=f1e62]: Contrôle 150 points◆
+    - generic [ref=f1e63]: Reprise sous 24 h◆
+    - generic [ref=f1e64]: Financement & leasing◆
+    - generic [ref=f1e65]: Livraison à domicile◆
+    - generic [ref=f1e66]: Essai sur rendez-vous◆
+    - generic [ref=f1e67]: Atelier toutes marques◆
+    - generic [ref=f1e68]: Véhicule de courtoisie◆
+    - generic [ref=f1e69]: Garantie 24 mois◆
+    - generic [ref=f1e70]: Contrôle 150 points◆
+    - generic [ref=f1e71]: Reprise sous 24 h◆
+    - generic [ref=f1e72]: Financement & leasing◆
+    - generic [ref=f1e73]: Livraison à domicile◆
+    - generic [ref=f1e74]: Essai sur rendez-vous◆
+    - generic [ref=f1e75]: Atelier toutes marques◆
+    - generic [ref=f1e76]: Véhicule de courtoisie◆
+    - generic [ref=f1e77]: Garantie 24 mois◆
+    - generic [ref=f1e78]: Contrôle 150 points◆
+    - generic [ref=f1e79]: Reprise sous 24 h◆
+    - generic [ref=f1e80]: Financement & leasing◆
+    - generic [ref=f1e81]: Livraison à domicile◆
+    - generic [ref=f1e82]: Essai sur rendez-vous◆
+    - generic [ref=f1e83]: Atelier toutes marques◆
+    - generic [ref=f1e84]: Véhicule de courtoisie◆
+    - generic [ref=f1e85]: Garantie 24 mois◆
+    - generic [ref=f1e86]: Contrôle 150 points◆
+    - generic [ref=f1e87]: Reprise sous 24 h◆
+    - generic [ref=f1e88]: Financement & leasing◆
+    - generic [ref=f1e89]: Livraison à domicile◆
+    - generic [ref=f1e90]: Essai sur rendez-vous◆
+    - generic [ref=f1e91]: Atelier toutes marques◆
+    - generic [ref=f1e92]: Véhicule de courtoisie◆
+  - generic [ref=f1e94]:
+    - generic [ref=f1e95]:
+      - generic [ref=f1e96]:
+        - generic [ref=f1e97]: La sélection du moment
+        - heading "Nos véhicules disponibles" [level=2] [ref=f1e98]: Nos véhiculesdisponibles
+      - paragraph [ref=f1e99]: Aucune voiture n'entre au stock sans être passée par le pont. Historique vérifié, révision complète, points d'usure remplacés, et la facture des travaux remise avec les clés.
+    - generic [ref=f1e100]:
+      - generic [ref=f1e101]:
+        - generic [ref=f1e102]: Carrosserie
+        - combobox "Carrosserie" [ref=f1e103] [cursor=pointer]:
+          - option "Toutes" [selected]
+          - option "SUV"
+          - option "4×4"
+          - option "Berline"
+          - option "Break"
+          - option "Coupé & sportive"
+          - option "Cabriolet"
+      - generic [ref=f1e104]:
+        - generic [ref=f1e105]: Énergie
+        - combobox "Énergie" [ref=f1e106] [cursor=pointer]:
+          - option "Toutes" [selected]
+          - option "Essence"
+          - option "Diesel"
+          - option "Hybride"
+          - option "Électrique"
+      - generic [ref=f1e107]:
+        - generic [ref=f1e108]: Boîte
+        - combobox "Boîte" [ref=f1e109] [cursor=pointer]:
+          - option "Toutes" [selected]
+          - option "Automatique"
+          - option "Manuelle"
+      - generic [ref=f1e110]:
+        - generic [ref=f1e111]: Budget
+        - combobox "Budget" [ref=f1e112] [cursor=pointer]:
+          - option "Peu importe" [selected]
+          - option "Jusqu'à 50 000 €"
+          - option "50 000 – 80 000 €"
+          - option "80 000 – 120 000 €"
+          - option "Plus de 120 000 €"
+      - button "Rechercher" [ref=f1e113] [cursor=pointer]
+    - generic [ref=f1e114]:
+      - group "Filtrer par carrosserie" [ref=f1e115]:
+        - button "Tout" [ref=f1e116] [cursor=pointer]
+        - button "SUV" [ref=f1e117] [cursor=pointer]
+        - button "4×4" [ref=f1e118] [cursor=pointer]
+        - button "Berlines" [ref=f1e119] [cursor=pointer]
+        - button "Breaks" [ref=f1e120] [cursor=pointer]
+        - button "Coupés" [ref=f1e121] [cursor=pointer]
+        - button "Cabriolets" [ref=f1e122] [cursor=pointer]
+      - generic [ref=f1e123]:
+        - text: Trier
+        - combobox "Trier" [ref=f1e124] [cursor=pointer]:
+          - option "Année, la plus récente" [selected]
+          - option "Prix, du plus élevé"
+          - option "Prix, du moins élevé"
+          - option "Kilométrage, le plus bas"
+          - option "Puissance, la plus forte"
+    - paragraph [ref=f1e125]: 15 véhicules en stock aujourd’hui
+    - generic [ref=f1e126]:
+      - article [ref=f1e127]:
+        - generic [ref=f1e128]:
+          - generic [ref=f1e129]: Première main
+          - img "Berline de direction noire sur un chemin couvert de feuilles" [ref=f1e130]
+          - generic [ref=f1e131]: "2023"
+        - generic [ref=f1e132]:
+          - heading "Berline de direction hybride" [level=3] [ref=f1e133]
+          - generic [ref=f1e134]: Hybride rechargeable · Automatique · 5 places
+          - generic [ref=f1e135]:
+            - generic [ref=f1e136]:
+              - term [ref=f1e137]: Kilométrage
+              - definition [ref=f1e138]: 28 400 km
+            - generic [ref=f1e139]:
+              - term [ref=f1e140]: Puissance
+              - definition [ref=f1e141]: 381 ch
+            - generic [ref=f1e142]:
+              - term [ref=f1e143]: Mise en circ.
+              - definition [ref=f1e144]: "2023"
+          - generic [ref=f1e145]:
+            - generic [ref=f1e146]:
+              - text: 89 900 €
+              - generic [ref=f1e147]: soit 1 350 €/mois sur 60 mois
+            - 'button "Voir la fiche : Berline de direction hybride" [ref=f1e148] [cursor=pointer]'
+      - article [ref=f1e151]:
+        - generic [ref=f1e152]:
+          - generic [ref=f1e153]: Pièce d'exception
+          - img "SUV grand format gris garé face à un port" [ref=f1e154]
+          - generic [ref=f1e155]: "2022"
+        - generic [ref=f1e156]:
+          - heading "SUV grand format V8" [level=3] [ref=f1e157]
+          - generic [ref=f1e158]: Essence · Automatique · 5 places
+          - generic [ref=f1e159]:
+            - generic [ref=f1e160]:
+              - term [ref=f1e161]: Kilométrage
+              - definition [ref=f1e162]: 31 600 km
+            - generic [ref=f1e163]:
+              - term [ref=f1e164]: Puissance
+              - definition [ref=f1e165]: 650 ch
+            - generic [ref=f1e166]:
+              - term [ref=f1e167]: Mise en circ.
+              - definition [ref=f1e168]: "2022"
+          - generic [ref=f1e169]:
+            - generic [ref=f1e170]:
+              - text: 189 000 €
+              - generic [ref=f1e171]: soit 2 850 €/mois sur 60 mois
+            - 'button "Voir la fiche : SUV grand format V8" [ref=f1e172] [cursor=pointer]'
+      - article [ref=f1e175]:
+        - generic [ref=f1e176]:
+          - generic [ref=f1e177]: Arrivage
+          - img "SUV coupé noir vu de l'arrière dans un showroom" [ref=f1e178]
+          - generic [ref=f1e179]: "2022"
+        - generic [ref=f1e180]:
+          - heading "SUV coupé V8 biturbo" [level=3] [ref=f1e181]
+          - generic [ref=f1e182]: Essence · Automatique · 5 places
+          - generic [ref=f1e183]:
+            - generic [ref=f1e184]:
+              - term [ref=f1e185]: Kilométrage
+              - definition [ref=f1e186]: 39 500 km
+            - generic [ref=f1e187]:
+              - term [ref=f1e188]: Puissance
+              - definition [ref=f1e189]: 612 ch
+            - generic [ref=f1e190]:
+              - term [ref=f1e191]: Mise en circ.
+              - definition [ref=f1e192]: "2022"
+          - generic [ref=f1e193]:
+            - generic [ref=f1e194]:
+              - text: 98 500 €
+              - generic [ref=f1e195]: soit 1 480 €/mois sur 60 mois
+            - 'button "Voir la fiche : SUV coupé V8 biturbo" [ref=f1e196] [cursor=pointer]'
+      - article [ref=f1e199]:
+        - generic [ref=f1e200]:
+          - img "Grand SUV bleu vu de profil en ville" [ref=f1e201]
+          - generic [ref=f1e202]: "2022"
+        - generic [ref=f1e203]:
+          - heading "Grand SUV 7 places" [level=3] [ref=f1e204]
+          - generic [ref=f1e205]: Essence · Automatique · 7 places
+          - generic [ref=f1e206]:
+            - generic [ref=f1e207]:
+              - term [ref=f1e208]: Kilométrage
+              - definition [ref=f1e209]: 44 800 km
+            - generic [ref=f1e210]:
+              - term [ref=f1e211]: Puissance
+              - definition [ref=f1e212]: 426 ch
+            - generic [ref=f1e213]:
+              - term [ref=f1e214]: Mise en circ.
+              - definition [ref=f1e215]: "2022"
+          - generic [ref=f1e216]:
+            - generic [ref=f1e217]:
+              - text: 79 500 €
+              - generic [ref=f1e218]: soit 1 200 €/mois sur 60 mois
+            - 'button "Voir la fiche : Grand SUV 7 places" [ref=f1e219] [cursor=pointer]'
+      - article [ref=f1e222]:
+        - generic [ref=f1e223]:
+          - generic [ref=f1e224]: Rare
+          - img "Tout-terrain blanc vu de l'arrière sur une route de montagne" [ref=f1e225]
+          - generic [ref=f1e226]: "2021"
+        - generic [ref=f1e227]:
+          - heading "4×4 statutaire V8" [level=3] [ref=f1e228]
+          - generic [ref=f1e229]: Essence · Automatique · 5 places
+          - generic [ref=f1e230]:
+            - generic [ref=f1e231]:
+              - term [ref=f1e232]: Kilométrage
+              - definition [ref=f1e233]: 52 000 km
+            - generic [ref=f1e234]:
+              - term [ref=f1e235]: Puissance
+              - definition [ref=f1e236]: 585 ch
+            - generic [ref=f1e237]:
+              - term [ref=f1e238]: Mise en circ.
+              - definition [ref=f1e239]: "2021"
+          - generic [ref=f1e240]:
+            - generic [ref=f1e241]:
+              - text: 124 900 €
+              - generic [ref=f1e242]: soit 1 880 €/mois sur 60 mois
+            - 'button "Voir la fiche : 4×4 statutaire V8" [ref=f1e243] [cursor=pointer]'
+      - article [ref=f1e246]:
+        - generic [ref=f1e247]:
+          - img "Berline électrique noire sur un parking humide" [ref=f1e248]
+          - generic [ref=f1e249]: "2021"
+        - generic [ref=f1e250]:
+          - heading "Berline électrique grande autonomie" [level=3] [ref=f1e251]
+          - generic [ref=f1e252]: Électrique · Automatique · 5 places
+          - generic [ref=f1e253]:
+            - generic [ref=f1e254]:
+              - term [ref=f1e255]: Kilométrage
+              - definition [ref=f1e256]: 56 200 km
+            - generic [ref=f1e257]:
+              - term [ref=f1e258]: Puissance
+              - definition [ref=f1e259]: 408 ch
+            - generic [ref=f1e260]:
+              - term [ref=f1e261]: Mise en circ.
+              - definition [ref=f1e262]: "2021"
+          - generic [ref=f1e263]:
+            - generic [ref=f1e264]:
+              - text: 42 900 €
+              - generic [ref=f1e265]: soit 650 €/mois sur 60 mois
+            - 'button "Voir la fiche : Berline électrique grande autonomie" [ref=f1e266] [cursor=pointer]'
+      - article [ref=f1e269]:
+        - generic [ref=f1e270]:
+          - img "4×4 baroudeur couvert de boue au bord d'une flaque" [ref=f1e271]
+          - generic [ref=f1e272]: "2021"
+        - generic [ref=f1e273]:
+          - heading "4×4 baroudeur 4 portes" [level=3] [ref=f1e274]
+          - generic [ref=f1e275]: Essence · Automatique · 5 places
+          - generic [ref=f1e276]:
+            - generic [ref=f1e277]:
+              - term [ref=f1e278]: Kilométrage
+              - definition [ref=f1e279]: 61 300 km
+            - generic [ref=f1e280]:
+              - term [ref=f1e281]: Puissance
+              - definition [ref=f1e282]: 272 ch
+            - generic [ref=f1e283]:
+              - term [ref=f1e284]: Mise en circ.
+              - definition [ref=f1e285]: "2021"
+          - generic [ref=f1e286]:
+            - generic [ref=f1e287]:
+              - text: 52 900 €
+              - generic [ref=f1e288]: soit 800 €/mois sur 60 mois
+            - 'button "Voir la fiche : 4×4 baroudeur 4 portes" [ref=f1e289] [cursor=pointer]'
+      - article [ref=f1e292]:
+        - generic [ref=f1e293]:
+          - img "Berline noire de face, portes ouvertes, dans un garage" [ref=f1e294]
+          - generic [ref=f1e295]: "2021"
+        - generic [ref=f1e296]:
+          - heading "Berline coupé 4 portes" [level=3] [ref=f1e297]
+          - generic [ref=f1e298]: Diesel · Automatique · 5 places
+          - generic [ref=f1e299]:
+            - generic [ref=f1e300]:
+              - term [ref=f1e301]: Kilométrage
+              - definition [ref=f1e302]: 84 000 km
+            - generic [ref=f1e303]:
+              - term [ref=f1e304]: Puissance
+              - definition [ref=f1e305]: 190 ch
+            - generic [ref=f1e306]:
+              - term [ref=f1e307]: Mise en circ.
+              - definition [ref=f1e308]: "2021"
+          - generic [ref=f1e309]:
+            - generic [ref=f1e310]:
+              - text: 34 900 €
+              - generic [ref=f1e311]: soit 530 €/mois sur 60 mois
+            - 'button "Voir la fiche : Berline coupé 4 portes" [ref=f1e312] [cursor=pointer]'
+      - article [ref=f1e315]:
+        - generic [ref=f1e316]:
+          - generic [ref=f1e317]: Coup de cœur
+          - img "Coupé grand tourisme noir, trois quarts arrière, de nuit" [ref=f1e318]
+          - generic [ref=f1e319]: "2020"
+        - generic [ref=f1e320]:
+          - heading "Coupé grand tourisme V8" [level=3] [ref=f1e321]
+          - generic [ref=f1e322]: Essence · Automatique · 4 places
+          - generic [ref=f1e323]:
+            - generic [ref=f1e324]:
+              - term [ref=f1e325]: Kilométrage
+              - definition [ref=f1e326]: 68 000 km
+            - generic [ref=f1e327]:
+              - term [ref=f1e328]: Puissance
+              - definition [ref=f1e329]: 435 ch
+            - generic [ref=f1e330]:
+              - term [ref=f1e331]: Mise en circ.
+              - definition [ref=f1e332]: "2020"
+          - generic [ref=f1e333]:
+            - generic [ref=f1e334]:
+              - text: 46 900 €
+              - generic [ref=f1e335]: soit 710 €/mois sur 60 mois
+            - 'button "Voir la fiche : Coupé grand tourisme V8" [ref=f1e336] [cursor=pointer]'
+      - article [ref=f1e339]:
+        - generic [ref=f1e340]:
+          - generic [ref=f1e341]: Boîte manuelle
+          - img "Coupé sportif blanc garé dans un parking en béton" [ref=f1e342]
+          - generic [ref=f1e343]: "2019"
+        - generic [ref=f1e344]:
+          - heading "Coupé sportif 6 cylindres" [level=3] [ref=f1e345]
+          - generic [ref=f1e346]: Essence · Manuelle · 2 places
+          - generic [ref=f1e347]:
+            - generic [ref=f1e348]:
+              - term [ref=f1e349]: Kilométrage
+              - definition [ref=f1e350]: 42 000 km
+            - generic [ref=f1e351]:
+              - term [ref=f1e352]: Puissance
+              - definition [ref=f1e353]: 344 ch
+            - generic [ref=f1e354]:
+              - term [ref=f1e355]: Mise en circ.
+              - definition [ref=f1e356]: "2019"
+          - generic [ref=f1e357]:
+            - generic [ref=f1e358]:
+              - text: 39 900 €
+              - generic [ref=f1e359]: soit 600 €/mois sur 60 mois
+            - 'button "Voir la fiche : Coupé sportif 6 cylindres" [ref=f1e360] [cursor=pointer]'
+      - article [ref=f1e363]:
+        - generic [ref=f1e364]:
+          - img "Coupé sportif gris photographié au coucher du soleil" [ref=f1e365]
+          - generic [ref=f1e366]: "2019"
+        - generic [ref=f1e367]:
+          - heading "Coupé sportif 4 cylindres" [level=3] [ref=f1e368]
+          - generic [ref=f1e369]: Essence · Automatique · 2 places
+          - generic [ref=f1e370]:
+            - generic [ref=f1e371]:
+              - term [ref=f1e372]: Kilométrage
+              - definition [ref=f1e373]: 47 200 km
+            - generic [ref=f1e374]:
+              - term [ref=f1e375]: Puissance
+              - definition [ref=f1e376]: 300 ch
+            - generic [ref=f1e377]:
+              - term [ref=f1e378]: Mise en circ.
+              - definition [ref=f1e379]: "2019"
+          - generic [ref=f1e380]:
+            - generic [ref=f1e381]:
+              - text: 54 900 €
+              - generic [ref=f1e382]: soit 830 €/mois sur 60 mois
+            - 'button "Voir la fiche : Coupé sportif 4 cylindres" [ref=f1e383] [cursor=pointer]'
+      - article [ref=f1e386]:
+        - generic [ref=f1e387]:
+          - img "Break sportif argent garé le long d'un bâtiment" [ref=f1e388]
+          - generic [ref=f1e389]: "2019"
+        - generic [ref=f1e390]:
+          - heading "Break sportif V8" [level=3] [ref=f1e391]
+          - generic [ref=f1e392]: Essence · Automatique · 5 places
+          - generic [ref=f1e393]:
+            - generic [ref=f1e394]:
+              - term [ref=f1e395]: Kilométrage
+              - definition [ref=f1e396]: 78 500 km
+            - generic [ref=f1e397]:
+              - term [ref=f1e398]: Puissance
+              - definition [ref=f1e399]: 560 ch
+            - generic [ref=f1e400]:
+              - term [ref=f1e401]: Mise en circ.
+              - definition [ref=f1e402]: "2019"
+          - generic [ref=f1e403]:
+            - generic [ref=f1e404]:
+              - text: 69 900 €
+              - generic [ref=f1e405]: soit 1 050 €/mois sur 60 mois
+            - 'button "Voir la fiche : Break sportif V8" [ref=f1e406] [cursor=pointer]'
+      - article [ref=f1e409]:
+        - generic [ref=f1e410]:
+          - generic [ref=f1e411]: Exception
+          - img "Coupé GT noir de face sur une route bordée d'arbres en automne" [ref=f1e412]
+          - generic [ref=f1e413]: "2018"
+        - generic [ref=f1e414]:
+          - heading "Coupé GT V8 biturbo" [level=3] [ref=f1e415]
+          - generic [ref=f1e416]: Essence · Automatique · 2 places
+          - generic [ref=f1e417]:
+            - generic [ref=f1e418]:
+              - term [ref=f1e419]: Kilométrage
+              - definition [ref=f1e420]: 38 900 km
+            - generic [ref=f1e421]:
+              - term [ref=f1e422]: Puissance
+              - definition [ref=f1e423]: 476 ch
+            - generic [ref=f1e424]:
+              - term [ref=f1e425]: Mise en circ.
+              - definition [ref=f1e426]: "2018"
+          - generic [ref=f1e427]:
+            - generic [ref=f1e428]:
+              - text: 112 000 €
+              - generic [ref=f1e429]: soit 1 690 €/mois sur 60 mois
+            - 'button "Voir la fiche : Coupé GT V8 biturbo" [ref=f1e430] [cursor=pointer]'
+      - article [ref=f1e433]:
+        - generic [ref=f1e434]:
+          - img "Tout-terrain noir surélevé devant un hangar" [ref=f1e435]
+          - generic [ref=f1e436]: "2016"
+        - generic [ref=f1e437]:
+          - heading "4×4 tout-terrain préparé" [level=3] [ref=f1e438]
+          - generic [ref=f1e439]: Diesel · Manuelle · 4 places
+          - generic [ref=f1e440]:
+            - generic [ref=f1e441]:
+              - term [ref=f1e442]: Kilométrage
+              - definition [ref=f1e443]: 96 000 km
+            - generic [ref=f1e444]:
+              - term [ref=f1e445]: Puissance
+              - definition [ref=f1e446]: 200 ch
+            - generic [ref=f1e447]:
+              - term [ref=f1e448]: Mise en circ.
+              - definition [ref=f1e449]: "2016"
+          - generic [ref=f1e450]:
+            - generic [ref=f1e451]:
+              - text: 68 000 €
+              - generic [ref=f1e452]: soit 1 020 €/mois sur 60 mois
+            - 'button "Voir la fiche : 4×4 tout-terrain préparé" [ref=f1e453] [cursor=pointer]'
+      - article [ref=f1e456]:
+        - generic [ref=f1e457]:
+          - generic [ref=f1e458]: Collection
+          - img "Cabriolet blanc capote ouverte, garé sous les arbres" [ref=f1e459]
+          - generic [ref=f1e460]: "2014"
+        - generic [ref=f1e461]:
+          - heading "Cabriolet V12" [level=3] [ref=f1e462]
+          - generic [ref=f1e463]: Essence · Automatique · 4 places
+          - generic [ref=f1e464]:
+            - generic [ref=f1e465]:
+              - term [ref=f1e466]: Kilométrage
+              - definition [ref=f1e467]: 58 700 km
+            - generic [ref=f1e468]:
+              - term [ref=f1e469]: Puissance
+              - definition [ref=f1e470]: 573 ch
+            - generic [ref=f1e471]:
+              - term [ref=f1e472]: Mise en circ.
+              - definition [ref=f1e473]: "2014"
+          - generic [ref=f1e474]:
+            - generic [ref=f1e475]:
+              - text: 94 500 €
+              - generic [ref=f1e476]: soit 1 420 €/mois sur 60 mois
+            - 'button "Voir la fiche : Cabriolet V12" [ref=f1e477] [cursor=pointer]'
+  - generic [ref=f1e481]:
+    - generic [ref=f1e482]:
+      - generic [ref=f1e483]:
+        - generic [ref=f1e484]: L'atelier · plus de 40 prestations
+        - heading "Tout ce qu'on sait faire sur une voiture" [level=2] [ref=f1e485]: Tout ce qu'on saitfaire sur une voiture
+      - paragraph [ref=f1e486]: "Six univers, du simple filtre à habitacle au recalibrage des caméras d'aide à la conduite. Cochez ce dont vous avez besoin : l'estimation se construit au fur et à mesure, et on vous rappelle avec un vrai devis."
+    - tablist [ref=f1e487]:
+      - tab "Entretien courant 12 prestations" [selected] [ref=f1e488] [cursor=pointer]:
+        - text: Entretien courant
+        - generic [ref=f1e489]: 12 prestations
+      - tab "Mécanique lourde 9 prestations" [ref=f1e490] [cursor=pointer]:
+        - text: Mécanique lourde
+        - generic [ref=f1e491]: 9 prestations
+      - tab "Diagnostic & électronique 8 prestations" [ref=f1e492] [cursor=pointer]:
+        - text: Diagnostic & électronique
+        - generic [ref=f1e493]: 8 prestations
+      - tab "Pneumatiques & trains roulants 7 prestations" [ref=f1e494] [cursor=pointer]:
+        - text: Pneumatiques & trains roulants
+        - generic [ref=f1e495]: 7 prestations
+      - tab "Carrosserie & esthétique 8 prestations" [ref=f1e496] [cursor=pointer]:
+        - text: Carrosserie & esthétique
+        - generic [ref=f1e497]: 8 prestations
+      - tab "Services au client 8 prestations" [ref=f1e498] [cursor=pointer]:
+        - text: Services au client
+        - generic [ref=f1e499]: 8 prestations
+    - tabpanel [ref=f1e500]:
+      - generic [ref=f1e501]:
+        - generic [ref=f1e502]:
+          - heading "Entretien courant" [level=3] [ref=f1e503]
+          - paragraph [ref=f1e504]: Ce qu'une voiture demande chaque année. Pièces d'origine ou équivalent constructeur, au choix, et la différence de prix annoncée avant, pas après.
+        - img "Voiture sur le pont élévateur dans l'atelier" [ref=f1e505]
+      - generic [ref=f1e506]:
+        - button "Vidange et filtre à huile Huile constructeur, remise à zéro du témoin dès 95 €" [ref=f1e507] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e508]: ✓
+          - generic [ref=f1e509]:
+            - text: Vidange et filtre à huile
+            - emphasis [ref=f1e510]: Huile constructeur, remise à zéro du témoin
+          - generic [ref=f1e511]: dès 95 €
+        - button "Révision constructeur complète Selon le carnet, tampon inclus dès 240 €" [ref=f1e512] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e513]: ✓
+          - generic [ref=f1e514]:
+            - text: Révision constructeur complète
+            - emphasis [ref=f1e515]: Selon le carnet, tampon inclus
+          - generic [ref=f1e516]: dès 240 €
+        - button "Filtre à air et filtre d'habitacle Filtre charbon actif en option dès 70 €" [ref=f1e517] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e518]: ✓
+          - generic [ref=f1e519]:
+            - text: Filtre à air et filtre d'habitacle
+            - emphasis [ref=f1e520]: Filtre charbon actif en option
+          - generic [ref=f1e521]: dès 70 €
+        - button "Plaquettes de frein Un train, contrôle des disques compris dès 160 €" [ref=f1e522] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e523]: ✓
+          - generic [ref=f1e524]:
+            - text: Plaquettes de frein
+            - emphasis [ref=f1e525]: Un train, contrôle des disques compris
+          - generic [ref=f1e526]: dès 160 €
+        - button "Disques et plaquettes Un train, montage et rodage dès 340 €" [ref=f1e527] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e528]: ✓
+          - generic [ref=f1e529]:
+            - text: Disques et plaquettes
+            - emphasis [ref=f1e530]: Un train, montage et rodage
+          - generic [ref=f1e531]: dès 340 €
+        - button "Liquide de frein Purge complète, contrôle du point d'ébullition dès 90 €" [ref=f1e532] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e533]: ✓
+          - generic [ref=f1e534]:
+            - text: Liquide de frein
+            - emphasis [ref=f1e535]: Purge complète, contrôle du point d'ébullition
+          - generic [ref=f1e536]: dès 90 €
+        - button "Courroie de distribution Avec pompe à eau et galets dès 690 €" [ref=f1e537] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e538]: ✓
+          - generic [ref=f1e539]:
+            - text: Courroie de distribution
+            - emphasis [ref=f1e540]: Avec pompe à eau et galets
+          - generic [ref=f1e541]: dès 690 €
+        - button "Chaîne de distribution Contrôle d'allongement puis remplacement dès 1 290 €" [ref=f1e542] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e543]: ✓
+          - generic [ref=f1e544]:
+            - text: Chaîne de distribution
+            - emphasis [ref=f1e545]: Contrôle d'allongement puis remplacement
+          - generic [ref=f1e546]: dès 1 290 €
+        - button "Batterie Test de charge, pose et codage si besoin dès 180 €" [ref=f1e547] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e548]: ✓
+          - generic [ref=f1e549]:
+            - text: Batterie
+            - emphasis [ref=f1e550]: Test de charge, pose et codage si besoin
+          - generic [ref=f1e551]: dès 180 €
+        - 'button "Climatisation : recharge Gaz R134a ou R1234yf, contrôle d''étanchéité dès 120 €" [ref=f1e552] [cursor=pointer]':
+          - generic [aria-hidden] [ref=f1e553]: ✓
+          - generic [ref=f1e554]:
+            - text: "Climatisation : recharge"
+            - emphasis [ref=f1e555]: Gaz R134a ou R1234yf, contrôle d'étanchéité
+          - generic [ref=f1e556]: dès 120 €
+        - 'button "Climatisation : désinfection Traitement du circuit et de l''évaporateur dès 75 €" [ref=f1e557] [cursor=pointer]':
+          - generic [aria-hidden] [ref=f1e558]: ✓
+          - generic [ref=f1e559]:
+            - text: "Climatisation : désinfection"
+            - emphasis [ref=f1e560]: Traitement du circuit et de l'évaporateur
+          - generic [ref=f1e561]: dès 75 €
+        - button "Balais d'essuie-glace et liquides Remise à niveau de tous les niveaux dès 45 €" [ref=f1e562] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f1e563]: ✓
+          - generic [ref=f1e564]:
+            - text: Balais d'essuie-glace et liquides
+            - emphasis [ref=f1e565]: Remise à niveau de tous les niveaux
+          - generic [ref=f1e566]: dès 45 €
+  - generic [ref=f1e568]:
+    - generic [ref=f1e569]:
+      - generic [ref=f1e570]:
+        - generic [ref=f1e571]: Ce qui est compris
+        - heading "La garantie, en trois points" [level=2] [ref=f1e572]: La garantie,en trois points
+      - paragraph [ref=f1e573]: "Une voiture premium d'occasion fait peur pour une seule raison : la facture qu'on n'a pas vue venir. Voilà comment on l'enlève."
+    - generic [ref=f1e574]:
+      - generic [ref=f1e575]:
+        - generic [ref=f1e576]: "01"
+        - heading "150 points contrôlés" [level=3] [ref=f1e577]
+        - paragraph [ref=f1e578]: "Le même protocole pour toutes : distribution, embrayage, trains roulants, électronique, climatisation, historique d'entretien. Le rapport signé part avec la voiture."
+      - generic [ref=f1e579]:
+        - generic [ref=f1e580]: "02"
+        - heading "24 mois pièces et main-d'œuvre" [level=3] [ref=f1e581]
+        - paragraph [ref=f1e582]: "Pas une extension vendue à part : elle est dans le prix affiché. Prise en charge dans notre atelier, ou chez un partenaire si vous êtes loin."
+      - generic [ref=f1e583]:
+        - generic [ref=f1e584]: "03"
+        - heading "Reprise chiffrée sous 24 h" [level=3] [ref=f1e585]
+        - paragraph [ref=f1e586]: Vous nous envoyez trois photos et le kilométrage, on vous donne un prix ferme le lendemain. Si vous achetez chez nous, il vient en déduction.
+  - generic [ref=f1e589]:
+    - img "Voiture prête à la livraison, phares allumés, dans le hall du garage" [ref=f1e591]
+    - generic [ref=f1e592]:
+      - generic [ref=f1e593]: Le garage · depuis 2006
+      - heading "On vend des voitures qu'on accepterait de reprendre" [level=2] [ref=f1e594]: On vend des voituresqu'on accepteraitde reprendre
+      - paragraph [ref=f1e595]: C'est le seul test qui compte. Si on ne serait pas prêts à la racheter dans deux ans, elle ne rentre pas au stock. Ça nous fait refuser environ une voiture sur trois, et ça explique pourquoi le stock est court.
+      - list [ref=f1e596]:
+        - listitem [ref=f1e597]:
+          - generic [ref=f1e600]: Devis avant toute intervention. Le prix annoncé est le prix payé, y compris quand on tombe sur autre chose en démontant.
+        - listitem [ref=f1e601]:
+          - generic [ref=f1e604]: "Anciennes pièces rendues. Sans avoir à le demander : elles vous attendent dans un carton à la reprise du véhicule."
+        - listitem [ref=f1e605]:
+          - generic [ref=f1e608]: Véhicule de courtoisie. Réservé à l'avance en même temps que le rendez-vous, pas promis puis oublié.
+      - generic [ref=f1e609]:
+        - generic [ref=f1e610]:
+          - generic [ref=f1e611]: "0"
+          - text: ans d'atelier
+        - generic [ref=f1e612]:
+          - generic [ref=f1e613]: "0"
+          - text: véhicules livrés
+        - generic [ref=f1e614]:
+          - generic [ref=f1e615]: "0"
+          - text: points contrôlés
+        - generic [ref=f1e616]:
+          - generic [ref=f1e617]: "0"
+          - text: de clients qui reviennent
+  - generic [ref=f1e619]:
+    - generic [ref=f1e621]:
+      - generic [ref=f1e622]: Ce qu'en disent nos clients
+      - heading "La confiance, ça se vérifie" [level=2] [ref=f1e623]: La confiance,ça se vérifie
+    - generic [ref=f1e624]:
+      - generic [ref=f1e625]:
+        - generic [ref=f1e626]: ★★★★★
+        - paragraph [ref=f1e627]: « J'ai acheté un 4×4 de sept ans, ce qui est censé être une mauvaise idée. Ils m'ont montré la facture des travaux faits avant la vente, distribution comprise. Deux ans après, rien à signaler. »
+        - generic [ref=f1e628]:
+          - generic [ref=f1e629]: JL
+          - generic [ref=f1e630]:
+            - generic [ref=f1e631]: Julien L.
+            - generic [ref=f1e632]: Achat véhicule · Luxembourg
+      - generic [ref=f1e633]:
+        - generic [ref=f1e634]: ★★★★★
+        - paragraph [ref=f1e635]: « Panne électronique que deux garages n'avaient pas trouvée. Ici, diagnostic le matin, voiture rendue le soir, et on m'a expliqué ce qui avait lâché au lieu de me tendre une facture. »
+        - generic [ref=f1e636]:
+          - generic [ref=f1e637]: SM
+          - generic [ref=f1e638]:
+            - generic [ref=f1e639]: Sophie M.
+            - generic [ref=f1e640]: Diagnostic · Esch-sur-Alzette
+      - generic [ref=f1e641]:
+        - generic [ref=f1e642]: ★★★★★
+        - paragraph [ref=f1e643]: « Reprise de mon break chiffrée en une journée, sans négociation à rallonge, et le prix tenu à la livraison. C'est rare assez pour être dit. »
+        - generic [ref=f1e644]:
+          - generic [ref=f1e645]: RD
+          - generic [ref=f1e646]:
+            - generic [ref=f1e647]: Ricardo D.
+            - generic [ref=f1e648]: Reprise · Bertrange
+  - generic [ref=f1e653]:
+    - heading [level=2] [ref=f1e654]:
+      - text: Venez la
+      - emphasis [ref=f1e655]: voir de près.
+    - paragraph [ref=f1e656]: "Un essai, une reprise à chiffrer, un bruit qui vous inquiète : le plus simple reste encore de décrocher."
+    - link "Appeler l'atelier →" [ref=f1e658] [cursor=pointer]:
+      - /url: tel:+35200000000
+      - text: Appeler l'atelier
+      - generic [ref=f1e659]: →
+    - link "+352 00 00 00" [ref=f1e661] [cursor=pointer]:
+      - /url: tel:+35200000000
+    - paragraph [ref=f1e662]: Lundi au vendredi 8h – 18h · Samedi 9h – 13h · Essai sur rendez-vous
+  - generic [ref=f1e665]:
+    - generic [ref=f1e666]:
+      - generic [ref=f1e667]: Adresse
+      - paragraph [ref=f1e668]: Rue à compléterL-0000 Luxembourg
+    - generic [ref=f1e669]:
+      - generic [ref=f1e670]: Téléphone
+      - paragraph [ref=f1e671]:
+        - link "+352 00 00 00" [ref=f1e672] [cursor=pointer]:
+          - /url: tel:+35200000000
+    - generic [ref=f1e673]:
+      - generic [ref=f1e674]: E-mail
+      - paragraph [ref=f1e675]:
+        - link "contact@motorline.example" [ref=f1e676] [cursor=pointer]:
+          - /url: mailto:contact@motorline.example
+    - generic [ref=f1e677]:
+      - generic [ref=f1e678]: Horaires
+      - paragraph [ref=f1e679]: Lun – ven 8h – 18hSamedi 9h – 13h
+  - contentinfo [ref=f1e680]:
+    - generic [ref=f1e681]:
+      - generic [ref=f1e682]:
+        - link "MOTORLINE" [ref=f1e683] [cursor=pointer]:
+          - /url: "#haut"
+        - generic [ref=f1e686]: Automobiles premium & atelier · Luxembourg
+      - generic [ref=f1e687]:
+        - generic [ref=f1e688]: "Démonstration : le nom, les coordonnées, les photos, les véhicules et les tarifs de ce site sont fictifs."
+        - generic [ref=f1e689]: Maquette réalisée par NS Development — création de sites web au Luxembourg
+  - generic:
+    - button "Ouvrir la discussion"
+    - dialog "Discussion avec MOTORLINE":
+      - generic:
+        - generic: M
+        - generic:
+          - generic: MOTORLINE
+          - generic: Réponse immédiate
+      - log
+      - generic:
+        - textbox "Votre message":
+          - /placeholder: Écrivez votre question…
+        - button "Envoyer"
+      - generic:
+        - text: Assistant propulsé par
+        - link "NS Development":
+          - /url: https://nsdevelopment.lu

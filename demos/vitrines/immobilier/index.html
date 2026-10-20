@@ -36,16 +36,66 @@
   .nav-links a:hover{color:var(--navy)}
   .hamb{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink)}
 
-  .hero{padding:200px 0 120px;position:relative;overflow:hidden}
-  .hero-in{max-width:900px}
-  .hero .eyebrow{margin-bottom:26px;display:block}
-  .hero h1{font-size:clamp(52px,8.5vw,108px);font-weight:500;letter-spacing:-.01em}
-  .hero h1 em{font-style:italic;color:var(--gold)}
-  .hero p{font-size:20px;color:var(--soft);max-width:540px;margin:32px 0 42px;font-weight:300}
-  .hero-cta{display:flex;gap:16px;flex-wrap:wrap}
-  .hero-rule{margin-top:70px;display:flex;gap:50px;flex-wrap:wrap;align-items:center;padding-top:34px;border-top:1px solid var(--line)}
-  .hero-rule div{font-size:13px;color:var(--soft);letter-spacing:.04em}
-  .hero-rule b{font-family:var(--serif);font-size:34px;color:var(--navy);font-weight:600;display:block;line-height:1}
+  /* ---- HERO « crépuscule » (refonte du 20/10/2026) ----
+     Le papier crème laisse la place à un bleu de fin de jour, une ligne
+     d'horizon dorée, et une fenêtre en arche où les biens se succèdent.
+     Plus de formulaire ni de bouton : on entre par un quartier. */
+  .hero{--gold-l:#d8b670;position:relative;overflow:hidden;min-height:100svh;display:flex;align-items:center;padding:130px 0 90px;color:var(--paper);
+    background:linear-gradient(180deg,#121a2e 0%,#1d2a47 58%,#2c3550 78%,#3a3a4a 100%)}
+  .hero::before{content:"";position:absolute;left:-10%;right:-10%;top:90%;height:60%;pointer-events:none;
+    background:radial-gradient(50% 40% at 62% 0%,rgba(224,192,122,.42),rgba(224,192,122,.08) 55%,transparent 75%)}
+  .hero::after{content:"";position:absolute;left:0;right:0;top:90%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(224,192,122,.7) 40%,rgba(224,192,122,.7) 70%,transparent);
+    transform:scaleX(0);animation:ligne 2.2s .3s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes ligne{to{transform:scaleX(1)}}
+  .hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:center}
+  .hero .eyebrow{margin-bottom:26px;display:block;color:var(--gold-l)}
+  .hero h1{font-size:clamp(48px,6.2vw,88px);font-weight:500;letter-spacing:-.01em;color:#fbf8f1;line-height:1.02}
+  .hero h1 em{font-style:italic;color:var(--gold-l)}
+  .hero-txt>p{font-size:18px;color:rgba(244,241,233,.78);max-width:470px;margin:28px 0 40px;font-weight:300}
+  .quartiers{border-top:1px solid rgba(244,241,233,.16);padding-top:22px;max-width:560px}
+  .quartiers .f-lab{color:var(--gold-l);margin-bottom:14px}
+  .q-liste{display:flex;flex-wrap:wrap;gap:6px 26px}
+  .q-liste button{background:none;border:0;padding:4px 0;cursor:pointer;font-family:var(--serif);font-size:25px;font-style:italic;
+    color:#fbf8f1;position:relative;transition:color .4s var(--ns-ease)}
+  .q-liste button sup{font-family:var(--sans);font-style:normal;font-size:11px;color:var(--gold-l);margin-left:3px;letter-spacing:.06em}
+  .q-liste button::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:1px;background:var(--gold-l);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ns-ease)}
+  .q-liste button:hover{color:var(--gold-l)}.q-liste button:hover::after{transform:scaleX(1)}
+  .hero-alt{margin-top:26px;font-size:14.5px;color:rgba(244,241,233,.7)}
+  .hero-alt a{color:#fbf8f1;border-bottom:1px solid rgba(224,192,122,.6);padding-bottom:2px}
+
+  .arche{position:relative;justify-self:end;width:min(100%,430px)}
+  .arche-f{position:relative;aspect-ratio:3/4;border-radius:999px 999px 6px 6px;overflow:hidden;background:#24304c;
+    box-shadow:0 60px 90px -50px rgba(0,0,0,.8),0 0 0 1px rgba(224,192,122,.35);
+    clip-path:inset(100% 0 0 0 round 999px 999px 6px 6px);animation:arche 1.5s .2s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes arche{to{clip-path:inset(0 0 0 0 round 999px 999px 6px 6px)}}
+  .arche-f img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);
+    transition:opacity 1.4s var(--ns-ease),transform 7s linear}
+  .arche-f img.on{opacity:1;transform:scale(1)}
+  .arche::before{content:"";position:absolute;inset:-18px -18px auto auto;width:100%;aspect-ratio:3/4;border-radius:999px 999px 6px 6px;
+    border:1px solid rgba(224,192,122,.3);pointer-events:none}
+  .arche-cap{position:absolute;left:-46px;bottom:38px;background:#fbf8f1;color:var(--ink);padding:18px 22px 16px;min-width:250px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+  .arche-cap .loc{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500}
+  .arche-cap b{display:block;font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.1;margin:4px 0 2px}
+  .arche-cap .px{font-size:14px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .arche-cap .px strong{color:var(--navy);font-weight:500}
+  .arche-cap .txt{transition:opacity .45s}
+  .arche-cap.fondu .txt{opacity:0}
+  .arche-bar{display:flex;gap:6px;margin-top:12px}
+  .arche-bar i{flex:1;height:2px;background:var(--line);position:relative;overflow:hidden}
+  .arche-bar i::after{content:"";position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left}
+  .arche-bar i.vu::after{transform:scaleX(1)}
+  .arche-bar i.on::after{animation:barre 5s linear forwards}
+  @keyframes barre{to{transform:scaleX(1)}}
+  /* nav posée sur le crépuscule tant qu'elle n'est pas opaque */
+  nav:not(.ns-solid) .logo{color:#fbf8f1}
+  nav:not(.ns-solid) .nav-links a{color:rgba(244,241,233,.78)}
+  nav:not(.ns-solid) .nav-links a:hover{color:#fff}
+  nav:not(.ns-solid) .hamb{color:#fbf8f1}
+  .nav-est{color:var(--gold)!important;border-bottom:1px solid currentColor;padding-bottom:3px}
+  nav:not(.ns-solid) .nav-est{color:var(--gold-l)!important}
+  @media(prefers-reduced-motion:reduce){.arche-f,.hero::after{animation:none;clip-path:none;transform:none}}
 
   section{padding:110px 0}
   .sec-head{text-align:center;max-width:640px;margin:0 auto 66px}
@@ -107,12 +157,6 @@
   .fld{appearance:none;-webkit-appearance:none;background:transparent;border:0;font-family:var(--sans);font-size:15px;font-weight:400;color:var(--ink);width:100%;cursor:pointer;outline-offset:5px;text-overflow:ellipsis}
   select.fld{padding-right:22px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a4823a' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right center}
 
-  .finder{margin:42px 0 22px;max-width:1000px;background:#fbf8f1;border:1px solid var(--line);box-shadow:0 34px 70px -46px rgba(28,37,54,.75);display:grid;grid-template-columns:repeat(4,1fr) auto}
-  .finder .f{padding:18px 20px;border-right:1px solid var(--line);min-width:0}
-  .finder .go{border:0;background:var(--navy);color:var(--paper);font-family:var(--sans);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;padding:0 38px;cursor:pointer;transition:var(--tr)}
-  .finder .go:hover{background:var(--gold)}
-  .hero-alt{font-size:14.5px;color:var(--soft)}
-  .hero-alt a{color:var(--navy)}
 
   .tools{border:1px solid var(--line);background:var(--paper2);padding:24px 26px;margin-bottom:32px}
   .tools-top{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
@@ -158,7 +202,9 @@
   @media(prefers-reduced-motion:reduce){#resultats .prop{opacity:1;translate:none;animation:none}}
   @media(max-width:1040px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.props{grid-template-columns:1fr}.sv-grid{grid-template-columns:1fr 1fr}
-    .finder{grid-template-columns:1fr}.finder .f{border-right:0;border-bottom:1px solid var(--line)}.finder .go{padding:18px}
+    .hero{min-height:auto;padding:120px 0 70px}.hero::before{display:none}.hero::after{top:auto;bottom:0}
+    .hero-in{grid-template-columns:1fr;gap:50px}.arche{justify-self:center;width:min(86%,360px)}.arche-cap{left:-22px;min-width:220px}
+    .q-liste button{font-size:22px}
     .seg{width:100%}.seg button{flex:1;padding:12px 8px;letter-spacing:.1em}
     .tools{padding:20px 18px}.tools-grid{grid-template-columns:1fr 1fr}
     .res{align-items:flex-start}}
@@ -168,25 +214,33 @@
 <body>
 <nav data-nav-solid><div class="nav-in">
   <a href="#" class="logo">Horizon</a>
-  <div class="nav-links"><a href="#biens" class="ns-link">Nos biens</a><a href="#services" class="ns-link">Services</a><a href="#estimation" class="ns-link">Estimation</a><a href="#contact" class="ns-link">Contact</a><a href="#estimation" class="btn gold" style="padding:11px 22px">Estimer mon bien</a></div>
+  <div class="nav-links"><a href="#biens" class="ns-link">Nos biens</a><a href="#services" class="ns-link">Services</a><a href="#estimation" class="ns-link">Estimation</a><a href="#contact" class="ns-link">Contact</a><a href="#estimation" class="nav-est">Estimer mon bien</a></div>
   <button class="hamb">☰</button>
 </div></nav>
 
 <header class="hero"><div class="wrap hero-in">
-  <span class="eyebrow" data-reveal="blur">Agence immobilière · Luxembourg</span>
-  <h1><span data-split data-delay="120">L'adresse de vos</span><br><em class="ns-gradient-text" data-reveal="blur" data-delay="620">plus beaux</em> <span data-split data-delay="780">projets.</span></h1>
-  <p data-reveal="blur" data-delay="1020">Achat, vente, location et estimation. Un accompagnement discret et exigeant, pour des biens à la hauteur de vos attentes.</p>
-  <form class="finder" id="finder" autocomplete="off" data-reveal data-delay="1140">
-    <div class="f"><label class="f-lab" for="f-t">Je souhaite</label><select class="fld" id="f-t"><option value="vente">Acheter</option><option value="location">Louer</option></select></div>
-    <div class="f"><label class="f-lab" for="f-loc">Localité</label><select class="fld" id="f-loc"></select></div>
-    <div class="f"><label class="f-lab" for="f-type">Type de bien</label><select class="fld" id="f-type"></select></div>
-    <div class="f"><label class="f-lab" for="f-budget">Budget max</label><select class="fld" id="f-budget"></select></div>
-    <button class="go ns-shine" type="submit">Rechercher</button>
-  </form>
-  <p class="hero-alt" data-reveal data-delay="1240">Vous vendez plutôt ? <a href="#estimation" class="ns-link">Faites estimer votre bien, gratuitement</a></p>
-  <div class="hero-rule" data-stagger="140" data-delay="1300">
-    <div><b><span data-count="15" data-duration="1600">0</span> ans</b>au service du Luxembourg</div><div><b><span data-count="200" data-suffix="+" data-duration="1600">0</span></b>biens vendus</div><div><b>Sur-mesure</b>un conseiller dédié</div>
+  <div class="hero-txt">
+    <span class="eyebrow" data-reveal="blur">Agence immobilière · Luxembourg</span>
+    <h1><span data-split data-delay="120">Voir plus loin</span><br><span data-split data-delay="420">que</span> <em data-reveal="blur" data-delay="640">quatre murs.</em></h1>
+    <p data-reveal="blur" data-delay="900">Achat, vente, location, estimation. Un conseiller qui connaît chaque rue du pays, et des biens choisis avec la même exigence que vous.</p>
+    <div class="quartiers" data-reveal data-delay="1080">
+      <span class="f-lab">Entrer par un quartier</span>
+      <div class="q-liste" id="hz-q"></div>
+    </div>
+    <p class="hero-alt" data-reveal data-delay="1200">Vous vendez plutôt ? <a href="#estimation">Estimation gratuite de votre bien</a></p>
   </div>
+  <figure class="arche" data-reveal="right" data-delay="200" aria-label="Quelques biens du moment">
+    <div class="arche-f" id="arche">
+      <img class="on" src="photos/penthouse-kirchberg.jpg" alt="Façade et terrasses du penthouse au Kirchberg" data-loc="Kirchberg" data-nom="Penthouse lumineux" data-px="980 000 €" data-m2="135 m² · 3 chambres" fetchpriority="high">
+      <img src="photos/villa-strassen.jpg" alt="Villa contemporaine à Strassen, piscine et baies vitrées" data-loc="Strassen" data-nom="Villa contemporaine" data-px="1 850 000 €" data-m2="285 m² · 5 chambres" loading="lazy">
+      <img src="photos/maison-maitre-belair.jpg" alt="Salon de la maison de maître à Belair" data-loc="Belair" data-nom="Maison de maître" data-px="1 490 000 €" data-m2="240 m² · 5 chambres" loading="lazy">
+      <img src="photos/loft-hollerich.jpg" alt="Loft d'artiste à Hollerich" data-loc="Hollerich" data-nom="Loft d'artiste" data-px="820 000 €" data-m2="140 m² · 2 chambres" loading="lazy">
+    </div>
+    <figcaption class="arche-cap" id="arche-cap">
+      <div class="txt"><span class="loc">Kirchberg</span><b>Penthouse lumineux</b><span class="px"><strong>980 000 €</strong> · 135 m² · 3 chambres</span></div>
+      <div class="arche-bar"><i class="on"></i><i></i><i></i><i></i></div>
+    </figcaption>
+  </figure>
 </div></header>
 
 <section id="biens"><div class="wrap">

@@ -201,7 +201,7 @@
   }
 
   function syncUI() {
-    $("#f-t").value = state.t;
+    if ($("#f-t")) $("#f-t").value = state.t;
     $$("#f-loc, #t-loc").forEach(function (s) { s.value = state.loc; });
     $$("#f-type, #t-type").forEach(function (s) { s.value = state.type; });
     $$("#f-budget, #t-budget").forEach(function (s) { s.value = String(state.budget); });
@@ -266,22 +266,27 @@
       else window.addEventListener("load", aller);
     }
 
-    /* barre du hero : pré-remplit les filtres puis emmène aux résultats */
-    $("#finder").addEventListener("submit", function (e) {
-      e.preventDefault();
-      /* on lit tout avant de reconstruire les listes, sinon les <option>
-         régénérées effacent la sélection de l'utilisateur */
-      var t = $("#f-t").value, loc = $("#f-loc").value,
-          type = $("#f-type").value, budget = parseInt($("#f-budget").value, 10) || 0;
-      state.t = t; state.loc = loc; state.type = type; state.budget = budget;
-      appliquer();
-      $("#biens").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-
-    $("#f-t").addEventListener("change", function () {
-      state.t = this.value;
-      majListes(); syncUI();
-    });
+    /* hero : chaque quartier ouvre directement ses biens */
+    var q = $("#hz-q");
+    if (q) {
+      /* un quartier ouvre ses biens à vendre, ou à louer s'il n'en a pas à vendre :
+         le chiffre affiché est exactement le nombre de biens qu'on verra */
+      var compte = {}, typeDe = {};
+      BIENS.forEach(function (b) { if (b.t === "vente") typeDe[b.loc] = "vente"; else if (!typeDe[b.loc]) typeDe[b.loc] = "location"; });
+      BIENS.forEach(function (b) { if (b.t === typeDe[b.loc]) compte[b.loc] = (compte[b.loc] || 0) + 1; });
+      var locs = Object.keys(compte).sort(function (a, b) { return compte[b] - compte[a] || a.localeCompare(b); }).slice(0, 7);
+      q.innerHTML = locs.map(function (l) {
+        return '<button type="button" data-loc="' + l + '" aria-label="Voir les ' + compte[l] + ' biens ' + (typeDe[l] === "vente" ? "à vendre" : "à louer") + ' à ' + l + '">' + l + '<sup>' + compte[l] + (typeDe[l] === "location" ? " à louer" : "") + '</sup></button>';
+      }).join("");
+      q.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-loc]");
+        if (!btn) return;
+        var l = btn.getAttribute("data-loc");
+        state.t = typeDe[l]; state.loc = l; state.type = ""; state.budget = 0; state.q = "";
+        appliquer();
+        $("#biens").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
 
     /* segments Acheter / Louer */
     $$(".seg button").forEach(function (btn) {
@@ -323,4 +328,29 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+})();
+
+/* ------------------------------------------------------------------
+   Hero : la fenêtre en arche fait défiler quatre biens, toutes les 5 s
+   ------------------------------------------------------------------ */
+(function () {
+  "use strict";
+  var f = document.getElementById("arche"), cap = document.getElementById("arche-cap");
+  if (!f || !cap) return;
+  var imgs = [].slice.call(f.querySelectorAll("img")), bars = [].slice.call(cap.querySelectorAll(".arche-bar i"));
+  var txt = cap.querySelector(".txt"), i = 0;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  function montrer(n) {
+    cap.classList.add("fondu");
+    setTimeout(function () {
+      imgs.forEach(function (im, k) { im.classList.toggle("on", k === n); });
+      bars.forEach(function (b, k) { b.classList.remove("on"); b.classList.toggle("vu", k < n); });
+      void cap.offsetWidth;
+      bars[n].classList.add("on");
+      var d = imgs[n].dataset;
+      txt.innerHTML = '<span class="loc">' + d.loc + '</span><b>' + d.nom + '</b><span class="px"><strong>' + d.px + '</strong> · ' + d.m2 + '</span>';
+      cap.classList.remove("fondu");
+    }, 450);
+  }
+  setInterval(function () { i = (i + 1) % imgs.length; montrer(i); }, 5000);
 })();

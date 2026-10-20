@@ -25,14 +25,25 @@
       vide = $('#vide');
 
   (function rail() {
-    var choix = ['v2', 'v11', 'v9'].map(function (id) { return $('#' + id); }).filter(Boolean);
-    $('#rail').innerHTML = choix.map(function (a) {
+    var choix = ['v1', 'v2', 'v13', 'v9', 'v11'].map(function (id) { return $('#' + id); }).filter(Boolean);
+    var rail = $('#rail');
+    rail.innerHTML = choix.map(function (a, i) {
       var d = JSON.parse(a.dataset.fiche);
-      return '<button type="button" class="rail-c" data-voir="' + a.id + '">' +
-        '<img src="' + d.photo + '" alt="" aria-hidden="true" width="1200" height="800" loading="lazy">' +
-        '<span><b>' + d.titre + '</b><span>' + d.an + ' · ' + esp(d.km) + ' km · ' + d.ch + ' ch</span></span>' +
-        '<i>' + esp(d.prix) + ' €</i></button>';
+      return '<button type="button" class="lame' + (i === 0 ? ' ouverte' : '') + '" style="--i:' + i + '" data-voir="' + a.id + '"' +
+        ' aria-label="' + d.titre + ', ' + d.an + ', ' + esp(d.prix) + ' euros : ouvrir la fiche">' +
+        '<img src="' + d.photo + '" alt="" aria-hidden="true" width="1200" height="800"' + (i > 1 ? ' loading="lazy"' : '') + '>' +
+        '<span class="lame-n">0' + (i + 1) + '</span>' +
+        '<span class="lame-v">' + d.titre + '</span>' +
+        '<span class="lame-info"><span><b>' + d.titre + '</b><small>' + d.an + ' · ' + esp(d.km) + ' km · ' + d.ch + ' ch · ' + d.carb + '</small></span>' +
+        '<i>' + esp(d.prix) + ' €<u>Voir la fiche →</u></i></span></button>';
     }).join('');
+    /* la lame survolée (ou atteinte au clavier) s'ouvre, les autres se replient */
+    var lames = $$('.lame', rail);
+    function ouvrir(l) { lames.forEach(function (x) { x.classList.toggle('ouverte', x === l); }); }
+    lames.forEach(function (l) {
+      l.addEventListener('mouseenter', function () { ouvrir(l); });
+      l.addEventListener('focus', function () { ouvrir(l); });
+    });
   })();
 
   /* ------------------------------------------------------------- catalogue */

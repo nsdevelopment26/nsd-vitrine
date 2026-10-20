@@ -16,6 +16,9 @@ window.ORVANE_I18N = {
     hero_sub: "Comptabilité, salaires, création de société et fiscalité luxembourgeoise. Un cabinet à taille humaine où vous parlez toujours à la même personne.",
     hero_cta1: "Prendre rendez-vous", hero_cta2: "Voir les prestations",
     hero_note: "Premier entretien gratuit, sans engagement.",
+    hero_note2: "Premier entretien gratuit, sans engagement →",
+    fr_titre: "l'année fiscale, vue par le cabinet", fr_leg: "Échéances luxembourgeoises courantes",
+    fr_note: "Calendrier indicatif pour une société à l'exercice civil. Le vôtre est établi au premier entretien.",
 
     doss_head: "Dossier client", doss_sub: "SARL · exercice en cours",
     doss_r1: "Déclaration TVA", doss_s1: "Transmise",
@@ -104,6 +107,9 @@ window.ORVANE_I18N = {
     hero_sub: "Buchhaltung, Löhne, Firmengründung und luxemburgisches Steuerrecht. Eine überschaubare Kanzlei, in der Sie immer mit derselben Person sprechen.",
     hero_cta1: "Termin vereinbaren", hero_cta2: "Leistungen ansehen",
     hero_note: "Erstgespräch kostenlos und unverbindlich.",
+    hero_note2: "Erstgespräch kostenlos und unverbindlich →",
+    fr_titre: "das Steuerjahr aus Sicht der Kanzlei", fr_leg: "Übliche luxemburgische Fristen",
+    fr_note: "Richtwerte für eine Gesellschaft, deren Geschäftsjahr dem Kalenderjahr entspricht. Ihr eigener Kalender entsteht im Erstgespräch.",
 
     doss_head: "Mandantenakte", doss_sub: "SARL · laufendes Geschäftsjahr",
     doss_r1: "MwSt.-Erklärung", doss_s1: "Eingereicht",
@@ -192,6 +198,9 @@ window.ORVANE_I18N = {
     hero_sub: "Accounting, payroll, company formation and Luxembourg tax. A small firm where you always speak to the same person.",
     hero_cta1: "Book an appointment", hero_cta2: "See the services",
     hero_note: "First meeting free, no obligation.",
+    hero_note2: "First meeting free, no obligation →",
+    fr_titre: "the tax year, as the firm sees it", fr_leg: "Common Luxembourg deadlines",
+    fr_note: "Indicative calendar for a company whose financial year is the calendar year. Yours is set up at the first meeting.",
 
     doss_head: "Client file", doss_sub: "SARL · current financial year",
     doss_r1: "VAT return", doss_s1: "Filed",
@@ -280,6 +289,9 @@ window.ORVANE_I18N = {
     hero_sub: "Contabilidade, salários, constituição de sociedades e fiscalidade luxemburguesa. Um escritório à escala humana onde fala sempre com a mesma pessoa.",
     hero_cta1: "Marcar reunião", hero_cta2: "Ver os serviços",
     hero_note: "Primeira reunião gratuita, sem compromisso.",
+    hero_note2: "Primeira reunião gratuita, sem compromisso →",
+    fr_titre: "o ano fiscal, visto pelo escritório", fr_leg: "Prazos luxemburgueses habituais",
+    fr_note: "Calendário indicativo para uma sociedade com exercício civil. O seu é definido na primeira reunião.",
 
     doss_head: "Processo do cliente", doss_sub: "SARL · exercício em curso",
     doss_r1: "Declaração de IVA", doss_s1: "Entregue",

@@ -176,62 +176,68 @@
   /* =========================================================
      HERO
      ========================================================= */
-  #hero{position:relative;padding:172px 0 132px}
-  .hero-grid{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:60px;align-items:center}
+  /* Refonte du 20/10/2026 : la photo et les deux boutons laissent la place
+     à la promesse elle-même. Une frise de l'année fiscale, le jour d'aujourd'hui
+     dessus, et le compte à rebours de la prochaine échéance. */
+  #hero{position:relative;padding:168px 0 96px;overflow:hidden}
+  #hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;
+    -webkit-mask-image:linear-gradient(180deg,transparent 8%,#000 40%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent 8%,#000 40%,#000 70%,transparent);
+    background:repeating-linear-gradient(180deg,transparent 0 35px,rgba(29,81,64,.07) 35px 36px)}
+  .hero-grid{position:relative;display:grid;grid-template-columns:1.25fr .75fr;gap:64px;align-items:end}
 
-  .hero-media{position:relative}
-  .hero-media img{width:100%;height:auto;aspect-ratio:5/7;object-fit:cover;object-position:center 74%;display:block;background:var(--paper-2)}
-  .hero-media-cap{
-    position:absolute;left:0;right:0;top:0;
-    background:linear-gradient(to bottom,rgba(15,42,33,.72),rgba(15,42,33,0));
-    color:var(--paper);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-    padding:16px 20px 34px;
-  }
+  h1{font-size:clamp(40px,5.6vw,78px);font-weight:500;letter-spacing:-.035em;line-height:1.0}
+  h1 .mark{position:relative;color:var(--green);white-space:nowrap;font-style:italic;font-weight:500}
+  h1 .mark::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:3px;background:var(--green);
+    transform:scaleX(0);transform-origin:left;animation:souligne 1.1s 1.1s var(--ns-ease) forwards}
+  @keyframes souligne{to{transform:scaleX(1)}}
 
-  h1{font-size:clamp(38px,5.1vw,68px);font-weight:500;letter-spacing:-.035em;line-height:1.02}
-  h1 .mark{
-    position:relative;color:var(--green);white-space:nowrap;
-    font-style:italic;font-weight:500;
-  }
-  h1 .mark::after{
-    content:"";position:absolute;left:0;right:0;bottom:.04em;height:2px;
-    background:var(--green);opacity:.32;
-  }
+  .lead{font-size:17px;color:var(--ink-2);line-height:1.68}
+  .hero-note{margin-top:18px;font-size:14px;color:var(--ink-3)}
+  .hero-note a{color:var(--green);font-weight:600;border-bottom:1px solid var(--rule-2);padding-bottom:2px;transition:border-color .3s}
+  .hero-note a:hover{border-color:var(--green)}
 
-  .lead{font-size:18px;color:var(--ink-2);max-width:34em;margin-top:30px;line-height:1.68}
-  .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
-  .hero-note{margin-top:20px;font-size:13.5px;color:var(--ink-3);display:flex;align-items:center;gap:9px}
-  .hero-note::before{content:"";width:16px;height:1px;background:var(--rule-2)}
+  /* compte à rebours : un ticket de grand livre */
+  .decompte{margin-top:30px;background:var(--green-deep);color:var(--paper);display:grid;grid-template-columns:auto 1fr;gap:0 22px;padding:24px 26px;align-items:center}
+  .decompte .j{font-family:'Fraunces',serif;font-size:60px;line-height:.9;font-weight:500;letter-spacing:-.04em;font-variant-numeric:lining-nums tabular-nums;grid-row:span 2}
+  .decompte .j small{display:block;font-family:'Public Sans',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9FC4B2;margin-top:8px;font-weight:600}
+  .decompte .quoi{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#9FC4B2;font-weight:600}
+  .decompte b{display:block;font-family:'Fraunces',serif;font-weight:500;font-size:20px;line-height:1.2;margin-top:4px}
+  .decompte .puis{grid-column:1/-1;margin-top:18px;padding-top:14px;border-top:1px solid rgba(242,241,236,.2);font-size:13.5px;color:rgba(242,241,236,.78)}
 
-  /* Panneau d'échéances — bloc vert plein, pas une feuille */
-  .sheet{background:var(--green-deep);color:var(--paper);padding:30px 28px 24px}
-  .hero-media .sheet{
-    position:absolute;left:52px;right:-26px;bottom:-52px;
-    box-shadow:0 20px 48px rgba(15,42,33,.24);
-  }
-  .sheet-head{display:flex;align-items:flex-start;gap:14px;padding-bottom:22px;border-bottom:1px solid rgba(242,241,236,.24)}
-  .sheet-mark{width:36px;height:36px;background:var(--paper);padding:5px;flex:none}
-  .sheet-head > span:nth-child(2){flex:1 1 auto;min-width:0}
-  .sheet-title{display:block;font-family:'Fraunces',serif;font-size:18px;font-weight:600;line-height:1.2}
-  .sheet-sub{display:block;font-size:12.5px;color:#9FC4B2;letter-spacing:.04em;margin-top:4px}
-  .sheet-ref{margin-left:auto;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,241,236,.55);padding-top:5px}
-
-  .sheet-rows li{
-    display:flex;align-items:center;justify-content:space-between;gap:16px;
-    padding:16px 0;border-bottom:1px solid rgba(242,241,236,.13);font-size:15px;
-  }
-  .sheet-rows li:last-child{border-bottom:0}
-  .sheet-rows li span:first-child{color:rgba(242,241,236,.88)}
-  .chip{
-    display:inline-flex;align-items:center;gap:8px;flex:none;
-    font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-    color:#8FD3AE;
-  }
-  .chip::before{content:"";width:6px;height:6px;background:#8FD3AE;flex:none}
-  .chip.pending{color:rgba(242,241,236,.5)}
-  .chip.pending::before{background:none;border:1px solid rgba(242,241,236,.5)}
-  .sheet-foot{display:flex;align-items:center;gap:11px;padding-top:20px;margin-top:4px;border-top:1px solid rgba(242,241,236,.24);font-size:12.5px;color:rgba(242,241,236,.6)}
-  .sheet-foot::before{content:"";width:18px;height:1px;background:rgba(242,241,236,.35)}
+  /* la frise de l'année */
+  .frise-zone{position:relative;margin-top:70px}
+  .frise-tete{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:14px;font-size:13px;color:var(--ink-3)}
+  .frise-tete b{font-family:'Fraunces',serif;font-size:22px;color:var(--ink);font-weight:500}
+  .frise-scroll{overflow-x:auto;scrollbar-width:none;padding:0 2px}
+  .frise-scroll::-webkit-scrollbar{display:none}
+  .frise{position:relative;min-width:860px;height:200px}
+  .frise .mois{position:absolute;left:0;right:0;bottom:0;height:42px;display:grid;grid-template-columns:repeat(12,1fr);border-top:1px solid var(--rule-2)}
+  .frise .mois span{border-left:1px solid var(--rule);padding:12px 0 0 8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .frise .mois span:first-child{border-left:0}
+  .frise .axe{position:absolute;left:0;right:0;bottom:42px;height:4px;background:var(--paper-2)}
+  .frise .fait{position:absolute;left:0;bottom:42px;height:4px;background:var(--green);width:0;transition:width 1.8s .5s var(--ns-ease)}
+  .frise .tic{position:absolute;bottom:46px;width:1px;height:10px;background:var(--rule-2)}
+  .frise .tic.passe{background:var(--green)}
+  .ech{position:absolute;bottom:46px;transform:translateX(-1px);opacity:0;translate:0 10px;transition:opacity .6s,translate .7s var(--ns-ease)}
+  .frise.go .ech{opacity:1;translate:0 0}
+  .ech::before{content:"";position:absolute;left:0;bottom:0;width:1px;height:var(--h);background:var(--ink-2)}
+  .ech .lab{position:absolute;z-index:2;background:var(--paper);padding:0 6px 2px 0;left:8px;bottom:calc(var(--h) - 16px);white-space:nowrap;font-size:12.5px;line-height:1.3;color:var(--ink)}
+  .ech .lab em{display:block;font-style:normal;font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+  .ech .pt{position:absolute;left:-4px;bottom:calc(var(--h) - 4px);width:9px;height:9px;border:1.5px solid var(--ink-2);background:var(--paper)}
+  .ech.passe .pt{background:var(--green);border-color:var(--green)}
+  .ech.passe .lab{color:var(--ink-3)}
+  .ech.fin .lab{left:auto;right:8px;text-align:right;padding:0 0 2px 6px}
+  .ech.proche::before{background:var(--green)}
+  .ech.proche .pt{border-color:var(--green);background:var(--paper);box-shadow:0 0 0 4px rgba(29,81,64,.15)}
+  .ech.proche .lab{color:var(--green);font-weight:600}
+  .auj{position:absolute;bottom:36px;transform:translateX(-50%);opacity:0;transition:opacity .5s 2s}
+  .frise.go .auj{opacity:1}
+  .auj i{display:block;width:16px;height:16px;border-radius:50%;background:var(--green);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--green)}
+  .auj i::after{content:"";position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;border:1px solid var(--green);animation:pouls 2.2s ease-out infinite}
+  @keyframes pouls{from{transform:scale(1);opacity:.9}to{transform:scale(2.8);opacity:0}}
+  .auj span{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--green);color:var(--paper);font-size:11px;font-weight:600;letter-spacing:.06em;padding:3px 8px}
+  .frise-note{margin-top:14px;font-size:12px;color:var(--ink-3)}
+  @media(prefers-reduced-motion:reduce){h1 .mark::after{animation:none;transform:none}.frise .fait{transition:none}.ech,.auj{transition:none}.auj i::after{animation:none}}
 
   /* =========================================================
      EN BREF
@@ -393,11 +399,8 @@
      RESPONSIVE
      ========================================================= */
   @media (max-width:1040px){
-    #hero{padding:150px 0 84px}
-    .hero-grid{grid-template-columns:1fr;gap:44px}
-    .hero-media img{aspect-ratio:16/10}
-    /* le panneau ne chevauche plus : il se pose sous la photo */
-    .hero-media .sheet{position:static;left:auto;right:auto;bottom:auto;box-shadow:none}
+    #hero{padding:150px 0 72px}
+    .hero-grid{grid-template-columns:1fr;gap:34px}
     .cab-grid,.ct-grid{grid-template-columns:1fr;gap:48px}
     .brief-grid{grid-template-columns:repeat(2,1fr)}
     .brief-item{padding:30px 24px}
@@ -412,8 +415,8 @@
   @media (max-width:860px){
     .nav-links,.nav-tel{display:none}
     .burger{display:block}
-    #hero{padding:128px 0 68px}
-    .hero-media img{aspect-ratio:4/3}
+    #hero{padding:124px 0 56px}
+    .frise-zone{margin-top:48px}
     .sec{padding:78px 0}
     .acc-btn{grid-template-columns:52px 1fr auto;gap:14px;padding:24px 2px}
     .acc-body{grid-template-columns:1fr;gap:22px;padding:0 2px 32px}
@@ -435,9 +438,8 @@
     .brief-item{border-right:0;border-bottom:1px solid var(--rule);padding:26px 0}
     .brief-item:last-child{border-bottom:0}
     .f-top{grid-template-columns:1fr;gap:30px}
-    .hero-actions .btn{width:100%;justify-content:center}
-    .sheet{padding:22px 20px 18px}
-    .sheet-ref{display:none}
+    .decompte{padding:20px}
+    .decompte .j{font-size:50px}
   }
   </style>
 </head>
@@ -505,44 +507,21 @@
 <header id="hero">
   <div class="wrap">
     <div class="hero-grid">
-
       <div>
         <p class="eyebrow" data-reveal data-i18n="hero_eyebrow">Fiduciaire indépendante · Dudelange, Luxembourg</p>
         <h1 data-reveal data-delay="80" data-i18n="hero_title">Vos comptes tenus,<br>vos échéances<br><span class="mark">jamais manquées</span>.</h1>
-        <p class="lead" data-reveal data-delay="180" data-i18n="hero_sub">Comptabilité, salaires, création de société et fiscalité luxembourgeoise. Un cabinet à taille humaine où vous parlez toujours à la même personne.</p>
-        <div class="hero-actions" data-reveal data-delay="260">
-          <a href="#contact" class="btn btn-solid" data-magnetic data-strength="0.3">
-            <span data-i18n="hero_cta1">Prendre rendez-vous</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-          <a href="#services" class="btn btn-ghost" data-i18n="hero_cta2">Voir les prestations</a>
-        </div>
-        <p class="hero-note" data-reveal data-delay="340" data-i18n="hero_note">Premier entretien gratuit, sans engagement.</p>
       </div>
-
-      <div class="hero-media" data-reveal="right" data-delay="200">
-        <img src="photos/facade.webp" alt="La façade de l'immeuble du cabinet, à Dudelange"
-             width="1200" height="1500" fetchpriority="high" decoding="async">
-        <p class="hero-media-cap" data-i18n="ab_cap">Le cabinet · Dudelange</p>
-        <div class="sheet">
-          <div class="sheet-head">
-            <span class="sheet-mark"><img src="logo.svg" alt="" width="34" height="34"></span>
-            <span>
-              <span class="sheet-title" data-i18n="doss_head">Dossier client</span>
-              <span class="sheet-sub" data-i18n="doss_sub">SARL · exercice en cours</span>
-            </span>
-            <span class="sheet-ref" data-nontraduit>Orvane</span>
-          </div>
-          <ul class="sheet-rows">
-            <li><span data-i18n="doss_r1">Déclaration TVA</span><span class="chip" data-i18n="doss_s1">Transmise</span></li>
-            <li><span data-i18n="doss_r2">Salaires · CCSS</span><span class="chip" data-i18n="doss_s2">Traités</span></li>
-            <li><span data-i18n="doss_r3">Comptes annuels · RCS</span><span class="chip pending" data-i18n="doss_s3">En préparation</span></li>
-            <li><span data-i18n="doss_r4">Impôts IRC / ICC</span><span class="chip pending" data-i18n="doss_s4">Planifié</span></li>
-          </ul>
-          <p class="sheet-foot" data-i18n="doss_foot">Point mensuel avec votre interlocuteur</p>
-        </div>
+      <div data-reveal data-delay="240">
+        <p class="lead" data-i18n="hero_sub">Comptabilité, salaires, création de société et fiscalité luxembourgeoise. Un cabinet à taille humaine où vous parlez toujours à la même personne.</p>
+        <div class="decompte" id="decompte" aria-live="polite"></div>
+        <p class="hero-note"><a href="#contact" data-i18n="hero_note2">Premier entretien gratuit, sans engagement →</a></p>
       </div>
+    </div>
 
+    <div class="frise-zone" data-reveal data-delay="380">
+      <div class="frise-tete"><span><b id="frise-an">2026</b> · <span data-i18n="fr_titre">l'année fiscale, vue par le cabinet</span></span><span data-i18n="fr_leg">Échéances luxembourgeoises courantes</span></div>
+      <div class="frise-scroll" id="frise-scroll"><div class="frise" id="frise" role="img" aria-label="Frise des échéances fiscales de l'année"></div></div>
+      <p class="frise-note" data-i18n="fr_note">Calendrier indicatif pour une société à l'exercice civil. Le vôtre est établi au premier entretien.</p>
     </div>
   </div>
 </header>
@@ -943,6 +922,7 @@
 </footer>
 
 <script src="ns-motion.js" defer></script>
+<script src="echeances.js" defer></script>
 <script src="i18n.js"></script>
 <script>
 (function(){
