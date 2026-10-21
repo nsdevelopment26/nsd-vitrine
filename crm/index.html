@@ -2781,7 +2781,8 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-totaux div.gros { font-size: 17px; font-weight: 800; border-top: 1px solid #333; margin-top: 6px; padding-top: 8px; }
   .fx-deux { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .fx-doc { position: fixed; inset: 0; z-index: 30; background: #eceef2; display: flex; flex-direction: column; }
-  .fx-doc .outils { display: flex; gap: 8px; padding: 10px 12px; background: var(--noir); }
+  /* Sous la barre d'état de l'iPhone dans l'appli installée : on décale les boutons (Sam, 21/10/2026). */
+  .fx-doc .outils { display: flex; gap: 8px; padding: calc(10px + env(safe-area-inset-top)) 12px 10px; background: var(--noir); }
   .fx-doc .outils .btn { flex: 1; padding: 11px 10px; }
   .fx-doc iframe { flex: 1; border: 0; width: 100%; background: #eceef2; }
   .fx-inclus { background: #f3f8f0; border: 1px solid #cfe3c4; border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 13px; }
@@ -3523,10 +3524,39 @@ const Factu = (() => {
       html = NSDocs.facture(doc, lignes || [], cc, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc, signer: reglageSig().contrat }, signeur('facture'));
     } else html = docFactureHTML(doc, lignes || [], cc);
     const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
-    v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">Imprimer / PDF</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
+    v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">PDF / Partager</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
     document.body.appendChild(v);
     v.querySelector('iframe').srcdoc = html;
     v._html = html;
+  }
+
+  // Sur téléphone, l'impression ne marche pas dans l'appli installée (Sam, 21/10/2026) :
+  // on fabrique le PDF dans la page, puis on ouvre le menu Partager (WhatsApp, mail, Fichiers).
+  // Sur ordinateur, l'impression du navigateur donne un meilleur PDF : on la garde.
+  const LIB_PDF = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+  async function imprimerOuPartager(btn) {
+    const f = document.querySelector('#fx-doc iframe'); if (!f) return;
+    if (!matchMedia('(pointer: coarse)').matches) { f.contentWindow.focus(); f.contentWindow.print(); return; }
+    const avant = btn.textContent; btn.disabled = true; btn.textContent = 'PDF…';
+    try {
+      const w = f.contentWindow, doc = f.contentDocument;
+      if (!w.html2pdf) await new Promise((ok, ko) => { const s = doc.createElement('script'); s.src = LIB_PDF; s.onload = ok; s.onerror = () => ko(new Error('pas de connexion')); doc.head.appendChild(s); });
+      const nom = (doc.title || 'document').replace(/[\\/:*?"<>|]+/g, '-').trim() + '.pdf';
+      // Les réglages sont recréés dans le cadre : html2pdf refuse un tableau venu d'une autre fenêtre (« Invalid margin array »).
+      const blob = await w.html2pdf().set(w.JSON.parse(JSON.stringify({
+        margin: [9, 10, 8, 10], filename: nom, image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 2, useCORS: true, windowWidth: 900, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], before: '.sheet + .sheet' },
+      }))).from(doc.body).outputPdf('blob');
+      const fichier = new File([blob], nom, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [fichier] })) {
+        try { await navigator.share({ files: [fichier], title: nom.replace(/\.pdf$/, '') }); }
+        catch (e) { if (e.name !== 'AbortError') throw e; }
+      } else {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+      }
+    } catch (e) { toast('PDF : ' + (e.message || e), true); }
+    btn.disabled = false; btn.textContent = avant;
   }
 
   const docDevisHTML = (d, l, c) => NSDocs.devis(d, l, c, S.data.banque, signeur('devis'));
@@ -3623,7 +3653,7 @@ const Factu = (() => {
     else if (act === 'emettre') emettre(id);
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
     else if (act === 'sig-png') telechargerSignature();
-    else if (act === 'imprimer') { const f = document.querySelector('#fx-doc iframe'); f.contentWindow.focus(); f.contentWindow.print(); }
+    else if (act === 'imprimer') imprimerOuPartager(a);
     else if (act === 'onglet') { const u = URL.createObjectURL(new Blob([document.getElementById('fx-doc')._html], { type: 'text/html' })); window.open(u, '_blank'); }
   });
   document.addEventListener('input', e => {
