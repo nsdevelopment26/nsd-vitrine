@@ -3533,21 +3533,55 @@ const Factu = (() => {
   // Sur téléphone, l'impression ne marche pas dans l'appli installée (Sam, 21/10/2026) :
   // on fabrique le PDF dans la page, puis on ouvre le menu Partager (WhatsApp, mail, Fichiers).
   // Sur ordinateur, l'impression du navigateur donne un meilleur PDF : on la garde.
-  const LIB_PDF = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+  const LIB_PDF = ['https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'];
+  // Le PDF du téléphone se construit page par page, comme à l'impression (Sam, 21/10/2026 : la
+  // première version capturait l'écran du téléphone et coupait le devis n'importe où).
+  // Le cadre passe à la largeur d'une page A4 imprimée, les règles d'impression s'appliquent,
+  // puis chaque feuille (.sheet) devient une page. Une feuille plus haute qu'une page se découpe.
+  async function pdfTelephone(f) {
+    const w = f.contentWindow, doc = f.contentDocument, LARGEUR = 703; // 186 mm à 96 ppp
+    for (const src of LIB_PDF) if (!doc.querySelector('script[src="' + src + '"]')) await new Promise((ok, ko) => { const s = doc.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error('pas de connexion')); doc.head.appendChild(s); });
+    const style = f.style.cssText;
+    f.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + LARGEUR + 'px;height:1100px;border:0';
+    const regles = [];
+    [...doc.styleSheets].forEach(sh => { try { [...sh.cssRules].forEach(r => { if (r.media && /print/.test(r.media.mediaText)) [...r.cssRules].forEach(x => regles.push(x.cssText)); }); } catch (e) {} });
+    const css = doc.createElement('style');
+    css.textContent = regles.join('\n') + 'html,body{background:#fff!important;padding:0!important;margin:0!important}.sheet{box-shadow:none!important;border:0!important;margin:0!important;border-radius:0!important;max-width:none!important}';
+    doc.head.appendChild(css);
+    try {
+      await new Promise(r => setTimeout(r, 400));
+      const pdf = new w.jspdf.jsPDF(w.JSON.parse('{"unit":"mm","format":"a4","orientation":"portrait"}'));
+      const ML = 12, MH = 9, PW = 186, PH = 280; let premiere = true;
+      const page = () => { if (!premiere) pdf.addPage(); premiere = false; };
+      const feuilles = doc.querySelectorAll('.sheet').length ? [...doc.querySelectorAll('.sheet')] : [doc.body];
+      for (const el of feuilles) {
+        const cv = await w.html2canvas(el, w.JSON.parse('{"scale":2,"backgroundColor":"#ffffff","useCORS":true,"windowWidth":' + LARGEUR + '}'));
+        const hmm = cv.height * PW / cv.width;
+        if (hmm <= PH * 1.12) {
+          // Tient sur une page (au besoin un peu réduite).
+          const k = Math.min(1, PH / hmm);
+          page(); pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', ML + PW * (1 - k) / 2, MH, PW * k, hmm * k);
+        } else {
+          // Feuille longue (contrat) : découpée en pages pleines.
+          const tranche = Math.floor(cv.width * PH / PW);
+          for (let y = 0; y < cv.height; y += tranche) {
+            const h = Math.min(tranche, cv.height - y), t2 = doc.createElement('canvas');
+            t2.width = cv.width; t2.height = h; const g = t2.getContext('2d');
+            g.fillStyle = '#fff'; g.fillRect(0, 0, t2.width, h); g.drawImage(cv, 0, y, cv.width, h, 0, 0, cv.width, h);
+            page(); pdf.addImage(t2.toDataURL('image/jpeg', 0.92), 'JPEG', ML, MH, PW, h * PW / cv.width);
+          }
+        }
+      }
+      return pdf.output('blob');
+    } finally { css.remove(); f.style.cssText = style; }
+  }
   async function imprimerOuPartager(btn) {
     const f = document.querySelector('#fx-doc iframe'); if (!f) return;
     if (!matchMedia('(pointer: coarse)').matches) { f.contentWindow.focus(); f.contentWindow.print(); return; }
     const avant = btn.textContent; btn.disabled = true; btn.textContent = 'PDF…';
     try {
-      const w = f.contentWindow, doc = f.contentDocument;
-      if (!w.html2pdf) await new Promise((ok, ko) => { const s = doc.createElement('script'); s.src = LIB_PDF; s.onload = ok; s.onerror = () => ko(new Error('pas de connexion')); doc.head.appendChild(s); });
-      const nom = (doc.title || 'document').replace(/[\\/:*?"<>|]+/g, '-').trim() + '.pdf';
-      // Les réglages sont recréés dans le cadre : html2pdf refuse un tableau venu d'une autre fenêtre (« Invalid margin array »).
-      const blob = await w.html2pdf().set(w.JSON.parse(JSON.stringify({
-        margin: [9, 10, 8, 10], filename: nom, image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, windowWidth: 900, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], before: '.sheet + .sheet' },
-      }))).from(doc.body).outputPdf('blob');
+      const nom = (f.contentDocument.title || 'document').replace(/[\\/:*?"<>|]+/g, '-').trim() + '.pdf';
+      const blob = await pdfTelephone(f);
       const fichier = new File([blob], nom, { type: 'application/pdf' });
       if (navigator.canShare && navigator.canShare({ files: [fichier] })) {
         try { await navigator.share({ files: [fichier], title: nom.replace(/\.pdf$/, '') }); }
