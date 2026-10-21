@@ -6,8 +6,12 @@
    qu'elle a été ouverte, puis combien de temps elle a été regardée.
    Sans ?p= dans le lien (un visiteur ordinaire), elle ne fait rien.
    Aucune adresse IP, aucun appareil, aucun nom : un ID, une page,
-   une durée. Les téléphones de l'équipe s'excluent une fois pour
-   toutes en ouvrant n'importe quelle démo avec ?equipe=1.
+   une durée. Rien n'est écrit sur l'appareil du visiteur (ni cookie,
+   ni stockage local) : l'ID ne vient que du lien, donc seule la page
+   d'arrivée est mesurée (20/10/2026, voir confidentialite.html § 2).
+   Les téléphones de l'équipe s'excluent une fois pour toutes en
+   ouvrant n'importe quelle démo avec ?equipe=1 (ce réglage-là n'est
+   écrit que sur nos propres téléphones).
    ============================================================ */
 (function () {
   "use strict";
@@ -18,9 +22,7 @@
     if (localStorage.getItem("nsd_equipe") || localStorage.getItem("crmnsd_pin")) return;
 
     var p = (q.get("p") || "").toUpperCase();
-    if (/^P\d{4,5}$/.test(p)) sessionStorage.setItem("nsd_p", p);
-    else p = sessionStorage.getItem("nsd_p") || "";
-    if (!p) return;
+    if (!/^P\d{4,5}$/.test(p)) return;
 
     /* le lien reste propre dans la barre d'adresse s'il est partagé ou mis en favori */
     if (q.has("p")) {
@@ -30,9 +32,7 @@
     }
 
     var hasard = function () { return (Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4)).replace(/[^a-z0-9]/g, ""); };
-    var session = sessionStorage.getItem("nsd_s");
-    if (!session) { session = hasard(); sessionStorage.setItem("nsd_s", session); }
-    var visite = hasard();
+    var visite = hasard(), session = visite;
     var page = (location.pathname.match(/demos\/.*$/) || [location.pathname])[0].replace(/index\.html$/, "");
 
     var cumul = 0, depuis = document.hidden ? 0 : Date.now();

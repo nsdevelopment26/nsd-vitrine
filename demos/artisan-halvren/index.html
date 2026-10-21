@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#17191c">
+<title>Halvren — Plomberie, chauffage, serrurerie, électricité · Luxembourg</title>
+<meta name="description" content="Dépannage et travaux au Luxembourg : fuite d'eau, panne de courant, porte claquée, chauffage en panne. Un numéro, une demande de devis avec photo, un prix annoncé avant de venir.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_LU">
+<meta property="og:site_name" content="Halvren">
+<meta property="og:title" content="Halvren — Dépannage plomberie, chauffage, serrurerie, électricité">
+<meta property="og:description" content="Fuite, panne, porte claquée : choisissez votre problème, appelez, ou envoyez une photo pour un devis.">
+<meta property="og:image" content="og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Halvren — Dépannage au Luxembourg">
+<meta name="twitter:description" content="Fuite, panne, porte claquée : un numéro, un devis avec photo, un prix annoncé avant de venir.">
+<meta name="twitter:image" content="og.jpg">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="stylesheet" href="../../assets/fonts/polices-d824aad280.css">
+<link rel="stylesheet" href="ns-motion.css">
+<style>
+/* =========================================================
+   HALVREN — direction « camionnette de chantier »
+   Anthracite, orange signal, gris béton froid.
+   Typo de lettrage de véhicule (Big Shoulders) + Barlow.
+   Angles droits, filets épais, aucune ombre douce.
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nuit:#17191c; --nuit-2:#202328; --nuit-3:#2b2f35;
+  --beton:#e7e9ec; --beton-2:#d5d9de; --blanc:#fbfbfc;
+  --encre:#16181b; --encre-2:#454b54;
+  --signal:#ff5b1f; --signal-f:#c2410c;
+  --jaune:#ffd23f;
+  --wrap:1180px;
+  --ns-progress-color:#ff5b1f;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Barlow',system-ui,sans-serif;font-size:17px;line-height:1.6;background:var(--beton);color:var(--encre);overflow-x:hidden}
+h1,h2,h3{font-family:'Big Shoulders Display',sans-serif;font-weight:800;line-height:.95;letter-spacing:.005em}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+:focus-visible{outline:3px solid var(--jaune);outline-offset:3px}
+
+/* bandeau démo */
+.demo-tag{position:fixed;left:12px;bottom:84px;z-index:60;background:var(--jaune);color:var(--encre);font-size:12.5px;font-weight:600;padding:8px 12px;border:2px solid var(--encre)}
+@media(min-width:861px){.demo-tag{bottom:14px}}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background-color .3s,border-color .3s;border-bottom:2px solid transparent}
+nav.ns-solid{background:var(--nuit);border-bottom-color:var(--signal)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-family:'Big Shoulders Display';font-weight:900;font-size:27px;letter-spacing:.04em}
+.logo svg{width:34px;height:34px}
+.nav-links{display:flex;gap:26px;align-items:center}
+.nav-links a{color:#e9ebee;text-decoration:none;font-weight:500;font-size:15.5px}
+.nav-call{background:var(--signal);color:var(--nuit)!important;font-weight:700!important;padding:9px 16px;border:2px solid var(--signal)}
+@media(max-width:860px){.nav-links a:not(.nav-call){display:none}}
+
+/* hero outil */
+.hero{background:var(--nuit);color:#fff;padding:118px 0 64px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 22px,rgba(255,91,31,.06) 22px 44px);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;position:relative}
+.hero h1{font-size:clamp(46px,8vw,92px);text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--signal)}
+.hero p.lead{color:#c9ced6;font-size:19px;margin:20px 0 0;max-width:30ch}
+.hero .alt{display:inline-block;margin-top:22px;color:#fff;font-weight:600}
+.outil{background:var(--nuit-2);border:2px solid var(--nuit-3);padding:24px}
+.outil h2{font-size:30px;text-transform:uppercase;margin-bottom:16px}
+.puces{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.puce{display:flex;align-items:center;gap:10px;background:transparent;color:#fff;border:2px solid var(--nuit-3);padding:13px 12px;font:600 16px 'Barlow';cursor:pointer;text-align:left;transition:border-color .2s,background .2s}
+.puce svg{width:24px;height:24px;flex:none;stroke:var(--signal)}
+.puce[aria-pressed="true"]{border-color:var(--signal);background:rgba(255,91,31,.12)}
+.reponse{margin-top:18px;border-top:2px dashed var(--nuit-3);padding-top:18px;min-height:150px}
+.reponse h3{font-size:24px;color:var(--signal);text-transform:uppercase}
+.reponse ol{margin:10px 0 0 20px;color:#dfe3e8;font-size:15.5px}
+.appeler{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:18px;background:var(--signal);color:var(--nuit);font:800 26px 'Big Shoulders Display';text-transform:uppercase;letter-spacing:.04em;text-decoration:none;padding:16px;border:3px solid var(--signal);cursor:pointer;width:100%}
+.appeler svg{width:26px;height:26px}
+.appeler:hover{background:#ff7a47}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:30px}.hero{padding-top:100px}}
+
+/* réassurance */
+.reass{background:var(--signal);color:var(--nuit)}
+.reass ul{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.reass li{padding:18px 20px;font-weight:600;border-right:2px solid rgba(23,25,28,.25);display:flex;gap:10px;align-items:center}
+.reass li:last-child{border-right:0}
+.reass b{font-family:'Big Shoulders Display';font-size:24px;font-weight:900;text-transform:uppercase}
+@media(max-width:760px){.reass ul{grid-template-columns:1fr}.reass li{border-right:0;border-bottom:2px solid rgba(23,25,28,.25)}}
+
+section.bloc{padding:88px 0}
+.titre{font-size:clamp(38px,5.5vw,64px);text-transform:uppercase;margin-bottom:14px}
+.sous{color:var(--encre-2);max-width:56ch;font-size:18px}
+
+/* services */
+.services{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:40px;border:3px solid var(--encre)}
+.serv{background:var(--blanc);padding:26px 22px 24px;border-right:3px solid var(--encre)}
+.serv:last-child{border-right:0}
+.serv .num{font:900 54px 'Big Shoulders Display';color:var(--signal-f);line-height:1}
+.serv h3{font-size:32px;text-transform:uppercase;margin:6px 0 12px}
+.serv ul{list-style:none;font-size:15.5px;color:var(--encre-2)}
+.serv li{padding:6px 0;border-top:1px solid var(--beton-2)}
+@media(max-width:960px){.services{grid-template-columns:1fr 1fr}.serv:nth-child(2){border-right:0}.serv:nth-child(-n+2){border-bottom:3px solid var(--encre)}}
+@media(max-width:560px){.services{grid-template-columns:1fr}.serv{border-right:0;border-bottom:3px solid var(--encre)}.serv:last-child{border-bottom:0}}
+
+/* étapes */
+.etapes{background:var(--nuit);color:#fff}
+.etapes .sous{color:#c9ced6}
+.ligne{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:44px;counter-reset:e}
+.etape{border-top:1px solid var(--nuit-3);padding-top:18px}
+.etape h3{font-size:30px;text-transform:uppercase;margin-bottom:8px}
+.etape h3::before{counter-increment:e;content:counter(e) " ";color:var(--signal)}
+.etape p{color:#c9ced6}
+@media(max-width:760px){.ligne{grid-template-columns:1fr}}
+
+/* avant / après */
+.compare{position:relative;margin-top:40px;aspect-ratio:16/8;border:3px solid var(--encre);overflow:hidden;background:var(--nuit-3);user-select:none}
+.compare .face{position:absolute;inset:0;display:flex;align-items:flex-end;padding:22px}
+.face.avant{background:linear-gradient(135deg,#5a4a3e,#3b332d 55%,#6b5a48);}
+.face.avant::before{content:"";position:absolute;inset:18% 30% 22% 26%;background:repeating-linear-gradient(100deg,#6e5a45 0 18px,#57483a 18px 30px);opacity:.8}
+.face.apres{background:linear-gradient(135deg,#f3f4f6,#d9dde2 60%,#eef0f2);clip-path:inset(0 0 0 var(--pos,50%))}
+.face.apres::before{content:"";position:absolute;inset:18% 30% 22% 26%;background:linear-gradient(90deg,#c4c9cf 0 2px,transparent 2px 60px),linear-gradient(#c4c9cf 0 2px,transparent 2px 60px);background-size:60px 60px;opacity:.8}
+.etiq{position:relative;font:800 22px 'Big Shoulders Display';text-transform:uppercase;padding:6px 12px;background:var(--encre);color:#fff}
+.face.apres .etiq{margin-left:auto;background:var(--signal);color:var(--nuit)}
+.compare input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize}
+.poignee{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:4px;background:var(--signal);transform:translateX(-2px);pointer-events:none}
+.poignee::after{content:"⇆";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;display:grid;place-items:center;background:var(--signal);color:var(--nuit);font-weight:800;font-size:22px}
+.legende{font-size:15px;color:var(--encre-2);margin-top:10px}
+
+/* zone */
+.zone{background:var(--blanc);border-top:3px solid var(--encre);border-bottom:3px solid var(--encre);padding:30px 0}
+.zone p{text-align:center;font-weight:600;color:var(--encre-2);margin-bottom:14px}
+.ns-marquee__track span{font:900 44px 'Big Shoulders Display';text-transform:uppercase;padding:0 26px;color:var(--encre)}
+.ns-marquee__track span:nth-child(even){color:var(--signal-f)}
+
+/* avis */
+.avis{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.avi{background:var(--blanc);border:3px solid var(--encre);padding:22px}
+.avi .stars{color:var(--signal-f);letter-spacing:3px;font-size:18px}
+.avi p{margin:10px 0 14px}
+.avi b{font-weight:700}
+.avi small{display:block;color:var(--encre-2);font-size:14px}
+@media(max-width:860px){.avis{grid-template-columns:1fr}}
+
+/* devis */
+.devis{background:var(--nuit);color:#fff}
+.devis .sous{color:#c9ced6}
+.form{margin-top:36px;background:var(--nuit-2);border:2px solid var(--nuit-3);padding:26px;max-width:720px}
+.pas{display:flex;gap:8px;margin-bottom:22px}
+.pas span{flex:1;height:6px;background:var(--nuit-3)}
+.pas span.on{background:var(--signal)}
+.etape-f{display:none}
+.etape-f.on{display:block}
+.etape-f h3{font-size:28px;text-transform:uppercase;margin-bottom:14px}
+.choix{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choix label{border:2px solid var(--nuit-3);padding:13px;cursor:pointer;font-weight:600}
+.choix input{accent-color:var(--signal);margin-right:8px}
+.champ{display:block;margin-bottom:14px;font-weight:600;font-size:15.5px}
+.champ input,.champ textarea{display:block;width:100%;margin-top:6px;background:var(--nuit);border:2px solid var(--nuit-3);color:#fff;padding:12px;font:16px 'Barlow'}
+.photo{border:2px dashed #6b7380;padding:18px;text-align:center;color:#c9ced6;margin-bottom:14px}
+.btns{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}
+.btn{background:var(--signal);color:var(--nuit);border:0;padding:14px 22px;font:800 20px 'Big Shoulders Display';text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.retour{background:none;border:0;color:#c9ced6;font:600 16px 'Barlow';text-decoration:underline;cursor:pointer}
+.merci{font-size:18px}
+@media(max-width:560px){.choix{grid-template-columns:1fr}}
+
+/* infos + footer */
+.infos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px;margin-top:30px}
+.infos h3{font-size:26px;text-transform:uppercase;margin-bottom:8px}
+.infos p{color:var(--encre-2)}
+@media(max-width:760px){.infos{grid-template-columns:1fr}}
+footer{background:#0e0f11;color:#aab1bb;padding:36px 0 110px;font-size:14.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer a{color:#fff}
+@media(min-width:861px){footer{padding-bottom:36px}}
+
+/* barre mobile */
+.barre{position:fixed;left:0;right:0;bottom:0;z-index:55;display:grid;grid-template-columns:1.4fr 1fr;border-top:3px solid var(--encre)}
+.barre a{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px 8px;font:800 21px 'Big Shoulders Display';text-transform:uppercase;text-decoration:none}
+.barre a:first-child{background:var(--signal);color:var(--nuit)}
+.barre a:last-child{background:var(--nuit);color:#fff}
+@media(min-width:861px){.barre{display:none}}
+.toast{position:fixed;left:50%;top:84px;transform:translate(-50%,-20px);opacity:0;z-index:70;background:var(--jaune);color:var(--encre);border:2px solid var(--encre);padding:12px 16px;font-weight:600;max-width:90vw;transition:opacity .3s,transform .3s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="ns-progress"></div>
+<div class="demo-tag">Site de démonstration · nom et contenus fictifs</div>
+
+<nav data-nav-solid aria-label="Navigation principale">
+  <div class="wrap nav-in">
+    <a class="logo" href="#haut" aria-label="Halvren, accueil">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="#ff5b1f"/><path d="M14 46V18h8v11h20V18h8v28h-8V36H22v10z" fill="#17191c"/></svg>
+      HALVREN
+    </a>
+    <div class="nav-links">
+      <a class="ns-link" href="#services">Services</a>
+      <a class="ns-link" href="#chantiers">Chantiers</a>
+      <a class="ns-link" href="#devis">Devis</a>
+      <a class="nav-call" href="#appel" data-appel>Appeler</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="haut">
+  <div class="wrap hero-grid">
+    <div>
+      <h1 data-split>Un problème&nbsp;?<br><em>On décroche.</em></h1>
+      <p class="lead" data-reveal data-delay="150">Plomberie, chauffage, serrurerie, électricité. Dites-nous ce qui se passe, on vous dit quoi faire en attendant et quand on arrive.</p>
+      <a class="alt ns-link" href="#devis" data-reveal data-delay="250">Pas urgent ? Demandez un devis avec une photo →</a>
+    </div>
+    <div class="outil" data-reveal="right" data-delay="200">
+      <h2>Quel est votre problème&nbsp;?</h2>
+      <div class="puces" role="group" aria-label="Choisir un problème">
+        <button class="puce" type="button" data-pb="fuite" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>Fuite d'eau</button>
+        <button class="puce" type="button" data-pb="courant" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Panne de courant</button>
+        <button class="puce" type="button" data-pb="porte" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/></svg>Porte claquée</button>
+        <button class="puce" type="button" data-pb="chauffage" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 20V8M9 20V8M14 20V8M19 20V8M2 20h20M2 8h20"/></svg>Plus de chauffage</button>
+      </div>
+      <div class="reponse" aria-live="polite" id="reponse"></div>
+      <a class="appeler ns-shine" href="#appel" data-appel><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler maintenant</a>
+    </div>
+  </div>
+</header>
+
+<div class="reass">
+  <ul class="wrap" data-stagger="100">
+    <li data-reveal><b>7 j / 7</b> de 7 h à 22 h</li>
+    <li data-reveal><b>Prix annoncé</b> avant de venir</li>
+    <li data-reveal><b>Devis écrit</b> avant tout travaux</li>
+  </ul>
+</div>
+
+<section class="bloc" id="services">
+  <div class="wrap">
+    <h2 class="titre" data-reveal>Quatre métiers, un seul numéro</h2>
+    <p class="sous" data-reveal>Le dépannage le jour même, et les vrais travaux quand ça peut attendre : salle de bain, chaudière, tableau électrique, serrures.</p>
+    <div class="services" data-stagger="110">
+      <article class="serv" data-reveal><div class="num">01</div><h3>Plomberie</h3><ul><li>Fuites et dégâts des eaux</li><li>WC, évier, douche bouchés</li><li>Chauffe-eau</li><li>Salle de bain complète</li></ul></article>
+      <article class="serv" data-reveal><div class="num">02</div><h3>Chauffage</h3><ul><li>Chaudière en panne</li><li>Entretien annuel</li><li>Radiateurs froids, purge</li><li>Pompe à chaleur</li></ul></article>
+      <article class="serv" data-reveal><div class="num">03</div><h3>Serrurerie</h3><ul><li>Porte claquée</li><li>Clés perdues ou cassées</li><li>Changement de cylindre</li><li>Porte blindée</li></ul></article>
+      <article class="serv" data-reveal><div class="num">04</div><h3>Électricité</h3><ul><li>Panne et disjoncteur</li><li>Tableau électrique</li><li>Prises et éclairage</li><li>Mise en conformité</li></ul></article>
+    </div>
+  </div>
+</section>
+
+<section class="bloc etapes">
+  <div class="wrap">
+    <h2 class="titre" data-reveal>Comment ça se passe</h2>
+    <p class="sous" data-reveal>Pas de surprise sur la facture : vous savez avant, pas après.</p>
+    <div class="ligne" data-stagger="130">
+      <div class="etape" data-reveal><h3>Vous appelez</h3><p>Ou vous envoyez une photo depuis le formulaire. On comprend le problème avant de prendre la route.</p></div>
+      <div class="etape" data-reveal><h3>On annonce le prix</h3><p>Le déplacement et le diagnostic sont annoncés au téléphone. Vous dites oui, on vient.</p></div>
+      <div class="etape" data-reveal><h3>On répare</h3><p>Les travaux en plus font l'objet d'un devis écrit. Facture détaillée, garantie sur la pièce posée.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="bloc" id="chantiers">
+  <div class="wrap">
+    <h2 class="titre" data-reveal>Avant, après</h2>
+    <p class="sous" data-reveal>Glissez pour voir. Sur le vrai site, ce sont les photos de vos chantiers : le meilleur argument d'un artisan.</p>
+    <div class="compare" id="compare" data-reveal="scale">
+      <div class="face avant"><span class="etiq">Avant</span></div>
+      <div class="face apres"><span class="etiq">Après</span></div>
+      <div class="poignee"></div>
+      <input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après">
+    </div>
+    <p class="legende">Salle de bain, dégât des eaux sous la douche. Vos photos de chantier ici.</p>
+  </div>
+</section>
+
+<div class="zone">
+  <p>On intervient partout dans le sud et le centre du pays</p>
+  <div class="ns-marquee" aria-hidden="true">
+    <div class="ns-marquee__track">
+      <span>Esch-sur-Alzette</span><span>Differdange</span><span>Dudelange</span><span>Pétange</span><span>Bettembourg</span><span>Luxembourg</span><span>Strassen</span><span>Bertrange</span><span>Mamer</span><span>Hesperange</span><span>Mersch</span><span>Sanem</span>
+      <span>Esch-sur-Alzette</span><span>Differdange</span><span>Dudelange</span><span>Pétange</span><span>Bettembourg</span><span>Luxembourg</span><span>Strassen</span><span>Bertrange</span><span>Mamer</span><span>Hesperange</span><span>Mersch</span><span>Sanem</span>
+    </div>
+  </div>
+</div>
+
+<section class="bloc">
+  <div class="wrap">
+    <h2 class="titre" data-reveal>Ils nous ont appelés</h2>
+    <p class="sous" data-reveal>Avis fictifs, pour la démonstration. Sur le vrai site, vos avis Google s'affichent ici.</p>
+    <div class="avis" data-stagger="120">
+      <div class="avi" data-reveal><div class="stars">★★★★★</div><p>Porte claquée à 21 h, en rentrant du travail. Trouvé sur Google, rappelé en deux minutes, ouvert sans rien abîmer.</p><b>Morgane L.</b><small>Serrurerie · Esch-sur-Alzette</small></div>
+      <div class="avi" data-reveal><div class="stars">★★★★★</div><p>Le prix du déplacement annoncé au téléphone, et c'est ce que j'ai payé. Rare.</p><b>Paulo F.</b><small>Plomberie · Differdange</small></div>
+      <div class="avi" data-reveal><div class="stars">★★★★★</div><p>J'ai envoyé la photo du tableau, ils savaient déjà quelle pièce prendre en arrivant.</p><b>Claire M.</b><small>Électricité · Bertrange</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="bloc devis" id="devis">
+  <div class="wrap">
+    <h2 class="titre" data-reveal>Un devis en deux minutes</h2>
+    <p class="sous" data-reveal>Pas urgent ? Trois questions et une photo. Réponse dans la journée.</p>
+    <form class="form" id="form" novalidate data-reveal>
+      <div class="pas"><span class="on"></span><span></span><span></span></div>
+      <div class="etape-f on" data-e="1">
+        <h3>C'est pour quoi ?</h3>
+        <div class="choix">
+          <label><input type="radio" name="type" value="Plomberie" checked>Plomberie</label>
+          <label><input type="radio" name="type" value="Chauffage">Chauffage</label>
+          <label><input type="radio" name="type" value="Serrurerie">Serrurerie</label>
+          <label><input type="radio" name="type" value="Électricité">Électricité</label>
+        </div>
+      </div>
+      <div class="etape-f" data-e="2">
+        <h3>Décrivez en une phrase</h3>
+        <label class="champ">Ce qui se passe<textarea rows="3" placeholder="Ex. : le chauffe-eau fait du bruit et l'eau sort tiède"></textarea></label>
+        <div class="photo">📷 Ajouter une photo (sur le vrai site, depuis le téléphone)</div>
+      </div>
+      <div class="etape-f" data-e="3">
+        <h3>Où vous joindre</h3>
+        <label class="champ">Votre nom<input type="text" autocomplete="name"></label>
+        <label class="champ">Téléphone<input type="tel" autocomplete="tel"></label>
+        <label class="champ">Commune<input type="text"></label>
+      </div>
+      <div class="etape-f" data-e="4">
+        <h3>C'est envoyé</h3>
+        <p class="merci">Sur le vrai site, la demande arrive à l'instant sur le téléphone de l'artisan, avec la photo. Ici, c'est une démonstration : rien n'est envoyé.</p>
+      </div>
+      <div class="btns">
+        <button class="retour" type="button" id="prec" hidden>← Retour</button>
+        <button class="btn" type="button" id="suiv">Continuer</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="bloc" id="appel">
+  <div class="wrap">
+    <h2 class="titre" data-reveal>Infos</h2>
+    <div class="infos" data-stagger="100">
+      <div data-reveal><h3>Téléphone</h3><p>Le numéro de l'artisan, cliquable depuis le téléphone. <a href="#appel" data-appel>Appeler</a></p></div>
+      <div data-reveal><h3>Horaires</h3><p>Dépannage 7 j / 7, de 7 h à 22 h.<br>Travaux sur rendez-vous, du lundi au vendredi.</p></div>
+      <div data-reveal><h3>Zone</h3><p>Sud et centre du Luxembourg. Au-delà, on vous le dit au téléphone, sans détour.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Halvren · site de démonstration, nom, avis et contenus fictifs</span>
+    <span>Réalisé par <a href="../../index.html">NS Development</a></span>
+  </div>
+</footer>
+
+<div class="barre">
+  <a href="#appel" data-appel>📞 Appeler</a>
+  <a href="#devis">Devis</a>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="ns-motion.js" defer></script>
+<script>
+(function(){
+  var PB={
+    fuite:{t:'Fuite d’eau',a:['Coupez l’arrivée d’eau générale (souvent sous l’évier ou près du compteur).','Coupez l’électricité si l’eau approche d’une prise.','Prenez une photo, elle nous aide à venir avec la bonne pièce.']},
+    courant:{t:'Panne de courant',a:['Regardez si c’est tout le quartier ou seulement chez vous.','Relevez le disjoncteur général une seule fois. S’il retombe, ne forcez pas.','Odeur de brûlé ou chaleur au tableau : ne touchez à rien et appelez.']},
+    porte:{t:'Porte claquée',a:['Ne forcez pas la serrure, ça coûte plus cher après.','Restez joignable au téléphone, on vous rappelle à l’approche.','Préparez une pièce d’identité à votre adresse.']},
+    chauffage:{t:'Plus de chauffage',a:['Vérifiez la pression de la chaudière (entre 1 et 2 bars en général).','Notez le code d’erreur affiché, s’il y en a un.','Prenez une photo de l’écran et de la plaque de la chaudière.']}
+  };
+  var rep=document.getElementById('reponse');
+  function montre(k){
+    var p=PB[k];
+    rep.innerHTML='<h3>'+p.t+' : en attendant</h3><ol>'+p.a.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ol>';
+    document.querySelectorAll('.puce').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.pb===k?'true':'false')});
+  }
+  document.querySelectorAll('.puce').forEach(function(b){b.addEventListener('click',function(){montre(b.dataset.pb)})});
+  montre('fuite');
+
+  var toast=document.getElementById('toast'),tt;
+  document.querySelectorAll('[data-appel]').forEach(function(a){a.addEventListener('click',function(e){
+    e.preventDefault();
+    toast.textContent='Site de démonstration : sur le vrai site, ce bouton appelle directement l’artisan.';
+    toast.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('on')},3200);
+  })});
+
+  var cmp=document.getElementById('compare'),rg=cmp.querySelector('input');
+  function pos(){cmp.style.setProperty('--pos',rg.value+'%')}
+  rg.addEventListener('input',pos);pos();
+
+  var e=1,suiv=document.getElementById('suiv'),prec=document.getElementById('prec'),pas=document.querySelectorAll('.pas span');
+  function maj(){
+    document.querySelectorAll('.etape-f').forEach(function(x){x.classList.toggle('on',+x.dataset.e===e)});
+    pas.forEach(function(s,i){s.classList.toggle('on',i<Math.min(e,3))});
+    prec.hidden=(e===1||e===4);suiv.hidden=(e===4);suiv.textContent=e===3?'Envoyer':'Continuer';
+  }
+  suiv.addEventListener('click',function(){if(e<4){e++;maj()}});
+  prec.addEventListener('click',function(){if(e>1){e--;maj()}});
+})();
+</script>
+</body>
+</html>

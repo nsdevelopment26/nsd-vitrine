@@ -3117,6 +3117,56 @@ const Factu = (() => {
   }
 
   // edit : { devis, a (lignes analysées), client } pour reprendre un brouillon existant.
+  // Infos du client imprimées sur le devis et la facture (Sam, 21/10/2026 : elles étaient fausses et
+  // impossibles à corriger). On part de la fiche de facturation, et ce qui manque vient de la fiche CRM.
+  function valeursClient(c, p) {
+    c = c || {}; p = p || {};
+    return {
+      nom: c.nom_etablissement || p.entreprise || '',
+      contact: [c.contact_prenom, c.contact_nom].filter(Boolean).join(' ') || p.gerant || '',
+      adresse: c.adresse || '', tva: c.tva_intra || '',
+      email: c.email || p.email || '', tel: c.telephone || String(p.telephone || '').split(/[\/;]| ou /)[0].trim(),
+    };
+  }
+  function champsClient(c, p) {
+    const v = valeursClient(c, p);
+    return `<label class="champ">Raison sociale (comme au registre)<input name="c_nom" value="${esc(v.nom)}" placeholder="Ex. MB Cars Sàrl-S"></label>
+      <label class="champ">Interlocuteur (gérant)<input name="c_contact" value="${esc(v.contact)}" placeholder="Prénom et nom"></label>
+      <label class="champ">Adresse<input name="adresse" value="${esc(v.adresse)}" placeholder="N°, rue, code postal, localité"></label>
+      <div class="fx-deux"><label class="champ">N° TVA client<input name="tva_intra" value="${esc(v.tva)}" placeholder="LU12345678, si société"></label>
+      <label class="champ">Téléphone<input name="c_tel" value="${esc(v.tel)}" inputmode="tel"></label></div>
+      <label class="champ">E-mail<input name="c_email" type="email" value="${esc(v.email)}"></label>`;
+  }
+  // Ce que le formulaire écrit dans la fiche client. Un champ vidé efface l'info, sauf la raison sociale.
+  function majDepuisForm(form) {
+    const g = n => (form[n] && form[n].value || '').trim();
+    const m = { contact_prenom: null, contact_nom: g('c_contact') || null, adresse: g('adresse') || null,
+      tva_intra: g('tva_intra') || null, email: g('c_email') || null, telephone: g('c_tel') || null };
+    if (g('c_nom')) m.nom_etablissement = g('c_nom');
+    return m;
+  }
+  async function ecrireClient(clientId, form) {
+    const { error } = await F.sb.from('clients').update(majDepuisForm(form)).eq('id', clientId);
+    return error;
+  }
+  // Corriger la fiche client depuis un devis ou une facture, quel que soit son statut.
+  function infosClient(clientId, retour) {
+    const c = F.clients.find(x => x.id === clientId) || {};
+    feuille(tete('Infos du client', esc(c.nom_etablissement || ''))
+      + `<form id="fx-client" class="bloc" data-client="${esc(clientId)}" data-retour="${esc(retour)}">
+         <div class="sous" style="margin-bottom:10px">Ce que tu corriges ici s’imprime sur tous ses devis et factures, et sur le contrat.</div>
+         ${champsClient(c, prospectDuClient(clientId) || {})}
+         <button class="btn large" type="submit">Enregistrer les infos</button></form>`);
+  }
+  async function enregistrerClient(form) {
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+    const err = await ecrireClient(form.dataset.client, form);
+    if (err) { btn.disabled = false; btn.textContent = 'Enregistrer les infos'; return toast(err.message, true); }
+    await charger(); toast('Infos du client enregistrées.');
+    const [type, id] = form.dataset.retour.split(':');
+    if (type === 'devis') ouvrirDevis(id); else if (type === 'facture') ouvrirFacture(id); else fermer();
+  }
+
   function nouveauDevis(prospect, edit) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
@@ -3139,8 +3189,7 @@ const Factu = (() => {
       ${prospect || edit ? '' : `<label class="champ">Client<select name="client" required><option value="">Choisir un client…</option>
         ${F.clients.map(c => `<option value="${c.id}">${esc(c.nom_etablissement)}</option>`).join('')}</select></label>
         <div class="sous" style="margin-bottom:10px">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div>`}
-        <label class="champ">Adresse<input name="adresse" value="${esc(cc.adresse || '')}" placeholder="N°, rue, code postal, localité"></label>
-        <label class="champ">N° TVA client<input name="tva_intra" value="${esc(cc.tva_intra || '')}" placeholder="LU12345678, si société"></label></div>
+        <div id="fx-champs-client">${champsClient(cc, prospect || prospectDuClient(D.clientId) || {})}</div></div>
       <div class="bloc"><h3>1 · Formule de base</h3><div class="fx-chips" id="fx-bases"></div><div id="fx-inclus"></div></div>
       <div class="bloc"><h3>2 · Options complémentaires</h3><div id="fx-qtes"></div><div class="fx-chips" id="fx-opts"></div></div>
       <div class="bloc"><h3>Lignes sur mesure</h3><div id="fx-lignes"></div>
@@ -3273,7 +3322,7 @@ const Factu = (() => {
       if (!clientId && D.prospect) {
         const p = D.prospect;
         const { data: c, error } = await F.sb.from('clients').insert({
-          nom_etablissement: p.entreprise, contact_nom: p.gerant || null, email: p.email || null,
+          nom_etablissement: (form.c_nom && form.c_nom.value.trim()) || p.entreprise, contact_nom: p.gerant || null, email: p.email || null,
           telephone: p.telephone || null, ville: p.commune || null, metier: p.secteur || null,
           site_domaine: p.site || null, formule: D.base || null, statut: 'prospect',
           notes: 'Créé depuis le CRM NSD (' + p.id + ').',
@@ -3317,12 +3366,9 @@ const Factu = (() => {
       const cc = F.clients.find(c => c.id === clientId);
       if (!cc || !cc.abonnement_moyen) majClient.abonnement_moyen = D.annuel ? 'virement' : 'sepa';
       await F.sb.from('clients').update(majClient).eq('id', clientId);
-      // Adresse et n° TVA : colonnes ajoutées par la migration du 24/09/2026. Sans elle, le devis part quand même.
-      const adresse = form.adresse.value.trim(), tvaIntra = form.tva_intra.value.trim();
-      if (adresse || tvaIntra) {
-        const { error: e3 } = await F.sb.from('clients').update({ adresse: adresse || null, tva_intra: tvaIntra || null }).eq('id', clientId);
-        if (e3) toast('Devis enregistré, mais l’adresse et le n° TVA n’ont pas pu être gardés : ' + e3.message, true);
-      }
+      // Les infos client du formulaire vont dans la fiche : c'est elle que le devis imprime.
+      const e3 = await ecrireClient(clientId, form);
+      if (e3) toast('Devis enregistré, mais les infos du client n’ont pas pu être gardées : ' + e3.message, true);
       toast((D.editId ? 'Devis modifié' : 'Devis enregistré') + (form.statut.value === 'envoyé' ? ' avec son numéro.' : ' en brouillon.'));
       await charger(); ouvrirDevis(dev.id);
     } catch (e) { echec(e.message || String(e)); }
@@ -3340,6 +3386,7 @@ const Factu = (() => {
     return Object.assign({}, c, {
       rcs: String(p.rcs || '').trim(), gerant: String(p.gerant || '').trim(), enseigne,
       email: c.email || p.email || '', telephone: c.telephone || p.telephone || '', adresse: c.adresse || c.ville || p.commune || '',
+      contact_nom: c.contact_nom || (c.contact_prenom ? '' : String(p.gerant || '').trim()),
     });
   }
 
@@ -3351,6 +3398,7 @@ const Factu = (() => {
     act.push('<button class="btn large" data-fx="voir-devis" data-id="' + id + '">Voir le devis (PDF)</button>');
     if (d.statut !== 'refusé' && NSDocs.contratDisponible()) act.push('<button class="btn clair large" data-fx="voir-contrat" data-id="' + id + '">Voir le contrat rempli (PDF)</button>');
     if (d.statut === 'brouillon' && !d.numero) act.push('<button class="btn large" data-fx="modifier-devis" data-id="' + id + '">Modifier le devis</button>');
+    act.push('<button class="btn clair large" data-fx="infos-client" data-client="' + d.client_id + '" data-retour="devis:' + id + '">Corriger les infos du client</button>');
     if (d.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="statut-devis" data-st="envoyé" data-id="' + id + '">Marquer envoyé (attribue le numéro)</button>');
     if (d.statut === 'envoyé') act.push('<div class="fx-deux"><button class="btn" data-fx="statut-devis" data-st="accepté" data-id="' + id + '">Accepté</button><button class="btn clair" data-fx="statut-devis" data-st="refusé" data-id="' + id + '">Refusé</button></div>');
     // Modèle validé : facture d'acompte à la signature, facture de solde à la livraison.
@@ -3424,6 +3472,7 @@ const Factu = (() => {
          '<button class="btn clair large" data-fx="voir-facture" data-id="' + id + '">Facture seule</button>']
       : ['<button class="btn large" data-fx="voir-facture" data-id="' + id + '">Voir la facture (PDF)</button>'];
     if (f.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="emettre" data-id="' + id + '">Émettre : attribuer le numéro légal</button>');
+    if (f.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="infos-client" data-client="' + f.client_id + '" data-retour="facture:' + id + '">Corriger les infos du client</button>');
     if (factureSupprimable(id)) act.push('<button class="btn danger large" data-fx="suppr-facture" data-id="' + id + '">Supprimer ce brouillon</button>');
     const paiement = (f.statut === 'envoyée' || f.statut === 'en_retard') ? `<form class="bloc" id="fx-paiement" data-id="${id}"><h3>Enregistrer un paiement</h3>
       <div class="fx-deux"><label class="champ">Montant<input name="montant" type="number" step="0.01" min="0" value="${Math.round(reste * 100) / 100}"></label>
@@ -3466,13 +3515,13 @@ const Factu = (() => {
     const { data: lignes } = await F.sb.from(table + '_lignes').select('*').eq(estDevis ? 'devis_id' : 'facture_id', id).order('ordre');
     const c = doc.clients || {}, qui = S.moi && S.moi.nom, cc = ficheContrat(c, doc.client_id);
     let html;
-    if (type === 'devis') html = docDevisHTML(doc, lignes || [], c);
+    if (type === 'devis') html = docDevisHTML(doc, lignes || [], cc);
     else if (type === 'contrat') html = NSDocs.contrat(doc, lignes || [], cc, S.data.banque, qui, reglageSig().contrat);
     else if (type === 'facture-contrat' && doc.devis) {
       const { data: lignesDevis, error: e2 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', doc.devis.id).order('ordre');
       if (e2) return toast(e2.message, true);
-      html = NSDocs.facture(doc, lignes || [], c, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc, signer: reglageSig().contrat }, signeur('facture'));
-    } else html = docFactureHTML(doc, lignes || [], c);
+      html = NSDocs.facture(doc, lignes || [], cc, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc, signer: reglageSig().contrat }, signeur('facture'));
+    } else html = docFactureHTML(doc, lignes || [], cc);
     const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
     v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">Imprimer / PDF</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
     document.body.appendChild(v);
@@ -3565,6 +3614,7 @@ const Factu = (() => {
     else if (act === 'suppr-ligne') { D.lignes.splice(Number(a.dataset.i), 1); dessinerChoix(); calculer(); }
     else if (act === 'voir-devis') voir('devis', id);
     else if (act === 'modifier-devis') modifierDevis(id);
+    else if (act === 'infos-client') infosClient(a.dataset.client, a.dataset.retour);
     else if (act === 'voir-facture') voir('facture', id);
     else if (act === 'voir-facture-contrat') voir('facture-contrat', id);
     else if (act === 'voir-contrat') voir('contrat', id);
@@ -3594,9 +3644,16 @@ const Factu = (() => {
     const k = e.target.dataset && e.target.dataset.fxSig;
     if (k) { changerSig(k, e.target.checked); toast('Signature ' + (e.target.checked ? 'ajoutée sur les ' : 'retirée des ') + { devis: 'devis', facture: 'factures', contrat: 'contrats' }[k] + '.'); }
   });
+  // Devis sans prospect : choisir le client dans la liste remplit ses infos.
+  document.addEventListener('change', e => {
+    if (e.target.name !== 'client' || !e.target.closest('#fx-devis')) return;
+    const id = e.target.value, z = document.getElementById('fx-champs-client');
+    if (z) z.innerHTML = champsClient(F.clients.find(c => c.id === id) || {}, prospectDuClient(id) || {});
+  });
   document.addEventListener('submit', e => {
     if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
     if (e.target.id === 'fx-devis') { e.preventDefault(); enregistrerDevis(e.target); }
+    if (e.target.id === 'fx-client') { e.preventDefault(); enregistrerClient(e.target); }
     if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
   });
 
