@@ -13,25 +13,65 @@
      1. SPLIT TEXT — découpe le texte en mots / lettres
         <h1 data-split> ou <h1 data-split="chars">
      -------------------------------------------------------- */
+  // Le découpage parcourt les nœuds au lieu de lire textContent :
+  // un <br>, un <em> ou un <span class="it"> dans le titre sont conservés
+  // (textContent les effaçait et collait « ? » au mot de la ligne suivante).
+  // Seules les espaces ordinaires coupent : une &nbsp; reste dans le mot.
+  function splitInto(src, dest, st) {
+    Array.prototype.forEach.call(src.childNodes, function (node) {
+      if (node.nodeType === 3) {
+        node.nodeValue.split(/([ \t\n\r]+)/).forEach(function (p) {
+          if (!p) return;
+          if (/^[ \t\n\r]+$/.test(p)) {
+            // pas d'espace en début de titre ni en début de ligne
+            if (st.lineStart) return;
+            st.pendingSpace = true;
+            return;
+          }
+          if (st.pendingSpace) {
+            if (st.mode === "chars") addSpan(dest, st, " ");
+            else dest.appendChild(document.createTextNode(" "));
+            st.pendingSpace = false;
+          }
+          if (st.mode === "chars") p.split("").forEach(function (c) { addSpan(dest, st, c); });
+          else addSpan(dest, st, p);
+          st.lineStart = false;
+        });
+      } else if (node.nodeType === 1) {
+        if (node.nodeName === "BR") {
+          dest.appendChild(node.cloneNode(false));
+          st.pendingSpace = false;
+          st.lineStart = true;
+          return;
+        }
+        var copy = node.cloneNode(false);
+        dest.appendChild(copy);
+        splitInto(node, copy, st);
+      }
+    });
+  }
+
+  function addSpan(dest, st, p) {
+    var span = document.createElement("span");
+    span.className = st.cls;
+    // en mode lettres, l'espace doit être insécable :
+    // un span inline-block ne conserve pas une espace simple
+    if (st.mode === "chars" && p === " ") span.innerHTML = "&nbsp;";
+    else span.textContent = p;
+    span.style.transitionDelay = st.i++ * (st.mode === "chars" ? 25 : 60) + "ms";
+    dest.appendChild(span);
+  }
+
   function splitText() {
     document.querySelectorAll("[data-split]").forEach(function (el) {
       if (el.dataset.nsSplitDone) return;
       var mode = el.getAttribute("data-split") || "words";
-      var text = el.textContent.trim();
-      var parts = mode === "chars" ? text.split("") : text.split(" ");
-      var cls = mode === "chars" ? "ns-char" : "ns-word";
+      var src = el.cloneNode(true);
       el.textContent = "";
       el.classList.add("ns-split");
-      parts.forEach(function (p, i) {
-        var span = document.createElement("span");
-        span.className = cls;
-        // en mode lettres, l'espace doit être insécable :
-        // un span inline-block ne conserve pas une espace simple
-        if (mode === "chars" && p === " ") span.innerHTML = "&nbsp;";
-        else span.textContent = p;
-        span.style.transitionDelay = i * (mode === "chars" ? 25 : 60) + "ms";
-        el.appendChild(span);
-        if (mode !== "chars") el.appendChild(document.createTextNode(" "));
+      splitInto(src, el, {
+        mode: mode, cls: mode === "chars" ? "ns-char" : "ns-word",
+        i: 0, lineStart: true, pendingSpace: false
       });
       el.dataset.nsSplitDone = "1";
     });

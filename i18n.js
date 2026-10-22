@@ -182,6 +182,15 @@ const NS_I18N = {
      en:"A shop with Apple Pay, a configurator where customers place their logo on a T-shirt, and a flip-through print catalogue, in three languages.",
      pt:"Loja com Apple Pay, um configurador onde o cliente coloca o seu logótipo numa T-shirt e um catálogo de impressão para folhear, em três línguas."},
   "Configurateur textile": {lb:"Textil-Konfigurator", de:"Textil-Konfigurator", en:"Apparel configurator", pt:"Configurador têxtil"},
+  "Artisan & dépannage": {lb:"Handwierker & Depannage", de:"Handwerk & Notdienst", en:"Trades & call-outs", pt:"Artesão & reparações"},
+  "Le client choisit son problème, fuite d'eau, panne de courant ou porte claquée, et lit quoi faire en attendant. Puis il appelle en un geste ou envoie sa demande de devis.":
+    {lb:"De Client wielt säi Problem, Waasserschued, Stroumpann oder zougefalen Dier, a liest wat en an der Tëschenzäit maache soll. Dann rifft hien mat engem Klick un oder schéckt seng Ufro fir en Devis.",
+     de:"Der Kunde wählt sein Problem, Wasserschaden, Stromausfall oder zugefallene Tür, und liest, was er bis dahin tun kann. Dann ruft er mit einem Tipp an oder schickt seine Angebotsanfrage.",
+     en:"Customers pick their problem, a leak, a power cut or a door slammed shut, and read what to do in the meantime. Then they call in one tap or send a quote request.",
+     pt:"O cliente escolhe o problema, fuga de água, falta de luz ou porta trancada, e lê o que fazer enquanto espera. Depois liga com um toque ou envia o pedido de orçamento."},
+  "Choix du problème": {lb:"Problem wielen", de:"Problemauswahl", en:"Problem picker", pt:"Escolha do problema"},
+  "Conseils d'urgence": {lb:"Noutfall-Tipps", de:"Notfall-Tipps", en:"Emergency tips", pt:"Conselhos de urgência"},
+  "Devis express": {lb:"Express-Devis", de:"Express-Angebot", en:"Quick quote", pt:"Orçamento rápido"},
   "Fiduciaire & comptable": {lb:"Fiduciaire & Comptabel", de:"Treuhand & Buchhaltung", en:"Accountancy firm", pt:"Fiduciária & contabilidade"},
   "Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.":
     {lb:"Gastronomesch Tafel: Menüen, illustréiert Kaart, Wäikeller an eng Online-Reservatioun déi e vollen Service wierklech spaart.",
