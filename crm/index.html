@@ -746,6 +746,60 @@
   body.v16 .cb-info button { color: var(--v-bleu); }
   body.v16 .cb-chercher { background: var(--v-bleu); box-shadow: 0 10px 22px -10px rgba(47,107,255,.8); font-family: var(--v-police); border-radius: 99px; }
 
+  /* --- Argent (23/10/2026) --- */
+  nav.onglets { grid-template-columns: repeat(8, 1fr); }
+  .v-ar-haut, .v-ar-milieu { display: grid; gap: 14px; }
+  .v-ar-milieu { margin-top: 14px; }
+  @media (min-width: 1000px) { .v-ar-haut { grid-template-columns: 1.3fr 1fr 1fr; } .v-ar-milieu { grid-template-columns: 1fr 1.6fr; } }
+  .v-gros { font-size: 40px; font-weight: 650; letter-spacing: -.04em; line-height: 1.05; margin: 4px 0 8px; }
+  .v-gros.moyen { font-size: 31px; }
+  .v-gros span { font-size: 14px; font-weight: 500; color: var(--v-doux); letter-spacing: 0; }
+  .v-ar-sous { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--v-doux); font-weight: 500; }
+  .v-ar-sous i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .v-ar-sous .rouge { color: var(--v-rouge); font-weight: 600; }
+  .v-ar-sous.petit { font-size: 11.5px; margin-top: 8px; }
+  .v-ar-boutons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .v-ar-boutons .btn { padding: 9px 15px; font-size: 13px; flex: 1; white-space: nowrap; }
+  body.v16 main .btn.noir:not(.clair) { background: var(--v-contraste); color: var(--v-carte); box-shadow: none; }
+  .v-ar-deux { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--v-ligne); }
+  .v-ar-deux small { display: block; font-size: 11.5px; color: var(--v-doux); }
+  .v-ar-deux b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -.02em; margin-top: 2px; }
+  .v-ar-deux em { display: block; font-style: normal; font-size: 11px; color: var(--v-pale); }
+  .v-ar-barre { display: flex; height: 8px; border-radius: 99px; background: var(--v-fond); overflow: hidden; margin-top: 16px; }
+  .v-ar-barre i { display: block; height: 100%; background: var(--v-bleu); }
+  .v-ar-barre i.r { background: var(--v-rouge); }
+  .v-pico.rouge { color: var(--v-rouge); } .v-pico.vert { color: var(--v-vert); }
+  .v-objectif { position: relative; background: #111214; color: #fff; border-radius: 16px; padding: 14px 16px 12px; text-align: center; margin-bottom: 10px; }
+  .v-obj-tete { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.75); }
+  .v-obj-tete b { color: #fff; background: var(--v-anis); color: #111214; border-radius: 99px; padding: 1px 9px; font-size: 12px; }
+  .v-jauge { width: 100%; max-width: 230px; display: block; margin: 4px auto -36px; }
+  .v-obj-val small { display: block; font-size: 11px; color: rgba(255,255,255,.55); }
+  .v-obj-val b { font-size: 26px; font-weight: 650; letter-spacing: -.03em; }
+  .v-obj-val span { display: block; font-size: 11.5px; color: rgba(255,255,255,.55); }
+  .v-ligne-k { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; padding: 10px 2px; border-top: 1px solid var(--v-ligne); font-size: 13px; }
+  .v-ligne-k span { color: var(--v-doux); font-weight: 500; }
+  .v-ligne-k b { font-weight: 650; }
+  .v-mini { grid-column: 1 / -1; height: 5px; border-radius: 99px; background: var(--v-fond); overflow: hidden; }
+  .v-mini i { display: block; height: 100%; background: var(--v-vert); border-radius: 99px; }
+  .v-colonnes-mois { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; height: 250px; align-items: end; padding-top: 30px; }
+  .v-colonnes-mois > div { display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; }
+  .v-colonnes-mois .pile { position: relative; flex: 1; width: 100%; max-width: 64px; display: flex; flex-direction: column-reverse; border-radius: 16px;
+    background: repeating-linear-gradient(135deg, var(--v-fond) 0 7px, transparent 7px 14px); border: 1px solid var(--v-ligne); overflow: visible; }
+  .v-colonnes-mois .pile i { display: block; width: 100%; transition: height 1s cubic-bezier(.16,1,.3,1); }
+  .v-colonnes-mois .pile i.s { background: #c9d7ff; border-radius: 0 0 15px 15px; }
+  .v-colonnes-mois .pile i.a { background: var(--v-anis); }
+  .v-colonnes-mois .pile i:last-of-type { border-top-left-radius: 15px; border-top-right-radius: 15px; }
+  .v-colonnes-mois .actuel .pile i.s { background: var(--v-bleu); }
+  .v-colonnes-mois .pile em { position: absolute; left: 50%; top: -24px; transform: translateX(-50%); font-style: normal; font-size: 10.5px; font-weight: 700; white-space: nowrap; color: var(--v-doux); }
+  .v-colonnes-mois .actuel .pile em { background: var(--v-bleu); color: #fff; border-radius: 99px; padding: 2px 7px; top: -26px; }
+  .v-colonnes-mois > div > span { font-size: 11px; font-weight: 600; color: var(--v-pale); text-transform: uppercase; }
+  .v-colonnes-mois .actuel > span { color: var(--v-encre); }
+  @media (max-width: 760px) { .v-colonnes-mois { height: 190px; gap: 6px; } .v-colonnes-mois .pile em { font-size: 9px; } .v-gros { font-size: 34px; } }
+  html[data-theme="sombre"] body.v16 main .btn.noir:not(.clair):not(.danger) { background: #f2f3f5; color: #0c0d10; box-shadow: none; }
+  html[data-theme="sombre"] .v-objectif { background: #000; border: 1px solid var(--v-ligne); }
+  html[data-theme="sombre"] .v-colonnes-mois .pile i.s { background: #2a3d73; }
+  html[data-theme="sombre"] .v-colonnes-mois .actuel .pile i.s { background: var(--v-bleu); }
+
   /* --- Bouton clair / sombre --- */
   .barre-droite { display: flex; align-items: center; gap: 8px; }
   .theme { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--v-ligne); background: var(--v-carte); color: var(--v-encre);
@@ -861,6 +915,7 @@
     <button data-vue="pipeline"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>Pipeline</button>
     <button data-vue="ajouter"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>Ajouter</button>
     <button data-vue="factu"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg></span>Factu</button>
+    <button data-vue="argent"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M2 10h20M6 15h3"/></svg></span>Argent</button>
     <button data-vue="carte"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>Carte</button>
     <button data-vue="reels"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="m10 8.5 5 3.5-5 3.5Z"/></svg></span>Reels</button>
     <button data-vue="stats"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9v9Z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15Z"/></svg></span>Stats</button>
@@ -1154,6 +1209,7 @@ function rendre() {
   else if (S.vue === 'pipeline') v.innerHTML = vuePipeline();
   else if (S.vue === 'ajouter') v.innerHTML = vueAjouter();
   else if (S.vue === 'factu') v.innerHTML = Factu.vue();
+  else if (S.vue === 'argent') v.innerHTML = vueArgent();
   else if (S.vue === 'reels') v.innerHTML = vueReels();
   else v.innerHTML = vueStats();
   remettreSaisie(saisie);
@@ -2134,6 +2190,149 @@ function vueStats() {
 }
 
 // ---------------------------------------------------------------------------
+// Argent (23/10/2026, demandé par Nelson sur le modèle « Dashboard V16 ») :
+// ce qui est encaissé, ce qui ne l'est pas encore, les abonnements payés ou non.
+// Tout vient de Factu (Supabase) : rien n'est saisi ici.
+// ---------------------------------------------------------------------------
+const eur2 = n => (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €';
+const MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+// Part d'abonnement d'une facture : ses lignes de maintenance, rapportées au total HT.
+function partAbo(f) {
+  const L = f.factures_lignes || [], ht = L.reduce((s, l) => s + (Number(l.montant_ht) || 0), 0);
+  if (!ht || typeof NSDocs === 'undefined') return 0;
+  return Math.max(0, Math.min(1, L.filter(NSDocs.estMaintenance).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0) / ht));
+}
+function jaugeObjectif(pct) {
+  const p = Math.max(0, Math.min(1, pct)), a = Math.PI * (1 - p), R = 70;
+  const x = 90 + R * Math.cos(a), y = 92 - R * Math.sin(a);
+  return `<svg viewBox="0 0 180 104" class="v-jauge" aria-hidden="true">
+    <path d="M20 92 A70 70 0 0 1 160 92" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/>
+    ${p > 0.005 ? `<path d="M20 92 A70 70 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="#2f6bff" stroke-width="12" stroke-linecap="round"/>` : ''}
+    <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="8" fill="#fff" stroke="#2f6bff" stroke-width="4"/></svg>`;
+}
+
+function vueArgent() {
+  const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
+  const tete = (outils) => `<div class="v-tete"><div><h1>Argent</h1><p>Encaissé, pas encore encaissé, abonnements · montants TTC sauf mention HT</p></div>${outils || ''}</div>`;
+  if (!F || !F.session) return tete() + `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico">€</span>Facturation non connectée</h3></div>
+    <p class="sous" style="margin:0 0 12px">Ce tableau lit les devis, factures et paiements de Factu. Connecte-toi une fois dans l’onglet Factu sur cet appareil.</p>
+    <button class="btn" data-action="aller-factu">Ouvrir Factu</button></div>`;
+  if (!F.pret) return tete() + '<div class="chargement">Lecture de la facturation…</div>';
+
+  const auj = aujourdhui(), mois = auj.slice(0, 7), annee = auj.slice(0, 4);
+  const P = S.argentPeriode || 'mois';
+  const debut = P === 'mois' ? mois + '-01' : P === 'annee' ? annee + '-01-01' : P === '90' ? (() => { const d = new Date(); d.setDate(d.getDate() - 89); return fmt(d).slice(0, 10); })() : '0000';
+  const dPrec = new Date(); dPrec.setDate(1); dPrec.setMonth(dPrec.getMonth() - 1); const moisPrec = fmt(dPrec).slice(0, 7);
+  const libP = { mois: 'ce mois-ci', '90': 'sur 90 jours', annee: 'en ' + annee, tout: 'depuis le début' }[P];
+
+  const facs = F.factures.filter(f => f.statut !== 'annulée');
+  const parId = Object.fromEntries(facs.map(f => [f.id, f]));
+  // Encaissements : la table des paiements (date réelle) ; sans elle, les factures payées à leur date d'émission.
+  const encaissements = F.paiements ? F.paiements.filter(x => parId[x.facture_id]).map(x => ({ date: String(x.date), montant: Number(x.montant) || 0, f: parId[x.facture_id], moyen: x.moyen }))
+    : facs.filter(f => Number(f.montant_paye) > 0).map(f => ({ date: String(f.date_emission), montant: Number(f.montant_paye), f, moyen: '' }));
+  const somme = (L, cond) => L.filter(cond).reduce((s, e) => s + e.montant, 0);
+  const enc = somme(encaissements, e => e.date >= debut);
+  const encAbo = encaissements.filter(e => e.date >= debut).reduce((s, e) => s + e.montant * partAbo(e.f), 0);
+  const encMois = somme(encaissements, e => e.date.startsWith(mois)), encPrec = somme(encaissements, e => e.date.startsWith(moisPrec));
+  const evol = encPrec ? Math.round((encMois - encPrec) / encPrec * 100) : null;
+
+  // Pas encore encaissé : factures émises non soldées, et brouillons pas encore émis.
+  const reste = f => Math.max(0, (Number(f.total_ttc) || 0) - (Number(f.montant_paye) || 0));
+  const emises = facs.filter(f => (f.statut === 'envoyée' || f.statut === 'en_retard') && reste(f) > 0.005);
+  const enRetard = emises.filter(f => f.statut === 'en_retard' || (f.date_echeance && String(f.date_echeance) < auj));
+  const brouillons = facs.filter(f => f.statut === 'brouillon');
+  const du = emises.reduce((s, f) => s + reste(f), 0), duRetard = enRetard.reduce((s, f) => s + reste(f), 0);
+  const aEmettre = brouillons.reduce((s, f) => s + (Number(f.total_ttc) || 0), 0);
+  const duAbo = emises.reduce((s, f) => s + reste(f) * partAbo(f), 0);
+
+  // Abonnements : clients avec un forfait, et l'état de leur dernière facture de maintenance.
+  const abos = F.clients.filter(c => Number(c.abonnement_mensuel) > 0 && c.statut !== 'inactif'
+    && (c.statut === 'actif' || F.devis.some(d => d.client_id === c.id && d.statut === 'accepté'))).map(c => {
+    const montant = Number(c.abonnement_montant_remise != null ? c.abonnement_montant_remise : c.abonnement_montant_standard) || Number(c.abonnement_mensuel) || 0;
+    const annuel = c.abonnement_periodicite === 'annuel';
+    // Le pire état gagne : une échéance en retard ne se cache pas derrière le brouillon suivant.
+    const fms = facs.filter(f => f.client_id === c.id && partAbo(f) > 0.5).sort((a, b) => String(b.date_emission).localeCompare(String(a.date_emission)));
+    const fm = fms[0], ouvertes = fms.filter(f => f.statut !== 'brouillon' && f.statut !== 'payée' && reste(f) > 0.005);
+    const etat = !fm ? 'pas encore facturé' : ouvertes.some(f => enRetard.includes(f)) ? 'en retard' : ouvertes.length ? 'en attente'
+      : fm.statut === 'brouillon' ? 'à émettre' : 'payé';
+    return { c, montant, annuel, parMois: montant / (annuel ? 12 : 3), etat, fm };
+  });
+  const recurrentMois = abos.reduce((s, a) => s + a.parMois, 0);
+  const abosPayes = abos.filter(a => a.etat === 'payé').length, abosRetard = abos.filter(a => a.etat === 'en retard').length;
+
+  // Objectif du mois : signé (devis acceptés datés de leur première facture), comme dans Stats.
+  const dateSigne = d => F.factures.filter(f => f.devis_id === d.id).map(f => String(f.date_emission || '')).filter(Boolean).sort()[0] || String(d.date_emission || '');
+  const signeMois = F.devis.filter(d => d.statut === 'accepté' && dateSigne(d).startsWith(mois)).reduce((s, d) => s + (Number(d.total_ht) || 0), 0);
+  const attente = F.devis.filter(d => d.statut === 'envoyé' && (!d.date_validite || String(d.date_validite) >= auj));
+  const enJeu = attente.reduce((s, d) => s + (Number(d.total_ht) || 0), 0);
+  const tranches = F.devis.filter(d => d.statut === 'accepté' || d.statut === 'refusé');
+  const tauxOui = tranches.length ? tranches.filter(d => d.statut === 'accepté').length / tranches.length : 0;
+
+  // Encaissements des 6 derniers mois.
+  const mois6 = []; for (let i = 5; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); const k = fmt(d).slice(0, 7);
+    mois6.push({ k, l: MOIS_COURT[d.getMonth()], v: somme(encaissements, e => e.date.startsWith(k)), a: encaissements.filter(e => e.date.startsWith(k)).reduce((s, e) => s + e.montant * partAbo(e.f), 0) }); }
+  const max6 = Math.max(1, ...mois6.map(m => m.v));
+
+  const outils = `<div class="v-outils"><div class="v-seg">${[['mois', 'Ce mois'], ['90', '90 j'], ['annee', annee], ['tout', 'Tout']].map(([k, l]) =>
+    `<button data-action="argent-periode" data-p="${k}" class="${k === P ? 'on' : ''}">${l}</button>`).join('')}</div></div>`;
+
+  const c1 = `<div class="v-carte v-ar-total"><div class="v-carte-tete"><h3><span class="v-pico">${ICO.barres}</span>Encaissé ${libP}</h3>
+      ${evol == null ? '' : `<span class="v-delta ${evol > 0 ? 'monte' : evol < 0 ? 'baisse' : 'neutre'}" title="ce mois-ci par rapport au mois dernier">${evol > 0 ? '▲' : evol < 0 ? '▼' : ''} ${Math.abs(evol)} % ce mois</span>`}</div>
+    <div class="v-gros">${eur2(enc)}</div>
+    <div class="v-ar-sous"><span><i style="background:#2f6bff"></i>Sites ${eur2(enc - encAbo)}</span><span><i style="background:#c5e83a"></i>Abonnements ${eur2(encAbo)}</span></div>
+    <div class="v-ar-boutons"><button class="btn" data-action="aller-factu">${ICO.plus.replace('<svg', '<svg width="14" height="14"')}Devis ou facture</button>
+      <button class="btn noir" data-action="aller-factu">${ICO.barres.replace('<svg', '<svg width="14" height="14"')}Voir les factures</button></div></div>`;
+  const c2 = `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico rouge">${SVG('<path d="M12 19V5M5 12l7-7 7 7"/>')}</span>Pas encore encaissé</h3><span class="v-delta neutre">${emises.length} facture${emises.length > 1 ? 's' : ''}</span></div>
+    <div class="v-gros moyen">${eur2(du)}</div>
+    <div class="v-ar-sous"><span class="${duRetard ? 'rouge' : ''}">${duRetard ? '⚠ ' + eur2(duRetard) + ' en retard (' + enRetard.length + ')' : 'Aucun retard'}</span></div>
+    <div class="v-ar-deux"><div><small>Factures à émettre</small><b>${eur2(aEmettre)}</b><em>${brouillons.length} brouillon${brouillons.length > 1 ? 's' : ''}</em></div>
+      <div><small>Dont abonnements</small><b>${eur2(duAbo)}</b><em>reste dû sur la maintenance</em></div></div></div>`;
+  const c3 = `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico vert">${SVG('<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>')}</span>Abonnements</h3><span class="v-delta neutre">${abos.length} client${abos.length > 1 ? 's' : ''}</span></div>
+    <div class="v-gros moyen">${eur2(recurrentMois)}<span> /mois HT</span></div>
+    <div class="v-ar-sous"><span>soit ${eur2(recurrentMois * 12)} HT par an</span></div>
+    <div class="v-ar-barre">${abos.length ? `<i style="width:${abosPayes / abos.length * 100}%"></i><i class="r" style="width:${abosRetard / abos.length * 100}%"></i>` : ''}</div>
+    <div class="v-ar-sous petit"><span><i style="background:#2f6bff"></i>${abosPayes} payé${abosPayes > 1 ? 's' : ''}</span><span><i style="background:#e5484d"></i>${abosRetard} en retard</span><span><i style="background:var(--v-ligne)"></i>${abos.length - abosPayes - abosRetard} autres</span></div></div>`;
+
+  const pctObj = signeMois / OBJECTIF_MOIS;
+  const c4 = `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico">${ICO.cible}</span>Objectif du mois</h3></div>
+    <div class="v-objectif"><div class="v-obj-tete"><span>${esc(MOIS[new Date().getMonth()])}</span><b>${Math.round(pctObj * 100)} %</b></div>
+      ${jaugeObjectif(pctObj)}<div class="v-obj-val"><small>Signé HT</small><b>${eur2(signeMois)}</b><span>/ ${eur2(OBJECTIF_MOIS)}</span></div></div>
+    <div class="v-ligne-k"><span>Devis en attente</span><b>${attente.length} · ${eur2(enJeu)} HT</b></div>
+    <div class="v-ligne-k"><span>Taux de signature</span><b>${tranches.length ? Math.round(tauxOui * 100) + ' %' : '—'}</b><div class="v-mini"><i style="width:${tauxOui * 100}%"></i></div></div></div>`;
+  const c5 = `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico">${ICO.barres}</span>Encaissements<small>6 derniers mois</small></h3>
+      <div class="v-leg"><span><i style="background:#2f6bff"></i>Sites</span><span><i style="background:#c5e83a"></i>Abos</span></div></div>
+    <div class="v-colonnes-mois">${mois6.map((m, i) => `<div class="${i === 5 ? 'actuel' : ''}"><div class="pile" title="${esc(m.l)} : ${esc(eur2(m.v))}">
+      ${m.v ? `<em>${esc(eur2(m.v))}</em>` : ''}<i class="s" style="height:${(m.v - m.a) / max6 * 100}%"></i><i class="a" style="height:${m.a / max6 * 100}%"></i></div><span>${m.l}</span></div>`).join('')}</div></div>`;
+
+  // Tableau des mouvements : à encaisser d'abord (retards en tête), puis les derniers encaissements.
+  const ligneFac = f => {
+    const retard = enRetard.includes(f), type = partAbo(f) > 0.5 ? 'Abonnement' : 'Site';
+    return `<tr><td><div class="v-qui">${avatar((f.clients && f.clients.nom_etablissement) || '?')}<div><b>${esc((f.clients && f.clients.nom_etablissement) || '—')}</b><small>${esc(f.numero || 'brouillon')}</small></div></div></td>
+      <td><b>${eur2(reste(f))}</b></td><td class="v-hm"><span class="v-faible">${type}</span></td><td class="v-hm"><span class="v-faible">échéance ${esc(f.date_echeance ? String(f.date_echeance).split('-').reverse().slice(0, 2).join('/') : '—')}</span></td>
+      <td><span class="v-st" style="--statut:${retard ? '#dd7e6b' : '#f6b26b'}">${retard ? 'En retard' : 'À encaisser'}</span></td></tr>`;
+  };
+  const ligneEnc = e => `<tr><td><div class="v-qui">${avatar((e.f.clients && e.f.clients.nom_etablissement) || '?')}<div><b>${esc((e.f.clients && e.f.clients.nom_etablissement) || '—')}</b><small>${esc(e.f.numero || '')}</small></div></div></td>
+      <td><b>${eur2(e.montant)}</b></td><td class="v-hm"><span class="v-faible">${partAbo(e.f) > 0.5 ? 'Abonnement' : 'Site'}</span></td><td class="v-hm"><span class="v-faible">${esc(e.date.split('-').reverse().join('/'))}${e.moyen ? ' · ' + esc(e.moyen) : ''}</span></td>
+      <td><span class="v-st" style="--statut:#93c47d">Encaissé</span></td></tr>`;
+  const aFaire = emises.slice().sort((a, b) => (enRetard.includes(b) - enRetard.includes(a)) || String(a.date_echeance).localeCompare(String(b.date_echeance)));
+  const derniers = encaissements.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
+  const c6 = `<div class="v-carte" style="margin-top:14px"><div class="v-carte-tete"><h3><span class="v-pico">${ICO.table}</span>Mouvements<small>${aFaire.length} à encaisser · ${derniers.length} derniers encaissements</small></h3></div>
+    ${aFaire.length || derniers.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Client</th><th>Montant</th><th class="v-hm">Type</th><th class="v-hm">Date</th><th>État</th></tr></thead>
+      <tbody>${aFaire.map(ligneFac).join('') + derniers.map(ligneEnc).join('')}</tbody></table></div>` : '<div class="vide">Aucune facture émise pour l’instant.</div>'}</div>`;
+  const ETATS = { 'payé': '#93c47d', 'en attente': '#f6b26b', 'en retard': '#dd7e6b', 'à émettre': '#efefef', 'pas encore facturé': '#ffffff' };
+  const c7 = `<div class="v-carte" style="margin-top:14px"><div class="v-carte-tete"><h3><span class="v-pico vert">${ICO.gens}</span>Abonnés<small>dernière facture de maintenance de chacun</small></h3></div>
+    ${abos.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Client</th><th>Forfait HT</th><th class="v-hm">Rythme</th><th class="v-hm">Prochaine échéance</th><th>État</th></tr></thead>
+      <tbody>${abos.sort((a, b) => b.parMois - a.parMois).map(a => `<tr><td><div class="v-qui">${avatar(a.c.nom_etablissement || '?')}<div><b>${esc(a.c.nom_etablissement || '—')}</b><small>${esc(a.c.formule || '')}</small></div></div></td>
+        <td><b>${eur2(a.montant)}</b></td><td class="v-hm"><span class="v-faible">${a.annuel ? 'annuel' : 'trimestriel'}${a.c.abonnement_moyen ? ' · ' + esc(a.c.abonnement_moyen) : ''}</span></td>
+        <td class="v-hm"><span class="v-faible">${a.c.abonnement_echeance ? esc(String(a.c.abonnement_echeance).split('-').reverse().join('/')) : '—'}</span></td>
+        <td><span class="v-st" style="--statut:${ETATS[a.etat]}">${esc(a.etat[0].toUpperCase() + a.etat.slice(1))}</span></td></tr>`).join('')}</tbody></table></div>`
+      : '<div class="vide">Aucun client avec un abonnement de maintenance pour l’instant.</div>'}</div>`;
+
+  return tete(outils) + `<div class="v-ar-haut">${c1}${c2}${c3}</div><div class="v-ar-milieu">${c4}${c5}</div>${c6}${c7}`
+    + (F.erreur ? `<div class="vide" style="margin-top:12px">Lecture partielle : ${esc(F.erreur)}</div>` : '');
+}
+
+// ---------------------------------------------------------------------------
 // Fiche prospect
 // ---------------------------------------------------------------------------
 const CHOIX = { res: '', rappel: '', duree: 60 };
@@ -2591,7 +2790,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-stop]'); if (t) { e.stopPropagation(); return; }
   const onglet = e.target.closest('#onglets button');
   if (onglet) { S.vue = onglet.dataset.vue; S.recherche = ''; document.getElementById('recherche').value = ''; window.scrollTo(0, 0); rendre();
-    if (S.vue === 'factu') Factu.recharger(); return; }
+    if (S.vue === 'factu' || S.vue === 'argent') Factu.recharger(); return; }
   const ouvrir = e.target.closest('[data-ouvrir]'); if (ouvrir) { e.preventDefault(); ouvrirFiche(ouvrir.dataset.ouvrir); return; }
   const ac = e.target.closest('[data-action="carte-noter"], [data-action="carte-wa"]');
   if (ac) {
@@ -2641,6 +2840,8 @@ document.addEventListener('click', e => {
   else if (act === 'sess-fin') finSession(false);
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
   else if (act === 'theme') basculerTheme();
+  else if (act === 'argent-periode') { S.argentPeriode = a.dataset.p; rendre(); }
+  else if (act === 'aller-factu') { S.vue = 'factu'; window.scrollTo(0, 0); rendre(); Factu.recharger(); }
   else if (act === 'aller-ajouter') { S.vue = 'ajouter'; window.scrollTo(0, 0); rendre(); }
   else if (act === 'pipe-mode') { S.pipeMode = a.dataset.m; stocker('pipeMode', S.pipeMode); rendre(); }
   else if (act === 'pipe-statut') { S.pipeStatut = a.dataset.k; S.pipeMax = 100; rendre(); }
@@ -3416,15 +3617,17 @@ const Factu = (() => {
     F.sb = window.supabase.createClient(S.data.supabase.url, S.data.supabase.cle, { auth: { persistSession: true, storageKey: 'crmnsd-supabase' }, global: { fetch: fetchJwt } });
     const { data } = await F.sb.auth.getSession();
     F.session = data.session;
-    if (F.session) await charger(); else { F.pret = true; if (S.vue === 'factu') rendre(); }
+    if (F.session) await charger(); else { F.pret = true; if (S.vue === 'factu' || S.vue === 'argent') rendre(); }
   }
 
   async function charger() {
     F.erreur = '';
-    const [c, d, f] = await Promise.all([
+    const [c, d, f, pay] = await Promise.all([
       F.sb.from('clients').select('*').order('created_at', { ascending: false }),
       F.sb.from('devis').select('*, clients(nom_etablissement)').order('created_at', { ascending: false }),
-      F.sb.from('factures').select('*, clients(nom_etablissement), factures_lignes(designation)').order('created_at', { ascending: false }),
+      F.sb.from('factures').select('*, clients(nom_etablissement), factures_lignes(designation, montant_ht)').order('created_at', { ascending: false }),
+      // Pour l'onglet Argent (23/10/2026) : la date réelle de chaque encaissement. Une erreur ici ne bloque pas Factu.
+      F.sb.from('paiements').select('*').order('date', { ascending: false }),
     ]);
     const err = c.error || d.error || f.error;
     // Toujours refusé après les essais : la session est perdue, on redemande la connexion.
@@ -3434,9 +3637,9 @@ const Factu = (() => {
       if (S.vue === 'factu') rendre(); return;
     }
     if (err) F.erreur = err.message;
-    F.clients = c.data || []; F.devis = d.data || []; F.factures = f.data || [];
+    F.clients = c.data || []; F.devis = d.data || []; F.factures = f.data || []; F.paiements = pay.error ? null : pay.data || [];
     F.pret = true;
-    if (S.vue === 'factu' || S.vue === 'stats') rendre();
+    if (S.vue === 'factu' || S.vue === 'stats' || S.vue === 'argent') rendre();
   }
 
   async function connexion(form) {
