@@ -183,14 +183,14 @@ const NS_I18N = {
      pt:"Loja com Apple Pay, um configurador onde o cliente coloca o seu logótipo numa T-shirt e um catálogo de impressão para folhear, em três línguas."},
   "Configurateur textile": {lb:"Textil-Konfigurator", de:"Textil-Konfigurator", en:"Apparel configurator", pt:"Configurador têxtil"},
   "Artisan & dépannage": {lb:"Handwierker & Depannage", de:"Handwerk & Notdienst", en:"Trades & call-outs", pt:"Artesão & reparações"},
-  "Le client choisit son problème, fuite d'eau, panne de courant ou porte claquée, et lit quoi faire en attendant. Puis il appelle en un geste ou envoie sa demande de devis.":
-    {lb:"De Client wielt säi Problem, Waasserschued, Stroumpann oder zougefalen Dier, a liest wat en an der Tëschenzäit maache soll. Dann rifft hien mat engem Klick un oder schéckt seng Ufro fir en Devis.",
-     de:"Der Kunde wählt sein Problem, Wasserschaden, Stromausfall oder zugefallene Tür, und liest, was er bis dahin tun kann. Dann ruft er mit einem Tipp an oder schickt seine Angebotsanfrage.",
-     en:"Customers pick their problem, a leak, a power cut or a door slammed shut, and read what to do in the meantime. Then they call in one tap or send a quote request.",
-     pt:"O cliente escolhe o problema, fuga de água, falta de luz ou porta trancada, e lê o que fazer enquanto espera. Depois liga com um toque ou envia o pedido de orçamento."},
-  "Choix du problème": {lb:"Problem wielen", de:"Problemauswahl", en:"Problem picker", pt:"Escolha do problema"},
-  "Conseils d'urgence": {lb:"Noutfall-Tipps", de:"Notfall-Tipps", en:"Emergency tips", pt:"Conselhos de urgência"},
-  "Devis express": {lb:"Express-Devis", de:"Express-Angebot", en:"Quick quote", pt:"Orçamento rápido"},
+  "Une page par métier, chacune avec son outil : manomètre de chaudière, tableau électrique, robinet d'arrêt pas à pas. Devis avec photos et chantiers avant/après à filtrer.":
+    {lb:"Eng Säit pro Beruff, all mat sengem Tool: Manometer vum Kessel, Sicherungskaascht, Waasserhunn Schrëtt fir Schrëtt. Devis mat Fotoen a Chantiere virdrun/nodrun zum Filteren.",
+     de:"Eine Seite pro Gewerk, jede mit ihrem Werkzeug: Heizungsmanometer, Sicherungskasten, Haupthahn Schritt für Schritt. Angebot mit Fotos und filterbare Vorher-nachher-Baustellen.",
+     en:"One page per trade, each with its own tool: boiler pressure gauge, fuse box, stopcock step by step. Quote requests with photos and filterable before/after jobs.",
+     pt:"Uma página por ofício, cada uma com a sua ferramenta: manómetro da caldeira, quadro elétrico, torneira de corte passo a passo. Orçamento com fotos e obras antes/depois com filtros."},
+  "5 pages métiers": {lb:"5 Beruffssäiten", de:"5 Gewerkseiten", en:"5 trade pages", pt:"5 páginas de ofícios"},
+  "Outils de diagnostic": {lb:"Diagnos-Tools", de:"Diagnose-Werkzeuge", en:"Diagnostic tools", pt:"Ferramentas de diagnóstico"},
+  "Devis avec photos": {lb:"Devis mat Fotoen", de:"Angebot mit Fotos", en:"Quotes with photos", pt:"Orçamento com fotos"},
   "Fiduciaire & comptable": {lb:"Fiduciaire & Comptabel", de:"Treuhand & Buchhaltung", en:"Accountancy firm", pt:"Fiduciária & contabilidade"},
   "Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.":
     {lb:"Gastronomesch Tafel: Menüen, illustréiert Kaart, Wäikeller an eng Online-Reservatioun déi e vollen Service wierklech spaart.",
