@@ -2239,7 +2239,7 @@ const dateFr = iso => iso ? String(iso).slice(0, 10).split('-').reverse().join('
 function formCharge(charges) {
   const c = charges.find(x => x.id === S.chargeEdit) || {};
   return `<form id="form-charge" class="v-form" autocomplete="off" style="margin-top:12px">
-    <label class="champ large-2">Abonnement<select name="id" id="charge-choix"><option value="">＋ Nouvel abonnement</option>
+    <label class="champ large-2">Abonnement<select name="charge" id="charge-choix"><option value="">＋ Nouvel abonnement</option>
       ${charges.map(x => `<option value="${esc(x.id)}" ${x.id === c.id ? 'selected' : ''}>${esc(x.nom)}</option>`).join('')}</select></label>
     <label class="champ">Nom *<input name="nom" required value="${esc(c.nom || '')}" placeholder="Ex. Claude Pro"></label>
     <label class="champ">Montant TTC prélevé<input name="montant" inputmode="decimal" value="${esc(c.montant || '')}" placeholder="Ex. 21,06"></label>
@@ -2251,7 +2251,9 @@ function formCharge(charges) {
 }
 async function enregistrerCharge(form) {
   const btn = form.querySelector('button[type=submit]'); btn.disabled = true;
-  const champs = Object.fromEntries([...form.elements].filter(e => e.name).map(e => [e.name, e.value]));
+  // Le champ s'appelle « charge » et non « id » : un champ nommé id masque form.id, et l'envoi
+  // n'était plus reconnu (bouton sans effet, vu par Nelson le 23/10/2026).
+  const champs = Object.fromEntries([...form.elements].filter(e => e.name).map(e => [e.name === 'charge' ? 'id' : e.name, e.value]));
   try { S.data.charges = await appel('api_charge_enregistrer', S.pin, champs); S.chargeEdit = ''; S.chargeOuvert = false; toast('Abonnement enregistré dans le Sheets.'); rendre(); }
   catch (e) { btn.disabled = false; toast(e.message, true); }
 }
