@@ -2184,8 +2184,9 @@ function vueStats() {
     `<div class="v-entonnoir">${etapes.map(([l, n], i) => `<div class="v-et"><span>${l}</span><div class="barre"><i style="width:${Math.max(4, n / base * 100)}%">${n}</i></div>
       <em>${i && etapes[0][1] ? Math.round(n / etapes[0][1] * 100) + ' %' : ''}</em></div>`).join('')}</div>`);
 
-  // Par personne : toujours les deux, pour se situer.
-  const reps = S.data.equipe.map(n => { const a = J.filter(e => dans(e) && parDe(e) === n);
+  // Par personne : toujours les deux, pour se situer. Lu sur tout le journal, pas sur l'espace
+  // ouvert : depuis l'espace de Nelson, Sam tombait à zéro (vu par Nelson le 23/10/2026).
+  const reps = S.data.equipe.map(n => { const a = S.data.journal.filter(e => dans(e) && parDe(e) === n);
     return { n, a: a.filter(estAppel).length, d: a.filter(decroche).length, r: a.filter(rdv).length, l: a.filter(lien).length }; }).sort((x, y) => y.a - x.a);
   const top = Math.max(1, ...reps.map(r => r.a));
   const c5 = carteV('Par personne', 'appels ' + periode, ICO.equipe, '', `<div class="v-reps">${reps.map(r => `<div>
