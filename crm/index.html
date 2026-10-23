@@ -2254,7 +2254,7 @@ async function enregistrerCharge(form) {
   // Le champ s'appelle « charge » et non « id » : un champ nommé id masque form.id, et l'envoi
   // n'était plus reconnu (bouton sans effet, vu par Nelson le 23/10/2026).
   const champs = Object.fromEntries([...form.elements].filter(e => e.name).map(e => [e.name === 'charge' ? 'id' : e.name, e.value]));
-  try { S.data.charges = await appel('api_charge_enregistrer', S.pin, champs); S.chargeEdit = ''; S.chargeOuvert = false; toast('Abonnement enregistré dans le Sheets.'); rendre(); }
+  try { S.data.charges = await appel('api_charge_enregistrer', S.pin, champs); S.chargeEdit = ''; S.chargeOuvert = false; form.remove(); toast('Abonnement enregistré dans le Sheets.'); rendre(); }
   catch (e) { btn.disabled = false; toast(e.message, true); }
 }
 
@@ -2911,7 +2911,8 @@ document.addEventListener('click', e => {
     const p = document.getElementById('date-precise'); if (p) p.value = d.dataset.date.replace(' ', 'T');
     if (document.getElementById('apres-nom')) majMessageApres(); return; }
   const ch = e.target.closest('tr[data-charge]');
-  if (ch) { S.chargeEdit = ch.dataset.charge; S.chargeOuvert = true; rendre(); const f = document.getElementById('form-charge'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  // Le formulaire en cours est retiré avant le redessin : sinon la saisie gardée (vide) écrase l'abonnement choisi.
+  if (ch) { S.chargeEdit = ch.dataset.charge; S.chargeOuvert = true; const vieux = document.getElementById('form-charge'); if (vieux) vieux.remove(); rendre(); const f = document.getElementById('form-charge'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
   const es = e.target.closest('[data-espace]');
   if (es) { S.espace = es.dataset.espace; stocker('espace', S.espace); S.plusJour = 25; window.scrollTo(0, 0); rendre(); return; }
   const a = e.target.closest('[data-action]'); if (!a) return;
