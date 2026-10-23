@@ -100,6 +100,10 @@ section.bloc{padding:88px 0}
 .serv::before{content:"";position:absolute;inset:0;background:var(--signal);transform:translateY(101%);transition:transform .45s cubic-bezier(.2,.7,.2,1);z-index:-1}
 .serv:hover::before,.serv:focus-visible::before{transform:none}
 .serv:last-child{border-right:0}
+.serv-photo{margin:-26px -22px 18px;aspect-ratio:16/10;overflow:hidden;border-bottom:3px solid var(--encre)}
+.serv-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05);transition:filter .5s,transform .8s cubic-bezier(.2,.7,.2,1)}
+.serv:hover .serv-photo img,.serv:focus-visible .serv-photo img{filter:none;transform:scale(1.05)}
+@media(hover:none){.serv-photo img{filter:none}}
 .serv .num{font:900 54px 'Big Shoulders Display';color:var(--signal-f);line-height:1;transition:color .3s}
 .serv:hover .num{color:var(--nuit)}
 .serv h3{font-size:32px;text-transform:uppercase;margin:6px 0 12px}
@@ -124,7 +128,6 @@ section.bloc{padding:88px 0}
 .compare{position:relative;aspect-ratio:16/8;border:3px solid var(--encre);overflow:hidden;background:var(--nuit-3);user-select:none;touch-action:pan-y}
 .compare .face{position:absolute;inset:0;display:flex;align-items:flex-end;padding:22px}
 .face.apres{clip-path:inset(0 0 0 var(--pos,50%))}
-.face::before{content:"";position:absolute;inset:16% 28% 20% 24%;opacity:.85;transition:background .5s}
 .etiq{position:relative;font:800 22px 'Big Shoulders Display';text-transform:uppercase;padding:6px 12px;background:var(--encre);color:#fff}
 .face.apres .etiq{margin-left:auto;background:var(--signal);color:var(--nuit)}
 .compare input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize}
@@ -132,23 +135,18 @@ section.bloc{padding:88px 0}
 .poignee::after{content:"⇆";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;display:grid;place-items:center;background:var(--signal);color:var(--nuit);font-weight:800;font-size:22px}
 .compare:has(input:focus-visible){outline:3px solid var(--jaune);outline-offset:3px}
 .legende{font-size:15px;color:var(--encre-2);margin-top:10px}
-/* scènes dessinées, une par chantier (les photos du client les remplacent) */
-.sc-sdb .avant{background:linear-gradient(135deg,#5a4a3e,#3b332d 55%,#6b5a48)}
-.sc-sdb .avant::before{background:repeating-linear-gradient(100deg,#6e5a45 0 18px,#57483a 18px 30px)}
-.sc-sdb .apres{background:linear-gradient(135deg,#f3f4f6,#d9dde2 60%,#eef0f2)}
-.sc-sdb .apres::before{background:linear-gradient(90deg,#c4c9cf 0 2px,transparent 2px 60px),linear-gradient(#c4c9cf 0 2px,transparent 2px 60px);background-size:60px 60px}
-.sc-chaud .avant{background:linear-gradient(160deg,#4a4038,#2d2824)}
-.sc-chaud .avant::before{background:repeating-linear-gradient(0deg,#6a5d50 0 10px,#4c4239 10px 16px);inset:14% 34% 18% 34%}
-.sc-chaud .apres{background:linear-gradient(160deg,#eef1f4,#d2d8de)}
-.sc-chaud .apres::before{background:linear-gradient(#fbfbfc,#e9ecef);inset:14% 34% 18% 34%;box-shadow:inset 0 -14px 0 #c9ced4,inset 0 0 0 3px #b9bfc6}
-.sc-porte .avant{background:linear-gradient(120deg,#3d342d,#2a2420)}
-.sc-porte .avant::before{background:linear-gradient(90deg,#5c4c3e,#4a3d32);inset:8% 36% 0 36%;box-shadow:inset -18px 0 0 #3a2f27}
-.sc-porte .apres{background:linear-gradient(120deg,#e4e7ea,#c9ced4)}
-.sc-porte .apres::before{background:linear-gradient(90deg,#2b2f35,#202328);inset:8% 36% 0 36%;box-shadow:inset -10px 0 0 #ff5b1f}
-.sc-tab .avant{background:linear-gradient(140deg,#3b3631,#26231f)}
-.sc-tab .avant::before{background:repeating-linear-gradient(45deg,#5e554b 0 3px,transparent 3px 9px),#4a433c;inset:12% 30% 14% 30%}
-.sc-tab .apres{background:linear-gradient(140deg,#f1f3f5,#d6dbe0)}
-.sc-tab .apres::before{background:repeating-linear-gradient(90deg,#fbfbfc 0 26px,#b9bfc6 26px 29px),#fbfbfc;inset:12% 30% 14% 30%;box-shadow:inset 0 0 0 3px #b9bfc6}
+@media(max-width:560px){.compare{aspect-ratio:4/3}.compare .face{padding:12px}.etiq{font-size:18px;padding:4px 10px}}
+/* chantiers : photos d'illustration (Unsplash), remplacées par celles du client */
+.compare .face{background:var(--nuit-3) center/cover no-repeat}
+.sc-sdb .avant{background-image:url(photos/sdb-avant.webp)}
+.sc-sdb .apres{background-image:url(photos/sdb-apres.webp)}
+.sc-chaud .avant{background-image:url(photos/radiateur-avant.webp)}
+.sc-chaud .apres{background-image:url(photos/radiateur-apres.webp)}
+.sc-porte .avant{background-image:url(photos/porte-avant.webp)}
+.sc-porte .apres{background-image:url(photos/porte-apres.webp)}
+.sc-tab .avant{background-image:url(photos/tableau-avant.webp)}
+.sc-tab .apres{background-image:url(photos/tableau-apres.webp)}
+.compare .face.avant{filter:saturate(.85)}
 
 /* galerie filtrable */
 .filtres{display:flex;flex-wrap:wrap;gap:8px;margin:34px 0 18px}
@@ -162,7 +160,8 @@ section.bloc{padding:88px 0}
 .vig[hidden]{display:none}
 .vig .mini{aspect-ratio:4/3;position:relative;overflow:hidden;border:2px solid var(--encre)}
 .vig .mini .face{position:absolute;inset:0;padding:0}
-.vig .mini .apres{clip-path:inset(0 0 0 50%)}
+.vig .mini .avant{display:none}
+.vig .mini .apres{clip-path:none}
 .vig b{display:block;font:800 21px/1.05 'Big Shoulders Display';text-transform:uppercase}
 .vig small{display:block;color:var(--encre-2);font-size:14px;margin-top:4px}
 @media(max-width:860px){.galerie{grid-template-columns:1fr}}
@@ -284,29 +283,13 @@ footer{background:#0e0f11;color:#aab1bb;padding:56px 0 170px;font-size:14.5px}
 .mhero .cta{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
 .mhero .cta .discret{color:#fff;font-weight:600}
 .illu{position:relative;aspect-ratio:1;max-width:440px;width:100%;justify-self:end;border:3px solid var(--nuit-3);background:var(--nuit-2)}
-.illu svg{width:100%;height:100%}
+.illu{overflow:hidden}
+.illu img{width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.illu.ns-in img{transform:none}
+.illu figcaption{position:absolute;left:0;bottom:0;background:var(--signal);color:var(--nuit);font:800 18px 'Big Shoulders Display';text-transform:uppercase;letter-spacing:.06em;padding:8px 14px}
 @media(max-width:860px){.mhero-grid{grid-template-columns:1fr}.illu{max-width:300px;justify-self:start}.mhero{padding-top:100px}}
 
-/* animations des illustrations */
-.goutte{animation:goutte 1.6s cubic-bezier(.5,0,.9,.5) infinite}
-@keyframes goutte{0%{transform:translateY(0);opacity:0}15%{opacity:1}80%{transform:translateY(120px);opacity:1}100%{transform:translateY(130px);opacity:0}}
-.onde{transform-origin:220px 372px;animation:onde 1.6s ease-out infinite}
-@keyframes onde{0%,75%{transform:scale(.2);opacity:0}80%{opacity:1}100%{transform:scale(1.4);opacity:0}}
-.flamme{transform-origin:50% 100%;transform-box:fill-box;animation:flamme .9s ease-in-out infinite alternate}
-.flamme.b{animation-duration:1.2s;animation-delay:-.4s}
-@keyframes flamme{from{transform:scaleY(.82) skewX(-4deg)}to{transform:scaleY(1.08) skewX(4deg)}}
-.chaleur{animation:monte 3s linear infinite}
-.chaleur.b{animation-delay:-1s}.chaleur.c{animation-delay:-2s}
-@keyframes monte{from{transform:translateY(30px);opacity:0}30%{opacity:.9}to{transform:translateY(-40px);opacity:0}}
-.cle{transform-origin:220px 220px;animation:tourne 3.2s cubic-bezier(.6,0,.2,1) infinite}
-@keyframes tourne{0%,35%{transform:rotate(0)}55%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
-.pene{animation:pene 3.2s cubic-bezier(.6,0,.2,1) infinite}
-@keyframes pene{0%,35%{transform:translateX(0)}55%,85%{transform:translateX(-46px)}100%{transform:translateX(0)}}
-.eclair{animation:eclair 2.4s steps(1) infinite}
-@keyframes eclair{0%,62%,70%,76%{opacity:1}64%,73%{opacity:.15}}
-.levier{transform-box:fill-box;transform-origin:50% 50%;animation:levier 2.4s cubic-bezier(.6,0,.2,1) infinite}
-@keyframes levier{0%,40%{transform:translateY(0)}55%,90%{transform:translateY(-28px)}100%{transform:translateY(0)}}
-@media(prefers-reduced-motion:reduce){.goutte,.onde,.flamme,.chaleur,.cle,.pene,.eclair,.levier,.point::after{animation:none}}
+@media(prefers-reduced-motion:reduce){.point::after{animation:none}.illu img{transform:none}}
 
 /* l'outil du métier */
 .atelier{display:grid;grid-template-columns:.9fr 1.1fr;gap:44px;align-items:start;margin-top:40px}
