@@ -15,8 +15,9 @@
 <link rel="icon" type="image/png" href="icones/favicon-64.png">
 <script>window.CRM_API = "https://script.google.com/macros/s/AKfycbyiSscsc1tvQiekpyzHl6EvPLnqugkx0TKEkJoQPYsDyHeCqg9HZ5tJSx8OZV7WBnk0/exec";</script>
 <meta name="theme-color" content="#0b0c0b">
+<script>try { if (localStorage.getItem('crmnsd_theme') === 'sombre') document.documentElement.dataset.theme = 'sombre'; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400..700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"></script>
 <style>
   :root {
@@ -498,6 +499,329 @@
     main.entree > *, .voile, .feuille { animation: none; opacity: 1; transform: none; }
     .sess-point, .vu-demo.chaud::before { animation: none; }
   }
+
+  /* =====================================================================
+     THÈME « TABLEAU DE BORD » (23/10/2026, demandé par Nelson sur le modèle
+     « Dashboard V16 ») : fond gris très clair, cartes blanches, onglets en
+     pilules (l'actif en noir), bleu NSD #2f6bff et une touche de vert anis.
+     Le cadre (en-tête, onglets) change partout. Le contenu ne change que
+     dans Pipeline, Ajouter, Reels, Stats et Carte (body.v16) : Journée et
+     Factu gardent l'habillage « Nuit NSD », à la demande de Nelson.
+     ===================================================================== */
+  :root {
+    --v-fond: #f2f3f5; --v-carte: #ffffff; --v-ligne: #e7e8ec; --v-encre: #0f1115; --v-doux: #6f7480; --v-pale: #a3a7b0;
+    --v-bleu: #2f6bff; --v-bleu-f: #1d4fd8; --v-bleu-p: #eaf0ff; --v-anis: #d4f34a; --v-noir: #111214;
+    --v-rouge: #e5484d; --v-vert: #12a150; --v-rayon: 18px;
+    --v-police: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    --v-ombre: 0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.03);
+    --v-grille: #eef0f3; --v-contraste: #111214; --v-survol: #f8f9fb;
+  }
+  html, body { background: var(--v-fond); }
+
+  /* --- Cadre : en-tête blanc --- */
+  header.barre { background: var(--v-carte); background-image: none; color: var(--v-encre); border-bottom: 1px solid var(--v-ligne); font-family: var(--v-police); }
+  .logo { font-family: var(--v-police); font-size: 17px; font-weight: 700; letter-spacing: -.02em; }
+  .logo img { width: 30px; height: 30px; border-radius: 9px; box-shadow: none; }
+  .moi { display: inline-flex; align-items: center; gap: 8px; background: var(--v-carte); border: 1px solid var(--v-ligne); color: var(--v-encre);
+    padding: 3px 12px 3px 3px; font-size: 13.5px; font-weight: 600; }
+  .moi small { color: var(--v-doux); font-weight: 500; }
+  .moi:hover { border-color: var(--v-encre); }
+  .espaces { background: var(--v-fond); border: 1px solid var(--v-ligne); }
+  .espaces button { color: var(--v-doux); font-weight: 600; }
+  .espaces button:hover { color: var(--v-encre); }
+  .espaces button.actif { background: var(--v-carte); color: var(--v-encre); box-shadow: 0 1px 2px rgba(16,24,40,.1), 0 0 0 1px var(--v-ligne); }
+  .recherche { background-color: var(--v-fond); color: var(--v-encre); border: 1px solid var(--v-ligne); border-radius: 99px; font-size: 15px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%236f7480' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m17 17-4.5-4.5'/%3E%3C/svg%3E"); }
+  .recherche::placeholder { color: var(--v-pale); }
+  .recherche:focus { border-color: var(--v-bleu); background-color: var(--v-carte); box-shadow: 0 0 0 4px rgba(47,107,255,.12); }
+
+  /* --- Onglets : pilules, l'actif en noir --- */
+  nav.onglets { background: rgba(255,255,255,.94); border: 1px solid var(--v-ligne); box-shadow: 0 14px 34px -16px rgba(16,24,40,.35); font-family: var(--v-police); }
+  nav.onglets button { color: var(--v-doux); border-radius: 17px; }
+  nav.onglets button .ico { display: grid; place-items: center; height: 20px; }
+  nav.onglets button .ico svg { width: 19px; height: 19px; }
+  nav.onglets button.actif { background: var(--v-noir); color: #fff; }
+  nav.onglets button.actif .ico { transform: none; }
+  .toast { background: var(--v-noir); box-shadow: 0 16px 34px -12px rgba(0,0,0,.4); font-family: var(--v-police); }
+
+  @media (min-width: 1000px) {
+    body { padding-left: 0; }
+    header.barre { padding: 12px 28px; }
+    .barre-int { max-width: none; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px 16px; }
+    .barre-haut { grid-column: 1 / -1; }
+    header.barre .logo { visibility: visible; }
+    .espaces { margin-top: 0; justify-self: start; }
+    .espaces button { flex: 0 0 auto; padding: 7px 16px; font-size: 13.5px; }
+    .recherche { margin-top: 0; justify-self: end; width: 340px; padding-top: 9px; padding-bottom: 9px; font-size: 14px; }
+    nav.onglets { top: 11px; bottom: auto; left: 50%; right: auto; width: auto; transform: translateX(-50%); flex-direction: row; gap: 2px;
+      padding: 4px; border-radius: 99px; background: var(--v-carte); background-image: none; border: 1px solid var(--v-ligne); box-shadow: var(--v-ombre); }
+    nav.onglets::before, nav.onglets::after, nav.onglets button.actif::before { content: none; }
+    nav.onglets button { padding: 7px 14px; font-size: 13.5px; gap: 7px; border-radius: 99px; }
+    nav.onglets button .ico { width: auto; height: auto; }
+    nav.onglets button .ico svg { width: 15px; height: 15px; }
+    nav.onglets button:hover { color: var(--v-encre); background: var(--v-fond); }
+    nav.onglets button.actif, nav.onglets button.actif:hover { background: var(--v-noir); color: #fff; }
+    nav.onglets button.actif .ico { color: #fff; }
+    .toast { margin-left: 0; }
+    #carte-zone { left: 0; }
+    body.v16 main { max-width: 1320px; padding: 22px 28px 40px; }
+    body[data-vue="pipeline"].v16 main { max-width: none; }
+  }
+
+  /* --- Contenu des onglets refaits --- */
+  body.v16 main { font-family: var(--v-police); color: var(--v-encre);
+    --carte: var(--v-carte); --ligne: var(--v-ligne); --encre: var(--v-encre); --doux: var(--v-doux); --rayon: var(--v-rayon); --ombre: var(--v-ombre);
+    --titre: var(--v-police); --accent: var(--v-bleu); --accent-l: #6f97ff; --accent-f: var(--v-bleu-f); --vert-texte: var(--v-bleu-f); --noir: var(--v-noir); }
+  body.v16 main h2.section { font-size: 17px; font-weight: 650; letter-spacing: -.015em; margin: 26px 2px 12px; }
+  body.v16 main h2.section small { font-family: var(--v-police); color: var(--v-doux); background: var(--v-carte); border: 1px solid var(--v-ligne); font-weight: 600; }
+  body.v16 main .bilan div, body.v16 main .bloc, body.v16 main .kpi, body.v16 main .rc { border-radius: 16px; box-shadow: var(--v-ombre); }
+  body.v16 main .bilan b { font-weight: 650; font-size: 26px; letter-spacing: -.03em; }
+  body.v16 main .bilan div:first-child { background: var(--v-bleu); border-color: var(--v-bleu); }
+  body.v16 main .bilan div:first-child span { color: rgba(255,255,255,.8); }
+  body.v16 main .bilan div:first-child::after { background: radial-gradient(circle, rgba(212,243,74,.75), transparent 70%); }
+  body.v16 main .btn { border-radius: 99px; font-weight: 600; }
+  body.v16 main .btn:not(.clair):not(.danger) { background: var(--v-bleu); box-shadow: 0 6px 16px -8px rgba(47,107,255,.8); }
+  body.v16 main .btn:not(.clair):not(.danger):hover { background: var(--v-bleu-f); }
+  body.v16 main .btn.clair { border-color: var(--v-ligne); }
+  body.v16 main label.champ { color: var(--v-doux); font-size: 12.5px; font-weight: 600; }
+  body.v16 main label.champ input, body.v16 main label.champ select, body.v16 main label.champ textarea, body.v16 main .filtres select, body.v16 main .reel-choix select {
+    border-color: var(--v-ligne); background: var(--v-carte); font-size: 15px; font-weight: 400; }
+  body.v16 main label.champ input:focus, body.v16 main label.champ select:focus, body.v16 main label.champ textarea:focus, body.v16 main .reel-choix select:focus {
+    border-color: var(--v-bleu); box-shadow: 0 0 0 4px rgba(47,107,255,.12); }
+  body.v16 main .rc-nom { font-weight: 650; font-size: 16px; }
+  body.v16 main .rc-actions .insta { background: var(--v-noir); }
+  body.v16 main .rc-actions .envoye { background: var(--v-vert); border-color: var(--v-vert); }
+  body.v16 main .vide { background: var(--v-carte); }
+  body.v16 main .pastille { font-weight: 600; }
+
+  /* En-tête de page : titre, sous-titre, outils à droite */
+  .v-tete { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin: 2px 0 16px; }
+  .v-tete h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.025em; display: flex; align-items: center; gap: 8px; }
+  .v-tete p { margin: 3px 0 0; color: var(--v-doux); font-size: 13.5px; }
+  .v-outils { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .v-seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--v-carte); border: 1px solid var(--v-ligne); border-radius: 99px; }
+  .v-seg button { border: 0; background: none; border-radius: 99px; padding: 6px 13px; font-size: 13px; font-weight: 600; color: var(--v-doux); display: inline-flex; align-items: center; gap: 6px; }
+  .v-seg button svg { width: 14px; height: 14px; }
+  .v-seg button.on { background: var(--v-noir); color: #fff; }
+  .v-select { border: 1px solid var(--v-ligne); background: var(--v-carte); border-radius: 99px; padding: 7px 30px 7px 14px; font-size: 13px; font-weight: 600;
+    -webkit-appearance: none; appearance: none; color: var(--v-encre);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%236f7480' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m3 4.5 3 3 3-3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 11px center; }
+
+  /* Cartes et tuiles */
+  .v-carte { background: var(--v-carte); border: 1px solid var(--v-ligne); border-radius: var(--v-rayon); padding: 16px 18px; box-shadow: var(--v-ombre); min-width: 0; }
+  .v-carte-tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .v-carte-tete h3 { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -.01em; display: flex; align-items: center; gap: 9px; }
+  .v-carte-tete small { display: block; font-size: 12px; font-weight: 500; color: var(--v-doux); margin-top: 1px; letter-spacing: 0; }
+  .v-pico { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--v-fond); color: var(--v-bleu); border: 1px solid var(--v-ligne); }
+  .v-pico svg { width: 15px; height: 15px; }
+  .v-tuiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (min-width: 760px) { .v-tuiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; } }
+  .v-tuile { position: relative; overflow: hidden; background: var(--v-carte); border: 1px solid var(--v-ligne); border-radius: var(--v-rayon); padding: 14px 16px; box-shadow: var(--v-ombre); }
+  .v-tuile .t-haut { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .v-tuile .t-lib { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--v-encre); }
+  .v-tuile .t-lib .v-pico { width: 26px; height: 26px; }
+  .v-tuile .t-lib .v-pico svg { width: 13px; height: 13px; }
+  .v-tuile .t-val { font-size: 28px; font-weight: 650; letter-spacing: -.035em; line-height: 1.1; margin-top: 12px; }
+  .v-tuile .t-sous { font-size: 12px; color: var(--v-doux); margin-top: 3px; }
+  .v-tuile.plein { background: var(--v-bleu); border-color: var(--v-bleu); color: #fff; box-shadow: 0 16px 30px -18px rgba(47,107,255,.9); }
+  .v-tuile.plein .t-lib, .v-tuile.plein .t-sous { color: rgba(255,255,255,.85); }
+  .v-tuile.plein .v-pico { background: rgba(255,255,255,.16); border-color: transparent; color: #fff; }
+  .v-tuile.plein::after { content: ""; position: absolute; right: -22px; bottom: -30px; width: 84px; height: 30px; border-radius: 99px; transform: rotate(-42deg);
+    background: var(--v-anis); box-shadow: -26px 18px 0 -6px rgba(255,255,255,.18); }
+  .v-delta { font-size: 11.5px; font-weight: 700; padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+  .v-delta.monte { color: var(--v-vert); background: #e7f7ee; }
+  .v-delta.baisse { color: var(--v-rouge); background: #fdecec; }
+  .v-delta.neutre { color: var(--v-doux); background: var(--v-fond); }
+  .v-tuile.plein .v-delta { background: rgba(255,255,255,.18); color: #fff; }
+  .v-tuile.rouge .v-pico { color: var(--v-rouge); }
+  .v-tuile.vert .v-pico { color: var(--v-vert); }
+  .v-tuile.noir .v-pico { background: var(--v-noir); color: #fff; border-color: var(--v-noir); }
+
+  /* Avatars et statuts */
+  .v-av { --t: var(--v-bleu); width: 32px; height: 32px; flex: none; border-radius: 50%; display: inline-grid; place-items: center; background: var(--t); color: #fff;
+    font-size: 11.5px; font-weight: 700; letter-spacing: .02em; }
+  .v-av.petit { width: 24px; height: 24px; min-width: 24px; font-size: 10px; }
+  .v-st { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap;
+    background: color-mix(in srgb, var(--statut) 34%, #fff); color: var(--v-encre); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--statut) 70%, #d9dce3); }
+  .v-st::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--statut) 55%, #2a2d34); }
+
+  /* Pipeline : filtres par statut et tableau */
+  .v-puces { display: flex; gap: 6px; flex-wrap: wrap; }
+  .v-puces button { border: 1px solid var(--v-ligne); background: var(--v-carte); border-radius: 99px; padding: 5px 6px 5px 12px; font-size: 12.5px; font-weight: 600;
+    color: var(--v-encre); display: inline-flex; align-items: center; gap: 7px; transition: background .2s, color .2s, border-color .2s; }
+  .v-puces button b { min-width: 20px; padding: 1px 6px; border-radius: 99px; background: var(--v-fond); font-size: 11px; font-weight: 700; text-align: center; }
+  .v-puces button:hover { border-color: var(--v-encre); }
+  .v-puces button.on { background: var(--v-noir); border-color: var(--v-noir); color: #fff; }
+  .v-puces button.on b { background: rgba(255,255,255,.18); }
+  .v-table-zone { overflow-x: auto; margin: 0 -18px -6px; padding: 0 18px; }
+  table.v-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.v-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--v-pale); padding: 10px 10px; border-bottom: 1px solid var(--v-ligne); white-space: nowrap; }
+  table.v-table td { padding: 11px 10px; border-bottom: 1px solid var(--v-ligne); vertical-align: middle; }
+  table.v-table tr:last-child td { border-bottom: 0; }
+  table.v-table tbody tr { cursor: pointer; transition: background .15s; }
+  table.v-table tbody tr:hover { background: var(--v-survol); }
+  table.v-table th:first-child, table.v-table td:first-child { padding-left: 2px; }
+  .v-qui { display: flex; align-items: center; gap: 11px; min-width: 0; }
+  .v-qui b { display: block; font-weight: 600; font-size: 13.5px; line-height: 1.25; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .v-qui small { display: block; color: var(--v-doux); font-size: 12px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .v-resp { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; white-space: nowrap; }
+  .v-resp.libre { color: var(--v-doux); }
+  .v-faible { color: var(--v-doux); white-space: nowrap; }
+  .v-tel { font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .v-date { font-weight: 600; white-space: nowrap; }
+  .v-date.retard { color: var(--v-rouge); }
+  .v-act { display: flex; gap: 6px; justify-content: flex-end; }
+  .v-act a, .v-act button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--v-ligne); display: grid; place-items: center; color: var(--v-encre); background: var(--v-carte); }
+  .v-act a svg, .v-act button svg { width: 14px; height: 14px; }
+  .v-act a:hover, .v-act button:hover { border-color: var(--v-encre); }
+  .v-act .inactif { opacity: .3; pointer-events: none; }
+  .v-plus { display: block; width: 100%; margin-top: 10px; border: 1px dashed var(--v-ligne); background: none; border-radius: 12px; padding: 10px; font-weight: 600; color: var(--v-doux); }
+  @media (max-width: 760px) { table.v-table .v-hm { display: none; } .v-qui b, .v-qui small { max-width: 170px; } }
+  body.v16 main .colonne { background: #e9ebef; border-radius: 18px; }
+  body.v16 main .colonne h3 { font-family: var(--v-police); font-weight: 650; }
+  body.v16 main .pc { border-left-width: 4px; box-shadow: var(--v-ombre); }
+  body.v16 main .pc-nom { font-family: var(--v-police); font-weight: 600; }
+
+  /* Stats : grilles et graphiques */
+  .v-deux { display: grid; gap: 14px; margin-top: 14px; }
+  .v-trois { display: grid; gap: 14px; margin-top: 14px; }
+  @media (min-width: 1000px) { .v-deux { grid-template-columns: 1.45fr 1fr; } .v-trois { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .v-leg { display: flex; gap: 12px; font-size: 11.5px; color: var(--v-doux); font-weight: 500; }
+  .v-leg i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+  .v-courbe { position: relative; }
+  .v-courbe svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .v-courbe .axe { font-size: 10px; fill: var(--v-pale); font-family: var(--v-police); }
+  .v-bulle { position: absolute; transform: translate(-50%, calc(-100% - 12px)); background: var(--v-noir); color: #fff; border-radius: 9px; padding: 5px 9px; font-size: 12px;
+    font-weight: 700; text-align: center; white-space: nowrap; pointer-events: none; line-height: 1.2; }
+  .v-bulle small { display: block; font-size: 10px; font-weight: 500; color: rgba(255,255,255,.65); }
+  .v-entonnoir { display: grid; gap: 9px; }
+  .v-et { display: grid; grid-template-columns: 76px 1fr 40px; align-items: center; gap: 10px; font-size: 12.5px; }
+  .v-et span { color: var(--v-doux); }
+  .v-et .barre { height: 22px; background: var(--v-fond); border-radius: 7px; overflow: hidden; }
+  .v-et .barre i { display: flex; align-items: center; height: 100%; min-width: 30px; padding-left: 8px; border-radius: 7px; background: var(--v-bleu); color: #fff; font-style: normal;
+    font-size: 11px; font-weight: 700; transition: width 1s cubic-bezier(.16,1,.3,1); }
+  .v-et:nth-child(n+3) .barre i { background: #6f97ff; } .v-et:nth-child(n+5) .barre i { background: #a9c1ff; color: var(--v-bleu-f); }
+  .v-et em { font-style: normal; text-align: right; color: var(--v-doux); font-size: 11.5px; }
+  .v-donut { display: flex; align-items: center; gap: 18px; }
+  .v-donut svg { width: 130px; height: 130px; flex: none; }
+  .v-donut ul { list-style: none; margin: 0; padding: 0; flex: 1; display: grid; gap: 7px; min-width: 0; }
+  .v-donut li { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 4px 8px; border-radius: 8px; }
+  .v-donut li:first-child { background: var(--v-fond); font-weight: 600; }
+  .v-donut li span { display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .v-donut li span i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .v-donut li b { font-weight: 600; color: var(--v-doux); }
+  .v-reps { display: grid; gap: 14px; }
+  .v-rep-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+  .v-rep-haut span { display: flex; align-items: center; gap: 8px; }
+  .v-rep-haut b { font-weight: 650; }
+  .v-rep-barre { height: 6px; border-radius: 99px; background: var(--v-fond); margin-top: 7px; overflow: hidden; }
+  .v-rep-barre i { display: block; height: 100%; border-radius: 99px; background: var(--v-bleu); }
+  .v-rep-sous { font-size: 11.5px; color: var(--v-doux); margin-top: 4px; }
+
+  /* Objectif du mois dans Stats : carte claire, progression bleue */
+  body.v16 main .obj { background: var(--v-carte); background-image: none; color: var(--v-encre); border: 1px solid var(--v-ligne); border-radius: var(--v-rayon); box-shadow: var(--v-ombre); }
+  body.v16 main .obj-lib, body.v16 main .obj-leg, body.v16 main .obj-note, body.v16 main .obj-calc, body.v16 main .obj-grille span { color: var(--v-doux); }
+  body.v16 main .obj-val { font-family: var(--v-police); font-weight: 700; font-size: 34px; }
+  body.v16 main .obj-val span { color: var(--v-pale); }
+  body.v16 main .obj-pct { font-family: var(--v-police); color: var(--v-bleu); }
+  body.v16 main .obj-barre { background: var(--v-fond); }
+  body.v16 main .obj-barre i.s { background: var(--v-bleu); }
+  body.v16 main .obj-barre i.p { background: repeating-linear-gradient(135deg, var(--v-anis) 0 6px, #e9f8a8 6px 12px); }
+  body.v16 main .obj-leg i.s { background: var(--v-bleu); } body.v16 main .obj-leg i.p { background: var(--v-anis); }
+  body.v16 main .obj-grille div { background: var(--v-fond); border-color: var(--v-ligne); }
+  body.v16 main .obj-grille b { font-family: var(--v-police); font-weight: 700; }
+  body.v16 main .obj-calc summary { color: var(--v-bleu); }
+
+  /* Ajouter : le formulaire dans une carte, sur deux colonnes à l'écran large */
+  .v-form { display: grid; gap: 0 16px; }
+  @media (min-width: 760px) { .v-form { grid-template-columns: 1fr 1fr; } .v-form .large-2 { grid-column: 1 / -1; } }
+
+  /* Carte : filtres en pilules claires */
+  body.v16 .cb-filtres { background: rgba(255,255,255,.95); border: 1px solid var(--v-ligne); box-shadow: 0 8px 20px -12px rgba(16,24,40,.4); font-family: var(--v-police); }
+  body.v16 .cb-filtres button { color: var(--v-doux); font-weight: 600; }
+  body.v16 .cb-filtres button.on { background: var(--v-noir); color: #fff; }
+  body.v16 .cb-bas button { background: var(--v-carte); color: var(--v-encre); border: 1px solid var(--v-ligne); }
+  body.v16 .cb-info { font-family: var(--v-police); }
+  body.v16 .cb-info button { color: var(--v-bleu); }
+  body.v16 .cb-chercher { background: var(--v-bleu); box-shadow: 0 10px 22px -10px rgba(47,107,255,.8); font-family: var(--v-police); border-radius: 99px; }
+
+  /* --- Bouton clair / sombre --- */
+  .barre-droite { display: flex; align-items: center; gap: 8px; }
+  .theme { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--v-ligne); background: var(--v-carte); color: var(--v-encre);
+    display: grid; place-items: center; padding: 0; cursor: pointer; transition: border-color .2s, transform .3s; }
+  .theme:hover { border-color: var(--v-encre); }
+  .theme:active { transform: scale(.92); }
+  .theme svg { width: 16px; height: 16px; grid-area: 1 / 1; transition: opacity .3s, transform .45s cubic-bezier(.16,1,.3,1); }
+  .theme .soleil { opacity: 0; transform: rotate(-90deg) scale(.6); }
+  html[data-theme="sombre"] .theme .lune { opacity: 0; transform: rotate(90deg) scale(.6); }
+  html[data-theme="sombre"] .theme .soleil { opacity: 1; transform: none; }
+
+  /* =====================================================================
+     MODE SOMBRE (23/10/2026). Tout passe par les variables ; les quelques
+     fonds blancs écrits en dur (anciens écrans, Factu) sont repris ici.
+     Le document PDF (iframe) reste sur papier blanc.
+     ===================================================================== */
+  html[data-theme="sombre"] {
+    color-scheme: dark;
+    --v-fond: #0c0d10; --v-carte: #16181c; --v-ligne: #272a30; --v-encre: #eef0f3; --v-doux: #9298a3; --v-pale: #6c717b;
+    --v-bleu-p: #172347; --v-grille: #23262c; --v-contraste: #eef0f3; --v-survol: #1c1f24;
+    --v-ombre: 0 1px 2px rgba(0,0,0,.3);
+    --fond: #0c0d10; --carte: #16181c; --encre: #eef0f3; --doux: #9298a3; --ligne: #272a30; --vert-texte: #5fe0b0;
+    --ombre: 0 1px 2px rgba(0,0,0,.35), 0 10px 30px -18px rgba(0,0,0,.6);
+  }
+  html[data-theme="sombre"] body { color: var(--encre); }
+  /* Pilules actives : blanches sur fond sombre */
+  html[data-theme="sombre"] nav.onglets { background: rgba(22,24,28,.94); }
+  html[data-theme="sombre"] nav.onglets button.actif, html[data-theme="sombre"] nav.onglets button.actif:hover,
+  html[data-theme="sombre"] .v-seg button.on, html[data-theme="sombre"] .v-puces button.on { background: #f2f3f5; color: #0c0d10; border-color: #f2f3f5; }
+  html[data-theme="sombre"] nav.onglets button.actif .ico { color: #0c0d10; }
+  html[data-theme="sombre"] .v-puces button.on b { background: rgba(0,0,0,.1); }
+  html[data-theme="sombre"] .v-tuile.noir .v-pico { background: #f2f3f5; color: #0c0d10; border-color: #f2f3f5; }
+  html[data-theme="sombre"] .v-delta.monte { background: rgba(18,161,80,.16); color: #4ad48a; }
+  html[data-theme="sombre"] .v-delta.baisse { background: rgba(229,72,77,.16); color: #ff7a7e; }
+  html[data-theme="sombre"] .v-st { background: color-mix(in srgb, var(--statut) 22%, #16181c); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--statut) 40%, #272a30); }
+  html[data-theme="sombre"] .v-st::before { background: color-mix(in srgb, var(--statut) 80%, #fff); }
+  html[data-theme="sombre"] table.v-table tbody tr:hover { background: var(--v-survol); }
+  html[data-theme="sombre"] .v-bulle { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] .v-bulle small { color: rgba(12,13,16,.6); }
+  html[data-theme="sombre"] .v-et:nth-child(n+5) .barre i { background: #3c5fb8; color: #fff; }
+  html[data-theme="sombre"] body.v16 main .colonne { background: #111316; }
+  html[data-theme="sombre"] .toast { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] .toast.erreur { background: var(--danger); color: #fff; }
+  /* Fonds blancs écrits en dur dans les anciens écrans et dans Factu */
+  html[data-theme="sombre"] :is(.jourbar .fleche, .jour-choix, .bilan div, .lp-actions a, .lp-actions button, .filtres select, .btn.clair,
+    label.champ input, label.champ select, label.champ textarea, .actions a, .actions button, .resultats button, .dates button,
+    .rc-actions a, .rc-actions button, .reel-choix select, .reel-texte, .metiers-choix label, .msg-haut input, .msg-haut textarea, .plus, .vide,
+    .fx-chips button, .fx-qte input, .fx-ligne input, .fx-frais input, .fx-geste input, .sv-filtres button, .fx-onglets button.on) {
+    background-color: var(--carte); color: var(--encre); border-color: var(--ligne); }
+  html[data-theme="sombre"] .bilan div:first-child { background: #000; }
+  html[data-theme="sombre"] body.v16 main .bilan div:first-child { background: var(--v-bleu); }
+  html[data-theme="sombre"] .lp-actions .appeler, html[data-theme="sombre"] .actions .principal { background: linear-gradient(120deg, var(--accent), var(--accent-l)); color: #0b0c0b; }
+  html[data-theme="sombre"] .actions .pret { background: #25d366; color: #fff; }
+  html[data-theme="sombre"] .rc-actions .insta { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] .rc-actions .envoye { background: var(--v-vert); color: #fff; }
+  html[data-theme="sombre"] .feuille .resultats button[data-res] { border-left-color: var(--statut, #3a3d44); }
+  html[data-theme="sombre"] .resultats button.choisi { box-shadow: 0 0 0 2px #f2f3f5; }
+  html[data-theme="sombre"] .dates button.choisi { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] :is(.colonne, .fx-onglets, .sv-ent .barre, .sv-argent) { background: #111316; }
+  html[data-theme="sombre"] .poignee { background: #3a3d44; }
+  html[data-theme="sombre"] .fermer { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] .qui { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] :is(.conseil, .fx-inclus) { background: rgba(53,210,154,.08); border-color: rgba(53,210,154,.25); }
+  html[data-theme="sombre"] :is(.doublon, .fx-alerte, .fx-carte.choisie) { background: rgba(229,72,77,.1); border-color: rgba(229,72,77,.35); }
+  html[data-theme="sombre"] .fx-st, html[data-theme="sombre"] .pastille, html[data-theme="sombre"] .lp-resultat { color: #141414; }
+  html[data-theme="sombre"] .fx-sig-apercu { background: #fff; }
+  html[data-theme="sombre"] .btn:not(.clair):not(.danger):not(.sess-go) { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] body.v16 main .btn:not(.clair):not(.danger) { background: var(--v-bleu); color: #fff; box-shadow: 0 6px 16px -8px rgba(47,107,255,.8); }
+  html[data-theme="sombre"] .cb-info { background: rgba(22,24,28,.94); color: var(--v-encre); }
+  html[data-theme="sombre"] body.v16 .cb-filtres { background: rgba(22,24,28,.94); }
+  html[data-theme="sombre"] body.v16 .cb-filtres button.on { background: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] #carte-zone { background: #1a1c20; }
+  html[data-theme="sombre"] #carte .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9); }
+  html[data-theme="sombre"] .leaflet-popup-content-wrapper, html[data-theme="sombre"] .leaflet-popup-tip { background: var(--carte); color: var(--encre); }
+  html[data-theme="sombre"] .pop-act a, html[data-theme="sombre"] .pop-act button { background: var(--carte); border-color: var(--ligne); color: var(--encre) !important; }
+  html[data-theme="sombre"] .pop-act > :first-child { background: #f2f3f5; color: #0c0d10 !important; }
 </style>
 </head>
 <body>
@@ -518,7 +842,13 @@
   <header class="barre"><div class="barre-int">
     <div class="barre-haut">
       <div class="logo"><img src="icones/nsd-vert-tuile-96.png" alt="NS Development"> CRM</div>
-      <button class="moi cache" id="moi" data-action="deconnexion" aria-label="Changer de personne"></button>
+      <div class="barre-droite">
+        <button class="theme" data-action="theme" aria-label="Basculer entre mode clair et mode sombre" title="Mode clair / sombre">
+          <svg class="lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button class="moi cache" id="moi" data-action="deconnexion" aria-label="Changer de personne"></button>
+      </div>
     </div>
     <div class="espaces" id="espaces"></div>
     <input class="recherche" id="recherche" type="search" placeholder="Chercher un nom, un numéro, une commune…">
@@ -527,13 +857,13 @@
   <!-- La carte vit hors de #vue : un redessin de l'écran ne la recrée pas. -->
   <div id="carte-zone" class="cache"><div id="carte"></div><div class="carte-barre" id="carte-barre"></div></div>
   <nav class="onglets" id="onglets">
-    <button data-vue="jour" class="actif"><span class="ico">☎︎</span>Journée</button>
-    <button data-vue="pipeline"><span class="ico">▦</span>Pipeline</button>
-    <button data-vue="ajouter"><span class="ico">＋</span>Ajouter</button>
-    <button data-vue="factu"><span class="ico">€</span>Factu</button>
-    <button data-vue="carte"><span class="ico">◎</span>Carte</button>
-    <button data-vue="reels"><span class="ico">▶︎</span>Reels</button>
-    <button data-vue="stats"><span class="ico">↗︎</span>Stats</button>
+    <button data-vue="jour" class="actif"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Journée</button>
+    <button data-vue="pipeline"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>Pipeline</button>
+    <button data-vue="ajouter"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>Ajouter</button>
+    <button data-vue="factu"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg></span>Factu</button>
+    <button data-vue="carte"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>Carte</button>
+    <button data-vue="reels"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="m10 8.5 5 3.5-5 3.5Z"/></svg></span>Reels</button>
+    <button data-vue="stats"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9v9Z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15Z"/></svg></span>Stats</button>
   </nav>
 </div>
 
@@ -731,7 +1061,7 @@ function rendreEspaces() {
   const noms = S.data.equipe.concat(EQUIPE_VUE);
   document.getElementById('espaces').innerHTML = noms.map(n =>
     `<button data-espace="${esc(n)}" class="${n === S.espace ? 'actif' : ''}">${esc(n === S.moi.nom ? n + ' (moi)' : n)}</button>`).join('');
-  const m = document.getElementById('moi'); m.textContent = S.moi.nom + ' · changer'; m.classList.remove('cache');
+  const m = document.getElementById('moi'); m.innerHTML = avatar(S.moi.nom, true) + esc(S.moi.nom) + ' <small>· changer</small>'; m.classList.remove('cache');
 }
 
 // ---------------------------------------------------------------------------
@@ -810,6 +1140,8 @@ function rendre() {
   rendreEspaces();
   document.querySelectorAll('#onglets button').forEach(b => b.classList.toggle('actif', b.dataset.vue === S.vue));
   document.body.dataset.vue = S.recherche ? 'recherche' : S.vue;
+  // Thème tableau de bord : tous les onglets sauf Journée et Factu (et la recherche, faite des cartes de la Journée).
+  document.body.classList.toggle('v16', !S.recherche && !['jour', 'factu'].includes(S.vue));
   const v = document.getElementById('vue');
   // L'entrée en cascade ne joue qu'au changement d'onglet : une carte mise à jour ne doit pas « sauter ».
   const ecran = S.recherche ? 'recherche' : S.vue;
@@ -1271,20 +1603,121 @@ function vueRecherche() {
     : '<div class="vide">Aucun prospect ne correspond. Tu peux l’ajouter dans l’onglet « Ajouter ».</div>');
 }
 
+// ---------------------------------------------------------------------------
+// Tableau de bord (23/10/2026, modèle « Dashboard V16 » choisi par Nelson)
+// ---------------------------------------------------------------------------
+const SVG = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICO = {
+  gens: SVG('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>'),
+  pouls: SVG('<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>'),
+  cible: SVG('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'),
+  croix: SVG('<circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/>'),
+  tel: SVG('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>'),
+  decroche: SVG('<path d="M20 6 9 17l-5-5"/>'),
+  lien: SVG('<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'),
+  rdv: SVG('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+  wa: SVG('<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>'),
+  table: SVG('<path d="M3 6h18M3 12h18M3 18h18"/>'),
+  colonnes: SVG('<rect x="3" y="3" width="5" height="18" rx="1.5"/><rect x="10" y="3" width="5" height="12" rx="1.5"/><rect x="17" y="3" width="4" height="8" rx="1.5"/>'),
+  courbe: SVG('<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>'),
+  barres: SVG('<path d="M12 20V10M18 20V4M6 20v-4"/>'),
+  entonnoir: SVG('<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>'),
+  donut: SVG('<path d="M21.2 15.9A10 10 0 1 1 8 2.8"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>'),
+  equipe: SVG('<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>'),
+  plus: SVG('<path d="M12 5v14M5 12h14"/>'),
+  tableur: SVG('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>'),
+};
+function initiales(n) {
+  const m = String(n || '').replace(/[^\p{L}\p{N} ]/gu, ' ').trim().split(/\s+/).filter(Boolean);
+  return ((m[0] || '?')[0] + (m[1] ? m[1][0] : '')).toUpperCase();
+}
+const TEINTES = ['#2f6bff', '#e5484d', '#12a150', '#475467', '#f76b15', '#8e4ec6', '#0b8de6', '#d6409f'];
+function teinte(s) { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return TEINTES[h % TEINTES.length]; }
+// Mode clair / sombre (23/10/2026, demandé par Nelson) : un bouton dans l'en-tête, retenu sur l'appareil.
+function basculerTheme() {
+  const sombre = document.documentElement.dataset.theme !== 'sombre';
+  if (sombre) document.documentElement.dataset.theme = 'sombre'; else delete document.documentElement.dataset.theme;
+  stocker('theme', sombre ? 'sombre' : '');
+  if (S.data) rendre(); // les courbes et le donut reprennent les couleurs du thème
+}
+function avatar(n, petit) { return `<span class="v-av${petit ? ' petit' : ''}" style="--t:${teinte(n)}">${esc(initiales(n))}</span>`; }
+function tuile(lib, ico, val, sous, opts) {
+  const o = opts || {};
+  return `<div class="v-tuile ${o.classe || ''}"><div class="t-haut"><div class="t-lib"><span class="v-pico">${ico}</span>${lib}</div>${o.delta || ''}</div>
+    <div class="t-val">${val}</div><div class="t-sous">${sous}</div></div>`;
+}
+function carteV(titre, sous, ico, droite, corps) {
+  return `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico">${ico}</span><span>${titre}${sous ? `<small>${sous}</small>` : ''}</span></h3>${droite || ''}</div>${corps}</div>`;
+}
+// « il y a combien de temps » en mots courts, pour la colonne Dernier contact.
+function depuisQuand(s) {
+  const d = versDate(s); if (!d) return '';
+  const j = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
+  if (j <= 0) return 'aujourd’hui'; if (j === 1) return 'hier'; if (j < 7) return 'il y a ' + j + ' j';
+  if (j < 35) return 'il y a ' + Math.round(j / 7) + ' sem.'; return 'il y a ' + Math.round(j / 30) + ' mois';
+}
+
 function vuePipeline() {
+  const mode = S.pipeMode || lire('pipeMode') || 'table';
   const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
   const liste = S.data.prospects.filter(p => (!S.filtreSecteur || p.secteur === S.filtreSecteur) && visible(p));
-  // « Sans réponse » n'est plus posé depuis le 24/09 : sa colonne disparaît une fois vide.
+  // « Sans réponse » n'est plus posé depuis le 24/09 : il disparaît une fois vide.
   const statuts = S.data.statuts.filter(s => s.k !== 'sans_reponse' || liste.some(p => cle(p) === s.k));
-  const cols = statuts.map(s => {
-    const items = liste.filter(p => cle(p) === s.k);
-    return `<div class="colonne"><h3><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span><span>${items.length}</span></h3>
-      <div class="liste">${items.length ? items.slice(0, 120).map(carteCompacte).join('') : '<div class="vide">Vide</div>'}
-      ${items.length > 120 ? `<div class="vide">+ ${items.length - 120} autres : utilise la recherche.</div>` : ''}</div></div>`;
-  }).join('');
-  return `<div class="filtres"><select id="filtre-secteur"><option value="">Tous les secteurs</option>
-    ${secteurs.map(s => `<option ${s === S.filtreSecteur ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></div>
-    <div class="colonnes" style="--nb-col:${statuts.length}">${cols}</div>`;
+  const nb = k => liste.filter(p => cle(p) === k).length;
+  const mois = aujourdhui().slice(0, 7);
+  const touches = new Set(S.data.journal.filter(e => e.date.startsWith(mois) && e.resultat !== 'Ajout' && entreeVisible(e)).map(e => e.id));
+  const enJeu = nb('lien') + nb('rdv') + nb('negociation');
+  const tuiles = `<div class="v-tuiles">
+    ${tuile('Prospects', ICO.gens, liste.length, nb('a_appeler') + ' encore à appeler')}
+    ${tuile('Travaillés ce mois', ICO.pouls, touches.size, 'appelés ou relancés depuis le 1er', { classe: 'vert' })}
+    ${tuile('En jeu', ICO.cible, enJeu, 'liens, RDV et négociations · ' + nb('signe') + ' signé' + (nb('signe') > 1 ? 's' : ''), { classe: 'noir' })}
+    ${tuile('Perdus', ICO.croix, nb('perdu'), liste.length ? Math.round(nb('perdu') / liste.length * 100) + ' % du fichier' : '', { classe: 'rouge' })}</div>`;
+  const outils = `<div class="v-outils">
+    <select class="v-select" id="filtre-secteur"><option value="">Tous les secteurs</option>
+      ${secteurs.map(s => `<option ${s === S.filtreSecteur ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select>
+    <div class="v-seg"><button data-action="pipe-mode" data-m="table" class="${mode === 'table' ? 'on' : ''}">${ICO.table}Tableau</button>
+      <button data-action="pipe-mode" data-m="colonnes" class="${mode === 'colonnes' ? 'on' : ''}">${ICO.colonnes}Colonnes</button></div>
+    <button class="btn" data-action="aller-ajouter" style="padding:8px 16px;font-size:13.5px">${ICO.plus.replace('<svg', '<svg width="15" height="15"')}Ajouter</button></div>`;
+  const tete = `<div class="v-tete"><div><h1>Pipeline</h1><p>Tous les commerces du fichier, des « à appeler » aux clients signés.</p></div>${outils}</div>`;
+
+  if (mode === 'colonnes') {
+    const cols = statuts.map(s => {
+      const items = liste.filter(p => cle(p) === s.k);
+      return `<div class="colonne"><h3><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span><span>${items.length}</span></h3>
+        <div class="liste">${items.length ? items.slice(0, 120).map(carteCompacte).join('') : '<div class="vide">Vide</div>'}
+        ${items.length > 120 ? `<div class="vide">+ ${items.length - 120} autres : utilise la recherche.</div>` : ''}</div></div>`;
+    }).join('');
+    return tete + tuiles + `<div class="colonnes" style="--nb-col:${statuts.length};margin-top:14px">${cols}</div>`;
+  }
+
+  const k = S.pipeStatut && statuts.some(s => s.k === S.pipeStatut) ? S.pipeStatut : '';
+  const max = S.pipeMax || 100;
+  // Les rappels d'abord (le plus proche en tête), puis les derniers contacts, puis le reste.
+  const lignes = liste.filter(p => !k || cle(p) === k).sort((a, b) =>
+    (a.rappel ? 0 : 1) - (b.rappel ? 0 : 1) || String(a.rappel).localeCompare(String(b.rappel)) || String(b.dernier || '').localeCompare(String(a.dernier || '')));
+  const puces = `<div class="v-puces"><button data-action="pipe-statut" data-k="" class="${!k ? 'on' : ''}">Tous <b>${liste.length}</b></button>
+    ${statuts.map(s => `<button data-action="pipe-statut" data-k="${s.k}" class="${k === s.k ? 'on' : ''}">${esc(s.label)} <b>${nb(s.k)}</b></button>`).join('')}</div>`;
+  const ligne = p => {
+    const tel = lienTel(p.telephone), wa = telInternational(p.telephone), m = metierDe(p), r = respDe(p);
+    const sous = [p.gerant, p.secteur || (m && m.metier)].filter(Boolean).join(' · ');
+    return `<tr data-id="${esc(p.id)}">
+      <td><div class="v-qui">${avatar(p.entreprise)}<div><b>${esc(p.entreprise)}</b><small>${esc(sous || '—')}</small></div></div></td>
+      <td class="v-hm"><span class="v-faible">${esc(p.commune || '—')}</span></td>
+      <td><span class="v-st" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span></td>
+      <td class="v-hm">${tel ? `<a class="v-tel" href="${tel}" data-stop="1">${esc(String(p.telephone).split(/\s*[\/;]\s*|\s+ou\s+/)[0])}</a>` : '<span class="v-faible">—</span>'}</td>
+      <td class="v-hm"><span class="v-resp ${r ? '' : 'libre'}">${r ? avatar(r, true) + esc(r) : 'libre'}</span></td>
+      <td class="v-hm"><span class="v-faible">${esc(depuisQuand(p.dernier) || '—')}</span></td>
+      <td>${p.rappel ? `<span class="v-date ${p.rappel < maintenant() ? 'retard' : ''}">${cle(p) === 'rdv' ? 'RDV ' : ''}${esc(dateCourte(p.rappel))}</span>` : '<span class="v-faible">—</span>'}</td>
+      <td><div class="v-act"><a href="${tel || '#'}" class="${tel ? '' : 'inactif'}" data-stop="1" title="Appeler">${ICO.tel}</a>
+        <button type="button" data-action="carte-wa" data-id="${esc(p.id)}" class="${wa ? '' : 'inactif'}" title="WhatsApp">${ICO.wa}</button></div></td></tr>`;
+  };
+  const table = lignes.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Prospect</th><th class="v-hm">Commune</th><th>Statut</th>
+      <th class="v-hm">Téléphone</th><th class="v-hm">Responsable</th><th class="v-hm">Dernier contact</th><th>Prochain rappel</th><th></th></tr></thead>
+      <tbody>${lignes.slice(0, max).map(ligne).join('')}</tbody></table></div>
+      ${lignes.length > max ? `<button class="v-plus" data-action="pipe-plus">Afficher 100 de plus · ${lignes.length - max} restants</button>` : ''}`
+    : '<div class="vide">Aucun prospect dans ce statut.</div>';
+  return tete + tuiles + `<div class="v-carte" style="margin-top:14px">
+    <div class="v-carte-tete" style="flex-wrap:wrap"><h3><span class="v-pico">${ICO.gens}</span>${k ? esc(statut(k).label) : 'Tous les prospects'}</h3>${puces}</div>${table}</div>`;
 }
 
 function optionsResponsable(choisi) {
@@ -1293,9 +1726,9 @@ function optionsResponsable(choisi) {
 }
 function vueAjouter(doublons) {
   const secteurs = [...new Set(S.data.prospects.map(p => p.secteur).filter(Boolean))].sort();
-  return `<h2 class="section">Nouveau prospect</h2>
+  return `<div class="v-tete"><div><h1>Nouveau prospect</h1><p>Il part dans l’onglet Prospects du Sheets, statut « À appeler ».</p></div></div>
   <div id="zone-doublons"></div>
-  <form id="form-ajout" autocomplete="off">
+  <form id="form-ajout" class="v-carte v-form" autocomplete="off">
     <label class="champ">Entreprise *<input name="entreprise" required></label>
     <label class="champ">Secteur<input name="secteur" list="liste-secteurs" placeholder="Restauration, Coiffure, Garage…"></label>
     <datalist id="liste-secteurs">${secteurs.map(s => `<option value="${esc(s)}">`).join('')}</datalist>
@@ -1309,8 +1742,8 @@ function vueAjouter(doublons) {
       <option>site web, mais pas quali</option><option>site web, non actuel</option></select></label>
     <label class="champ">N° RCS<input name="rcs"></label>
     <label class="champ">Qui l’appelle<select name="responsable">${optionsResponsable(S.moi.nom)}</select></label>
-    <label class="champ">Notes<textarea name="notes" placeholder="Repéré où, ce qu'on a vu, à qui parler…"></textarea></label>
-    <button class="btn large" type="submit">Ajouter au Sheets</button>
+    <label class="champ large-2">Notes<textarea name="notes" placeholder="Repéré où, ce qu'on a vu, à qui parler…"></textarea></label>
+    <button class="btn large large-2" type="submit">Ajouter au Sheets</button>
   </form>`;
 }
 
@@ -1565,44 +1998,139 @@ function vueObjectif() {
   </div>`);
 }
 
+// Courbe lissée en SVG, avec une bulle qui suit le doigt ou la souris (voir « pointermove »).
+// Sur téléphone, un repère plus étroit : la courbe garde une hauteur lisible.
+const COURBE = { H: 230, G: 34, B: 24, T: 44, largeur: () => window.innerWidth < 760 ? 360 : 640 };
+function plafond(n) { if (n <= 5) return 5; const p = Math.pow(10, Math.floor(Math.log10(n))); return Math.ceil(n / p * 2) / 2 * p; }
+function courbe(id, etiquettes, series) {
+  const { H, G, B, T } = COURBE, W = COURBE.largeur(), n = etiquettes.length;
+  const max = plafond(Math.max(1, ...series.flatMap(s => s.vals)));
+  const X = i => G + (n > 1 ? i * (W - G - 6) / (n - 1) : 0), Y = v => T + (H - T - B) * (1 - v / max);
+  const chemin = vals => vals.map((v, i) => {
+    if (!i) return `M${X(0)},${Y(v)}`;
+    // Catmull-Rom vers Bézier, poignées bornées au cadre : une journée à zéro ne plonge pas sous l'axe.
+    const p0 = vals[Math.max(0, i - 2)], p1 = vals[i - 1], p3 = vals[Math.min(n - 1, i + 1)];
+    const lim = y => Math.min(H - B, Math.max(T, y)), dx = (X(i) - X(i - 1)) / 3;
+    return `C${X(i - 1) + dx},${lim(Y(p1) - (Y(v) - Y(p0)) / 6)} ${X(i) - dx},${lim(Y(v) - (Y(p3) - Y(p1)) / 6)} ${X(i)},${Y(v)}`;
+  }).join('');
+  const graduations = [0, .25, .5, .75, 1].map(f => `<line x1="${G}" x2="${W}" y1="${Y(max * f)}" y2="${Y(max * f)}" style="stroke:var(--v-grille)"/>
+    <text class="axe" x="${G - 8}" y="${Y(max * f) + 3}" text-anchor="end">${Math.round(max * f)}</text>`).join('');
+  const pas = Math.max(1, Math.ceil(n / (W < 500 ? 4 : 7)));
+  const bas = etiquettes.map((e, i) => i % pas && i !== n - 1 ? '' : `<text class="axe" x="${X(i)}" y="${H - 6}" text-anchor="middle">${esc(e)}</text>`).join('');
+  const traces = series.map((s, k) => (s.aire ? `<path d="${chemin(s.vals)}L${X(n - 1)},${H - B}L${X(0)},${H - B}Z" fill="url(#deg-${id})"/>` : '')
+    + `<path d="${chemin(s.vals)}" fill="none" style="stroke:${s.couleur}" stroke-width="${k ? 2 : 2.4}" ${s.pointille ? 'stroke-dasharray="5 5"' : ''} stroke-linecap="round"/>`).join('');
+  const donnees = { W, x: etiquettes.map((_, i) => X(i) / W * 100), y: series[0].vals.map(v => Y(v) / H * 100), e: etiquettes, s: series.map(s => ({ n: s.nom, v: s.vals })) };
+  return `<div class="v-courbe" data-courbe='${esc(JSON.stringify(donnees))}'>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(series.map(s => s.nom).join(', '))}"><defs><linearGradient id="deg-${id}" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#2f6bff" stop-opacity=".22"/><stop offset="1" stop-color="#2f6bff" stop-opacity="0"/></linearGradient></defs>
+      ${graduations}${bas}${traces}
+      <line class="v-repere" x1="0" x2="0" y1="${T}" y2="${H - B}" stroke-width="1.2" style="display:none;stroke:var(--v-contraste)"/>
+      <circle class="v-point" r="5" stroke="#2f6bff" stroke-width="2.5" style="display:none;fill:var(--v-carte)"/></svg>
+    <div class="v-bulle" style="display:none"></div></div>`;
+}
+function placerBulle(z, i) {
+  const d = JSON.parse(z.dataset.courbe), svg = z.querySelector('svg'), W = d.W, H = COURBE.H;
+  const x = d.x[i] / 100 * W, y = d.y[i] / 100 * H;
+  const rep = z.querySelector('.v-repere'), pt = z.querySelector('.v-point'), b = z.querySelector('.v-bulle');
+  rep.setAttribute('x1', x); rep.setAttribute('x2', x); rep.style.display = ''; pt.setAttribute('cx', x); pt.setAttribute('cy', y); pt.style.display = '';
+  b.style.display = ''; b.style.left = d.x[i] + '%'; b.style.top = d.y[i] / 100 * svg.getBoundingClientRect().height + 'px';
+  b.innerHTML = d.s.map((s, k) => k ? `<small>${esc(s.n)} ${s.v[i]}</small>` : `${s.v[i]} ${esc(s.n)}`).join('') + `<small>${esc(d.e[i])}</small>`;
+}
+function suivreCourbe(e) {
+  const z = e.target.closest && e.target.closest('.v-courbe'); if (!z) return;
+  const r = z.getBoundingClientRect(), d = JSON.parse(z.dataset.courbe), f = (e.clientX - r.left) / r.width * 100;
+  let i = 0; d.x.forEach((x, k) => { if (Math.abs(x - f) < Math.abs(d.x[i] - f)) i = k; });
+  placerBulle(z, i);
+}
+document.addEventListener('pointermove', suivreCourbe);
+document.addEventListener('pointerdown', suivreCourbe);
+function bullesDeDepart() {
+  document.querySelectorAll('.v-courbe').forEach(z => { const d = JSON.parse(z.dataset.courbe), v = d.s[0].v; placerBulle(z, v.reduce((b, x, i) => x >= v[b] ? i : b, 0)); });
+}
+
+const DONUT = { a_appeler: '#c9ccd4', sans_reponse: '#e7e8ec', rappel: '#f59e0b', lien: '#2f6bff', rdv: '#12a150', negociation: '#c5e83a', signe: 'var(--v-contraste)', perdu: '#e5484d' };
+function donut(parts, centre, sous) {
+  const total = parts.reduce((t, p) => t + p.n, 0) || 1, R = 46, C = 2 * Math.PI * R;
+  let deja = 0;
+  const arcs = parts.filter(p => p.n).map(p => { const l = p.n / total * C, a = `<circle r="${R}" cx="60" cy="60" fill="none" stroke-width="16" style="stroke:${p.c}"
+    stroke-dasharray="${Math.max(0, l - 1.5)} ${C}" stroke-dashoffset="${-deja}" transform="rotate(-90 60 60)"/>`; deja += l; return a; }).join('');
+  return `<div class="v-donut"><svg viewBox="0 0 120 120" role="img" aria-label="Répartition du fichier"><circle r="${R}" cx="60" cy="60" fill="none" stroke-width="16" style="stroke:var(--v-fond)"/>${arcs}
+    <text x="60" y="60" text-anchor="middle" font-size="21" font-weight="700" style="fill:var(--v-encre)" font-family="Inter, sans-serif">${centre}</text>
+    <text x="60" y="76" text-anchor="middle" font-size="9.5" style="fill:var(--v-doux)" font-family="Inter, sans-serif">${sous}</text></svg>
+    <ul>${parts.map(p => `<li><span><i style="background:${p.c}"></i>${esc(p.l)}</span><b>${Math.round(p.n / total * 100)} %</b></li>`).join('')}</ul></div>`;
+}
+
 function vueStats() {
+  const P = S.statsJours || 30;
   const appels = RES_APPEL(), J = S.data.journal.filter(entreeVisible);
-  const jour = aujourdhui();
-  const lundi = new Date(); lundi.setHours(0, 0, 0, 0); lundi.setDate(lundi.getDate() - ((lundi.getDay() + 6) % 7));
-  const debutSem = fmt(lundi).slice(0, 10);
-  const il30 = new Date(); il30.setDate(il30.getDate() - 30); const d30 = fmt(il30).slice(0, 10);
-  const compte = (depuis, filtre) => J.filter(e => e.date.slice(0, 10) >= depuis && filtre(e)).length;
   const estAppel = e => appels.includes(e.resultat);
   const decroche = e => estAppel(e) && e.resultat !== 'Pas de réponse';
-  const rdv = e => e.resultat === 'RDV obtenu';
-  const a30 = compte(d30, estAppel), r30 = compte(d30, rdv), dec30 = compte(d30, decroche);
+  const rdv = e => e.resultat === 'RDV obtenu', lien = e => e.resultat === 'Lien envoyé';
+  const jourK = n => { const d = new Date(); d.setDate(d.getDate() - n); return fmt(d).slice(0, 10); };
+  const debut = jourK(P - 1), avant = jourK(2 * P - 1);
+  const dans = e => e.date.slice(0, 10) >= debut, precedent = e => e.date.slice(0, 10) >= avant && e.date.slice(0, 10) < debut;
+  const compte = (f, quand) => J.filter(e => quand(e) && f(e)).length;
+  // Le journal chargé couvre 120 jours : au-delà, la période d'avant serait tronquée.
+  const delta = f => {
+    if (2 * P > 120) return '';
+    const a = compte(f, dans), b = compte(f, precedent);
+    if (!b) return `<span class="v-delta neutre">${a ? 'nouveau' : '='}</span>`;
+    const pc = Math.round((a - b) / b * 100);
+    return `<span class="v-delta ${pc > 0 ? 'monte' : pc < 0 ? 'baisse' : 'neutre'}">${pc > 0 ? '▲' : pc < 0 ? '▼' : ''} ${Math.abs(pc)} %</span>`;
+  };
+  const nA = compte(estAppel, dans), nD = compte(decroche, dans);
+  const periode = P === 1 ? 'aujourd’hui' : 'sur ' + P + ' jours';
+
+  const tete = `<div class="v-tete"><div><h1>Statistiques</h1><p>Comment avance la prospection · ${esc(vueEquipe() ? 'toute l’équipe' : 'espace ' + S.espace)}${2 * P <= 120 ? ' · flèches : ' + (P === 1 ? 'par rapport à hier' : 'par rapport aux ' + P + ' jours d’avant') : ''}</p></div>
+    <div class="v-outils"><div class="v-seg">${[[1, 'Aujourd’hui'], [7, '7 j'], [30, '30 j'], [90, '90 j']].map(([n, l]) =>
+      `<button data-action="stats-periode" data-n="${n}" class="${n === P ? 'on' : ''}">${l}</button>`).join('')}</div>
+    <a class="btn clair" style="padding:8px 14px;font-size:13px" href="${esc(S.data.lienSheets)}" target="_blank" rel="noopener">${ICO.tableur.replace('<svg', '<svg width="14" height="14"')}Sheets</a></div></div>`;
+  const tuiles = `<div class="v-tuiles">
+    ${tuile('Appels', ICO.tel, nA, periode, { classe: 'plein', delta: delta(estAppel) })}
+    ${tuile('Décrochés', ICO.decroche, nD, nA ? Math.round(nD / nA * 100) + ' % de décroché' : 'aucun appel', { delta: delta(decroche) })}
+    ${tuile('Liens envoyés', ICO.lien, compte(lien, dans), 'démos envoyées ' + periode, { delta: delta(lien) })}
+    ${tuile('RDV obtenus', ICO.rdv, compte(rdv, dans), nA && compte(rdv, dans) ? Math.round(nA / compte(rdv, dans)) + ' appels pour un RDV' : periode, { delta: delta(rdv) })}</div>`;
+
+  // Courbes : au moins 14 jours, pour qu'une période courte se lise quand même.
+  const nJ = Math.max(P, 14), jours = [];
+  for (let i = nJ - 1; i >= 0; i--) { const k = jourK(i), d = versDate(k + ' 00:00');
+    jours.push({ k, e: d.getDate() + '/' + (d.getMonth() + 1), a: J.filter(e => e.date.startsWith(k) && estAppel(e)).length, d: J.filter(e => e.date.startsWith(k) && decroche(e)).length,
+      o: (OBJECTIF_JOUR[vueEquipe() ? 'Sam' : S.espace] || {})[d.getDay()] || 0 }); }
+  const avecObjectif = !!OBJECTIF_JOUR[vueEquipe() ? 'Sam' : S.espace];
+  const c1 = carteV('Appels par jour', nJ + ' derniers jours', ICO.courbe, `<div class="v-leg"><span><i style="background:#2f6bff"></i>Appels</span></div>`,
+    courbe('appels', jours.map(j => j.e), [{ nom: 'appels', vals: jours.map(j => j.a), couleur: '#2f6bff', aire: true }]));
+  const c2 = avecObjectif
+    ? carteV('Appels et objectif', 'la grille de Sam, jour par jour', ICO.cible, `<div class="v-leg"><span><i style="background:#2f6bff"></i>Appels</span><span><i style="background:var(--v-contraste)"></i>Objectif</span></div>`,
+      courbe('objectif', jours.map(j => j.e), [{ nom: 'appels', vals: jours.map(j => j.a), couleur: '#2f6bff' }, { nom: 'objectif', vals: jours.map(j => j.o), couleur: 'var(--v-contraste)', pointille: true }]))
+    : carteV('Décrochés', 'patrons joints au téléphone', ICO.decroche, `<div class="v-leg"><span><i style="background:#2f6bff"></i>Décrochés</span><span><i style="background:var(--v-contraste)"></i>Appels</span></div>`,
+      courbe('decroches', jours.map(j => j.e), [{ nom: 'décrochés', vals: jours.map(j => j.d), couleur: '#2f6bff' }, { nom: 'appels', vals: jours.map(j => j.a), couleur: 'var(--v-contraste)', pointille: true }]));
+
+  // Le fichier, par statut.
   const pipe = S.data.prospects.filter(aLui);
+  const parts = S.data.statuts.map(s => ({ l: s.label, n: pipe.filter(p => cle(p) === s.k).length, c: DONUT[s.k] || '#c9ccd4' })).filter(p => p.n).sort((a, b) => b.n - a.n);
+  const enJeu = pipe.filter(p => ['lien', 'rdv', 'negociation'].includes(cle(p))).length;
+  const c3 = carteV('Le fichier', pipe.length + ' prospects, par statut', ICO.donut, '', donut(parts, pipe.length, 'prospects'));
 
-  const jours = [];
-  for (let i = 13; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const k = fmt(d).slice(0, 10); jours.push({ k, d, n: J.filter(e => e.date.startsWith(k) && estAppel(e)).length }); }
-  const max = Math.max(1, ...jours.map(j => j.n));
+  // Entonnoir de la période : commerces distincts à chaque étape.
+  const ids = f => new Set(J.filter(e => dans(e) && f(e)).map(e => e.id)).size;
+  const etapes = [['Appelés', ids(estAppel)], ['Décrochés', ids(decroche)], ['Lien envoyé', ids(lien)], ['RDV', ids(rdv)], ['Signés', ids(e => e.resultat === 'Client signé')]];
+  const base = etapes[0][1] || 1;
+  const conv = etapes[0][1] ? (etapes[3][1] / etapes[0][1] * 100).toFixed(1).replace('.', ',') + ' %' : '—';
+  const c4 = carteV('Entonnoir', 'commerces distincts ' + periode + ', % des appelés', ICO.entonnoir, `<div style="text-align:right;font-size:11px;color:var(--v-doux)">appel → RDV<br><b style="font-size:15px;color:var(--v-encre)">${conv}</b></div>`,
+    `<div class="v-entonnoir">${etapes.map(([l, n], i) => `<div class="v-et"><span>${l}</span><div class="barre"><i style="width:${Math.max(4, n / base * 100)}%">${n}</i></div>
+      <em>${i && etapes[0][1] ? Math.round(n / etapes[0][1] * 100) + ' %' : ''}</em></div>`).join('')}</div>`);
 
-  return vueObjectif() + section('Aujourd’hui', '', `<div class="grille">
-      <div class="kpi"><div class="v">${compte(jour, estAppel)}</div><div class="l">appels</div></div>
-      <div class="kpi"><div class="v">${compte(jour, rdv)}</div><div class="l">RDV obtenus</div></div></div>`)
-    + section('Cette semaine', 'depuis lundi', `<div class="grille">
-      <div class="kpi"><div class="v">${compte(debutSem, estAppel)}</div><div class="l">appels</div></div>
-      <div class="kpi"><div class="v">${compte(debutSem, decroche)}</div><div class="l">décrochés</div></div>
-      <div class="kpi"><div class="v">${compte(debutSem, e => e.resultat === 'Lien envoyé')}</div><div class="l">liens envoyés</div></div>
-      <div class="kpi"><div class="v">${compte(debutSem, rdv)}</div><div class="l">RDV obtenus</div></div></div>`)
-    + section('Appels par jour', '14 derniers jours', `<div class="barres">${jours.map(j =>
-      `<div class="barre-j" style="height:${Math.round(j.n / max * 100)}%"><em>${j.n || ''}</em><span>${j.d.getDate()}</span></div>`).join('')}</div>`)
-    + section('Sur 30 jours', '', `<table class="recap">
-      <tr><td>Appels passés</td><td>${a30}</td></tr>
-      <tr><td>Taux de décroché</td><td>${a30 ? Math.round(dec30 / a30 * 100) + ' %' : '—'}</td></tr>
-      <tr><td>Appels pour un RDV</td><td>${r30 ? Math.round(a30 / r30) : '—'}</td></tr></table>`)
-    + (vueEquipe() ? section('Par personne', 'cette semaine', `<table class="recap">
-      <tr><td></td><td>Appels</td><td>Décrochés</td><td>RDV</td></tr>
-      ${S.data.equipe.map(n => { const c = f => compte(debutSem, e => parDe(e) === n && f(e));
-        return `<tr><td>${esc(n)}</td><td>${c(estAppel)}</td><td>${c(decroche)}</td><td>${c(rdv)}</td></tr>`; }).join('')}</table>`) : '')
-    + section('Pipeline', pipe.length + ' prospects', `<table class="recap">${S.data.statuts.map(s =>
-      `<tr><td><span class="pastille" style="--statut:${s.color}">${esc(s.label)}</span></td><td>${pipe.filter(p => cle(p) === s.k).length}</td></tr>`).join('')}</table>`)
-    + `<p style="margin-top:18px"><a class="btn clair large" href="${esc(S.data.lienSheets)}" target="_blank">Ouvrir le Google Sheets</a></p>`;
+  // Par personne : toujours les deux, pour se situer.
+  const reps = S.data.equipe.map(n => { const a = J.filter(e => dans(e) && parDe(e) === n);
+    return { n, a: a.filter(estAppel).length, d: a.filter(decroche).length, r: a.filter(rdv).length, l: a.filter(lien).length }; }).sort((x, y) => y.a - x.a);
+  const top = Math.max(1, ...reps.map(r => r.a));
+  const c5 = carteV('Par personne', 'appels ' + periode, ICO.equipe, '', `<div class="v-reps">${reps.map(r => `<div>
+    <div class="v-rep-haut"><span>${avatar(r.n, true)}${esc(r.n)}</span><b>${r.a} appels</b></div>
+    <div class="v-rep-barre"><i style="width:${r.a / top * 100}%"></i></div>
+    <div class="v-rep-sous">${r.d} décrochés · ${r.l} liens · ${r.r} RDV</div></div>`).join('')}</div>`);
+
+  setTimeout(bullesDeDepart, 0);
+  return tete + tuiles + `<div class="v-deux">${c1}${c2}</div><div class="v-trois">${c3}${c4}${c5}</div>` + vueObjectif();
 }
 
 // ---------------------------------------------------------------------------
@@ -2072,7 +2600,7 @@ document.addEventListener('click', e => {
     if (ac.dataset.action === 'carte-wa') ouvrirMessages('whatsapp');
     return;
   }
-  const c = e.target.closest('.lp, .pc'); if (c && !e.target.closest('[data-action]')) { ouvrirFiche(c.dataset.id); return; }
+  const c = e.target.closest('.lp, .pc, tr[data-id]'); if (c && !e.target.closest('[data-action], [data-stop]')) { ouvrirFiche(c.dataset.id); return; }
   if (e.target.id === 'fiche') { fermerFiche(); return; }
   const r = e.target.closest('[data-res]');
   if (r) { CHOIX.res = r.dataset.res === 'rappel' ? 'pas_repondu' : r.dataset.res;
@@ -2112,6 +2640,12 @@ document.addEventListener('click', e => {
   else if (act === 'sess-passer') suivantSession();
   else if (act === 'sess-fin') finSession(false);
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
+  else if (act === 'theme') basculerTheme();
+  else if (act === 'aller-ajouter') { S.vue = 'ajouter'; window.scrollTo(0, 0); rendre(); }
+  else if (act === 'pipe-mode') { S.pipeMode = a.dataset.m; stocker('pipeMode', S.pipeMode); rendre(); }
+  else if (act === 'pipe-statut') { S.pipeStatut = a.dataset.k; S.pipeMax = 100; rendre(); }
+  else if (act === 'pipe-plus') { S.pipeMax = (S.pipeMax || 100) + 100; rendre(); }
+  else if (act === 'stats-periode') { S.statsJours = Number(a.dataset.n); rendre(); }
   else if (act === 'jour') { S.jour = decalerJour(S.jour || aujourdhui(), Number(a.dataset.n)); rendre(); }
   else if (act === 'jour-auj') { S.jour = aujourdhui(); rendre(); }
   else if (act === 'enregistrer') enregistrer(a);
