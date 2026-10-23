@@ -668,6 +668,7 @@
   .v-resp { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; white-space: nowrap; }
   .v-resp.libre { color: var(--v-doux); }
   .v-faible { color: var(--v-doux); white-space: nowrap; }
+  table.v-table td > b { white-space: nowrap; }
   .v-tel { font-weight: 600; text-decoration: none; white-space: nowrap; }
   .v-date { font-weight: 600; white-space: nowrap; }
   .v-date.retard { color: var(--v-rouge); }
@@ -796,6 +797,13 @@
   .v-colonnes-mois .actuel > span { color: var(--v-encre); }
   @media (max-width: 760px) { .v-colonnes-mois { height: 190px; gap: 6px; } .v-colonnes-mois .pile em { font-size: 9px; } .v-gros { font-size: 34px; } }
   html[data-theme="sombre"] body.v16 main .btn.noir:not(.clair):not(.danger) { background: #f2f3f5; color: #0c0d10; box-shadow: none; }
+  .v-ar-net { margin-top: 10px; font-size: 13px; color: var(--v-doux); }
+  .v-ar-net b { color: var(--v-vert); font-weight: 650; }
+  .v-ar-net.neg b { color: var(--v-rouge); }
+  .v-ar-net small { color: var(--v-pale); }
+  .v-details { margin-top: 12px; border-top: 1px solid var(--v-ligne); padding-top: 10px; }
+  .v-details summary { cursor: pointer; font-weight: 600; font-size: 13.5px; color: var(--v-bleu); }
+  table.v-table tr[data-charge] { cursor: pointer; }
   html[data-theme="sombre"] .v-objectif { background: #000; border: 1px solid var(--v-ligne); }
   html[data-theme="sombre"] .v-colonnes-mois .pile i.s { background: #2a3d73; }
   html[data-theme="sombre"] .v-colonnes-mois .actuel .pile i.s { background: var(--v-bleu); }
@@ -946,7 +954,7 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 //   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
 // - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
 // - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
-const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter'];
+const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer'];
 const attendreVisible = () => document.hidden ? new Promise(ok => {
   const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
   document.addEventListener('visibilitychange', f);
@@ -1175,7 +1183,7 @@ function section(titre, info, html) {
 
 // Le formulaire « Ajouter » survit aux redessins automatiques (toutes les 60 s, et au retour sur
 // l'appli après un passage dans une autre) : sans ça, tout ce que Sam avait tapé disparaissait.
-const FORMS_GARDES = ['form-ajout', 'form-reel', 'form-audience'];
+const FORMS_GARDES = ['form-ajout', 'form-reel', 'form-audience', 'form-charge'];
 function garderSaisie() {
   const f = FORMS_GARDES.map(id => document.getElementById(id)).find(Boolean); if (!f) return null;
   const a = document.activeElement, z = document.getElementById('zone-doublons');
@@ -2194,7 +2202,8 @@ function vueStats() {
 // ce qui est encaissé, ce qui ne l'est pas encore, les abonnements payés ou non.
 // Tout vient de Factu (Supabase) : rien n'est saisi ici.
 // ---------------------------------------------------------------------------
-const eur2 = n => (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' €';
+// 2 625 € pour un montant rond, 1 708,20 € dès qu'il y a des centimes (jamais « 1 708,2 »), comme Factu.
+const eur2 = n => { const v = Math.round((Number(n) || 0) * 100) / 100, c = v % 1 ? 2 : 0; return v.toLocaleString('fr-FR', { minimumFractionDigits: c, maximumFractionDigits: c }) + ' €'; };
 const MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 // Part d'abonnement d'une facture : ses lignes de maintenance, rapportées au total HT.
 function partAbo(f) {
@@ -2209,6 +2218,41 @@ function jaugeObjectif(pct) {
     <path d="M20 92 A70 70 0 0 1 160 92" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/>
     ${p > 0.005 ? `<path d="M20 92 A70 70 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="#2f6bff" stroke-width="12" stroke-linecap="round"/>` : ''}
     <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="8" fill="#fff" stroke="#2f6bff" stroke-width="4"/></svg>`;
+}
+
+// Nos abonnements (onglet Charges du Sheets) : chaque prélèvement se déduit du premier paiement.
+function prelevements(c) {
+  const r = { passes: [], prochain: '' };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(c.debut || '')) return r;
+  const [a, m, j] = c.debut.split('-').map(Number), pas = c.rythme === 'annuel' ? 12 : 1, auj = aujourdhui();
+  for (let k = 0; k < 1200; k += pas) {
+    const d = new Date(a, m - 1 + k, 1); d.setDate(Math.min(j, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+    const iso = fmt(d).slice(0, 10);
+    if (c.fin && iso > c.fin) break;
+    if (iso > auj) { r.prochain = iso; break; }
+    r.passes.push(iso);
+  }
+  return r;
+}
+const dateFr = iso => iso ? String(iso).slice(0, 10).split('-').reverse().join('/') : '—';
+function formCharge(charges) {
+  const c = charges.find(x => x.id === S.chargeEdit) || {};
+  return `<form id="form-charge" class="v-form" autocomplete="off" style="margin-top:12px">
+    <label class="champ large-2">Abonnement<select name="id" id="charge-choix"><option value="">＋ Nouvel abonnement</option>
+      ${charges.map(x => `<option value="${esc(x.id)}" ${x.id === c.id ? 'selected' : ''}>${esc(x.nom)}</option>`).join('')}</select></label>
+    <label class="champ">Nom *<input name="nom" required value="${esc(c.nom || '')}" placeholder="Ex. Claude Pro"></label>
+    <label class="champ">Montant TTC prélevé<input name="montant" inputmode="decimal" value="${esc(c.montant || '')}" placeholder="Ex. 21,06"></label>
+    <label class="champ">Rythme<select name="rythme"><option value="mensuel" ${c.rythme !== 'annuel' ? 'selected' : ''}>Chaque mois</option><option value="annuel" ${c.rythme === 'annuel' ? 'selected' : ''}>Chaque année</option></select></label>
+    <label class="champ">Premier paiement *<input name="debut" type="date" required value="${esc(c.debut || '')}"></label>
+    <label class="champ">Arrêté le (si résilié)<input name="fin" type="date" value="${esc(c.fin || '')}"></label>
+    <label class="champ">Note<input name="note" value="${esc(c.note || '')}"></label>
+    <button class="btn large large-2" type="submit">${c.id ? 'Enregistrer les changements' : 'Ajouter l’abonnement'}</button></form>`;
+}
+async function enregistrerCharge(form) {
+  const btn = form.querySelector('button[type=submit]'); btn.disabled = true;
+  const champs = Object.fromEntries([...form.elements].filter(e => e.name).map(e => [e.name, e.value]));
+  try { S.data.charges = await appel('api_charge_enregistrer', S.pin, champs); S.chargeEdit = ''; S.chargeOuvert = false; toast('Abonnement enregistré dans le Sheets.'); rendre(); }
+  catch (e) { btn.disabled = false; toast(e.message, true); }
 }
 
 function vueArgent() {
@@ -2268,6 +2312,27 @@ function vueArgent() {
   const tranches = F.devis.filter(d => d.statut === 'accepté' || d.statut === 'refusé');
   const tauxOui = tranches.length ? tranches.filter(d => d.statut === 'accepté').length / tranches.length : 0;
 
+  // Nos abonnements : prélèvements passés, sur la période et au total.
+  const charges = (S.data.charges || []).map(c => { const pr = prelevements(c), mt = c.montant === '' ? null : Number(c.montant);
+    return { c, pr, mt, parMois: mt == null ? 0 : mt / (c.rythme === 'annuel' ? 12 : 1), periode: pr.passes.filter(d => d >= debut).length, total: pr.passes.length }; });
+  const depPeriode = charges.reduce((s, x) => s + (x.mt || 0) * x.periode, 0), depTotal = charges.reduce((s, x) => s + (x.mt || 0) * x.total, 0);
+  const depMois = charges.filter(x => !x.c.fin || x.c.fin >= auj).reduce((s, x) => s + x.parMois, 0);
+  const sansMontant = charges.filter(x => x.mt == null && (!x.c.fin || x.c.fin >= auj));
+  const prochainDebit = charges.map(x => x.pr.prochain && { d: x.pr.prochain, x }).filter(Boolean).sort((a, b) => a.d.localeCompare(b.d))[0];
+
+  // Devis : création du site, maintenance de la première année, acompte et solde (même règle que la facture).
+  const devisL = F.devis.map(d => {
+    const L = d.devis_lignes || [], tva = 1 + (Number(d.tva_taux) || 0) / 100;
+    const estM = l => typeof NSDocs !== 'undefined' && NSDocs.estMaintenance(l), estF = l => typeof NSDocs !== 'undefined' && NSDocs.estFrais(l);
+    const mtn = L.filter(estM).reduce((t, l) => t + (Number(l.montant_ht) || 0), 0);
+    const site = L.length ? L.filter(l => !estM(l) && !estF(l)).reduce((t, l) => t + (Number(l.montant_ht) || 0), 0) : Number(d.total_ht) || 0;
+    const expire = d.statut === 'envoyé' && d.date_validite && String(d.date_validite) < auj;
+    return { d, site, mtn, ttc: Number(d.total_ttc) || 0, acompte: (site / 2 + mtn) * tva, solde: site / 2 * tva, expire,
+      etat: expire ? 'expiré' : d.statut };
+  }).sort((a, b) => String(b.d.date_emission).localeCompare(String(a.d.date_emission)));
+  const devisAttente = devisL.filter(x => x.etat === 'envoyé');
+  const potentielMois = devisAttente.reduce((s, x) => s + x.mtn / 12, 0);
+
   // Encaissements des 6 derniers mois.
   const mois6 = []; for (let i = 5; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); const k = fmt(d).slice(0, 7);
     mois6.push({ k, l: MOIS_COURT[d.getMonth()], v: somme(encaissements, e => e.date.startsWith(k)), a: encaissements.filter(e => e.date.startsWith(k)).reduce((s, e) => s + e.montant * partAbo(e.f), 0) }); }
@@ -2280,6 +2345,7 @@ function vueArgent() {
       ${evol == null ? '' : `<span class="v-delta ${evol > 0 ? 'monte' : evol < 0 ? 'baisse' : 'neutre'}" title="ce mois-ci par rapport au mois dernier">${evol > 0 ? '▲' : evol < 0 ? '▼' : ''} ${Math.abs(evol)} % ce mois</span>`}</div>
     <div class="v-gros">${eur2(enc)}</div>
     <div class="v-ar-sous"><span><i style="background:#2f6bff"></i>Sites ${eur2(enc - encAbo)}</span><span><i style="background:#c5e83a"></i>Abonnements ${eur2(encAbo)}</span></div>
+    <div class="v-ar-net ${enc - depPeriode < 0 ? 'neg' : ''}">Net après nos abonnements : <b>${eur2(enc - depPeriode)}</b>${sansMontant.length ? ' <small>(montant manquant : ' + esc(sansMontant.map(x => x.c.nom).join(', ')) + ')</small>' : ''}</div>
     <div class="v-ar-boutons"><button class="btn" data-action="aller-factu">${ICO.plus.replace('<svg', '<svg width="14" height="14"')}Devis ou facture</button>
       <button class="btn noir" data-action="aller-factu">${ICO.barres.replace('<svg', '<svg width="14" height="14"')}Voir les factures</button></div></div>`;
   const c2 = `<div class="v-carte"><div class="v-carte-tete"><h3><span class="v-pico rouge">${SVG('<path d="M12 19V5M5 12l7-7 7 7"/>')}</span>Pas encore encaissé</h3><span class="v-delta neutre">${emises.length} facture${emises.length > 1 ? 's' : ''}</span></div>
@@ -2291,6 +2357,7 @@ function vueArgent() {
     <div class="v-gros moyen">${eur2(recurrentMois)}<span> /mois HT</span></div>
     <div class="v-ar-sous"><span>soit ${eur2(recurrentMois * 12)} HT par an</span></div>
     <div class="v-ar-barre">${abos.length ? `<i style="width:${abosPayes / abos.length * 100}%"></i><i class="r" style="width:${abosRetard / abos.length * 100}%"></i>` : ''}</div>
+    ${potentielMois ? `<div class="v-ar-sous petit"><span>Si les ${devisAttente.length} devis en attente signent : <b style="color:var(--v-encre)">+${eur2(potentielMois)} /mois HT</b></span></div>` : ''}
     <div class="v-ar-sous petit"><span><i style="background:#2f6bff"></i>${abosPayes} payé${abosPayes > 1 ? 's' : ''}</span><span><i style="background:#e5484d"></i>${abosRetard} en retard</span><span><i style="background:var(--v-ligne)"></i>${abos.length - abosPayes - abosRetard} autres</span></div></div>`;
 
   const pctObj = signeMois / OBJECTIF_MOIS;
@@ -2328,7 +2395,28 @@ function vueArgent() {
         <td><span class="v-st" style="--statut:${ETATS[a.etat]}">${esc(a.etat[0].toUpperCase() + a.etat.slice(1))}</span></td></tr>`).join('')}</tbody></table></div>`
       : '<div class="vide">Aucun client avec un abonnement de maintenance pour l’instant.</div>'}</div>`;
 
-  return tete(outils) + `<div class="v-ar-haut">${c1}${c2}${c3}</div><div class="v-ar-milieu">${c4}${c5}</div>${c6}${c7}`
+  const ST_DEVIS = { 'envoyé': ['#c9daf8', 'En attente'], 'accepté': ['#93c47d', 'Signé'], 'refusé': ['#dd7e6b', 'Refusé'], 'expiré': ['#efefef', 'Expiré'], 'brouillon': ['#ffffff', 'Brouillon'] };
+  const c8 = `<div class="v-carte" style="margin-top:14px"><div class="v-carte-tete" style="flex-wrap:wrap"><h3><span class="v-pico">${SVG('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>')}</span>Devis<small>${devisAttente.length} en attente · ${eur2(devisAttente.reduce((s, x) => s + x.ttc, 0))} TTC, dont ${eur2(devisAttente.reduce((s, x) => s + x.acompte, 0))} d’acomptes à la signature</small></h3></div>
+    ${devisL.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Client</th><th>Total TTC</th><th class="v-hm">Site HT</th><th class="v-hm">Maintenance HT</th><th class="v-hm">À la signature</th><th class="v-hm">À la mise en ligne</th><th class="v-hm">Valable jusqu’au</th><th>État</th></tr></thead>
+      <tbody>${devisL.map(x => `<tr><td><div class="v-qui">${avatar((x.d.clients && x.d.clients.nom_etablissement) || '?')}<div><b>${esc((x.d.clients && x.d.clients.nom_etablissement) || '—')}</b><small>${esc(x.d.numero || 'brouillon')} · ${esc(dateFr(x.d.date_emission))}</small></div></div></td>
+        <td><b>${eur2(x.ttc)}</b></td><td class="v-hm">${eur2(x.site)}</td><td class="v-hm">${x.mtn ? eur2(x.mtn) + ' /an' : '—'}</td>
+        <td class="v-hm">${eur2(x.acompte)}</td><td class="v-hm">${eur2(x.solde)}</td>
+        <td class="v-hm"><span class="v-faible">${esc(dateFr(x.d.date_validite))}</span></td>
+        <td><span class="v-st" style="--statut:${(ST_DEVIS[x.etat] || ST_DEVIS.brouillon)[0]}">${(ST_DEVIS[x.etat] || [0, esc(x.etat)])[1]}</span></td></tr>`).join('')}</tbody></table></div>
+      <p class="sous" style="margin:10px 0 0">À la signature : 50 % du site et la première année de maintenance, TTC. À la mise en ligne : l’autre moitié du site.</p>`
+      : '<div class="vide">Aucun devis pour l’instant.</div>'}</div>`;
+  const c9 = `<div class="v-carte" style="margin-top:14px"><div class="v-carte-tete" style="flex-wrap:wrap"><h3><span class="v-pico rouge">${SVG('<path d="M12 5v14M19 12l-7 7-7-7"/>')}</span>Nos abonnements<small>ce que NSD paie · ${eur2(depMois)} /mois TTC${sansMontant.length ? ' sans ' + esc(sansMontant.map(x => x.c.nom).join(', ')) : ''}</small></h3>
+      <span class="v-delta neutre">${eur2(depTotal)} payés depuis le début</span></div>
+    ${charges.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Abonnement</th><th>Montant</th><th class="v-hm">Depuis</th><th class="v-hm">Prélèvements</th><th class="v-hm">Payé au total</th><th>Prochain</th></tr></thead>
+      <tbody>${charges.map(x => `<tr data-charge="${esc(x.c.id)}"><td><div class="v-qui">${avatar(x.c.nom)}<div><b>${esc(x.c.nom)}</b><small>${esc(x.c.note || (x.c.rythme === 'annuel' ? 'chaque année' : 'chaque mois'))}</small></div></div></td>
+        <td>${x.mt == null ? '<span class="v-st" style="--statut:#f6b26b">À compléter</span>' : '<b>' + eur2(x.mt) + '</b><small class="v-faible"> /' + (x.c.rythme === 'annuel' ? 'an' : 'mois') + '</small>'}</td>
+        <td class="v-hm"><span class="v-faible">${esc(dateFr(x.c.debut))}</span></td><td class="v-hm">${x.total}${x.periode !== x.total ? ` <small class="v-faible">(${x.periode} ${esc(libP)})</small>` : ''}</td>
+        <td class="v-hm">${x.mt == null ? '<span class="v-faible">—</span>' : eur2(x.mt * x.total)}</td>
+        <td>${x.c.fin && x.c.fin < auj ? '<span class="v-faible">arrêté le ' + esc(dateFr(x.c.fin)) + '</span>' : '<span class="v-date">' + esc(dateFr(x.pr.prochain)) + '</span>'}</td></tr>`).join('')}</tbody></table></div>`
+      : '<div class="vide">Aucun abonnement noté.</div>'}
+    <details class="v-details" ${S.chargeOuvert ? 'open' : ''}><summary>Ajouter ou modifier un abonnement</summary>${formCharge(S.data.charges || [])}</details></div>`;
+
+  return tete(outils) + `<div class="v-ar-haut">${c1}${c2}${c3}</div><div class="v-ar-milieu">${c4}${c5}</div>${c8}${c6}${c9}${c7}`
     + (F.erreur ? `<div class="vide" style="margin-top:12px">Lecture partielle : ${esc(F.erreur)}</div>` : '');
 }
 
@@ -2819,6 +2907,8 @@ document.addEventListener('click', e => {
   if (d) { CHOIX.rappel = d.dataset.date; document.querySelectorAll('[data-date]').forEach(b => b.classList.toggle('choisi', b === d));
     const p = document.getElementById('date-precise'); if (p) p.value = d.dataset.date.replace(' ', 'T');
     if (document.getElementById('apres-nom')) majMessageApres(); return; }
+  const ch = e.target.closest('tr[data-charge]');
+  if (ch) { S.chargeEdit = ch.dataset.charge; S.chargeOuvert = true; rendre(); const f = document.getElementById('form-charge'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
   const es = e.target.closest('[data-espace]');
   if (es) { S.espace = es.dataset.espace; stocker('espace', S.espace); S.plusJour = 25; window.scrollTo(0, 0); rendre(); return; }
   const a = e.target.closest('[data-action]'); if (!a) return;
@@ -2872,6 +2962,7 @@ document.addEventListener('submit', e => {
   if (e.target.id === 'form-ajout') ajouter(e.target);
   if (e.target.id === 'form-reel') enregistrerReel(e.target);
   if (e.target.id === 'form-audience') ajouterAudience(e.target);
+  if (e.target.id === 'form-charge') enregistrerCharge(e.target);
 });
 document.addEventListener('input', e => {
   if (e.target.id === 'apres-nom') majMessageApres();
@@ -2881,7 +2972,10 @@ document.addEventListener('change', e => {
   if (e.target.id === 'filtre-secteur') { S.filtreSecteur = e.target.value; rendre(); }
   if (e.target.id === 'jour-date' && e.target.value) { S.jour = e.target.value; rendre(); }
   if (e.target.id === 'choix-reel') { S.reel = e.target.value; rendre(); }
+  if (e.target.id === 'charge-choix') { S.chargeEdit = e.target.value; S.chargeOuvert = true; const f = document.getElementById('form-charge'); if (f) f.outerHTML = formCharge(S.data.charges || []); }
 });
+// Le volet « abonnement » reste ouvert aux redessins automatiques (toutes les 60 s).
+document.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('v-details')) S.chargeOuvert = e.target.open; }, true);
 document.getElementById('recherche').addEventListener('input', e => { S.recherche = e.target.value.trim(); rendre(); });
 
 // Connexion
@@ -3624,7 +3718,7 @@ const Factu = (() => {
     F.erreur = '';
     const [c, d, f, pay] = await Promise.all([
       F.sb.from('clients').select('*').order('created_at', { ascending: false }),
-      F.sb.from('devis').select('*, clients(nom_etablissement)').order('created_at', { ascending: false }),
+      F.sb.from('devis').select('*, clients(nom_etablissement), devis_lignes(designation, montant_ht)').order('created_at', { ascending: false }),
       F.sb.from('factures').select('*, clients(nom_etablissement), factures_lignes(designation, montant_ht)').order('created_at', { ascending: false }),
       // Pour l'onglet Argent (23/10/2026) : la date réelle de chaque encaissement. Une erreur ici ne bloque pas Factu.
       F.sb.from('paiements').select('*').order('date', { ascending: false }),
