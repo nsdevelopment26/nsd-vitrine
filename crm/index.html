@@ -885,6 +885,24 @@
   .ag-coche input { width: auto !important; margin: 0 !important; }
   @media (max-width: 760px) { .ag-leg { margin-left: 0; } .ag-corps { max-height: calc(100vh - 360px); } }
 
+  /* --- Notes regroupées dans la fiche (25/10/2026) --- */
+  .notes-bloc h3 { display: flex; align-items: center; gap: 8px; }
+  .notes-bloc h3 small { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: var(--fond); color: var(--doux); }
+  .note-ajout { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 12px; align-items: end; }
+  .note-ajout textarea { min-height: 44px; border: 1px solid var(--ligne); border-radius: 12px; padding: 10px 12px; font-size: 15px; background: var(--carte); color: var(--encre); }
+  .note-ajout .btn { padding: 11px 16px; }
+  .note-fiche { background: color-mix(in srgb, #f6b26b 14%, var(--carte)); border: 1px solid color-mix(in srgb, #f6b26b 40%, var(--ligne)); border-radius: 12px; padding: 10px 12px; margin-bottom: 10px; }
+  .note-etiquette { font-size: 12px; font-weight: 700; color: var(--doux); }
+  .note-lien { margin-left: auto; border: 0; background: none; padding: 0; font-size: 12px; color: var(--doux); text-decoration: underline; cursor: pointer; }
+  .notes-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .notes-liste li { padding: 10px 0; border-top: 1px solid var(--ligne); }
+  .notes-liste li:first-child { border-top: 0; padding-top: 2px; }
+  .note-tete { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 12.5px; }
+  .note-tete b { font-weight: 700; }
+  .note-res { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: color-mix(in srgb, var(--statut) 45%, var(--carte)); color: var(--encre); }
+  .note-date { margin-left: auto; color: var(--doux); font-size: 12px; }
+  .note-texte { white-space: pre-wrap; font-size: 14.5px; line-height: 1.45; margin-top: 5px; overflow-wrap: anywhere; }
+
   /* --- Bouton clair / sombre --- */
   .barre-droite { display: flex; align-items: center; gap: 8px; }
   .theme { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--v-ligne); background: var(--v-carte); color: var(--v-encre);
@@ -1219,6 +1237,7 @@ function carteRiche(p, droite, entree) {
   const sous = [p.secteur || (m && m.metier), p.commune].filter(Boolean).join(' · ');
   const notes = String(p.notes || '').split(' · ').filter(x => !/^Contacté \?/.test(x)).join(' · ');
   const dernier = entree ? '' : dernierContact(p);
+  const nbNotes = entree ? 0 : notesDe(p).length;
   const lignes = [
     ['Gérant', p.gerant ? esc(p.gerant) : '<span class="faible">inconnu, demander le responsable</span>'],
     ['Tél.', tel ? `<a href="${tel}" data-stop="1">${esc(p.telephone)}</a>` : '<span class="faible">aucun numéro</span>'],
@@ -1227,7 +1246,8 @@ function carteRiche(p, droite, entree) {
     entree && entree.note ? ['Dit', esc(entree.note)] : null,
     dernier ? ['Dernier', esc(dernier)] : null,
     !entree && vuesDe(p) ? ['Démo', `<b class="vu-demo${chaud(p) ? ' chaud' : ''}">${esc(vuesTxt(vuesDe(p)))}</b>`] : null,
-    !entree && notes ? ['Notes', esc(notes.length > 160 ? notes.slice(0, 160) + '…' : notes)] : null,
+    !entree && (notes || nbNotes) ? ['Notes', (notes ? esc(notes.length > 160 ? notes.slice(0, 160) + '…' : notes) : '')
+      + (nbNotes ? `${notes ? ' · ' : ''}<span class="faible">${nbNotes} note${nbNotes > 1 ? 's' : ''} d’appel, toutes dans la fiche</span>` : '')] : null,
   ].filter(Boolean);
   return `<div class="lp" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
     <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
@@ -1842,9 +1862,9 @@ function vuePipeline() {
     ${statuts.map(s => `<button data-action="pipe-statut" data-k="${s.k}" class="${k === s.k ? 'on' : ''}">${esc(s.label)} <b>${nb(s.k)}</b></button>`).join('')}</div>`;
   const ligne = p => {
     const tel = lienTel(p.telephone), wa = telInternational(p.telephone), m = metierDe(p), r = respDe(p);
-    const sous = [p.gerant, p.secteur || (m && m.metier)].filter(Boolean).join(' · ');
+    const sous = [p.gerant, p.secteur || (m && m.metier)].filter(Boolean).join(' · '), nbN = notesDe(p).length + (p.notes ? 1 : 0);
     return `<tr data-id="${esc(p.id)}">
-      <td><div class="v-qui">${avatar(p.entreprise)}<div><b>${esc(p.entreprise)}</b><small>${esc(sous || '—')}</small></div></div></td>
+      <td><div class="v-qui">${avatar(p.entreprise)}<div><b>${esc(p.entreprise)}</b><small>${esc(sous || '—')}${nbN ? ' · 📝 ' + nbN : ''}</small></div></div></td>
       <td class="v-hm"><span class="v-faible">${esc(p.commune || '—')}</span></td>
       <td><span class="v-st" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span></td>
       <td class="v-hm">${tel ? `<a class="v-tel" href="${tel}" data-stop="1">${esc(String(p.telephone).split(/\s*[\/;]\s*|\s+ou\s+/)[0])}</a>` : '<span class="v-faible">—</span>'}</td>
@@ -2734,6 +2754,8 @@ function rendreFiche(edition) {
       <div id="zone-res" class="${CHOIX.res ? '' : 'cache'}">${zoneResultat()}</div>
     </div>
 
+    ${blocNotes(p)}
+
     ${m && (m.conseil || creneau) ? `<div class="conseil"><b>${esc(m.metier)}</b>${creneau ? ' · ' + esc(creneau) : ''}${m.conseil ? '<br>' + esc(m.conseil) : ''}</div>` : ''}
 
     <div class="bloc"><h3>Infos</h3><dl class="infos">
@@ -2749,7 +2771,6 @@ function rendreFiche(edition) {
         : cle(p) === 'lien' && String(p.dernier || '') >= SUIVI_DEPUIS ? 'pas encore ouverte' : '—'}</dd>
       <dt>N° RCS</dt><dd>${esc(p.rcs || '—')}</dd>
       <dt>Contacts</dt><dd>${esc(p.nb || '0')}${p.dernier ? ' · dernier ' + esc(dateCourte(p.dernier)) : ''}</dd>
-      <dt>Notes</dt><dd style="white-space:pre-wrap">${esc(p.notes || '—')}</dd>
     </dl>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
       <button class="btn clair" data-action="editer">Modifier la fiche</button>
@@ -2761,6 +2782,39 @@ function rendreFiche(edition) {
       : '<div class="sous">Aucun contact enregistré dans l’appli.</div>'}</div>`}
   </div>`;
   if (!edition) rendreMessageHaut();
+}
+
+// Notes d'un client, toutes au même endroit (25/10/2026, demandé par Sam) : la note de la fiche
+// (épinglée) et chaque note laissée à un appel, une relance, un message, d'où qu'elle vienne
+// (Journée, Pipeline, recherche, session). Les lignes que l'appli ajoute seule sont retirées.
+const NOTE_AUTO = /^(Agenda\b|Agenda NON\b|Import\b|Contacté \?)/;
+function notesDe(p) {
+  return historique(p.id).map(e => {
+    const texte = String(e.note || '').split(' · ').map(x => x.trim()).filter(x => x && !NOTE_AUTO.test(x)).join(' · ');
+    return texte ? { date: e.date, par: parDe(e), resultat: e.resultat, statut: e.statut, texte } : null;
+  }).filter(Boolean);
+}
+function blocNotes(p) {
+  const notes = notesDe(p);
+  const fiche = String(p.notes || '').split(' · ').filter(x => x.trim() && !NOTE_AUTO.test(x.trim())).join(' · ');
+  const resCouleur = r => { const def = Object.values(S.data.resultats).find(x => x.label === r); return def && def.statut ? statut(def.statut).color : '#e7e8ec'; };
+  return `<div class="bloc notes-bloc"><h3>Notes <small>${notes.length + (fiche ? 1 : 0)}</small></h3>
+    <form id="form-note" class="note-ajout" autocomplete="off"><textarea name="texte" rows="2" placeholder="Ajouter une note sur ${esc(p.entreprise)}…"></textarea>
+      <button class="btn" type="submit">Ajouter</button></form>
+    ${fiche ? `<div class="note-fiche"><div class="note-tete"><span class="note-etiquette">📌 Note de la fiche</span><button class="note-lien" data-action="editer">modifier</button></div><div class="note-texte">${esc(fiche)}</div></div>` : ''}
+    ${notes.length ? `<ul class="notes-liste">${notes.map(n => `<li><div class="note-tete">${avatar(n.par, true)}<b>${esc(n.par)}</b>
+        <span class="note-res" style="--statut:${resCouleur(n.resultat)}">${esc(n.resultat)}</span><span class="note-date">${esc(dateCourte(n.date))}</span></div>
+        <div class="note-texte">${esc(n.texte)}</div></li>`).join('')}</ul>`
+      : !fiche ? '<div class="sous">Aucune note pour l’instant. Écris-en une ci-dessus, ou laisse-en une en notant un appel.</div>' : ''}</div>`;
+}
+async function ajouterNote(form) {
+  const texte = form.texte.value.trim(); if (!texte) return toast('Écris la note d’abord.', true);
+  const b = form.querySelector('button'); b.disabled = true; b.textContent = '…';
+  try {
+    const p = await appel('api_logger', S.pin, S.ouvert, 'note', texte, '', S.par, null);
+    majLocale(p, { resultat: S.data.resultats.note.label, note: texte, rappel: '' });
+    toast('Note ajoutée.'); rendreFiche(); rendre();
+  } catch (e) { b.disabled = false; b.textContent = 'Ajouter'; toast(e.message || String(e), true); }
 }
 
 // Cinq boutons (décision du 24/09/2026), plus « En cours » pour une négociation
@@ -3230,6 +3284,7 @@ document.addEventListener('submit', e => {
   if (e.target.id === 'form-reel') enregistrerReel(e.target);
   if (e.target.id === 'form-audience') ajouterAudience(e.target);
   if (e.target.id === 'form-charge') enregistrerCharge(e.target);
+  if (e.target.id === 'form-note') ajouterNote(e.target);
 });
 document.addEventListener('input', e => {
   if (e.target.id === 'apres-nom') majMessageApres();
