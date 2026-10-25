@@ -903,6 +903,18 @@
   .note-date { margin-left: auto; color: var(--doux); font-size: 12px; }
   .note-texte { white-space: pre-wrap; font-size: 14.5px; line-height: 1.45; margin-top: 5px; overflow-wrap: anywhere; }
 
+  /* --- Liens rapides fiche Google / registre (25/10/2026) --- */
+  .liens-rapides { display: flex; gap: 8px; margin: 8px 0 2px; flex-wrap: wrap; }
+  .liens-rapides a { flex: 1; min-width: 140px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 10px; border-radius: 12px;
+    border: 1px solid var(--ligne); background: var(--carte); color: var(--encre); text-decoration: none; font-size: 13px; font-weight: 700; }
+  .liens-rapides a span { font-size: 10.5px; font-weight: 800; padding: 2px 6px; border-radius: 6px; background: #1a73e8; color: #fff; letter-spacing: .02em; }
+  .liens-rapides a + a span { background: #8a1538; }
+  .liens-rapides a.cherche { border-style: dashed; color: var(--doux); font-weight: 600; }
+  .liens-rapides a.cherche span { opacity: .55; }
+  .liens-rapides a:hover { border-color: var(--encre); }
+  .liens-rapides.petit { margin-top: 8px; }
+  .liens-rapides.petit a { padding: 7px 8px; font-size: 12px; min-width: 120px; }
+
   /* --- Bouton clair / sombre --- */
   .barre-droite { display: flex; align-items: center; gap: 8px; }
   .theme { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--v-ligne); background: var(--v-carte); color: var(--v-encre);
@@ -1181,6 +1193,25 @@ function lienTel(t) { const i = telInternational(t); return i ? 'tel:+' + i : ''
 function lienSite(s) { s = String(s || '').trim(); if (!s || !/[.]/.test(s)) return ''; return /^https?:/i.test(s) ? s : 'https://' + s; }
 function lienInsta(s) { s = String(s || '').trim(); if (!s) return ''; if (/^https?:/i.test(s)) return s; return 'https://instagram.com/' + s.replace(/^@/, ''); }
 function trouver(id) { return S.data.prospects.find(p => p.id === id); }
+// Fiche Google et registre du commerce (25/10/2026) : le lien noté par Tom en priorité ; sinon le lien
+// se fabrique (fiche RCS d'après le numéro, recherche Google Maps d'après le nom et la commune).
+function lienGoogle(p) {
+  const l = lienSite(p.lienGoogle); if (l) return { url: l, exact: true };
+  return { url: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([p.entreprise, p.commune, 'Luxembourg'].filter(Boolean).join(' ')), exact: false };
+}
+function lienRcs(p) {
+  const l = lienSite(p.lienRcs); if (l) return { url: l, exact: true };
+  const n = String(p.rcs || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (/^[A-Z]\d{3,7}$/.test(n)) return { url: 'https://www.lbr.lu/mjrcs-web-front/consult-company/' + n, exact: true };
+  return { url: 'https://www.lbr.lu/mjrcs-web-front/consult-search-list?search=' + encodeURIComponent(String(p.entreprise || '').replace(/\b(s\.?\s?[aà]\.?\s?r\.?\s?l\.?(-s)?|sarl(-s)?|s\.?a\.?)\b/gi, '').trim()), exact: false };
+}
+function liensRapides(p, petit) {
+  const g = lienGoogle(p), r = lienRcs(p);
+  return `<div class="liens-rapides${petit ? ' petit' : ''}">
+    <a href="${esc(g.url)}" target="_blank" rel="noopener" data-stop="1" class="${g.exact ? '' : 'cherche'}" title="${g.exact ? 'Fiche Google du commerce' : 'Pas encore de lien noté : recherche sur Google Maps'}"><span>G</span>${g.exact ? 'Fiche Google' : 'Chercher sur Google'}</a>
+    <a href="${esc(r.url)}" target="_blank" rel="noopener" data-stop="1" class="${r.exact ? '' : 'cherche'}" title="${r.exact ? 'Fiche au registre de commerce (lbr.lu)' : 'Pas de numéro RCS : recherche au registre'}"><span>RCS</span>${r.exact ? 'Registre ' + esc(String(p.rcs || '').replace(/\s/g, '') || 'RCS') : 'Chercher au registre'}</a>
+  </div>`;
+}
 // Démo ouverte (20/10/2026) : { n: ouvertures, s: secondes, nbPages, premiere, derniere }.
 const SUIVI_DEPUIS = '2026-10-20'; // avant, les liens partaient sans ?p= : « pas ouverte » ne voudrait rien dire
 function vuesDe(p) { return p && S.data.vues ? S.data.vues[p.id] || null : null; }
@@ -1253,6 +1284,7 @@ function carteRiche(p, droite, entree) {
     <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
       ${droite || ''}</div>
     <dl class="lp-grille">${lignes.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    ${liensRapides(p, true)}
     <div class="lp-actions">
       <a class="appeler ${tel ? '' : 'inactif'}" href="${tel || '#'}" data-stop="1">☎︎ Appeler</a>
       <button data-action="carte-wa" data-id="${esc(p.id)}" class="${wa ? '' : 'inactif'}">WhatsApp</button>
@@ -1904,6 +1936,8 @@ function vueAjouter(doublons) {
     <label class="champ">Mauvais points<select name="mauvais"><option></option><option>pas de site web, zero vitrine</option>
       <option>site web, mais pas quali</option><option>site web, non actuel</option></select></label>
     <label class="champ">N° RCS<input name="rcs"></label>
+    <label class="champ">Lien de la fiche Google<input name="lienGoogle" inputmode="url" placeholder="https://maps.google.com/…"></label>
+    <label class="champ">Lien de la fiche RCS<input name="lienRcs" inputmode="url" placeholder="https://www.lbr.lu/mjrcs-web-front/consult-company/B…"></label>
     <label class="champ">Qui l’appelle<select name="responsable">${optionsResponsable(S.moi.nom)}</select></label>
     <label class="champ large-2">Notes<textarea name="notes" placeholder="Repéré où, ce qu'on a vu, à qui parler…"></textarea></label>
     <button class="btn large large-2" type="submit">Ajouter au Sheets</button>
@@ -2745,6 +2779,7 @@ function rendreFiche(edition) {
         <button data-action="msg" data-canal="sms" class="${wa ? '' : 'inactif'}"><span class="ico">✉︎</span>SMS</button>
         <button data-action="msg" data-canal="mail" class="${p.email ? '' : 'inactif'}"><span class="ico">@</span>Mail</button>
       </div>
+      ${liensRapides(p)}
       <div id="msg-haut" class="msg-haut"></div>
     </div>
 
@@ -2948,6 +2983,7 @@ function formEdition(p) {
     ${f('entreprise', 'Entreprise')}${f('secteur', 'Secteur')}${f('commune', 'Commune')}${f('telephone', 'Téléphone', 'tel')}
     ${f('gerant', 'Nom du gérant')}${f('email', 'Email', 'email')}${f('site', 'Site web')}${f('instagram', 'Instagram')}
     ${f('mauvais', 'Mauvais points')}${f('rcs', 'N° RCS')}
+    ${f('lienGoogle', 'Lien de la fiche Google', 'url')}${f('lienRcs', 'Lien de la fiche RCS (lbr.lu)', 'url')}
     <label class="champ">Prochain rappel<input name="rappel" type="datetime-local" value="${esc((p.rappel || '').replace(' ', 'T'))}"></label>
     <label class="champ">Responsable<select name="responsable">${optionsResponsable(respDe(p))}</select></label>
     <label class="champ">Statut<select name="statut">${S.data.statuts.filter(s => s.k !== 'sans_reponse' || s.k === cle(p)).map(s => `<option value="${s.k}" ${s.k === cle(p) ? 'selected' : ''}>${esc(s.label)}</option>`).join('')}</select></label>
