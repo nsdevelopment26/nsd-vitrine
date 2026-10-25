@@ -423,6 +423,19 @@ const NS_I18N = {
   "Parler à Sam":        {lb:"Mam Sam schwätzen", de:"Mit Sam sprechen", en:"Talk to Sam",   pt:"Falar com o Sam"},
 
   /* ---------- Contact ---------- */
+  /* ---------- Réseaux (25/10/2026, lb À RELIRE) ---------- */
+  "Nos réseaux": {lb:"Eis Netzwierker", de:"Unsere Kanäle", en:"Our socials", pt:"As nossas redes"},
+  "Les coulisses, en vidéo": {lb:"Hannert de Kulissen, op Video", de:"Hinter den Kulissen, im Video", en:"Behind the scenes, on video", pt:"Os bastidores, em vídeo"},
+  "Chaque semaine, on montre les appels, les sites qu'on livre et ce qu'on apprend en route. Sans filtre.": {
+     lb:"All Woch weise mir d'Uriff, d'Websäiten déi mir liwweren an dat wat mir ënnerwee léieren. Ouni Filter.",
+     de:"Jede Woche zeigen wir die Anrufe, die Websites, die wir liefern, und was wir unterwegs lernen. Ohne Filter.",
+     en:"Every week we show the calls, the sites we deliver and what we learn along the way. No filter.",
+     pt:"Todas as semanas mostramos as chamadas, os sites que entregamos e o que aprendemos pelo caminho. Sem filtros."},
+  "Réseaux": {lb:"Netzwierker", de:"Soziale Medien", en:"Socials", pt:"Redes"},
+  "Suivez-nous": {lb:"Suivéiert eis", de:"Folgen Sie uns", en:"Follow us", pt:"Siga-nos"},
+  "Instagram de Sam": {lb:"Instagram vum Sam", de:"Instagram von Sam", en:"Sam's Instagram", pt:"Instagram do Sam"},
+  "TikTok de Sam": {lb:"TikTok vum Sam", de:"TikTok von Sam", en:"Sam's TikTok", pt:"TikTok do Sam"},
+
   "Parlons de votre projet": {lb:"Loosst eis iwwer Äre Projet schwätzen", de:"Sprechen wir über Ihr Projekt", en:"Let's talk about your project", pt:"Vamos falar do seu projeto"},
   "Un devis gratuit, sans engagement, sous 24 h. Dites-nous ce dont vous avez besoin.":
     {lb:"Eng gratis Offert, ouni Engagement, bannent 24 Stonnen. Sot eis wat Dir braucht.",

@@ -13,16 +13,16 @@
   const COMPTES = {
     nsd: {
       nom: 'NS Development', handle: 'nsdevelopment.lu',
-      photo: 'assets/logo-ns-tuile.png',
+      photo: 'assets/reseaux/av-nsd.png',
       insta: 'https://www.instagram.com/nsdevelopment.lu/',
       tiktok: 'https://www.tiktok.com/@nsdevelopment.lu',
       phrase: 'Nos réalisations, nos méthodes, et ce que coûte vraiment un site.',
-      reels: ['De6lxStN7tn','De392F_tiqI','De1cgHdNnPH','Dey4GW2N6vc','DewP76QtoN5','Deocn1_t8R8',
-              'Del32cRtgJA','DeeMACDtMGc','Dd9d1phNNOL','Dd4UupXNcpx','DdmUne4tcvo']
+      reels: ['De6lxStN7tn','De392F_tiqI','De1cgHdNnPH','Dey4GW2N6vc','DewP76QtoN5',
+              'Del32cRtgJA','DejUBPlNRP5','DeeMACDtMGc','Dd9d1phNNOL','Dd4UupXNcpx','DdmUne4tcvo']
     },
     sam: {
       nom: 'Sam', handle: 'samnsdevelopment',
-      photo: 'assets/sam.webp?v=2',
+      photo: 'assets/reseaux/av-sam.jpg',
       insta: 'https://www.instagram.com/samnsdevelopment/',
       tiktok: 'https://www.tiktok.com/@samnsdevelopment',
       phrase: 'Les appels du jour, les refus, les oui. La vie d\'une agence qui démarre.',
