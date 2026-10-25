@@ -2889,11 +2889,21 @@ function recalerAppel(d) {
   regler(depart, '00:00'); caler(depart);
   return depart;
 }
-// Le prochain jour d'appel, à la même heure (à 5 min près), recalé dans ses plages.
+// Le premier créneau libre à partir de d, de 5 en 5 minutes, sans tomber sur un rappel déjà posé
+// pour la même personne (le prospect ouvert ne compte pas). Le 25/10/2026, sept rappels de Sam
+// notés le samedi vers 9 h 30 s'étaient tous empilés à 10 h le lundi, début de sa plage.
+function creneauLibre(d) {
+  const qui = S.moi && PLAGES[S.moi.nom] ? S.moi.nom : 'Sam';
+  const pris = new Set(S.data.prospects.filter(p => p.id !== S.ouvert && p.rappel && respDe(p) === qui).map(p => String(p.rappel).slice(0, 16)));
+  for (let i = 0; i < 200 && pris.has(fmt(d)); i++) d = recalerAppel(new Date(d.getTime() + 5 * 6e4));
+  return d;
+}
+// Le prochain jour d'appel, à la même heure (à 5 min près), recalé dans ses plages,
+// puis avancé au premier créneau libre si l'heure est déjà prise.
 function demainMemeHeure() {
   const d = new Date(); d.setDate(d.getDate() + 1);
   d.setMinutes(Math.round(d.getMinutes() / 5) * 5, 0, 0);
-  return fmt(recalerAppel(d));
+  return fmt(creneauLibre(recalerAppel(d)));
 }
 
 function optionsDates() {
