@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="ns-motion.css">
 <link rel="stylesheet" href="ns-fx.css?v=7">
 <link rel="stylesheet" href="ns-clair.css?v=5">
+<link rel="stylesheet" href="reseaux.css?v=1">
 <script src="ns-motion.js?v=20260924" defer></script>
 <script src="assets/terres.js?v=1" defer></script>
 <script src="ns-fx.js?v=16" defer></script>
@@ -421,7 +422,7 @@
   .cf-ok{display:none;margin-top:16px;text-align:center;color:var(--acc2);font-size:13.5px;background:var(--glow);border:1px solid var(--line2);border-radius:10px;padding:13px}
 
   footer{border-top:1px solid var(--line);padding:56px 0 34px;background:var(--bg)}
-  .foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:44px;padding-bottom:38px;border-bottom:1px solid var(--line)}
+  .foot-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:44px;padding-bottom:38px;border-bottom:1px solid var(--line)}
   .foot-brand img{height:52px;margin-bottom:16px}
   .foot-brand p{font-size:13.5px;color:var(--muted);line-height:1.7;max-width:36ch}
   .foot-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:16px}
@@ -989,6 +990,42 @@
   </div>
 </section>
 
+<!-- RÉSEAUX : derniers reels NSD et Sam (reseaux.js, reseaux.css) -->
+<section class="sec" id="reseaux">
+  <div class="wrap">
+    <div class="rl-tete">
+      <div class="sec-head">
+        <span class="eyebrow" data-reveal="blur">Nos réseaux</span>
+        <h2 data-reveal data-delay="120">Les coulisses, en vidéo</h2>
+        <p data-reveal="blur" data-delay="240">Chaque semaine, on montre les appels, les sites qu'on livre et ce qu'on apprend en route. Sans filtre.</p>
+      </div>
+      <div class="rl-tabs" role="tablist" aria-label="Choisir le compte" data-reveal="blur" data-delay="300">
+        <button class="rl-tab" role="tab" data-compte="nsd" aria-selected="true" aria-controls="rlPiste">
+          <span class="rl-av"><img src="assets/logo-ns-tuile.png" alt=""></span>
+          <span>NS Development<small>@nsdevelopment.lu</small></span>
+        </button>
+        <button class="rl-tab" role="tab" data-compte="sam" aria-selected="false" aria-controls="rlPiste">
+          <span class="rl-av"><img src="assets/sam.webp?v=2" alt=""></span>
+          <span>Sam<small>@samnsdevelopment</small></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="rl-scene" data-reveal>
+    <div class="rl-piste" id="rlPiste" role="tabpanel" aria-label="Derniers reels"></div>
+  </div>
+  <div class="wrap">
+    <div class="rl-bas">
+      <div class="rl-suivre"></div>
+      <div class="rl-nav">
+        <div class="rl-barre" aria-hidden="true"><i></i></div>
+        <button class="rl-fl rl-prev" aria-label="Reels précédents"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="rl-fl rl-next" aria-label="Reels suivants"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="sec" id="contact">
   <div class="wrap">
@@ -1001,7 +1038,8 @@
       <div class="cinfo" data-reveal="left">
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">nsdevelopment26@gmail.com</div></div></div>
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="ci-l">Zone</div><div class="ci-v">Luxembourg & alentours</div></div></div>
-        <div class="cline" style="border-bottom:none"><div class="ci-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="ci-l">Réponse</div><div class="ci-v">Sous 24 h ouvrées</div></div></div>
+        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="ci-l">Réponse</div><div class="ci-v">Sous 24 h ouvrées</div></div></div>
+        <div class="cline" style="border-bottom:none"><div class="ci-ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/></svg></div><div><div class="ci-l">Réseaux</div><div class="ci-res"><a href="https://www.instagram.com/nsdevelopment.lu/" target="_blank" rel="noopener">@nsdevelopment.lu</a><a href="https://www.instagram.com/samnsdevelopment/" target="_blank" rel="noopener">@samnsdevelopment</a></div></div></div>
       </div>
       <form class="cf" data-reveal="right" data-delay="140" id="nsForm" onsubmit="return sendNS(event)">
         <div class="cf-row">
@@ -1044,6 +1082,13 @@
         <a href="mailto:nsdevelopment26@gmail.com">nsdevelopment26@gmail.com</a>
         <a href="#contact">Devis gratuit</a>
         <span style="display:block;font-size:13.5px;color:var(--muted);padding:5px 0">Luxembourg</span>
+      </div>
+      <div class="foot-col">
+        <h4>Suivez-nous</h4>
+        <a href="https://www.instagram.com/nsdevelopment.lu/" target="_blank" rel="noopener">Instagram NSD</a>
+        <a href="https://www.tiktok.com/@nsdevelopment.lu" target="_blank" rel="noopener">TikTok NSD</a>
+        <a href="https://www.instagram.com/samnsdevelopment/" target="_blank" rel="noopener">Instagram de Sam</a>
+        <a href="https://www.tiktok.com/@samnsdevelopment" target="_blank" rel="noopener">TikTok de Sam</a>
       </div>
     </div>
     <div class="foot-bot">
@@ -1244,5 +1289,6 @@
         data-bienvenue="Bonjour ! Une question sur nos sites, nos tarifs ou les délais ?"></script>
 <!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
 <script src="suivi.js" defer></script>
+<script src="reseaux.js?v=1" defer></script>
 </body>
 </html>

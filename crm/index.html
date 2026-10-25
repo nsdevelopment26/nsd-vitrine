@@ -748,7 +748,8 @@
   body.v16 .cb-chercher { background: var(--v-bleu); box-shadow: 0 10px 22px -10px rgba(47,107,255,.8); font-family: var(--v-police); border-radius: 99px; }
 
   /* --- Argent (23/10/2026) --- */
-  nav.onglets { grid-template-columns: repeat(8, 1fr); }
+  nav.onglets { grid-template-columns: repeat(9, 1fr); }
+  @media (max-width: 999px) { nav.onglets button { font-size: 10px; padding-left: 0; padding-right: 0; letter-spacing: -.01em; } }
   .v-ar-haut, .v-ar-milieu { display: grid; gap: 14px; }
   .v-ar-milieu { margin-top: 14px; }
   @media (min-width: 1000px) { .v-ar-haut { grid-template-columns: 1.3fr 1fr 1fr; } .v-ar-milieu { grid-template-columns: 1fr 1.6fr; } }
@@ -807,6 +808,82 @@
   html[data-theme="sombre"] .v-objectif { background: #000; border: 1px solid var(--v-ligne); }
   html[data-theme="sombre"] .v-colonnes-mois .pile i.s { background: #2a3d73; }
   html[data-theme="sombre"] .v-colonnes-mois .actuel .pile i.s { background: var(--v-bleu); }
+
+  /* --- Agenda (25/10/2026) --- */
+  .ag-barre { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin-bottom: 12px; }
+  .ag-nav { display: inline-flex; gap: 4px; }
+  .ag-nav button, .ag-leg button { border: 1px solid var(--v-ligne); background: var(--v-carte); color: var(--v-encre); border-radius: 99px; padding: 6px 12px; font-size: 13px; font-weight: 600; }
+  .ag-nav button:hover, .ag-leg button:hover { border-color: var(--v-encre); }
+  .ag-titre { font-size: 17px; font-weight: 650; letter-spacing: -.015em; }
+  .ag-titre::first-letter { text-transform: uppercase; }
+  .ag-leg { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; margin-left: auto; font-size: 11.5px; color: var(--v-doux); font-weight: 500; }
+  .ag-leg i { display: inline-block; width: 8px; height: 8px; border-radius: 3px; margin-right: 5px; }
+  .ag-carte { padding: 0; overflow: hidden; }
+  .ag-grille { --g: 52px; overflow-x: auto; }
+  .ag-ligne, .ag-corps { display: grid; grid-template-columns: var(--g) repeat(var(--n), minmax(0, 1fr)); min-width: calc(var(--g) + var(--n) * 92px); }
+  .ag-grille.un .ag-ligne, .ag-grille.un .ag-corps { min-width: 0; }
+  .ag-tetes { border-bottom: 1px solid var(--v-ligne); }
+  .ag-tj { border: 0; background: none; padding: 10px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--v-doux); }
+  .ag-tj small { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .ag-tj b { font-size: 20px; font-weight: 600; color: var(--v-encre); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; }
+  .ag-tj.auj small { color: var(--v-bleu); }
+  .ag-tj.auj b { background: var(--v-bleu); color: #fff; }
+  .ag-journee { border-bottom: 1px solid var(--v-ligne); min-height: 28px; }
+  .ag-coin { display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
+  .ag-coin small { font-size: 9.5px; color: var(--v-pale); }
+  .ag-jj { border-left: 1px solid var(--v-ligne); padding: 3px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ag-ev-j { border: 0; border-radius: 6px; background: var(--c); color: #fff; font-size: 11.5px; font-weight: 600; padding: 3px 7px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ag-corps { position: relative; max-height: calc(100vh - 330px); min-height: 420px; overflow-y: auto; }
+  .ag-heures .ag-h { height: var(--px, 52px); position: relative; }
+  .ag-heures .ag-h span { position: absolute; top: -7px; right: 8px; font-size: 10.5px; color: var(--v-pale); }
+  .ag-heures .ag-h:first-child span { display: none; }
+  .ag-col { position: relative; border-left: 1px solid var(--v-ligne); }
+  .ag-col.auj { background: color-mix(in srgb, var(--v-bleu) 4%, transparent); }
+  .ag-case { height: 52px; border-top: 1px solid var(--v-ligne); cursor: pointer; }
+  .ag-case:hover { background: color-mix(in srgb, var(--v-bleu) 7%, transparent); }
+  .ag-ev { position: absolute; z-index: 2; border: 0; border-left: 3px solid var(--c); border-radius: 7px; padding: 4px 6px; text-align: left; overflow: hidden;
+    background: color-mix(in srgb, var(--c) 16%, var(--v-carte)); color: var(--v-encre); display: flex; flex-direction: column; gap: 1px; cursor: pointer;
+    transition: box-shadow .2s, transform .2s; }
+  .ag-ev:hover { box-shadow: 0 6px 16px -8px rgba(16,24,40,.45); transform: translateY(-1px); z-index: 3; }
+  .ag-ev b { font-size: 12px; font-weight: 650; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .ag-ev span { font-size: 10.5px; color: var(--v-doux); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ag-ev.court { flex-direction: row; align-items: center; gap: 6px; padding-top: 1px; padding-bottom: 1px; }
+  .ag-ev.court b { -webkit-line-clamp: 1; flex: 1 1 auto; min-width: 0; white-space: nowrap; display: block; text-overflow: ellipsis; }
+  .ag-ev.court span { flex: 0 1 auto; min-width: 0; }
+  .ag-maintenant { position: absolute; left: 0; right: 0; height: 2px; background: var(--v-rouge); z-index: 4; pointer-events: none; }
+  .ag-maintenant::before { content: ""; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--v-rouge); }
+  .ag-mois { overflow-x: auto; }
+  .ag-mtete, .ag-mgrille { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 560px; }
+  .ag-mtete span { padding: 9px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--v-pale); border-bottom: 1px solid var(--v-ligne); }
+  .ag-mc { min-height: 108px; border-right: 1px solid var(--v-ligne); border-bottom: 1px solid var(--v-ligne); padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; min-width: 0; }
+  .ag-mc:nth-child(7n) { border-right: 0; }
+  .ag-mc.hors { background: color-mix(in srgb, var(--v-fond) 60%, transparent); }
+  .ag-mc.hors .ag-mj { color: var(--v-pale); }
+  .ag-mj { align-self: flex-start; border: 0; background: none; font-size: 12.5px; font-weight: 600; width: 26px; height: 26px; border-radius: 50%; color: var(--v-encre); }
+  .ag-mc.auj .ag-mj { background: var(--v-bleu); color: #fff; }
+  .ag-mev { border: 0; border-radius: 5px; background: color-mix(in srgb, var(--c) 16%, var(--v-carte)); border-left: 3px solid var(--c); color: var(--v-encre);
+    font-size: 11px; font-weight: 600; text-align: left; padding: 2px 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ag-mev small { font-weight: 500; color: var(--v-doux); margin-right: 4px; }
+  .ag-plus { border: 0; background: none; font-size: 11px; color: var(--v-doux); font-weight: 600; text-align: left; padding: 1px 5px; }
+  #ag-fenetre { z-index: 12; font-family: var(--v-police); }
+  .ag-feuille { max-width: 520px; background: var(--v-carte); color: var(--v-encre); }
+  .ag-det-tete { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .ag-det-tete > i { width: 14px; height: 14px; border-radius: 4px; margin-top: 7px; flex: none; }
+  .ag-det-tete > div { flex: 1; min-width: 0; }
+  .ag-det-tete h2 { margin: 0; font-size: 20px; font-weight: 650; letter-spacing: -.02em; line-height: 1.25; }
+  .ag-det-tete p { margin: 3px 0 0; color: var(--v-doux); font-size: 13.5px; }
+  .ag-det-tete p::first-letter { text-transform: uppercase; }
+  .ag-ligne-d { font-size: 14px; margin: 0 0 10px; }
+  .ag-desc { white-space: pre-wrap; font-size: 13.5px; background: var(--v-fond); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; max-height: 260px; overflow-y: auto; }
+  .ag-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .ag-actions .btn { flex: 1; border-radius: 99px; }
+  .ag-feuille .btn:not(.clair) { background: var(--v-bleu); color: #fff; }
+  .btn.danger-t { color: var(--v-rouge) !important; }
+  .ag-form label.champ { color: var(--v-doux); font-size: 12.5px; font-weight: 600; }
+  .ag-form label.champ input, .ag-form label.champ textarea { background: var(--v-carte); color: var(--v-encre); border-color: var(--v-ligne); font-weight: 400; }
+  .ag-coche { display: flex !important; align-items: center; gap: 8px; padding-top: 24px; }
+  .ag-coche input { width: auto !important; margin: 0 !important; }
+  @media (max-width: 760px) { .ag-leg { margin-left: 0; } .ag-corps { max-height: calc(100vh - 360px); } }
 
   /* --- Bouton clair / sombre --- */
   .barre-droite { display: flex; align-items: center; gap: 8px; }
@@ -920,6 +997,7 @@
   <div id="carte-zone" class="cache"><div id="carte"></div><div class="carte-barre" id="carte-barre"></div></div>
   <nav class="onglets" id="onglets">
     <button data-vue="jour" class="actif"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Journée</button>
+    <button data-vue="agenda"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2.5"/><path d="M16 2v4M8 2v4M3 10h18M8 14h2M14 14h2M8 18h2"/></svg></span>Agenda</button>
     <button data-vue="pipeline"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>Pipeline</button>
     <button data-vue="ajouter"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>Ajouter</button>
     <button data-vue="factu"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M4 14h9M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg></span>Factu</button>
@@ -954,7 +1032,7 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 //   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
 // - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
 // - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
-const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer'];
+const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer'];
 const attendreVisible = () => document.hidden ? new Promise(ok => {
   const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
   document.addEventListener('visibilitychange', f);
@@ -1218,6 +1296,7 @@ function rendre() {
   else if (S.vue === 'ajouter') v.innerHTML = vueAjouter();
   else if (S.vue === 'factu') v.innerHTML = Factu.vue();
   else if (S.vue === 'argent') v.innerHTML = vueArgent();
+  else if (S.vue === 'agenda') v.innerHTML = vueAgenda();
   else if (S.vue === 'reels') v.innerHTML = vueReels();
   else v.innerHTML = vueStats();
   remettreSaisie(saisie);
@@ -2424,6 +2503,187 @@ function vueArgent() {
 }
 
 // ---------------------------------------------------------------------------
+// Agenda (25/10/2026, demandé par Nelson) : le Google Agenda du compte NSD, lu et
+// écrit en direct par Code.gs (api_agenda…). Pas de copie : ce que Sam pose ici est
+// dans Google Agenda, ce qui est posé dans Google Agenda apparaît ici.
+// ---------------------------------------------------------------------------
+const AG = { H0: 7, H1: 22, PX: 52, cache: {}, charge: {} };
+const AG_TYPES = [['[Annulé]', '#9aa0aa', 'Annulé'], ['RDV NSD', '#12a150', 'RDV'], ['Rappel NSD', '#f59e0b', 'Rappel'],
+  ['Relance lien NSD', '#2f6bff', 'Relance'], ['Suivi négo NSD', '#c99a00', 'Suivi négo']];
+function agType(ev) { const t = AG_TYPES.find(([p]) => ev.titre.indexOf(p) === 0); return t ? { c: t[1], l: t[2] } : { c: '#8e4ec6', l: '' }; }
+const agIso = d => fmt(d).slice(0, 10);
+const agDate = iso => { const [a, m, j] = iso.split('-').map(Number); return new Date(a, m - 1, j); };
+const agPlus = (iso, n) => { const d = agDate(iso); d.setDate(d.getDate() + n); return agIso(d); };
+const agLundi = iso => { const d = agDate(iso); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return agIso(d); };
+function agPeriode() {
+  const v = S.agVue, d = S.agDate;
+  if (v === 'jour') return [d, d];
+  if (v === 'semaine') return [agLundi(d), agPlus(agLundi(d), 6)];
+  const premier = d.slice(0, 8) + '01', debut = agLundi(premier);
+  return [debut, agPlus(debut, 41)];
+}
+function agEvenements(du, au, forcer) {
+  const cle = du + '_' + au, c = AG.cache[cle];
+  if ((!c || forcer || Date.now() - c.t > 120000) && !AG.charge[cle]) {
+    AG.charge[cle] = true;
+    appel('api_agenda', S.pin, du, au).then(ev => { AG.cache[cle] = { t: Date.now(), ev, erreur: '' }; })
+      .catch(e => { AG.cache[cle] = { t: Date.now(), ev: c ? c.ev : [], erreur: e.message }; })
+      .finally(() => { delete AG.charge[cle]; if (S.vue === 'agenda' && !S.recherche) rendre(); });
+  }
+  return c || null;
+}
+const agHeure = s => { const [h, m] = s.slice(11, 16).split(':').map(Number); return h + (m ? ' h ' + pad(m) : ' h'); };
+function agLibelle() {
+  const [du, au] = agPeriode(), d = agDate(S.agDate);
+  if (S.agVue === 'jour') return JOURS_LONG[d.getDay()] + ' ' + d.getDate() + ' ' + MOIS[d.getMonth()] + ' ' + d.getFullYear();
+  if (S.agVue === 'mois') return MOIS[d.getMonth()] + ' ' + d.getFullYear();
+  const a = agDate(du), b = agDate(au);
+  return a.getDate() + (a.getMonth() !== b.getMonth() ? ' ' + MOIS[a.getMonth()] : '') + ' – ' + b.getDate() + ' ' + MOIS[b.getMonth()] + ' ' + b.getFullYear();
+}
+// Colonnes d'un jour : seuls les événements qui se chevauchent se partagent la largeur.
+function agColonnes(evs) {
+  let groupe = [], voies = [], finGroupe = '';
+  const clore = () => { groupe.forEach(e => e._nb = voies.length); groupe = []; voies = []; };
+  evs.sort((a, b) => a.debut.localeCompare(b.debut)).forEach(e => {
+    if (groupe.length && e.debut >= finGroupe) clore();
+    let i = voies.findIndex(f => f <= e.debut); if (i < 0) { i = voies.length; voies.push(''); }
+    voies[i] = e.fin; e._voie = i; groupe.push(e);
+    finGroupe = groupe.length === 1 || e.fin > finGroupe ? e.fin : finGroupe;
+  });
+  clore(); return evs;
+}
+function agGrille(jours, evs) {
+  const auj = aujourdhui(), H = AG.H1 - AG.H0, mtn = new Date();
+  const heures = Array.from({ length: H }, (_, i) => `<div class="ag-h"><span>${AG.H0 + i} h</span></div>`).join('');
+  const journee = jours.map(j => `<div class="ag-jj">${evs.filter(e => e.journee && e.debut.slice(0, 10) <= j && e.fin.slice(0, 10) > j).map(e =>
+    `<button class="ag-ev-j" data-ag-ev="${esc(e.id)}" style="--c:${agType(e).c}">${esc(e.titre)}</button>`).join('')}</div>`).join('');
+  const cols = jours.map(j => {
+    const du = evs.filter(e => !e.journee && e.debut.slice(0, 10) <= j && e.fin.slice(0, 10) >= j && e.fin.slice(0, 16) > j + ' 00:00');
+    const blocs = agColonnes(du.map(e => Object.assign({}, e))).map(e => {
+      const a = e.debut.slice(0, 10) < j ? AG.H0 * 60 : Number(e.debut.slice(11, 13)) * 60 + Number(e.debut.slice(14, 16));
+      const b = e.fin.slice(0, 10) > j ? AG.H1 * 60 : Number(e.fin.slice(11, 13)) * 60 + Number(e.fin.slice(14, 16));
+      const haut = Math.max(0, (Math.max(a, AG.H0 * 60) - AG.H0 * 60) / 60 * AG.PX), h = Math.max(20, (Math.min(b, AG.H1 * 60) - Math.max(a, AG.H0 * 60)) / 60 * AG.PX - 2);
+      if (b <= AG.H0 * 60 || a >= AG.H1 * 60) return '';
+      const t = agType(e);
+      return `<button class="ag-ev ${h < 34 ? 'court' : ''}" data-ag-ev="${esc(e.id)}" style="--c:${t.c};top:${haut}px;height:${h}px;left:calc(${e._voie / e._nb * 100}% + 2px);width:calc(${100 / e._nb}% - 4px)">
+        <b>${esc(e.titre.replace(/^(RDV|Rappel|Relance lien|Suivi négo) NSD · /, ''))}</b><span>${t.l ? t.l + ' · ' : ''}${agHeure(e.debut)}</span></button>`;
+    }).join('');
+    const ligne = j === auj && mtn.getHours() >= AG.H0 && mtn.getHours() < AG.H1 ? `<i class="ag-maintenant" style="top:${((mtn.getHours() - AG.H0) * 60 + mtn.getMinutes()) / 60 * AG.PX}px"></i>` : '';
+    return `<div class="ag-col ${j === auj ? 'auj' : ''}" data-ag-jour="${j}">${Array.from({ length: H }, (_, i) => `<div class="ag-case" data-ag-creer="${j} ${pad(AG.H0 + i)}:00"></div>`).join('')}${blocs}${ligne}</div>`;
+  }).join('');
+  const tete = jours.map(j => { const d = agDate(j); return `<button class="ag-tj ${j === auj ? 'auj' : ''}" data-ag-aller="${j}"><small>${JOURS[d.getDay()]}</small><b>${d.getDate()}</b></button>`; }).join('');
+  return `<div class="ag-grille ${jours.length === 1 ? 'un' : ''}" style="--n:${jours.length}">
+    <div class="ag-ligne ag-tetes"><div class="ag-coin"></div>${tete}</div>
+    <div class="ag-ligne ag-journee"><div class="ag-coin"><small>journée</small></div>${journee}</div>
+    <div class="ag-corps"><div class="ag-heures">${heures}</div>${cols}</div></div>`;
+}
+function agMois(du, evs) {
+  const mois = S.agDate.slice(0, 7), auj = aujourdhui();
+  const cases = Array.from({ length: 42 }, (_, i) => {
+    const j = agPlus(du, i), d = agDate(j);
+    const dujour = evs.filter(e => e.journee ? e.debut.slice(0, 10) <= j && e.fin.slice(0, 10) > j : e.debut.slice(0, 10) === j);
+    return `<div class="ag-mc ${j.slice(0, 7) !== mois ? 'hors' : ''} ${j === auj ? 'auj' : ''}" data-ag-creer="${j} 10:00">
+      <button class="ag-mj" data-ag-aller="${j}">${d.getDate()}</button>
+      ${dujour.slice(0, 3).map(e => `<button class="ag-mev" data-ag-ev="${esc(e.id)}" style="--c:${agType(e).c}">${e.journee ? '' : `<small>${esc(e.debut.slice(11, 16).replace(':00', ' h').replace(':', ' h '))}</small>`}${esc(e.titre.replace(/^(RDV|Rappel|Relance lien|Suivi négo) NSD · /, ''))}</button>`).join('')}
+      ${dujour.length > 3 ? `<button class="ag-plus" data-ag-aller="${j}">+ ${dujour.length - 3} autres</button>` : ''}</div>`;
+  }).join('');
+  return `<div class="ag-mois"><div class="ag-mtete">${['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'].map(x => `<span>${x}</span>`).join('')}</div><div class="ag-mgrille">${cases}</div></div>`;
+}
+function vueAgenda() {
+  if (!S.agVue) S.agVue = window.innerWidth < 760 ? 'jour' : 'semaine';
+  if (!S.agDate) S.agDate = aujourdhui();
+  const [du, au] = agPeriode(), c = agEvenements(du, au);
+  const evs = c ? c.ev : [];
+  const jours = S.agVue === 'jour' ? [du] : S.agVue === 'semaine' ? Array.from({ length: 7 }, (_, i) => agPlus(du, i)) : [];
+  const corps = !c ? '<div class="chargement">Lecture de Google Agenda…</div>' : S.agVue === 'mois' ? agMois(du, evs) : agGrille(jours, evs);
+  const aVenir = evs.filter(e => e.debut >= maintenant()).length;
+  // La grille s'ouvre sur l'heure en cours et garde sa position aux redessins (toutes les 60 s).
+  setTimeout(() => { const z = document.querySelector('.ag-corps'); if (!z) return;
+    z.scrollTop = AG.defile != null ? AG.defile : Math.max(0, (new Date().getHours() - AG.H0 - 1) * AG.PX);
+    z.addEventListener('scroll', () => { AG.defile = z.scrollTop; }); }, 0);
+  return `<div class="v-tete"><div><h1>Agenda</h1><p>Le Google Agenda NSD, en direct · ${c ? evs.length + ' événement' + (evs.length > 1 ? 's' : '') + ' sur la période' + (aVenir ? ', ' + aVenir + ' à venir' : '') : 'chargement'}</p></div>
+    <div class="v-outils"><div class="v-seg">${[['jour', 'Jour'], ['semaine', 'Semaine'], ['mois', 'Mois']].map(([k, l]) => `<button data-ag-vue="${k}" class="${S.agVue === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <button class="btn" data-ag-creer="${S.agDate} ${pad(Math.min(20, Math.max(9, new Date().getHours() + 1)))}:00" style="padding:8px 16px;font-size:13.5px">${ICO.plus.replace('<svg', '<svg width="15" height="15"')}Événement</button></div></div>
+    <div class="ag-barre"><div class="ag-nav"><button data-ag-pas="-1" aria-label="Précédent">‹</button><button data-ag-pas="0">Aujourd’hui</button><button data-ag-pas="1" aria-label="Suivant">›</button></div>
+      <b class="ag-titre">${esc(agLibelle())}</b>
+      <div class="ag-leg">${AG_TYPES.slice(1).map(([, c, l]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}<span><i style="background:#8e4ec6"></i>Autre</span>
+        <button data-ag-synchro title="Relire Google Agenda">↻ Synchroniser</button></div></div>
+    ${c && c.erreur ? `<div class="vide" style="margin-bottom:10px">Google Agenda n’a pas répondu : ${esc(c.erreur)}</div>` : ''}
+    <div class="v-carte ag-carte">${corps}</div>`;
+}
+
+// Fenêtre d'un événement : détail, modification, création.
+function agTrouver(id) { for (const k in AG.cache) { const e = (AG.cache[k].ev || []).find(x => x.id === id); if (e) return e; } return null; }
+function agFenetre(html) {
+  let m = document.getElementById('ag-fenetre');
+  if (!m) { m = document.createElement('div'); m.id = 'ag-fenetre'; m.className = 'voile'; document.body.appendChild(m); }
+  m.innerHTML = `<div class="feuille ag-feuille"><div class="feuille-tete"><div class="poignee"></div></div>${html}</div>`; m.classList.remove('cache');
+}
+function agFermer() { const m = document.getElementById('ag-fenetre'); if (m) m.remove(); }
+function agDetail(id) {
+  const e = agTrouver(id); if (!e) return;
+  const t = agType(e), p = e.prospect ? trouver(e.prospect) : null;
+  const quand = e.journee ? jourLong(e.debut.slice(0, 10)) + ' · journée entière' : jourLong(e.debut.slice(0, 10)) + ' · ' + agHeure(e.debut) + ' – ' + agHeure(e.fin);
+  const bloque = e.recurrent ? 'Événement répété : il se modifie dans Google Agenda.' : p ? 'Il suit le rappel de ce prospect : déplace-le depuis sa fiche, l’agenda suivra.' : '';
+  agFenetre(`<div class="ag-det"><div class="ag-det-tete"><i style="background:${t.c}"></i><div><h2>${esc(e.titre)}</h2><p>${esc(quand)}</p></div><button class="fermer" data-ag-fermer>×</button></div>
+    ${e.lieu ? `<p class="ag-ligne-d">📍 ${esc(e.lieu)}</p>` : ''}
+    ${e.description ? `<div class="ag-desc">${esc(e.description)}</div>` : ''}
+    ${bloque ? `<p class="sous">${esc(bloque)}</p>` : ''}
+    <div class="ag-actions">${p ? `<button class="btn" data-ag-fiche="${esc(p.id)}">Ouvrir la fiche ${esc(p.entreprise)}</button>` : ''}
+      ${!bloque ? `<button class="btn" data-ag-modifier="${esc(e.id)}">Modifier</button><button class="btn clair danger-t" data-ag-supprimer="${esc(e.id)}">Supprimer</button>` : ''}</div></div>`);
+}
+function agFormulaire(e, depart) {
+  e = e || {}; const [jour, heure] = (depart || '').split(' ');
+  const hd = e.debut ? e.debut.slice(11, 16) : heure || '10:00';
+  const hf = e.fin ? e.fin.slice(11, 16) : pad(Math.min(23, Number(hd.slice(0, 2)) + 1)) + hd.slice(2);
+  agFenetre(`<form id="form-agenda" class="ag-form" autocomplete="off"><div class="ag-det-tete"><div><h2>${e.id ? 'Modifier l’événement' : 'Nouvel événement'}</h2><p>Il part dans Google Agenda NSD.</p></div><button type="button" class="fermer" data-ag-fermer>×</button></div>
+    <input type="hidden" name="ev" value="${esc(e.id || '')}">
+    <label class="champ">Titre *<input name="titre" required value="${esc(e.titre || '')}" placeholder="Ex. Tournage, RDV comptable, Appel MB Cars"></label>
+    <div class="fx-deux"><label class="champ">Date *<input name="jour" type="date" required value="${esc(e.debut ? e.debut.slice(0, 10) : jour || aujourdhui())}"></label>
+      <label class="champ ag-coche"><input name="journee" type="checkbox" ${e.journee ? 'checked' : ''}> Journée entière</label></div>
+    <div class="fx-deux ag-heures-f ${e.journee ? 'cache' : ''}"><label class="champ">Début<input name="heureDebut" type="time" value="${esc(hd)}"></label><label class="champ">Fin<input name="heureFin" type="time" value="${esc(hf)}"></label></div>
+    <label class="champ">Lieu<input name="lieu" value="${esc(e.lieu || '')}"></label>
+    <label class="champ">Notes<textarea name="description">${esc(e.id ? e.description || '' : '')}</textarea></label>
+    <button class="btn large" type="submit">${e.id ? 'Enregistrer' : 'Ajouter à l’agenda'}</button></form>`);
+}
+async function agEnregistrer(form) {
+  const b = form.querySelector('button[type=submit]'); b.disabled = true;
+  const f = form.elements, ev = { id: f.ev.value, titre: f.titre.value, jour: f.jour.value, journee: f.journee.checked, heureDebut: f.heureDebut.value, heureFin: f.heureFin.value, lieu: f.lieu.value, description: f.description.value };
+  try { await appel('api_agenda_ecrire', S.pin, ev); agFermer(); toast(ev.id ? 'Événement modifié dans Google Agenda.' : 'Ajouté à Google Agenda.'); S.agDate = ev.jour; AG.cache = {}; rendre(); }
+  catch (e) { b.disabled = false; toast(e.message, true); }
+}
+async function agSupprimer(id) {
+  const e = agTrouver(id); if (!e || !confirm('Supprimer « ' + e.titre + ' » de Google Agenda ?')) return;
+  try { await appel('api_agenda_supprimer', S.pin, id); agFermer(); toast('Supprimé de Google Agenda.'); AG.cache = {}; rendre(); }
+  catch (er) { toast(er.message, true); }
+}
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.id === 'ag-fenetre' || t.closest('[data-ag-fermer]')) return agFermer();
+  const b = t.closest('[data-ag-ev], [data-ag-creer], [data-ag-aller], [data-ag-vue], [data-ag-pas], [data-ag-synchro], [data-ag-modifier], [data-ag-supprimer], [data-ag-fiche]');
+  if (!b) return;
+  const d = b.dataset;
+  if (d.agEv) { e.stopPropagation(); return agDetail(d.agEv); }
+  if (d.agModifier) return agFormulaire(agTrouver(d.agModifier));
+  if (d.agSupprimer) return agSupprimer(d.agSupprimer);
+  if (d.agFiche) { agFermer(); return ouvrirFiche(d.agFiche); }
+  if (d.agAller) { e.stopPropagation(); S.agDate = d.agAller; S.agVue = 'jour'; return rendre(); }
+  if (d.agVue) { S.agVue = d.agVue; return rendre(); }
+  if (d.agSynchro) { AG.cache = {}; return rendre(); }
+  if (d.agPas !== undefined) {
+    const n = Number(d.agPas);
+    if (!n) S.agDate = aujourdhui();
+    else if (S.agVue === 'mois') { const x = agDate(S.agDate); x.setDate(1); x.setMonth(x.getMonth() + n); S.agDate = agIso(x); }
+    else S.agDate = agPlus(S.agDate, n * (S.agVue === 'semaine' ? 7 : 1));
+    return rendre();
+  }
+  if (d.agCreer) return agFormulaire(null, d.agCreer);
+});
+document.addEventListener('submit', e => { if (e.target.id === 'form-agenda') { e.preventDefault(); agEnregistrer(e.target); } });
+document.addEventListener('change', e => { if (e.target.name === 'journee' && e.target.closest('#form-agenda')) e.target.closest('form').querySelector('.ag-heures-f').classList.toggle('cache', e.target.checked); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') agFermer(); });
+
+// ---------------------------------------------------------------------------
 // Fiche prospect
 // ---------------------------------------------------------------------------
 const CHOIX = { res: '', rappel: '', duree: 60 };
@@ -2881,7 +3141,10 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-stop]'); if (t) { e.stopPropagation(); return; }
   const onglet = e.target.closest('#onglets button');
   if (onglet) { S.vue = onglet.dataset.vue; S.recherche = ''; document.getElementById('recherche').value = ''; window.scrollTo(0, 0); rendre();
-    if (S.vue === 'factu' || S.vue === 'argent') Factu.recharger(); return; }
+    if (S.vue === 'factu' || S.vue === 'argent') Factu.recharger();
+    // Un RDV posé depuis une fiche entre-temps : l'agenda se relit en arrière-plan.
+    if (S.vue === 'agenda') Object.values(AG.cache).forEach(c => { c.t = 0; });
+    return; }
   const ouvrir = e.target.closest('[data-ouvrir]'); if (ouvrir) { e.preventDefault(); ouvrirFiche(ouvrir.dataset.ouvrir); return; }
   const ac = e.target.closest('[data-action="carte-noter"], [data-action="carte-wa"]');
   if (ac) {
