@@ -567,6 +567,11 @@
     nav.onglets button.actif, nav.onglets button.actif:hover { background: var(--v-noir); color: #fff; }
     nav.onglets button.actif .ico { color: #fff; }
     .toast { margin-left: 0; }
+  }
+  /* Dix onglets (Suivi, 26/10/2026) : entre 1000 et 1500 px ils mordaient sur les boutons de droite.
+     Icône seule pour les onglets non choisis, le nom en bulle au survol. */
+  @media (min-width: 1000px) and (max-width: 1499px) {
+    nav.onglets button:not(.actif) { font-size: 0 !important; gap: 0; padding: 8px 11px; }
     #carte-zone { left: 0; }
     body.v16 main { max-width: 1320px; padding: 22px 28px 40px; }
     body[data-vue="pipeline"].v16 main { max-width: none; }
@@ -1107,6 +1112,16 @@
   html.natif[data-theme="sombre"] main { background: rgba(0,0,0,.14); border-color: rgba(255,255,255,.1); }
   html.natif[data-theme="sombre"] header.barre, html.natif[data-theme="sombre"] nav#onglets { background: rgba(0,0,0,.12) !important; }
   html.natif [data-action="fond"] { display: none; }
+  /* Dans l'appli Mac, les cartes laissent passer le bureau : voile léger, liseré net. */
+  html.natif .v-carte, html.natif .v-tuile:not(.plein):not(.vert):not(.noir):not(.rouge), html.natif .fx-carte, html.natif .kpi, html.natif .bloc,
+  html.natif label.jour-choix, html.natif .obj, html.natif .lp, html.natif .pc, html.natif .vide, html.natif .ag-carte, html.natif .rc {
+    background: linear-gradient(165deg, rgba(255,255,255,.3), rgba(255,255,255,.16)) !important; border-color: rgba(255,255,255,.45) !important; }
+  html.natif[data-theme="sombre"] .v-carte, html.natif[data-theme="sombre"] .v-tuile:not(.plein):not(.vert):not(.noir):not(.rouge), html.natif[data-theme="sombre"] .fx-carte,
+  html.natif[data-theme="sombre"] .kpi, html.natif[data-theme="sombre"] .bloc, html.natif[data-theme="sombre"] label.jour-choix, html.natif[data-theme="sombre"] .obj,
+  html.natif[data-theme="sombre"] .lp, html.natif[data-theme="sombre"] .pc, html.natif[data-theme="sombre"] .vide, html.natif[data-theme="sombre"] .ag-carte, html.natif[data-theme="sombre"] .rc {
+    background: linear-gradient(165deg, rgba(20,20,22,.34), rgba(10,10,12,.22)) !important; border-color: rgba(255,255,255,.12) !important; }
+  html.natif main { background: rgba(255,255,255,.06); }
+  html.natif[data-theme="sombre"] main { background: rgba(0,0,0,.08); }
   /* Barre d'onglets en verre clair : libellés sombres (ils étaient clairs, faits pour la barre noire). */
   html:not([data-theme="sombre"]) nav#onglets button:not(.actif) { color: rgba(32,24,18,.78) !important; }
   html:not([data-theme="sombre"]) nav#onglets button:not(.actif):hover { color: #1d1712 !important; background: rgba(255,255,255,.3) !important; }
@@ -3869,6 +3884,7 @@ function vueSuivi() {
 // Ouverte depuis script.google.com (et non la version installable) : on guide vers la bonne adresse.
 if (!window.CRM_API) document.getElementById('bandeau-installer').classList.remove('cache');
 
+document.querySelectorAll('#onglets button').forEach(b => { b.title = b.textContent.trim(); });
 S.pin = lire('pin');
 S.espace = lire('espace');
 if (S.pin) demarrer();
