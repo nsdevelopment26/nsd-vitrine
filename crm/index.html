@@ -488,6 +488,14 @@
   .leaflet-bottom.leaflet-right { margin-bottom: calc(96px + env(safe-area-inset-bottom)); }
   .leaflet-popup-content-wrapper { border-radius: 16px; box-shadow: 0 18px 40px -16px rgba(0,0,0,.45); }
   .leaflet-popup-content { margin: 12px 14px; font: 14px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; }
+  .pop-gmap { display: block; width: 100%; height: 230px; border: 0; border-radius: 12px; margin: 8px 0 4px; background: #eef0f3; }
+  .pop-gmap-lien { display: inline-block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+  .couv-pt { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+  .cb-couv-leg { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+  .cb-couv-leg span { white-space: nowrap; }
+  .cb-couv-leg select { border-radius: 99px; padding: 5px 10px; font-size: 13px; border: 1px solid rgba(0,0,0,.15); background: #fff; }
+  .cb-couv { background: #6d28d9 !important; }
+  .cb-couv.on { background: #1d1d1f !important; }
   .pop b { font-family: var(--titre); font-size: 16px; letter-spacing: -.01em; }
   .pop-sous { color: var(--doux); font-size: 12.5px; margin-top: 3px; }
   .pop-act { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
@@ -1695,6 +1703,15 @@ const Carte = (() => {
   const LUX = [[49.44, 5.73], [50.19, 6.53]];
   // La bulle s'ouvre sous la barre de filtres et au-dessus des onglets, jamais dessous.
   const POPUP = { maxWidth: 260, autoPanPaddingTopLeft: [12, 170], autoPanPaddingBottomRight: [12, 110] };
+  // Bulle avec la fiche Google du commerce (26/10/2026, demandé par Nelson) : la carte Google Maps
+  // intégrée (nom, note, avis, adresse, horaires), sans clé d'API, et un lien vers la fiche complète.
+  const POPUP_G = Object.assign({}, POPUP, { maxWidth: 330, minWidth: 290 });
+  function ficheGoogle(nom, lieu, lienExact) {
+    const q = [nom, lieu].filter(Boolean).join(', ');
+    const ouvrir = lienExact || 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+    return `<iframe class="pop-gmap" src="https://www.google.com/maps?q=${encodeURIComponent(q)}&hl=fr&z=17&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Fiche Google de ${esc(nom)}"></iframe>
+      <a class="pop-gmap-lien" href="${esc(ouvrir)}" target="_blank" rel="noopener">Ouvrir la fiche Google Business ↗</a>`;
+  }
   try { C.communes = JSON.parse(lire('communes') || '{}'); } catch (e) {}
   const charge = () => new Promise((ok, ko) => {
     if (window.L) return ok();
@@ -1719,7 +1736,9 @@ const Carte = (() => {
   }
   function popupProspect(p, lieu) {
     const tel = lienTel(p.telephone), v = vuesDe(p);
+    const g = lienGoogle(p);
     return `<div class="pop"><b>${esc(p.entreprise)}</b><div class="pop-sous">${esc([p.secteur, p.commune].filter(Boolean).join(' · '))}</div>
+      ${ficheGoogle(p.entreprise, p.commune ? p.commune + ', Luxembourg' : 'Luxembourg', g && g.exact ? g.url : '')}
       <div class="pop-sous"><span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${sansSite(p) ? ' · sans site' : ''}${lieu.approx ? ' · position approximative' : ''}</div>
       ${v ? `<div class="pop-sous vu-demo">démo ${esc(vuesTxt(v))}</div>` : ''}
       <div class="pop-act"><button data-action="carte-fiche" data-id="${esc(p.id)}">Fiche</button>
@@ -1736,7 +1755,7 @@ const Carte = (() => {
       places++;
       L.circleMarker(lieu.ll, { radius: cle(p) === 'signe' ? 9 : 7, color: '#0b0c0b', weight: lieu.approx ? 1 : 2, dashArray: lieu.approx ? '2 3' : null,
         fillColor: couleur(p) === '#ffffff' ? '#f4f6f4' : couleur(p), fillOpacity: lieu.approx ? .7 : .95 })
-        .bindPopup(() => popupProspect(p, lieu), POPUP).addTo(C.couche);
+        .bindPopup(() => popupProspect(p, lieu), POPUP_G).addTo(C.couche);
     });
     C.places = places; C.total = total;
     barre();
@@ -1753,6 +1772,9 @@ const Carte = (() => {
       <div class="cb-bas"><span class="cb-info">${C.places || 0} sur la carte${C.total > C.places ? ' · ' + (C.total - C.places) + ' à placer' : ''}${C.enCours ? ' · placement en cours…' : ''}</span>
       <button data-action="carte-moi" aria-label="Me localiser">◎</button></div>
       <button class="cb-chercher" data-action="carte-chercher">Chercher des commerces sans site ici</button>
+      <button class="cb-chercher cb-couv ${C.couv.actif ? 'on' : ''}" data-action="carte-couv">${C.couv.actif ? (C.couv.data ? 'Masquer les ' + C.couv.data.p.length.toLocaleString('fr-FR') + ' commerces sans site' : 'Chargement des commerces…') : 'Commerces sans site · Luxembourg, Belgique, Allemagne, France'}</button>
+      ${C.couv.actif && C.couv.data ? `<div class="cb-info cb-couv-leg">${Object.values(COUV_ETATS).map(([c, l]) => `<span><i class="couv-pt" style="background:${c}"></i>${l}</span>`).join('')}
+        <select data-action="carte-couv-metier" aria-label="Métier"><option value="">Tous les métiers</option>${C.couv.data.metiers.map(m => `<option ${m === C.couv.metier ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>` : ''}
       ${C.pistes.length ? `<div class="cb-info cb-pistes">${C.pistes.length} commerce${C.pistes.length > 1 ? 's' : ''} sans site connu dans la zone · <button data-action="carte-effacer">effacer</button></div>` : ''}`;
   }
   // --- positions manquantes (Nominatim : 1 requête par seconde au plus) ---
@@ -1854,11 +1876,12 @@ const Carte = (() => {
     C.pistes.forEach((x, i) => {
       L.circleMarker([x.lat, x.lng], { radius: 7, color: '#3b2a7a', weight: 2, fillColor: '#9b7bff', fillOpacity: .9 })
         .bindPopup(() => `<div class="pop"><b>${esc(x.nom)}</b><div class="pop-sous">${esc([x.label, x.rue, x.commune].filter(Boolean).join(' · '))}</div>
+          ${ficheGoogle(x.nom, [x.rue, x.commune || 'Luxembourg'].filter(Boolean).join(', '))}
           <div class="pop-sous">Pas de site connu sur OpenStreetMap${x.facebook ? ', page Facebook' : ''}. À vérifier.</div>
           ${x.tel ? `<div class="pop-sous">Tél. ${esc(x.tel)}</div>` : ''}
           <div class="pop-act"><button data-action="carte-ajouter" data-i="${i}">Ajouter au CRM</button>
           <a href="https://www.google.com/search?q=${encodeURIComponent(x.nom + ' ' + (x.commune || 'Luxembourg'))}" target="_blank" rel="noopener">Vérifier</a>
-          <a href="${esc(lienPlans(x.nom, x.commune, [x.lat, x.lng], false))}" target="_blank" rel="noopener">Y aller</a></div></div>`, POPUP)
+          <a href="${esc(lienPlans(x.nom, x.commune, [x.lat, x.lng], false))}" target="_blank" rel="noopener">Y aller</a></div></div>`, POPUP_G)
         .addTo(C.couchePistes);
     });
     barre();
@@ -1869,6 +1892,105 @@ const Carte = (() => {
       notes: 'Repéré sur la carte (OpenStreetMap : pas de site connu, à vérifier)' + (x.rue ? ' · ' + x.rue : '') + (x.facebook ? ' · Facebook ' + x.facebook : ''),
       _lieu: { lat: x.lat, lng: x.lng, precision: 'précis' } };
     S.vue = 'ajouter'; rendre(); window.scrollTo(0, 0);
+  }
+  // --- les commerces sans site de la Grande Région (26/10/2026, demandé par Nelson) ---
+  // La carte de couverture du 11/09/2026 (OpenStreetMap, 100 km autour du Luxembourg) : ~13 500
+  // commerces sans site ou au site en panne, cafés et bars exclus. Dessinés directement sur les
+  // tuiles (canvas), pas un marqueur par commerce : la carte reste fluide sur iPhone.
+  const COUV_URL = window.CRM_API ? 'commerces.json' : 'https://nsdevelopment26.github.io/nsd-vitrine/crm/commerces.json';
+  const COUV_ETATS = { aucun: ['#6d28d9', 'Aucun site (vérifié)'], presume: ['#a78bfa', 'Pas de site connu'], doute: ['#f59e0b', 'Site douteux'], mort: ['#ef4444', 'Site en panne'] };
+  const PAYS = { LU: 'Luxembourg', BE: 'Belgique', DE: 'Allemagne', FR: 'France' };
+  C.couv = { actif: false, data: null, cases: null, couche: null, metier: '', charge: null };
+  const caseDe = (lat, lng) => Math.floor(lat * 10) + ':' + Math.floor(lng * 10);
+  function chargerCouv() {
+    if (C.couv.charge) return C.couv.charge;
+    C.couv.charge = fetch(COUV_URL).then(r => { if (!r.ok) throw new Error('Fichier des commerces injoignable (' + r.status + ')'); return r.json(); }).then(d => {
+      // Ceux déjà au CRM (même nom ou même téléphone) ne sont pas redessinés.
+      const noms = new Set(S.data.prospects.map(p => sansAccent(p.entreprise).replace(/[^a-z0-9]/g, '')));
+      const tels = new Set(S.data.prospects.map(p => String(p.telephone || '').replace(/\D/g, '').slice(-6)).filter(t => t.length === 6));
+      d.p = d.p.filter(x => !noms.has(sansAccent(x[2]).replace(/[^a-z0-9]/g, '')) && !(x[5] && tels.has(String(x[5]).replace(/\D/g, '').slice(-6))));
+      const cases = new Map();
+      d.p.forEach((x, i) => { const k = caseDe(x[0], x[1]); if (!cases.has(k)) cases.set(k, []); cases.get(k).push(i); });
+      C.couv.data = d; C.couv.cases = cases;
+      return d;
+    }).catch(e => { C.couv.charge = null; throw e; });
+    return C.couv.charge;
+  }
+  const visibleCouv = x => !C.couv.metier || C.couv.data.metiers[x[3]] === C.couv.metier;
+  // Les indices des commerces dont la case (0,1°) touche le rectangle donné.
+  function dansZone(s, w, n, e) {
+    const out = [];
+    for (let a = Math.floor(s * 10); a <= Math.floor(n * 10); a++)
+      for (let o = Math.floor(w * 10); o <= Math.floor(e * 10); o++) { const l = C.couv.cases.get(a + ':' + o); if (l) out.push(...l); }
+    return out;
+  }
+  const rayonCouv = z => z < 9 ? 1.6 : z < 11 ? 2.6 : z < 13 ? 3.8 : 5.5;
+  function creerCoucheCouv() {
+    const Couche = L.GridLayer.extend({
+      createTile(coords) {
+        const t = L.DomUtil.create('canvas'), taille = this.getTileSize(), dpr = window.devicePixelRatio || 1;
+        t.width = taille.x * dpr; t.height = taille.y * dpr; t.style.width = taille.x + 'px'; t.style.height = taille.y + 'px';
+        const ctx = t.getContext('2d'); ctx.scale(dpr, dpr);
+        const z = coords.z, r = rayonCouv(z), haut = coords.scaleBy(taille);
+        const marge = L.point(r + 2, r + 2);
+        const ne = C.map.unproject(haut.add(L.point(taille.x, 0)).add(L.point(marge.x, -marge.y)), z);
+        const so = C.map.unproject(haut.add(L.point(0, taille.y)).add(L.point(-marge.x, marge.y)), z);
+        const D = C.couv.data;
+        dansZone(so.lat, so.lng, ne.lat, ne.lng).forEach(i => {
+          const x = D.p[i]; if (!visibleCouv(x)) return;
+          const pt = C.map.project([x[0], x[1]], z).subtract(haut);
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, r, 0, 6.2832);
+          ctx.fillStyle = COUV_ETATS[D.etats[x[4]]][0]; ctx.fill();
+          if (z >= 11) { ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.stroke(); }
+        });
+        return t;
+      },
+    });
+    return new Couche({ pane: 'overlayPane', zIndex: 300, updateWhenZooming: false });
+  }
+  // Un clic sur la carte : le commerce le plus proche à moins de 12 px.
+  function clicCouv(e) {
+    if (!C.couv.actif || !C.couv.data || Date.now() - (C.dernierPopup || 0) < 150) return;
+    const D = C.couv.data, z = C.map.getZoom(), pc = e.containerPoint, d = 0.02 * Math.pow(2, Math.max(0, 13 - z));
+    let meilleur = -1, dist = 144;
+    dansZone(e.latlng.lat - d, e.latlng.lng - d * 1.5, e.latlng.lat + d, e.latlng.lng + d * 1.5).forEach(i => {
+      const x = D.p[i]; if (!visibleCouv(x)) return;
+      const p = C.map.latLngToContainerPoint([x[0], x[1]]), dd = (p.x - pc.x) ** 2 + (p.y - pc.y) ** 2;
+      if (dd < dist) { dist = dd; meilleur = i; }
+    });
+    if (meilleur < 0) return;
+    const x = D.p[meilleur], etat = COUV_ETATS[D.etats[x[4]]], tel = x[5] && lienTel(x[5]);
+    L.popup(POPUP_G).setLatLng([x[0], x[1]]).setContent(`<div class="pop"><b>${esc(x[2])}</b>
+      <div class="pop-sous">${esc([D.metiers[x[3]], x[6], x[7], PAYS[x[8]] || x[8]].filter(Boolean).join(' · '))}</div>
+      ${ficheGoogle(x[2], [x[6], x[7], PAYS[x[8]] || x[8]].filter(Boolean).join(', '))}
+      <div class="pop-sous"><span class="couv-pt" style="background:${etat[0]}"></span>${esc(etat[1])} · OpenStreetMap, à vérifier avant d’appeler</div>
+      ${x[5] ? `<div class="pop-sous">Tél. ${esc(x[5])}</div>` : ''}
+      <div class="pop-act"><button data-action="carte-couv-ajouter" data-i="${meilleur}">Ajouter au CRM</button>
+      <a href="https://www.google.com/search?q=${encodeURIComponent(x[2] + ' ' + (x[7] || ''))}" target="_blank" rel="noopener">Vérifier</a>
+      ${tel ? `<a href="${tel}">Appeler</a>` : `<a href="${esc(lienPlans(x[2], x[7], [x[0], x[1]], false))}" target="_blank" rel="noopener">Y aller</a>`}</div></div>`).openOn(C.map);
+  }
+  async function basculerCouv() {
+    C.couv.actif = !C.couv.actif;
+    if (!C.couv.actif) { if (C.couv.couche) C.map.removeLayer(C.couv.couche); C.map.closePopup(); barre(); return; }
+    barre();
+    try {
+      await chargerCouv();
+      if (!C.couv.actif) return;
+      if (!C.couv.couche) C.couv.couche = creerCoucheCouv();
+      C.couv.couche.addTo(C.map);
+      if (C.map.getZoom() > 9) C.map.setView([49.65, 6.2], 8);
+      toast(C.couv.data.p.length.toLocaleString('fr-FR') + ' commerces sans site sur la carte. Clique un point pour sa fiche.');
+    } catch (e) { C.couv.actif = false; toast((e.message || String(e)) + '.', true); }
+    barre();
+  }
+  function metierCouv(m) { C.couv.metier = m; if (C.couv.couche) C.couv.couche.redraw(); barre(); }
+  function ajouterCouv(i) {
+    const D = C.couv.data, x = D && D.p[i]; if (!x) return;
+    const etat = COUV_ETATS[D.etats[x[4]]][1];
+    S.preremplir = { entreprise: x[2], secteur: D.metiers[x[3]], commune: x[7], telephone: x[5],
+      notes: 'Repéré sur la carte Grande Région (OpenStreetMap, ' + D.genere + ' : ' + etat.toLowerCase() + ', à vérifier)' + (x[6] ? ' · ' + x[6] : '') + (x[8] && x[8] !== 'LU' ? ' · ' + (PAYS[x[8]] || x[8]) : ''),
+      _lieu: { lat: x[0], lng: x[1], precision: 'précis' } };
+    C.map.closePopup(); S.vue = 'ajouter'; rendre(); window.scrollTo(0, 0);
   }
   function placerHaut() {
     const z = document.getElementById('carte-zone'), h = document.querySelector('header.barre');
@@ -1883,6 +2005,8 @@ const Carte = (() => {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(C.map);
       L.control.zoom({ position: 'bottomright' }).addTo(C.map);
       C.couche = L.layerGroup().addTo(C.map); C.couchePistes = L.layerGroup().addTo(C.map);
+      C.map.on('popupopen', () => { C.dernierPopup = Date.now(); });
+      C.map.on('click', e => setTimeout(() => clicCouv(e), 0));
       window.addEventListener('resize', () => { placerHaut(); C.map.invalidateSize(); });
     }
     setTimeout(() => { placerHaut(); C.map.invalidateSize(); if (!C.cadre) { C.cadre = true; C.map.fitBounds(LUX); } }, 60);
@@ -1896,7 +2020,7 @@ const Carte = (() => {
       C.map.setView(ll, 14);
     }, () => toast('Localisation refusée : autorise-la pour l’appli dans les réglages.', true), { enableHighAccuracy: true, timeout: 10000 });
   }
-  return { afficher, chercher, localiser, ajouterPiste, centrer: (ll, z) => C.map && C.map.setView(ll, z),
+  return { afficher, chercher, localiser, ajouterPiste, basculerCouv, metierCouv, ajouterCouv, centrer: (ll, z) => C.map && C.map.setView(ll, z),
     filtrer: k => { C.filtre = k; dessinerProspects(); },
     effacer: () => { C.pistes = []; C.couchePistes.clearLayers(); barre(); },
     lieuPour: (id, lieu) => { S.data.lieux = S.data.lieux || {}; S.data.lieux[id] = lieu; appel('api_lieux_ajouter', S.pin, [Object.assign({ id, source: 'OpenStreetMap' }, lieu)]).catch(() => {}); } };
@@ -2848,6 +2972,7 @@ document.addEventListener('click', e => {
   if (d.agCreer) return agFormulaire(null, d.agCreer);
 });
 document.addEventListener('submit', e => { if (e.target.id === 'form-agenda') { e.preventDefault(); agEnregistrer(e.target); } });
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.action === 'carte-couv-metier') Carte.metierCouv(e.target.value); });
 document.addEventListener('change', e => { if (e.target.name === 'journee' && e.target.closest('#form-agenda')) e.target.closest('form').querySelector('.ag-heures-f').classList.toggle('cache', e.target.checked); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') agFermer(); });
 
@@ -3405,6 +3530,8 @@ document.addEventListener('click', e => {
   else if (act === 'carte-moi') Carte.localiser();
   else if (act === 'carte-effacer') Carte.effacer();
   else if (act === 'carte-ajouter') Carte.ajouterPiste(Number(a.dataset.i));
+  else if (act === 'carte-couv') Carte.basculerCouv();
+  else if (act === 'carte-couv-ajouter') Carte.ajouterCouv(Number(a.dataset.i));
   else if (act === 'sess-lancer') lancerSession();
   else if (act === 'sess-reprendre') reprendreSession();
   else if (act === 'sess-passer') suivantSession();
