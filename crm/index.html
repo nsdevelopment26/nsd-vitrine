@@ -748,7 +748,47 @@
   body.v16 .cb-chercher { background: var(--v-bleu); box-shadow: 0 10px 22px -10px rgba(47,107,255,.8); font-family: var(--v-police); border-radius: 99px; }
 
   /* --- Argent (23/10/2026) --- */
-  nav.onglets { grid-template-columns: repeat(9, 1fr); }
+  nav.onglets { grid-template-columns: repeat(10, 1fr); }
+  @media (max-width: 480px) { nav.onglets button { font-size: 8.5px !important; letter-spacing: -.03em; overflow: hidden; white-space: nowrap; } }
+
+  /* --- Présence et Suivi (26/10/2026) --- */
+  .voyant { display: inline-block; position: relative; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; flex: none;
+    background: #ef4444; box-shadow: 0 0 0 2px rgba(239,68,68,.18); transition: background .25s, box-shadow .25s; }
+  .voyant.inconnu { background: #b8bcc6; box-shadow: none; }
+  .voyant.actif, .voyant.appel { background: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,.22); }
+  .voyant.actif::after, .voyant.appel::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #22c55e;
+    animation: voyant-pouls 1.9s cubic-bezier(.2,.7,.3,1) infinite; }
+  .voyant.appel::after { animation-duration: .85s; }
+  @keyframes voyant-pouls { from { transform: scale(.55); opacity: .9; } to { transform: scale(2); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .voyant::after { animation: none !important; opacity: 0; } }
+  .voyant-txt { font-size: 10.5px; font-weight: 500; opacity: .7; margin-left: 5px; white-space: nowrap; }
+  .espaces button { white-space: nowrap; }
+  .su-live { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .su-live > .voyant { width: 14px; height: 14px; margin: 0 4px; }
+  .su-live h2 { margin: 0; font-size: 17px; letter-spacing: -.015em; }
+  .su-live p { margin: 3px 0 0; color: var(--v-doux); font-size: 13px; }
+  .su-depuis { margin-left: auto; text-align: right; font-size: 12px; color: var(--v-doux); white-space: nowrap; }
+  .su-depuis b { display: block; font-size: 17px; color: var(--v-encre); font-variant-numeric: tabular-nums; }
+  .su-jours button[disabled] { opacity: .35; }
+  .su-fil { display: flex; flex-direction: column; }
+  .su-l { display: grid; grid-template-columns: 66px 12px 1fr; gap: 10px; align-items: start; padding: 8px 6px; border-radius: 10px; }
+  .su-l[data-ouvrir] { cursor: pointer; }
+  .su-l[data-ouvrir]:hover { background: var(--v-fond); }
+  .su-l time { font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--v-doux); padding-top: 1px; }
+  .su-pt { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; background: #b8bcc6; }
+  .su-l.appel .su-pt { background: #2f6bff; }
+  .su-l.resultat .su-pt { background: #22c55e; }
+  .su-l.arrivee .su-pt { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.22); }
+  .su-l.depart .su-pt { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.18); }
+  .su-c { min-width: 0; }
+  .su-c b { font-size: 13.5px; font-weight: 600; color: var(--v-encre); }
+  .su-c small { display: block; color: var(--v-doux); font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
+  .su-alerte { color: #d93025; font-weight: 600; }
+  .v-tuile.plein .su-alerte { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+  .su-doux { opacity: .75; font-style: italic; }
+  .su-trou { margin: 2px 0 2px 82px; font-size: 11.5px; color: var(--v-doux); border-left: 2px dashed var(--v-ligne); padding: 5px 10px; }
+  html[data-theme="sombre"] .su-alerte { color: #ff7a6e; }
+  @media (max-width: 520px) { .su-live { flex-wrap: wrap; } .su-depuis { margin-left: 0; text-align: left; width: 100%; } .su-l { grid-template-columns: 58px 10px 1fr; gap: 8px; } .su-trou { margin-left: 70px; } }
   @media (max-width: 999px) { nav.onglets button { font-size: 10px; padding-left: 0; padding-right: 0; letter-spacing: -.01em; } }
   .v-ar-haut, .v-ar-milieu { display: grid; gap: 14px; }
   .v-ar-milieu { margin-top: 14px; }
@@ -1007,6 +1047,49 @@
   html[data-theme="sombre"] .leaflet-popup-content-wrapper, html[data-theme="sombre"] .leaflet-popup-tip { background: var(--carte); color: var(--encre); }
   html[data-theme="sombre"] .pop-act a, html[data-theme="sombre"] .pop-act button { background: var(--carte); border-color: var(--ligne); color: var(--encre) !important; }
   html[data-theme="sombre"] .pop-act > :first-child { background: #f2f3f5; color: #0c0d10 !important; }
+  /* =====================================================================
+     VERRE DÉPOLI (26/10/2026, demandé par Nelson) : le fond n'est plus un gris
+     plat mais un dégradé doux, fixe, qu'on voit au travers des surfaces.
+     Flou réel (backdrop-filter) sur les barres et les grandes cartes seulement :
+     les longues listes de cartes restent semi-transparentes sans flou, pour que
+     le défilement reste fluide sur iPhone.
+     ===================================================================== */
+  html { background: #eceef2; }
+  html body, html body.v16 { background: transparent; }
+  body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(900px 620px at 8% -8%, rgba(53,210,154,.30), transparent 62%),
+      radial-gradient(820px 560px at 104% 4%, rgba(47,107,255,.24), transparent 58%),
+      radial-gradient(760px 620px at 70% 108%, rgba(255,176,72,.20), transparent 62%),
+      radial-gradient(640px 520px at -6% 92%, rgba(168,85,247,.14), transparent 60%),
+      #eceef2; }
+  header.barre, nav#onglets { background: rgba(255,255,255,.58) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.7); backdrop-filter: blur(22px) saturate(1.7);
+    border-color: rgba(255,255,255,.65) !important; }
+  .v-carte, .v-tuile:not(.plein):not(.vert):not(.noir):not(.rouge), .fx-carte, .kpi, .bloc, label.jour-choix, .obj, .v-seg, #moi, .espaces button.actif {
+    background: rgba(255,255,255,.52) !important; border-color: rgba(255,255,255,.7) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6); }
+  .lp, .pc, .vide, .btn.clair, .ag-carte { background: rgba(255,255,255,.6) !important; border-color: rgba(255,255,255,.75) !important; }
+  .espaces, input.recherche { background: rgba(255,255,255,.35) !important; border-color: rgba(255,255,255,.55) !important; }
+  html[data-theme="sombre"] { background: #0b0c0f; }
+  html[data-theme="sombre"] body::before { background:
+      radial-gradient(900px 620px at 8% -8%, rgba(53,210,154,.20), transparent 62%),
+      radial-gradient(820px 560px at 104% 4%, rgba(47,107,255,.20), transparent 58%),
+      radial-gradient(760px 620px at 70% 108%, rgba(255,140,60,.12), transparent 62%),
+      radial-gradient(640px 520px at -6% 92%, rgba(168,85,247,.14), transparent 60%),
+      #0b0c0f; }
+  html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(18,20,24,.55) !important; border-color: rgba(255,255,255,.08) !important; }
+  html[data-theme="sombre"] .v-carte, html[data-theme="sombre"] .v-tuile:not(.plein):not(.vert):not(.noir):not(.rouge), html[data-theme="sombre"] .fx-carte,
+  html[data-theme="sombre"] .kpi, html[data-theme="sombre"] .bloc, html[data-theme="sombre"] label.jour-choix, html[data-theme="sombre"] .obj,
+  html[data-theme="sombre"] .v-seg, html[data-theme="sombre"] #moi, html[data-theme="sombre"] .espaces button.actif {
+    background: rgba(26,28,33,.5) !important; border-color: rgba(255,255,255,.08) !important; }
+  html[data-theme="sombre"] .lp, html[data-theme="sombre"] .pc, html[data-theme="sombre"] .vide, html[data-theme="sombre"] .btn.clair, html[data-theme="sombre"] .ag-carte {
+    background: rgba(26,28,33,.6) !important; border-color: rgba(255,255,255,.08) !important; }
+  html[data-theme="sombre"] .espaces, html[data-theme="sombre"] input.recherche { background: rgba(255,255,255,.05) !important; border-color: rgba(255,255,255,.08) !important; }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    header.barre, nav#onglets { background: rgba(255,255,255,.92) !important; }
+    html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(18,20,24,.94) !important; }
+  }
 </style>
 </head>
 <body>
@@ -1051,6 +1134,7 @@
     <button data-vue="carte"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>Carte</button>
     <button data-vue="reels"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="m10 8.5 5 3.5-5 3.5Z"/></svg></span>Reels</button>
     <button data-vue="stats"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9v9Z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15Z"/></svg></span>Stats</button>
+    <button data-vue="suivi"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span>Suivi</button>
   </nav>
 </div>
 
@@ -1266,7 +1350,8 @@ function badgeQui(p) {
 function rendreEspaces() {
   const noms = S.data.equipe.concat(EQUIPE_VUE);
   document.getElementById('espaces').innerHTML = noms.map(n =>
-    `<button data-espace="${esc(n)}" class="${n === S.espace ? 'actif' : ''}">${esc(n === S.moi.nom ? n + ' (moi)' : n)}</button>`).join('');
+    `<button data-espace="${esc(n)}" class="${n === S.espace ? 'actif' : ''}">${n === EQUIPE_VUE ? '' : voyant(n)}${esc(n === S.moi.nom ? n + ' (moi)' : n)}${n === EQUIPE_VUE || n === S.moi.nom ? '' : `<small class="voyant-txt" data-voyant-txt="${esc(n)}"></small>`}</button>`).join('');
+  majVoyants();
   const m = document.getElementById('moi'); m.innerHTML = avatar(S.moi.nom, true) + esc(S.moi.nom) + ' <small>· changer</small>'; m.classList.remove('cache');
 }
 
@@ -1366,6 +1451,7 @@ function rendre() {
   else if (S.vue === 'argent') v.innerHTML = vueArgent();
   else if (S.vue === 'agenda') v.innerHTML = vueAgenda();
   else if (S.vue === 'reels') v.innerHTML = vueReels();
+  else if (S.vue === 'suivi') v.innerHTML = vueSuivi();
   else v.innerHTML = vueStats();
   remettreSaisie(saisie);
   // Un commerce choisi sur la carte : le formulaire Ajouter arrive rempli (une seule fois).
@@ -3371,6 +3457,14 @@ document.addEventListener('click', e => {
   else if (act === 'pipe-statut') { S.pipeStatut = a.dataset.k; S.pipeMax = 100; rendre(); }
   else if (act === 'pipe-plus') { S.pipeMax = (S.pipeMax || 100) + 100; rendre(); }
   else if (act === 'stats-periode') { S.statsJours = Number(a.dataset.n); rendre(); }
+  else if (act === 'suivi-qui') { SU.qui = a.dataset.n; rendre(); }
+  else if (act === 'suivi-filtre') { SU.filtre = a.dataset.n; rendre(); }
+  else if (act === 'suivi-jour') {
+    const n = Number(a.dataset.n);
+    if (n) { const d = versDate((SU.jour || aujourdhui()) + ' 12:00'); d.setDate(d.getDate() + n); const k = fmt(d).slice(0, 10); if (k > aujourdhui()) return; SU.jour = k; }
+    else SU.jour = aujourdhui();
+    SU.data = null; SU.cle = ''; rendre();
+  }
   else if (act === 'jour') { S.jour = decalerJour(S.jour || aujourdhui(), Number(a.dataset.n)); rendre(); }
   else if (act === 'jour-auj') { S.jour = aujourdhui(); rendre(); }
   else if (act === 'enregistrer') enregistrer(a);
@@ -3446,6 +3540,7 @@ function appliquerDonnees() {
   if (![...S.data.equipe, EQUIPE_VUE].includes(S.espace)) S.espace = S.moi.nom;
   rendre();
   Factu.init();
+  signalPresence('actif');
 }
 
 async function demarrer() {
@@ -3478,6 +3573,220 @@ async function verifierVues() {
   } catch (e) { if (/inconnue/i.test(e.message || '')) vuesActives = false; }
 }
 setInterval(verifierVues, 120000);
+
+// ---------------------------------------------------------------------------
+// Présence et supervision (26/10/2026, demandé par Nelson)
+// ---------------------------------------------------------------------------
+// Voyant à côté de chaque nom : vert quand la personne a l'appli ouverte sous les yeux
+// (signal toutes les 8 s), vert pulsé rapide quand elle vient de lancer un appel depuis le
+// CRM, rouge sinon. Le serveur garde ces signaux en mémoire, pas dans le Sheets.
+// L'onglet Suivi relit l'onglet « Activité » : arrivées, départs, chaque tap sur
+// « Appeler » (à la seconde, heure du téléphone) et chaque résultat noté.
+const PRES = { gens: {}, decalage: 0, enVol: false, tap: 0, coupe: false };
+const PRES_INTERVALLE = 8000;
+const NOM_VUE = { jour: 'Journée', agenda: 'Agenda', pipeline: 'Pipeline', ajouter: 'Ajouter', factu: 'Factu', argent: 'Argent',
+  carte: 'Carte', reels: 'Reels', stats: 'Stats', suivi: 'Suivi', appel: 'appel' };
+
+// Un appel léger : une seule tentative, pas de relance ni d'erreur affichée (un signal raté
+// est remplacé par le suivant).
+function appelLeger(fn, ...args) {
+  if (window.google && google.script && google.script.run) return new Promise((ok, ko) => google.script.run.withSuccessHandler(ok).withFailureHandler(ko)[fn](...args));
+  return appelUnique({ fn, args }).then(r => { if (r.erreur) throw new Error(r.erreur); return r.resultat; });
+}
+function ficheOuverte() { const p = S.ouvert && S.data && S.data.prospects.find(x => x.id === S.ouvert); return p ? p.entreprise : ''; }
+
+async function signalPresence(etat) {
+  if (!S.pin || !S.data || PRES.coupe || PRES.enVol) return;
+  PRES.enVol = true;
+  try { majPresence(await appelLeger('api_presence', S.pin, etat || 'actif', S.vue, ficheOuverte())); }
+  catch (e) { if (/inconnue/i.test(e.message || '')) PRES.coupe = true; }
+  finally { PRES.enVol = false; }
+}
+// L'appli passe en arrière-plan : « je quitte », envoyé même si iOS gèle la page juste après.
+function signalDepart() {
+  if (!S.pin || !S.data || PRES.coupe) return;
+  if (Date.now() - PRES.tap < 5000) return; // c'est le passage au téléphone après « Appeler »
+  const args = [S.pin, 'absent', S.vue, ''];
+  if (window.CRM_API && navigator.sendBeacon && !(window.google && google.script && google.script.run)) {
+    try { if (navigator.sendBeacon(window.CRM_API, new Blob([JSON.stringify({ fn: 'api_presence', args })], { type: 'text/plain' }))) return; } catch (e) {}
+  }
+  appelLeger('api_presence', ...args).catch(() => {});
+}
+function majPresence(r) {
+  if (!r || !r.gens) return;
+  PRES.gens = r.gens; PRES.decalage = r.maintenant - Date.now();
+  majVoyants();
+}
+const maintenantServeur = () => Date.now() + PRES.decalage;
+function hmMs(ms) { const d = new Date(ms); return d.getHours() + ' h ' + pad(d.getMinutes()); }
+function dureeMs(ms) { const m = Math.max(0, Math.round(ms / 60000)); return m < 1 ? 'moins d’une minute' : m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + pad(m % 60) : ''); }
+function quandMs(ms) {
+  if (!ms) return '';
+  const d = new Date(ms), auj = aujourdhui();
+  const k = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  return k === auj ? 'à ' + hmMs(ms) : jourCourt(k) + ' à ' + hmMs(ms);
+}
+function etatDe(n) {
+  if (S.moi && n === S.moi.nom && !document.hidden) return { etat: 'actif', vue: S.vue, fiche: ficheOuverte(), depuis: 0, vu: Date.now() };
+  return PRES.gens[n] || null;
+}
+// Texte court pour l'onglet, texte long pour la bulle et la carte du Suivi.
+function presenceTxt(n, long) {
+  const p = etatDe(n);
+  if (!p) return long ? 'Pas encore de nouvelles' : '';
+  if (p.etat === 'actif') return long ? 'Sur le CRM' + (p.vue ? ' · ' + (NOM_VUE[p.vue] || p.vue) : '') + (p.fiche ? ' · fiche ' + p.fiche : '') : 'en ligne';
+  if (p.etat === 'appel') return long ? 'En appel' + (p.fiche ? ' avec ' + p.fiche : '') + ' · lancé ' + quandMs(p.depuis || p.vu) : 'en appel';
+  return long ? (p.vu ? 'Hors du CRM · vu ' + quandMs(p.vu) : 'Hors du CRM · jamais vu') : (p.vu ? 'vu ' + hmMs(p.vu).replace(' h ', 'h') : 'hors ligne');
+}
+function classeVoyant(n) { const p = etatDe(n); return 'voyant ' + (p ? (p.etat === 'hors' ? 'hors' : p.etat) : 'inconnu'); }
+function voyant(n) { return `<i class="${classeVoyant(n)}" data-voyant="${esc(n)}"></i>`; }
+function majVoyants() {
+  document.querySelectorAll('[data-voyant]').forEach(el => {
+    const n = el.dataset.voyant, cls = classeVoyant(n);
+    if (el.className !== cls) el.className = cls;
+    el.title = n + ' : ' + presenceTxt(n, true);
+  });
+  document.querySelectorAll('[data-voyant-txt]').forEach(el => { const t = presenceTxt(el.dataset.voyantTxt); if (el.textContent !== t) el.textContent = t; });
+  const live = document.getElementById('suivi-live');
+  if (live) live.innerHTML = suiviLive(live.dataset.qui);
+}
+setInterval(() => { if (!document.hidden) signalPresence('actif'); else majVoyants(); }, PRES_INTERVALLE);
+document.addEventListener('visibilitychange', () => { if (document.hidden) signalDepart(); else { signalPresence('actif'); if (S.vue === 'suivi') chargerSuivi(); } });
+window.addEventListener('pagehide', signalDepart);
+
+// Chaque tap sur un numéro : l'heure exacte part au serveur. L'iPhone coupe souvent la
+// requête en passant au téléphone : elle repart au retour, avec la même heure et le même rid.
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href^="tel:"]');
+  if (!a || !S.pin || !S.data) return;
+  const tel = decodeURIComponent(a.getAttribute('href').slice(4));
+  const carte = a.closest('.lp, .pc, tr[data-id]');
+  const chiffres = t => String(t || '').replace(/\D/g, '').slice(-8);
+  const p = S.data.prospects.find(x => x.id === (S.ouvert || (carte && carte.dataset.id)))
+    || S.data.prospects.find(x => chiffres(x.telephone) && chiffres(x.telephone) === chiffres(tel));
+  PRES.tap = Date.now();
+  tracerAppel([S.pin, p ? p.id : '', p ? p.entreprise : '', tel, PRES.tap]);
+}, true);
+async function tracerAppel(args) {
+  if ((window.google && google.script && google.script.run) || !window.CRM_API) { appelLeger('api_appel_lance', ...args).then(majPresence).catch(() => {}); return; }
+  const corps = { fn: 'api_appel_lance', args, rid: Date.now().toString(36) + Math.random().toString(36).slice(2, 10) };
+  for (let essai = 1; essai <= 6; essai++) {
+    try { const r = await appelUnique(corps); if (r && r.resultat) majPresence(r.resultat); if (S.vue === 'suivi') chargerSuivi(); return; }
+    catch (e) { if (!e.reseau) return; await attendreVisible(); await pause(essai * 800); }
+  }
+}
+
+// ----------------------------------------------------------------- onglet Suivi
+const SU = { jour: '', qui: '', data: null, cle: '', enVol: false, filtre: 'tout' };
+setInterval(() => { if (S.vue === 'suivi' && !document.hidden && SU.jour === aujourdhui()) chargerSuivi(); }, PRES_INTERVALLE);
+async function chargerSuivi() {
+  if (SU.enVol || !S.pin) return;
+  const jour = SU.jour || aujourdhui();
+  SU.enVol = true;
+  try {
+    const r = await appelLeger('api_activite', S.pin, jour);
+    if (r.jour !== (SU.jour || aujourdhui())) return;
+    majPresence(r.presence);
+    const cle = r.jour + '|' + r.lignes.length + '|' + (r.lignes.length ? r.lignes[r.lignes.length - 1].date : '');
+    const neuf = cle !== SU.cle;
+    SU.data = r; SU.cle = cle; SU.erreur = '';
+    if (neuf && S.vue === 'suivi' && !S.ouvert && !S.recherche) rendre();
+  } catch (e) {
+    SU.erreur = /inconnue/i.test(e.message || '') ? 'Le serveur n’est pas encore à jour.' : (e.message || 'Lecture impossible.');
+    if (S.vue === 'suivi' && !S.data) rendre();
+  } finally { SU.enVol = false; }
+}
+function suiviLive(n) {
+  const p = etatDe(n), etat = p ? (p.etat === 'hors' ? 'hors' : p.etat) : 'inconnu';
+  const titre = etat === 'actif' ? n + ' est sur le CRM' : etat === 'appel' ? n + ' est en appel' : etat === 'hors' ? n + ' n’est pas sur le CRM' : 'En attente du premier signal…';
+  let droite = '';
+  if (p && etat === 'actif' && p.depuis) droite = `<span>depuis ${hmMs(p.depuis)}</span><b>${dureeMs(maintenantServeur() - p.depuis)}</b>`;
+  else if (p && etat === 'appel') droite = `<span>appel lancé ${hmMs(p.depuis || p.vu)}</span><b>${dureeMs(maintenantServeur() - (p.depuis || p.vu))}</b>`;
+  else if (p && p.vu) droite = `<span>dernier signal ${quandMs(p.vu)}</span><b>il y a ${dureeMs(maintenantServeur() - p.vu)}</b>`;
+  return `<i class="voyant ${etat}"></i><div><h2>${esc(titre)}</h2><p>${esc(p ? presenceTxt(n, true) : 'Le voyant s’allume dès que l’appli reçoit les signaux.')}</p></div><div class="su-depuis">${droite}</div>`;
+}
+const hms = s => String(s).slice(11, 19) || String(s).slice(11, 16);
+function vueSuivi() {
+  const auj = aujourdhui();
+  SU.jour = SU.jour || auj;
+  if (!SU.qui || !S.data.equipe.includes(SU.qui)) SU.qui = S.data.equipe.find(n => n !== S.moi.nom) || S.moi.nom;
+  if (!SU.data || SU.data.jour !== SU.jour) setTimeout(chargerSuivi, 0);
+  const qui = SU.qui, jour = SU.jour;
+  const ecart = Math.round((new Date(jour) - new Date(auj)) / 864e5);
+  const tete = `<div class="v-tete"><div><h1>Suivi</h1><p>Qui est sur le CRM, et chaque appel à la seconde · ${ecart === 0 ? 'mis à jour toutes les 8 s' : 'journée passée'}</p></div>
+    <div class="v-outils"><div class="v-seg">${S.data.equipe.map(n => `<button data-action="suivi-qui" data-n="${esc(n)}" class="${n === qui ? 'on' : ''}">${voyant(n)}${esc(n)}</button>`).join('')}</div>
+    <div class="v-seg su-jours"><button data-action="suivi-jour" data-n="-1" aria-label="Jour précédent">‹</button><button data-action="suivi-jour" data-n="0" class="on">${esc(ecart === 0 ? 'Aujourd’hui' : jourLong(jour))}</button><button data-action="suivi-jour" data-n="1" aria-label="Jour suivant" ${ecart >= 0 ? 'disabled' : ''}>›</button></div></div></div>`;
+  const live = `<div class="v-carte su-live" id="suivi-live" data-qui="${esc(qui)}">${suiviLive(qui)}</div>`;
+  if (SU.erreur && !SU.data) return tete + live + `<div class="vide">${esc(SU.erreur)}</div>`;
+  if (!SU.data || SU.data.jour !== jour) return tete + live + '<div class="vide">Lecture de l’activité…</div>';
+
+  // Les événements de la personne. Pour une journée d'avant le 26/10/2026 (pas encore d'onglet
+  // Activité), les résultats viennent du journal, à la minute.
+  const L = SU.data.lignes.filter(l => l.par === qui).map(l => Object.assign({}, l));
+  if (!L.some(l => l.type === 'Résultat'))
+    S.data.journal.filter(e => e.date.startsWith(jour) && parDe(e) === qui && e.resultat !== 'Ajout').forEach(e =>
+      L.push({ date: e.date + ':00', par: qui, type: 'Résultat', id: e.id, entreprise: e.entreprise, detail: e.resultat, note: e.note, minute: true }));
+  L.sort((a, b) => a.date.localeCompare(b.date));
+  const appelsRes = RES_APPEL();
+  const lances = L.filter(l => l.type === 'Appel lancé'), resultats = L.filter(l => l.type === 'Résultat');
+  // Chaque appel lancé trouve son résultat : le premier noté pour ce prospect avant l'appel suivant.
+  lances.forEach((a, i) => {
+    if (!a.id) return;
+    const suivant = lances.slice(i + 1).find(x => x.id === a.id);
+    const r = resultats.find(x => x.id === a.id && !x.appel && x.date >= a.date && (!suivant || x.date < suivant.date));
+    if (r) { a.res = r; r.appel = a; }
+  });
+  const sec = s => { const m = String(s).match(/(\d{2}):(\d{2})(?::(\d{2}))?$/); return m ? +m[1] * 3600 + +m[2] * 60 + +(m[3] || 0) : 0; };
+  const ecartTxt = (a, b) => { const d = sec(b) - sec(a); return d < 60 ? d + ' s' : Math.floor(d / 60) + ' min ' + pad(d % 60); };
+
+  // Temps passé sur le CRM : d'une arrivée au départ suivant (ou à maintenant si la personne est là).
+  let total = 0, ouverte = null, pause = 0;
+  L.forEach(l => {
+    if (l.type === 'Arrivée') { if (ouverte === null) ouverte = sec(l.date); }
+    else if (l.type === 'Départ') { if (ouverte !== null) { total += sec(l.date) - ouverte; ouverte = null; } }
+  });
+  const p = etatDe(qui);
+  if (ouverte !== null) { const n = new Date(); total += (ecart === 0 && p && p.etat !== 'hors' ? n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds() : sec(L[L.length - 1].date)) - ouverte; }
+  for (let i = 1; i < L.length; i++) pause = Math.max(pause, sec(L[i].date) - sec(L[i - 1].date));
+  const decroches = resultats.filter(r => appelsRes.includes(r.detail) && r.detail !== 'Pas de réponse').length;
+  const rdv = resultats.filter(r => r.detail === 'RDV obtenu').length;
+  const sansRes = lances.filter(a => !a.res && a.id).length;
+  const hm = s => s ? hms(s).slice(0, 5).replace(/^0/, '') : '—';
+  const tuiles = `<div class="v-tuiles">
+    ${tuile('Appels lancés', ICO.tel, lances.length, lances.length ? new Set(lances.map(a => a.id || a.telephone)).size + ' numéros différents' + (sansRes ? ` · <span class="su-alerte">${sansRes} sans résultat</span>` : '') : 'aucun tap sur « Appeler »', { classe: 'plein' })}
+    ${tuile('Résultats notés', ICO.decroche, resultats.length, decroches + ' décrochés · ' + rdv + ' RDV')}
+    ${tuile('Temps sur le CRM', ICO.pouls, total ? dureeMs(total * 1000) : '—', L.some(l => l.type === 'Arrivée') ? L.filter(l => l.type === 'Arrivée').length + ' connexion' + (L.filter(l => l.type === 'Arrivée').length > 1 ? 's' : '') : 'pas de connexion notée')}
+    ${tuile('Amplitude', ICO.courbe, L.length ? hm(L[0].date) + ' → ' + hm(L[L.length - 1].date) : '—', pause >= 600 ? 'plus long blanc : ' + dureeMs(pause * 1000) : 'aucun blanc de 10 min')}</div>`;
+
+  // Le fil, le plus récent en haut. Un blanc de 15 min ou plus est signalé.
+  const vus = SU.filtre === 'appels' ? L.filter(l => l.type === 'Appel lancé' || l.type === 'Résultat') : L;
+  const lignes = [];
+  for (let i = vus.length - 1; i >= 0; i--) {
+    const l = vus[i], av = vus[i - 1];
+    let cls = '', titre = '', sous = [];
+    if (l.type === 'Appel lancé') {
+      cls = 'appel'; titre = '☎︎ Appel lancé · ' + (l.entreprise || l.telephone || 'numéro inconnu');
+      if (l.telephone) sous.push(esc(l.telephone));
+      sous.push(l.res ? '→ ' + esc(l.res.detail) + ', noté ' + ecartTxt(l.date, l.res.date) + ' après' : l.id ? '<span class="su-alerte">aucun résultat noté</span>' : 'numéro hors fichier');
+    } else if (l.type === 'Résultat') {
+      cls = 'resultat'; titre = esc(l.detail || 'Résultat') + ' · ' + esc(l.entreprise || l.id);
+      if (l.note) sous.push('« ' + esc(l.note.slice(0, 140)) + ' »');
+      if (l.appel) sous.push('appel lancé à ' + hms(l.appel.date));
+      else if (!l.minute && appelsRes.includes(l.detail)) sous.push('<span class="su-doux">sans appel lancé depuis le CRM</span>');
+      if (l.minute) sous.push('<span class="su-doux">heure du journal, à la minute</span>');
+    } else if (l.type === 'Arrivée') { cls = 'arrivee'; titre = 'Ouvre le CRM'; }
+    else if (l.type === 'Départ') { cls = 'depart'; titre = 'Quitte le CRM'; if (l.detail && l.detail !== 'quitte le CRM') sous.push(esc(l.detail)); }
+    else { titre = esc(l.type); }
+    lignes.push(`<div class="su-l ${cls}"${l.id ? ` data-ouvrir="${esc(l.id)}"` : ''}><time>${l.minute ? hms(l.date).slice(0, 5) : hms(l.date)}</time><span class="su-pt"></span>
+      <div class="su-c"><b>${l.type === 'Appel lancé' ? esc(titre) : titre}</b>${sous.length ? `<small>${sous.join(' · ')}</small>` : ''}</div></div>`);
+    if (av) { const blanc = sec(l.date) - sec(av.date);
+      if (blanc >= 900) lignes.push(`<div class="su-trou">${av.type === 'Départ' ? 'hors du CRM' : 'rien'} pendant ${dureeMs(blanc * 1000)}</div>`); }
+  }
+  const fil = carteV('Fil de la journée', esc(qui) + ' · ' + vus.length + ' événement' + (vus.length > 1 ? 's' : '') + ', le plus récent en haut', ICO.pouls,
+    `<div class="v-seg"><button data-action="suivi-filtre" data-n="tout" class="${SU.filtre === 'tout' ? 'on' : ''}">Tout</button><button data-action="suivi-filtre" data-n="appels" class="${SU.filtre === 'appels' ? 'on' : ''}">Appels</button></div>`,
+    lignes.length ? `<div class="su-fil">${lignes.join('')}</div>` : `<div class="vide">Rien de noté pour ${esc(qui)} ${ecart === 0 ? 'aujourd’hui pour l’instant' : 'ce jour-là'}.</div>`);
+  return tete + live + tuiles + fil;
+}
 
 // Ouverte depuis script.google.com (et non la version installable) : on guide vers la bonne adresse.
 if (!window.CRM_API) document.getElementById('bandeau-installer').classList.remove('cache');
