@@ -15,7 +15,8 @@
 <link rel="icon" type="image/png" href="icones/favicon-64.png">
 <script>window.CRM_API = "https://script.google.com/macros/s/AKfycbyiSscsc1tvQiekpyzHl6EvPLnqugkx0TKEkJoQPYsDyHeCqg9HZ5tJSx8OZV7WBnk0/exec";</script>
 <meta name="theme-color" content="#0b0c0b">
-<script>try { if (localStorage.getItem('crmnsd_theme') === 'sombre') document.documentElement.dataset.theme = 'sombre'; } catch (e) {}</script>
+<script>try { if (localStorage.getItem('crmnsd_theme') === 'sombre') document.documentElement.dataset.theme = 'sombre';
+  const f = localStorage.getItem('crmnsd_fond'); if (f) { document.documentElement.classList.add('fond-perso'); document.documentElement.style.setProperty('--fond-perso', 'url(' + f + ')'); } } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400..700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.js"></script>
@@ -1064,32 +1065,45 @@
   body.v16, body { --v-doux: #5f544b; --v-ligne: rgba(90,62,40,.14); }
   html[data-theme="sombre"] body { --v-doux: #b3aaa2; --v-ligne: rgba(255,255,255,.09); }
 
-  /* Le grand panneau de verre qui porte le contenu. */
-  main { background: linear-gradient(160deg, rgba(255,255,255,.26), rgba(255,255,255,.12));
-    border: 1px solid rgba(255,255,255,.42); border-radius: 26px; margin-top: 12px !important; margin-bottom: 18px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 40px 90px -40px rgba(45,26,12,.55); }
-  @media (max-width: 999px) { main { margin-left: 8px !important; margin-right: 8px !important; border-radius: 22px; } }
-  body[data-vue="carte"] main { background: none; border: 0; box-shadow: none; }
-  html[data-theme="sombre"] main { background: linear-gradient(160deg, rgba(40,34,32,.42), rgba(18,16,16,.3));
-    border-color: rgba(255,255,255,.09); box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 40px 90px -40px rgba(0,0,0,.7); }
+  /* Fond personnel : la photo nette, telle quelle. */
+  html.fond-perso body::before, html.fond-perso[data-theme="sombre"] body::before { background: #222 var(--fond-perso) center / cover no-repeat; }
 
-  /* Les cartes : verre plus clair, liseré blanc, reflet en haut. */
+  /* Le grand panneau : c'est lui qui floute ce qu'il y a derrière (un seul flou pour toute la
+     page, les cartes dedans n'en ajoutent pas : fluide sur iPhone). Autour, l'image reste nette. */
+  main { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.38); border-radius: 26px; margin-top: 12px !important; margin-bottom: 18px;
+    -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 40px 90px -40px rgba(20,12,6,.55); }
+  @media (max-width: 790px) { main { margin-left: 8px !important; margin-right: 8px !important; border-radius: 22px; } }
+  body[data-vue="carte"] main { background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  html[data-theme="sombre"] main { background: rgba(14,13,13,.28); border-color: rgba(255,255,255,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 40px 90px -40px rgba(0,0,0,.7); }
+
+  /* Les cartes : verre clair et léger, les couleurs passent au travers. */
   .v-carte, .v-tuile:not(.plein):not(.vert):not(.noir):not(.rouge), .fx-carte, .kpi, .bloc, label.jour-choix, .obj, .lp, .pc, .vide, .ag-carte, .rc, .bilan div:not(:first-child) {
-    background: linear-gradient(165deg, rgba(255,255,255,.62), rgba(255,255,255,.4)) !important;
-    border: 1px solid rgba(255,255,255,.6) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.75), 0 14px 34px -18px rgba(60,36,18,.45) !important; }
-  .v-seg, #moi, .espaces button.actif, .btn.clair { background: rgba(255,255,255,.5) !important; border-color: rgba(255,255,255,.6) !important; }
-  .espaces, input.recherche { background: rgba(255,255,255,.22) !important; border-color: rgba(255,255,255,.4) !important; }
-  html:not([data-theme="sombre"]) input.recherche { color: #2a211b !important; }
-  html:not([data-theme="sombre"]) input.recherche::placeholder { color: rgba(60,44,32,.62) !important; }
-  header.barre, nav#onglets { background: rgba(255,255,255,.3) !important; border-color: rgba(255,255,255,.45) !important;
-    -webkit-backdrop-filter: blur(26px) saturate(1.5); backdrop-filter: blur(26px) saturate(1.5); }
+    background: linear-gradient(165deg, rgba(255,255,255,.4), rgba(255,255,255,.22)) !important;
+    border: 1px solid rgba(255,255,255,.5) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 14px 34px -20px rgba(30,18,8,.45) !important; }
+  .v-seg, #moi, .espaces button.actif, .btn.clair { background: rgba(255,255,255,.4) !important; border-color: rgba(255,255,255,.5) !important; }
+  .espaces, input.recherche { background: rgba(255,255,255,.16) !important; border-color: rgba(255,255,255,.35) !important; }
+  html:not([data-theme="sombre"]) input.recherche { color: #1d1712 !important; }
+  html:not([data-theme="sombre"]) input.recherche::placeholder { color: rgba(40,30,22,.66) !important; }
+  header.barre, nav#onglets { background: rgba(255,255,255,.18) !important; border-color: rgba(255,255,255,.38) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.6); backdrop-filter: blur(24px) saturate(1.6); }
   html[data-theme="sombre"] .v-carte, html[data-theme="sombre"] .v-tuile:not(.plein):not(.vert):not(.noir):not(.rouge), html[data-theme="sombre"] .fx-carte, html[data-theme="sombre"] .kpi, html[data-theme="sombre"] .bloc, html[data-theme="sombre"] label.jour-choix, html[data-theme="sombre"] .obj, html[data-theme="sombre"] .lp, html[data-theme="sombre"] .pc, html[data-theme="sombre"] .vide, html[data-theme="sombre"] .ag-carte, html[data-theme="sombre"] .rc, html[data-theme="sombre"] .bilan div:not(:first-child) {
-    background: linear-gradient(165deg, rgba(48,42,40,.62), rgba(26,23,22,.5)) !important;
-    border-color: rgba(255,255,255,.09) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 14px 34px -18px rgba(0,0,0,.6) !important; }
-  html[data-theme="sombre"] .v-seg, html[data-theme="sombre"] #moi, html[data-theme="sombre"] .espaces button.actif, html[data-theme="sombre"] .btn.clair { background: rgba(50,44,42,.6) !important; border-color: rgba(255,255,255,.1) !important; }
-  html[data-theme="sombre"] .espaces, html[data-theme="sombre"] input.recherche { background: rgba(255,255,255,.05) !important; border-color: rgba(255,255,255,.08) !important; }
-  html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(22,19,18,.5) !important; border-color: rgba(255,255,255,.08) !important; }
+    background: linear-gradient(165deg, rgba(40,36,34,.44), rgba(18,16,16,.32)) !important;
+    border-color: rgba(255,255,255,.1) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 14px 34px -20px rgba(0,0,0,.6) !important; }
+  html[data-theme="sombre"] .v-seg, html[data-theme="sombre"] #moi, html[data-theme="sombre"] .espaces button.actif, html[data-theme="sombre"] .btn.clair { background: rgba(40,36,34,.5) !important; border-color: rgba(255,255,255,.1) !important; }
+  html[data-theme="sombre"] .espaces, html[data-theme="sombre"] input.recherche { background: rgba(0,0,0,.18) !important; border-color: rgba(255,255,255,.08) !important; }
+  html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(14,13,13,.32) !important; border-color: rgba(255,255,255,.08) !important; }
+  /* Sur une photo chargée, les titres posés à même le panneau gardent du relief. */
+  html.fond-perso main h1, html.fond-perso main h2.section, html.fond-perso .v-tete p { text-shadow: 0 1px 12px rgba(255,255,255,.6); }
+  html.fond-perso[data-theme="sombre"] main h1, html.fond-perso[data-theme="sombre"] main h2.section, html.fond-perso[data-theme="sombre"] .v-tete p { text-shadow: 0 1px 12px rgba(0,0,0,.65); }
+  .menu-fond { position: fixed; z-index: 50; display: flex; flex-direction: column; padding: 6px; border-radius: 14px; min-width: 200px;
+    background: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.7); box-shadow: 0 18px 40px -16px rgba(0,0,0,.4);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  .menu-fond button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 9px; font-size: 14px; font-weight: 600; color: #1d1712; }
+  .menu-fond button:hover { background: rgba(0,0,0,.06); }
+  html[data-theme="sombre"] .menu-fond { background: rgba(28,26,25,.82); border-color: rgba(255,255,255,.1); }
+  html[data-theme="sombre"] .menu-fond button { color: #eee; }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     header.barre, nav#onglets { background: rgba(245,238,230,.94) !important; }
     html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(22,19,18,.95) !important; }
@@ -1119,6 +1133,10 @@
           <svg class="lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           <svg class="soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
         </button>
+        <button class="theme" data-action="fond" aria-label="Mon fond d’écran" title="Mon fond d’écran">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg>
+        </button>
+        <input type="file" id="fond-fichier" accept="image/*" hidden>
         <button class="moi cache" id="moi" data-action="deconnexion" aria-label="Changer de personne"></button>
       </div>
     </div>
@@ -1989,6 +2007,39 @@ function basculerTheme() {
   stocker('theme', sombre ? 'sombre' : '');
   if (S.data) rendre(); // les courbes et le donut reprennent les couleurs du thème
 }
+// Fond d'écran personnel (26/10/2026, demandé par Nelson) : une page web ne peut pas laisser
+// voir le bureau derrière elle ; chacun choisit donc sa propre image, gardée sur son appareil
+// seulement (réduite à 1800 px, JPEG, ~300 Ko dans le stockage du navigateur).
+function appliquerFond(url) {
+  const h = document.documentElement;
+  if (url) { h.classList.add('fond-perso'); h.style.setProperty('--fond-perso', 'url(' + url + ')'); }
+  else { h.classList.remove('fond-perso'); h.style.removeProperty('--fond-perso'); }
+}
+function menuFond(btn) {
+  const vieux = document.getElementById('menu-fond'); if (vieux) { vieux.remove(); return; }
+  if (!lire('fond')) { document.getElementById('fond-fichier').click(); return; }
+  const m = document.createElement('div'); m.id = 'menu-fond'; m.className = 'menu-fond';
+  m.innerHTML = '<button data-action="fond-changer">Changer d’image</button><button data-action="fond-retirer">Revenir au fond NSD</button>';
+  const r = btn.getBoundingClientRect(); m.style.top = (r.bottom + 8) + 'px'; m.style.right = Math.max(8, innerWidth - r.right) + 'px';
+  document.body.appendChild(m);
+  setTimeout(() => document.addEventListener('click', function f(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener('click', f, true); } }, true), 0);
+}
+document.addEventListener('change', e => {
+  if (e.target.id !== 'fond-fichier' || !e.target.files[0]) return;
+  const fichier = e.target.files[0]; e.target.value = '';
+  const img = new Image(), url = URL.createObjectURL(fichier);
+  img.onload = () => {
+    const k = Math.min(1, 1800 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+    let data = c.toDataURL('image/jpeg', .84);
+    if (data.length > 1.5e6) data = c.toDataURL('image/jpeg', .7);
+    try { localStorage.setItem('crmnsd_fond', data); } catch (err) { toast('Image trop lourde pour cet appareil, essaie une autre.', true); return; }
+    appliquerFond(data); toast('Fond d’écran posé sur cet appareil.');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('Image illisible.', true); };
+  img.src = url;
+});
 function avatar(n, petit) { return `<span class="v-av${petit ? ' petit' : ''}" style="--t:${teinte(n)}">${esc(initiales(n))}</span>`; }
 function tuile(lib, ico, val, sous, opts) {
   const o = opts || {};
@@ -3453,6 +3504,9 @@ document.addEventListener('click', e => {
   else if (act === 'sess-fin') finSession(false);
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
   else if (act === 'theme') basculerTheme();
+  else if (act === 'fond') menuFond(a);
+  else if (act === 'fond-changer') { document.getElementById('menu-fond').remove(); document.getElementById('fond-fichier').click(); }
+  else if (act === 'fond-retirer') { document.getElementById('menu-fond').remove(); try { localStorage.removeItem('crmnsd_fond'); } catch (e) {} appliquerFond(''); }
   else if (act === 'argent-periode') { S.argentPeriode = a.dataset.p; rendre(); }
   else if (act === 'aller-factu') { S.vue = 'factu'; window.scrollTo(0, 0); rendre(); Factu.recharger(); }
   else if (act === 'ouvrir-devis') Factu.ouvrirDevis(a.dataset.id);
