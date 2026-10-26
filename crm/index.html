@@ -16,6 +16,9 @@
 <script>window.CRM_API = "https://script.google.com/macros/s/AKfycbyiSscsc1tvQiekpyzHl6EvPLnqugkx0TKEkJoQPYsDyHeCqg9HZ5tJSx8OZV7WBnk0/exec";</script>
 <meta name="theme-color" content="#0b0c0b">
 <script>try { if (localStorage.getItem('crmnsd_theme') === 'sombre') document.documentElement.dataset.theme = 'sombre';
+  // Dans l'appli Mac (mac/CRMNSD.swift) : la fenêtre est en verre Apple, le CRM la laisse voir.
+  if (/CRMNSD-Mac/.test(navigator.userAgent)) { document.documentElement.classList.add('natif');
+    try { webkit.messageHandlers.theme.postMessage(document.documentElement.dataset.theme === 'sombre' ? 'sombre' : 'clair'); } catch (e) {} }
   const f = localStorage.getItem('crmnsd_fond'); if (f) { document.documentElement.classList.add('fond-perso'); document.documentElement.style.setProperty('--fond-perso', 'url(' + f + ')'); } } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400..700&display=swap" rel="stylesheet">
@@ -1094,6 +1097,16 @@
   html[data-theme="sombre"] .v-seg, html[data-theme="sombre"] #moi, html[data-theme="sombre"] .espaces button.actif, html[data-theme="sombre"] .btn.clair { background: rgba(40,36,34,.5) !important; border-color: rgba(255,255,255,.1) !important; }
   html[data-theme="sombre"] .espaces, html[data-theme="sombre"] input.recherche { background: rgba(0,0,0,.18) !important; border-color: rgba(255,255,255,.08) !important; }
   html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(14,13,13,.32) !important; border-color: rgba(255,255,255,.08) !important; }
+  /* Appli Mac (26/10/2026) : le vrai verre est celui de la fenêtre (NSVisualEffectView), qui
+     voit le bureau et les applis derrière. Ici, plus aucun fond : seulement des voiles légers. */
+  html.natif, html.natif body, html.natif body.v16 { background: transparent !important; }
+  html.natif body::before { display: none; }
+  html.natif main { background: rgba(255,255,255,.14); -webkit-backdrop-filter: none; backdrop-filter: none;
+    border-color: rgba(255,255,255,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 30px 70px -40px rgba(0,0,0,.35); }
+  html.natif header.barre, html.natif nav#onglets { background: rgba(255,255,255,.12) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  html.natif[data-theme="sombre"] main { background: rgba(0,0,0,.14); border-color: rgba(255,255,255,.1); }
+  html.natif[data-theme="sombre"] header.barre, html.natif[data-theme="sombre"] nav#onglets { background: rgba(0,0,0,.12) !important; }
+  html.natif [data-action="fond"] { display: none; }
   /* Barre d'onglets en verre clair : libellés sombres (ils étaient clairs, faits pour la barre noire). */
   html:not([data-theme="sombre"]) nav#onglets button:not(.actif) { color: rgba(32,24,18,.78) !important; }
   html:not([data-theme="sombre"]) nav#onglets button:not(.actif):hover { color: #1d1712 !important; background: rgba(255,255,255,.3) !important; }
@@ -2011,6 +2024,7 @@ function basculerTheme() {
   const sombre = document.documentElement.dataset.theme !== 'sombre';
   if (sombre) document.documentElement.dataset.theme = 'sombre'; else delete document.documentElement.dataset.theme;
   stocker('theme', sombre ? 'sombre' : '');
+  try { webkit.messageHandlers.theme.postMessage(sombre ? 'sombre' : 'clair'); } catch (e) {}
   if (S.data) rendre(); // les courbes et le donut reprennent les couleurs du thème
 }
 // Fond d'écran personnel (26/10/2026, demandé par Nelson) : une page web ne peut pas laisser
