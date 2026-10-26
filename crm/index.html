@@ -915,6 +915,22 @@
   .liens-rapides.petit { margin-top: 8px; }
   .liens-rapides.petit a { padding: 7px 8px; font-size: 12px; min-width: 120px; }
 
+  /* --- Relances des devis (26/10/2026) --- */
+  .relance-pill { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 99px; white-space: nowrap; background: var(--fond); color: var(--doux); }
+  .relance-pill.retard { background: #fdecea; color: #b3261e; }
+  .relance-pill.pause { background: #fff4d6; color: #8a5a00; }
+  .relance-pill.prevu { background: #e7f0ff; color: #1d4fd8; }
+  html[data-theme="sombre"] .relance-pill.retard { background: rgba(229,72,77,.16); color: #ff8a8e; }
+  html[data-theme="sombre"] .relance-pill.pause { background: rgba(245,158,11,.16); color: #f7c35c; }
+  html[data-theme="sombre"] .relance-pill.prevu { background: rgba(47,107,255,.18); color: #8fb0ff; }
+  .relance-fil { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+  .relance-fil li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; font-size: 13.5px; border-top: 1px solid var(--ligne); padding-top: 8px; }
+  .relance-fil li:first-child { border-top: 0; padding-top: 0; }
+  .relance-fil .q { color: var(--doux); font-size: 12px; }
+  .relance-fil b { font-weight: 700; }
+  .relance-boutons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .relance-boutons .large-2 { grid-column: 1 / -1; }
+
   /* --- Bouton clair / sombre --- */
   .barre-droite { display: flex; align-items: center; gap: 8px; }
   .theme { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--v-ligne); background: var(--v-carte); color: var(--v-encre);
@@ -1062,7 +1078,7 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 //   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
 // - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
 // - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
-const ECRITURES = ['api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer'];
+const ECRITURES = ['api_relance_ajouter', 'api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer'];
 const attendreVisible = () => document.hidden ? new Promise(ok => {
   const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
   document.addEventListener('visibilitychange', f);
@@ -1368,6 +1384,43 @@ function jourLong(j) {
   return JOURS_LONG[dt.getDay()] + ' ' + d + ' ' + MOIS[m - 1] + (a !== new Date().getFullYear() ? ' ' + a : '');
 }
 function decalerJour(j, n) { const [a, m, d] = j.split('-').map(Number); const dt = new Date(a, m - 1, d + n); return fmt(dt).slice(0, 10); }
+
+// ---------------------------------------------------------------------------
+// Relances des devis (26/10/2026, demandé par Nelson). Chaque événement d'un devis vit dans
+// l'onglet « Relances devis » du Sheets : Envoi, Relance (canal), Réponse, Pause (motif + reprise).
+// Prochaine relance : 3 jours après le dernier contact (envoi, relance ou réponse), sauf une pause
+// motivée posée depuis, qui la repousse à sa date de reprise. Seul un devis « envoyé » se relance.
+// ---------------------------------------------------------------------------
+const RELANCE_JOURS = 3;
+function suiviDevis(d) {
+  const ev = (S.data.relancesDevis || []).filter(r => r.devis === d.id).sort((a, b) => a.date.localeCompare(b.date));
+  const envoi = ev.find(r => r.type === 'Envoi');
+  const debut = envoi ? envoi.date : String(d.date_emission || '').slice(0, 10) + ' 09:00';
+  const contacts = ev.filter(r => r.type === 'Relance' || r.type === 'Réponse');
+  const dernier = contacts.length ? contacts[contacts.length - 1].date : debut;
+  const pauses = ev.filter(r => r.type === 'Pause' && r.date >= dernier);
+  const pause = pauses.length ? pauses[pauses.length - 1] : null;
+  const prochaine = pause ? pause.reprise : decalerJour(dernier.slice(0, 10), RELANCE_JOURS);
+  const auj = aujourdhui();
+  const ouvert = d.statut === 'envoyé';
+  const etat = !ouvert ? 'clos' : prochaine <= auj ? (pause ? 'reprise' : 'retard') : pause ? 'pause' : 'prevu';
+  const jours = Math.round((new Date(auj) - new Date(prochaine)) / 864e5);
+  return { ev, debut, dernier, pause, prochaine, etat, jours, relances: ev.filter(r => r.type === 'Relance').length };
+}
+const jourCourt = j => { const d = new Date(j + 'T12:00'); return JOURS[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1); };
+function etatRelance(sv) {
+  if (sv.etat === 'retard') return { cls: 'retard', txt: sv.jours > 0 ? 'À relancer, en retard de ' + sv.jours + ' j' : 'À relancer aujourd’hui' };
+  if (sv.etat === 'reprise') return { cls: 'retard', txt: 'Pause finie : à relancer' };
+  if (sv.etat === 'pause') return { cls: 'pause', txt: 'En pause jusqu’au ' + jourCourt(sv.prochaine) };
+  if (sv.etat === 'prevu') return { cls: 'prevu', txt: 'Relance le ' + jourCourt(sv.prochaine) };
+  return { cls: 'clos', txt: 'Plus de relance' };
+}
+function devisARelancer() {
+  const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
+  if (!F || !F.session || !F.pret) return [];
+  return F.devis.filter(d => d.statut === 'envoyé').map(d => ({ d, sv: suiviDevis(d) }))
+    .filter(x => x.sv.etat === 'retard' || x.sv.etat === 'reprise').sort((a, b) => a.sv.prochaine.localeCompare(b.sv.prochaine));
+}
 function barreJour() {
   const auj = aujourdhui(), j = S.jour;
   const ecart = Math.round((new Date(j) - new Date(auj)) / 864e5);
@@ -1479,6 +1532,17 @@ function vueAujourdhui() {
   // Ils ont ouvert la démo et personne ne les a rappelés depuis : c'est maintenant qu'ils l'ont en tête.
   if (vusDemo.length) h += section('Ont ouvert la démo', vusDemo.length + ' à rappeler maintenant',
     grille(vusDemo.map(p => carteRiche(p, `<div class="lp-droite chaud">${esc(ilYa(vuesDe(p).derniere))}<small>${esc(vuesDe(p).n + '× · ' + dureeTxt(vuesDe(p).s))}</small></div>`)).join('')));
+  // Devis envoyés à relancer (3 jours sans contact, ou pause finie) : Sam les voit dans sa journée.
+  const aRelancer = devisARelancer();
+  if (aRelancer.length) h += section('Devis à relancer', aRelancer.length + ' en attente de réponse',
+    grille(aRelancer.map(({ d, sv }) => { const pr = S.data.prospects.find(x => x.client === d.client_id); const tel = pr && lienTel(pr.telephone);
+      const e = etatRelance(sv);
+      return `<div class="lp" data-id="${esc(pr ? pr.id : '')}" style="--statut:#ffd966"><div class="lp-tete"><div><div class="lp-nom">${esc(d.clients ? d.clients.nom_etablissement : '?')}</div>
+        <div class="lp-sous">${esc(d.numero || '')} · ${eur2(d.total_ttc)} TTC · ${sv.relances ? sv.relances + ' relance' + (sv.relances > 1 ? 's' : '') : 'jamais relancé'}</div></div>
+        <div class="lp-droite retard">${esc(e.txt)}</div></div>
+        <dl class="lp-grille"><dt>Dernier</dt><dd>${esc(dateCourte(sv.dernier))}</dd>${pr && pr.gerant ? `<dt>Gérant</dt><dd>${esc(pr.gerant)}</dd>` : ''}${pr && pr.telephone ? `<dt>Tél.</dt><dd>${esc(pr.telephone)}</dd>` : ''}</dl>
+        <div class="lp-actions" style="grid-template-columns:1fr 1.3fr"><a class="appeler ${tel ? '' : 'inactif'}" href="${tel || '#'}" data-stop="1">☎︎ Appeler</a>
+        <button data-action="ouvrir-devis" data-id="${esc(d.id)}">Noter la relance</button></div></div>`; }).join('')));
   if (negoSansDate.length) h += section('Devis en cours sans prochain point', negoSansDate.length + ' à relancer',
     grille(negoSansDate.map(p => carteRiche(p, droite('à relancer', p.dernier ? 'vu ' + dateCourte(p.dernier) : '', true))).join('')));
   if (retard.length) h += section('En retard', retard.length + ' à replacer', grille(retard.map(p => carteRiche(p, droite(rdvOuRappel(p), 'en retard', true))).join('')));
@@ -2532,12 +2596,14 @@ function vueArgent() {
       : '<div class="vide">Aucun client avec un abonnement de maintenance pour l’instant.</div>'}</div>`;
 
   const ST_DEVIS = { 'envoyé': ['#c9daf8', 'En attente'], 'accepté': ['#93c47d', 'Signé'], 'refusé': ['#dd7e6b', 'Refusé'], 'expiré': ['#efefef', 'Expiré'], 'brouillon': ['#ffffff', 'Brouillon'] };
-  const c8 = `<div class="v-carte" style="margin-top:14px"><div class="v-carte-tete" style="flex-wrap:wrap"><h3><span class="v-pico">${SVG('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>')}</span>Devis<small>${devisAttente.length} en attente · ${eur2(devisAttente.reduce((s, x) => s + x.ttc, 0))} TTC, dont ${eur2(devisAttente.reduce((s, x) => s + x.acompte, 0))} d’acomptes à la signature</small></h3></div>
-    ${devisL.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Client</th><th>Total TTC</th><th class="v-hm">Site HT</th><th class="v-hm">Maintenance HT</th><th class="v-hm">À la signature</th><th class="v-hm">À la mise en ligne</th><th class="v-hm">Valable jusqu’au</th><th>État</th></tr></thead>
-      <tbody>${devisL.map(x => `<tr><td><div class="v-qui">${avatar((x.d.clients && x.d.clients.nom_etablissement) || '?')}<div><b>${esc((x.d.clients && x.d.clients.nom_etablissement) || '—')}</b><small>${esc(x.d.numero || 'brouillon')} · ${esc(dateFr(x.d.date_emission))}</small></div></div></td>
+  const nbARelancer = devisARelancer().length;
+  const c8 = `<div class="v-carte" style="margin-top:14px"><div class="v-carte-tete" style="flex-wrap:wrap"><h3><span class="v-pico">${SVG('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>')}</span>Devis<small>${devisAttente.length} en attente · ${eur2(devisAttente.reduce((s, x) => s + x.ttc, 0))} TTC, dont ${eur2(devisAttente.reduce((s, x) => s + x.acompte, 0))} d’acomptes à la signature${nbARelancer ? ' · <b style="color:var(--v-rouge)">' + nbARelancer + ' à relancer</b>' : ''}</small></h3></div>
+    ${devisL.length ? `<div class="v-table-zone"><table class="v-table"><thead><tr><th>Client</th><th>Total TTC</th><th class="v-hm">Site HT</th><th class="v-hm">Maintenance HT</th><th class="v-hm">À la signature</th><th class="v-hm">À la mise en ligne</th><th class="v-hm">Valable jusqu’au</th><th>Relance</th><th>État</th></tr></thead>
+      <tbody>${devisL.map(x => `<tr data-fx-devis="${esc(x.d.id)}" style="cursor:pointer"><td><div class="v-qui">${avatar((x.d.clients && x.d.clients.nom_etablissement) || '?')}<div><b>${esc((x.d.clients && x.d.clients.nom_etablissement) || '—')}</b><small>${esc(x.d.numero || 'brouillon')} · ${esc(dateFr(x.d.date_emission))}</small></div></div></td>
         <td><b>${eur2(x.ttc)}</b></td><td class="v-hm">${eur2(x.site)}</td><td class="v-hm">${x.mtn ? eur2(x.mtn) + ' /an' : '—'}</td>
         <td class="v-hm">${eur2(x.acompte)}</td><td class="v-hm">${eur2(x.solde)}</td>
         <td class="v-hm"><span class="v-faible">${esc(dateFr(x.d.date_validite))}</span></td>
+        <td>${x.d.statut === 'envoyé' ? (e => `<span class="relance-pill ${e.cls}">${esc(e.txt)}</span>`)(etatRelance(suiviDevis(x.d))) : '<span class="v-faible">—</span>'}</td>
         <td><span class="v-st" style="--statut:${(ST_DEVIS[x.etat] || ST_DEVIS.brouillon)[0]}">${(ST_DEVIS[x.etat] || [0, esc(x.etat)])[1]}</span></td></tr>`).join('')}</tbody></table></div>
       <p class="sous" style="margin:10px 0 0">À la signature : 50 % du site et la première année de maintenance, TTC. À la mise en ligne : l’autre moitié du site.</p>`
       : '<div class="vide">Aucun devis pour l’instant.</div>'}</div>`;
@@ -3299,6 +3365,7 @@ document.addEventListener('click', e => {
   else if (act === 'theme') basculerTheme();
   else if (act === 'argent-periode') { S.argentPeriode = a.dataset.p; rendre(); }
   else if (act === 'aller-factu') { S.vue = 'factu'; window.scrollTo(0, 0); rendre(); Factu.recharger(); }
+  else if (act === 'ouvrir-devis') Factu.ouvrirDevis(a.dataset.id);
   else if (act === 'aller-ajouter') { S.vue = 'ajouter'; window.scrollTo(0, 0); rendre(); }
   else if (act === 'pipe-mode') { S.pipeMode = a.dataset.m; stocker('pipeMode', S.pipeMode); rendre(); }
   else if (act === 'pipe-statut') { S.pipeStatut = a.dataset.k; S.pipeMax = 100; rendre(); }
@@ -4152,6 +4219,7 @@ const Factu = (() => {
         <div class="kpi"><div class="v">${enAttente.length}</div><div class="l">devis en attente de réponse</div></div></div>
       ${F.menage ? `<div class="fx-alerte" style="background:#fff8e1;border-color:#f3d98b">Touche les devis et factures à supprimer. Une facture émise (avec numéro FAC) ne se supprime pas : c'est un document légal. Un devis déjà facturé non plus.</div>`
         : `<div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button><button class="btn clair" data-fx="menage">Supprimer…</button></div>`}
+      ${F.menage ? '' : blocRelances()}
       ${aEmettre.length ? section('Factures à émettre', 'brouillons sans numéro', aEmettre.map(carteFacture).join('')) : ''}
       ${impayees.length ? section('Factures à encaisser', impayees.length + '', impayees.map(carteFacture).join('')) : ''}
       ${section('Devis', F.devis.length + '', F.devis.length ? F.devis.map(carteDevis).join('') : '<div class="vide">Aucun devis. Ouvre la fiche d’un prospect et touche « Faire un devis ».</div>')}
@@ -4159,6 +4227,59 @@ const Factu = (() => {
       ${F.menage ? `<div class="fx-menage"><button class="btn clair" data-fx="menage-fin">Annuler</button>
         <button class="btn danger" data-fx="menage-go" ${F.choix.size ? '' : 'disabled'}>Supprimer${F.choix.size ? ' (' + F.choix.size + ')' : ''}</button></div>`
         : `${blocSignature()}<p style="margin-top:18px"><button class="btn clair large" data-fx="deconnexion">Se déconnecter de la facturation</button></p>`}`;
+  }
+
+  // ------------------------------------------------------------------ relances des devis
+  // Supervision (26/10/2026) : tous les devis envoyés, les plus en retard d'abord. Calcul dans Index.html (suiviDevis).
+  function blocRelances() {
+    const L = F.devis.filter(d => d.statut === 'envoyé').map(d => ({ d, sv: suiviDevis(d) }));
+    if (!L.length) return '';
+    const ordre = { retard: 0, reprise: 0, prevu: 1, pause: 2 };
+    L.sort((a, b) => ordre[a.sv.etat] - ordre[b.sv.etat] || a.sv.prochaine.localeCompare(b.sv.prochaine));
+    const n = L.filter(x => x.sv.etat === 'retard' || x.sv.etat === 'reprise').length;
+    return section('Relances des devis', n ? n + ' à relancer' : 'tout est à jour', L.map(({ d, sv }) => { const e = etatRelance(sv);
+      return `<div class="fx-carte" data-fx-devis="${d.id}"><div class="corps"><div class="nom">${esc(d.clients ? d.clients.nom_etablissement : '?')}</div>
+        <div class="meta">${esc(d.numero || '')} · dernier contact ${esc(dateCourte(sv.dernier))} · ${sv.relances ? sv.relances + ' relance' + (sv.relances > 1 ? 's' : '') : 'jamais relancé'}${sv.pause ? ' · ' + esc(sv.pause.note) : ''}</div>
+        <div style="margin-top:4px"><span class="relance-pill ${e.cls}">${esc(e.txt)}</span></div></div>
+        <div class="mt">${eur(d.total_ttc)} €</div></div>`; }).join(''));
+  }
+  const LIB_REL = { Envoi: 'Devis envoyé', Relance: 'Relance', Réponse: 'Réponse du client', Pause: 'Pas de relance' };
+  function blocSuiviRelances(d) {
+    const sv = suiviDevis(d), e = etatRelance(sv);
+    const fil = sv.ev.length ? sv.ev.slice().reverse() : [{ date: sv.debut, type: 'Envoi', note: 'date du devis (envoi non noté)', par: '' }];
+    const form = F.formRelance && F.formRelance.devis === d.id ? formRelance(d, F.formRelance.type) : '';
+    return `<div class="bloc"><h3>Suivi des relances</h3>
+      <div><span class="relance-pill ${e.cls}">${esc(e.txt)}</span></div>
+      <p class="sous" style="margin:8px 0 0">Sans réponse, on relance ${RELANCE_JOURS} jours après le dernier contact. Pour attendre plus longtemps, il faut une raison et une date de reprise.</p>
+      <ul class="relance-fil">${fil.map(r => `<li><span class="q">${esc(dateCourte(r.date))}</span><span><b>${esc(LIB_REL[r.type] || r.type)}</b>${r.canal ? ' · ' + esc(r.canal) : ''}${r.par ? ' · ' + esc(r.par) : ''}
+        ${r.note ? '<br>' + esc(r.note) : ''}${r.type === 'Pause' && r.reprise ? '<br><span class="q">reprise le ' + esc(jourCourt(r.reprise)) + '</span>' : ''}</span></li>`).join('')}</ul>
+      ${d.statut === 'envoyé' ? (form || `<div class="relance-boutons"><button class="btn" data-fx="relance-form" data-type="Relance" data-id="${d.id}">J’ai relancé</button>
+        <button class="btn clair" data-fx="relance-form" data-type="Réponse" data-id="${d.id}">Le client a répondu</button>
+        <button class="btn clair large-2" data-fx="relance-form" data-type="Pause" data-id="${d.id}">Ne pas relancer pour l’instant…</button></div>`) : ''}</div>`;
+  }
+  function formRelance(d, type) {
+    const reprise = decalerJour(aujourdhui(), 7);
+    return `<form id="fx-relance" class="bloc" style="margin-top:12px;box-shadow:none" autocomplete="off">
+      <input type="hidden" name="devis" value="${d.id}"><input type="hidden" name="type" value="${type}">
+      <h3 style="margin-bottom:8px">${type === 'Relance' ? 'J’ai relancé' : type === 'Réponse' ? 'Le client a répondu' : 'Ne pas relancer pour l’instant'}</h3>
+      ${type === 'Relance' ? `<label class="champ">Comment<select name="canal"><option>Appel</option><option>WhatsApp</option><option>Mail</option><option>SMS</option><option>Sur place</option></select></label>` : ''}
+      ${type === 'Pause' ? `<label class="champ">Pourquoi on ne relance pas *<input name="note" required placeholder="Ex. il revient de vacances, il attend l’avis de son associé…"></label>
+        <label class="champ">On reprend le *<input name="reprise" type="date" required value="${reprise}"></label>`
+        : `<label class="champ">${type === 'Réponse' ? 'Ce qu’il a dit' : 'Note'}<input name="note" placeholder="${type === 'Réponse' ? 'Ex. il réfléchit, rappeler jeudi' : 'Ex. messagerie, message laissé'}"></label>`}
+      <div class="fx-deux"><button type="button" class="btn clair" data-fx="relance-annuler" data-id="${d.id}">Annuler</button><button class="btn" type="submit">Enregistrer</button></div></form>`;
+  }
+  async function noterRelance(r) {
+    const d = F.devis.find(x => x.id === r.devis); if (!d) return null;
+    const p = prospectDuClient(d.client_id);
+    const ligne = await appel('api_relance_ajouter', S.pin, Object.assign({ numero: d.numero || '', client: d.clients ? d.clients.nom_etablissement : '', prospect: p ? p.id : '' }, r));
+    (S.data.relancesDevis = S.data.relancesDevis || []).push(ligne);
+    return ligne;
+  }
+  async function enregistrerRelance(form) {
+    const b = form.querySelector('button[type=submit]'); b.disabled = true;
+    const r = Object.fromEntries([...form.elements].filter(e => e.name).map(e => [e.name, e.value]));
+    try { await noterRelance(r); F.formRelance = null; toast(r.type === 'Pause' ? 'Pause notée, reprise le ' + jourCourt(r.reprise) + '.' : 'Noté dans le suivi du devis.'); ouvrirDevis(r.devis); rendre(); }
+    catch (e) { b.disabled = false; toast(e.message || String(e), true); }
   }
 
   // ------------------------------------------------------------------ suivi clients
@@ -4613,6 +4734,7 @@ const Factu = (() => {
     feuille(tete(d.numero ? esc(d.numero) : 'Devis brouillon', esc(d.clients ? d.clients.nom_etablissement : '') + ' · <span class="fx-st ' + cls(d.statut) + '">' + esc(d.statut) + '</span>')
       + `<div class="bloc"><dl class="infos"><dt>Émis le</dt><dd>${fmtDate(d.date_emission)}</dd><dt>Valable jusqu’au</dt><dd>${fmtDate(d.date_validite)}</dd>
          <dt>Total HT</dt><dd>${eur(d.total_ht)} €</dd><dt>Total TTC</dt><dd><b>${eur(d.total_ttc)} €</b></dd></dl></div>
+         ${d.statut !== 'brouillon' ? blocSuiviRelances(d) : ''}
          <div style="display:grid;gap:8px;margin-top:12px">${act.join('')}</div>`);
   }
 
@@ -4623,6 +4745,8 @@ const Factu = (() => {
     await charger();
     const d = F.devis.find(x => x.id === id);
     toast(st === 'envoyé' ? 'Devis ' + (d && d.numero || '') + ' envoyé.' : 'Devis ' + st + '.');
+    // Le suivi des relances part de l'envoi, et se clôt sur la réponse (26/10/2026).
+    try { await noterRelance(st === 'envoyé' ? { devis: id, type: 'Envoi' } : { devis: id, type: 'Réponse', note: 'Devis ' + st }); } catch (e) { toast('Suivi des relances non noté : ' + e.message, true); }
     // Devis accepté = client signé dans le CRM.
     const p = d && prospectDuClient(d.client_id);
     if (st === 'accepté' && p && cle(p) !== 'signe' && confirm('Passer ' + p.entreprise + ' en « Client signé » dans le CRM ?')) {
@@ -4882,6 +5006,8 @@ const Factu = (() => {
     else if (act === 'voir-facture-contrat') voir('facture-contrat', id);
     else if (act === 'voir-contrat') voir('contrat', id);
     else if (act === 'statut-devis') changerStatutDevis(id, a.dataset.st);
+    else if (act === 'relance-form') { F.formRelance = { devis: id, type: a.dataset.type }; ouvrirDevis(id); }
+    else if (act === 'relance-annuler') { F.formRelance = null; ouvrirDevis(id); }
     else if (act === 'facturer') facturer(id, a.dataset.objet);
     else if (act === 'emettre') emettre(id);
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
@@ -4918,10 +5044,11 @@ const Factu = (() => {
     if (e.target.id === 'fx-devis') { e.preventDefault(); enregistrerDevis(e.target); }
     if (e.target.id === 'fx-client') { e.preventDefault(); enregistrerClient(e.target); }
     if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
+    if (e.target.id === 'fx-relance') { e.preventDefault(); enregistrerRelance(e.target); }
   });
 
   // donnees : lu par l'objectif du mois (Stats), en lecture seule.
-  return { init, vue, nouveauDevis, recharger: () => F.session && charger(), donnees: () => F };
+  return { init, vue, nouveauDevis, ouvrirDevis, recharger: () => F.session && charger(), donnees: () => F };
 })();
 </script>
 
