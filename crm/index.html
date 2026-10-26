@@ -4168,7 +4168,8 @@ const Factu = (() => {
     if (err) F.erreur = err.message;
     F.clients = c.data || []; F.devis = d.data || []; F.factures = f.data || []; F.paiements = pay.error ? null : pay.data || [];
     F.pret = true;
-    if (S.vue === 'factu' || S.vue === 'stats' || S.vue === 'argent') rendre();
+    // La Journée aussi : sa section « Devis à relancer » attend ces devis, chargés après elle.
+    if (S.vue === 'factu' || S.vue === 'stats' || S.vue === 'argent' || S.vue === 'jour') rendre();
   }
 
   async function connexion(form) {
