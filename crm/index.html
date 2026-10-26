@@ -536,7 +536,7 @@
   .recherche:focus { border-color: var(--v-bleu); background-color: var(--v-carte); box-shadow: 0 0 0 4px rgba(47,107,255,.12); }
 
   /* --- Onglets : pilules, l'actif en noir --- */
-  nav.onglets { background: rgba(255,255,255,.94); border: 1px solid var(--v-ligne); box-shadow: 0 14px 34px -16px rgba(16,24,40,.35); font-family: var(--v-police); }
+  nav.onglets { background: var(--v-carte); -webkit-backdrop-filter: none; backdrop-filter: none; border: 1px solid var(--v-ligne); box-shadow: 0 14px 34px -16px rgba(16,24,40,.35); font-family: var(--v-police); }
   nav.onglets button { color: var(--v-doux); border-radius: 17px; }
   nav.onglets button .ico { display: grid; place-items: center; height: 20px; }
   nav.onglets button .ico svg { width: 19px; height: 19px; }
@@ -1002,7 +1002,7 @@
   }
   html[data-theme="sombre"] body { color: var(--encre); }
   /* Pilules actives : blanches sur fond sombre */
-  html[data-theme="sombre"] nav.onglets { background: rgba(22,24,28,.94); }
+  html[data-theme="sombre"] nav.onglets { background: var(--v-carte); }
   html[data-theme="sombre"] nav.onglets button.actif, html[data-theme="sombre"] nav.onglets button.actif:hover,
   html[data-theme="sombre"] .v-seg button.on, html[data-theme="sombre"] .v-puces button.on { background: #f2f3f5; color: #0c0d10; border-color: #f2f3f5; }
   html[data-theme="sombre"] nav.onglets button.actif .ico { color: #0c0d10; }
