@@ -1702,7 +1702,7 @@ const Carte = (() => {
   const C = { map: null, couche: null, couchePistes: null, filtre: 'actifs', pistes: [], file: [], enCours: false, faits: 0, aEnvoyer: [], communes: {}, moi: null };
   const LUX = [[49.44, 5.73], [50.19, 6.53]];
   // La bulle s'ouvre sous la barre de filtres et au-dessus des onglets, jamais dessous.
-  const POPUP = { maxWidth: 260, autoPanPaddingTopLeft: [12, 170], autoPanPaddingBottomRight: [12, 110] };
+  const POPUP = { maxWidth: 260, autoPanPaddingTopLeft: [12, 260], autoPanPaddingBottomRight: [12, 110] };
   // Bulle avec la fiche Google du commerce (26/10/2026, demandé par Nelson) : la carte Google Maps
   // intégrée (nom, note, avis, adresse, horaires), sans clé d'API, et un lien vers la fiche complète.
   const POPUP_G = Object.assign({}, POPUP, { maxWidth: 330, minWidth: 290 });
