@@ -1094,6 +1094,12 @@
   html[data-theme="sombre"] .v-seg, html[data-theme="sombre"] #moi, html[data-theme="sombre"] .espaces button.actif, html[data-theme="sombre"] .btn.clair { background: rgba(40,36,34,.5) !important; border-color: rgba(255,255,255,.1) !important; }
   html[data-theme="sombre"] .espaces, html[data-theme="sombre"] input.recherche { background: rgba(0,0,0,.18) !important; border-color: rgba(255,255,255,.08) !important; }
   html[data-theme="sombre"] header.barre, html[data-theme="sombre"] nav#onglets { background: rgba(14,13,13,.32) !important; border-color: rgba(255,255,255,.08) !important; }
+  /* Barre d'onglets en verre clair : libellés sombres (ils étaient clairs, faits pour la barre noire). */
+  html:not([data-theme="sombre"]) nav#onglets button:not(.actif) { color: rgba(32,24,18,.78) !important; }
+  html:not([data-theme="sombre"]) nav#onglets button:not(.actif):hover { color: #1d1712 !important; background: rgba(255,255,255,.3) !important; }
+  html:not([data-theme="sombre"]) nav#onglets::before { color: #1d1712 !important; }
+  html:not([data-theme="sombre"]) nav#onglets::after { color: rgba(32,24,18,.6) !important; }
+  @media (min-width: 1000px) { nav#onglets { background-image: none !important; } }
   /* Sur une photo chargée, les titres posés à même le panneau gardent du relief. */
   html.fond-perso main h1, html.fond-perso main h2.section, html.fond-perso .v-tete p { text-shadow: 0 1px 12px rgba(255,255,255,.6); }
   html.fond-perso[data-theme="sombre"] main h1, html.fond-perso[data-theme="sombre"] main h2.section, html.fond-perso[data-theme="sombre"] .v-tete p { text-shadow: 0 1px 12px rgba(0,0,0,.65); }
