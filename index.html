@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="ns-fx.css?v=7">
 <link rel="stylesheet" href="ns-clair.css?v=5">
 <link rel="stylesheet" href="reseaux.css?v=3">
+<link rel="stylesheet" href="ns-showcase.css?v=1">
 <script src="ns-motion.js?v=20260924" defer></script>
 <script src="assets/terres.js?v=1" defer></script>
 <script src="ns-fx.js?v=16" defer></script>
@@ -472,6 +473,7 @@
     .hw-track{animation:none}
   }
 </style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Quels contenus dois-je fournir pour mon site ?", "acceptedAnswer": {"@type": "Answer", "text": "Votre logo, vos textes et vos photos, si vous en avez. Ce qui manque, on le prévoit ensemble à la découverte : vous n’avez pas à tout préparer avant de nous appeler. Les zones d’image sont maquettées en attendant vos photos."}}, {"@type": "Question", "name": "Combien de temps faut-il pour avoir mon site ?", "acceptedAnswer": {"@type": "Answer", "text": "Le développement se compte en jours, pas en mois, une fois la maquette validée. Vous voyez le design avant que la moindre ligne de code ne soit écrite, et vous suivez l’avancement à chaque étape."}}, {"@type": "Question", "name": "Combien ça coûte ?", "acceptedAnswer": {"@type": "Answer", "text": "À partir de 990 € pour un site Essentiel, 1 990 € pour un Standard, 3 290 € pour du sur-mesure. Montants hors TVA et hors maintenance, donnés pour situer. Le tarif exact est établi avec vous, le devis est gratuit."}}, {"@type": "Question", "name": "La maintenance est-elle obligatoire ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, c’est elle qui garde votre site en ligne : hébergement au Luxembourg, nom de domaine, sauvegardes, sécurité, support et petites modifications. Elle se paie au trimestre ou à l’année, jamais au mois. Le montant dépend de la formule et figure sur le devis, rien n’est caché."}}, {"@type": "Question", "name": "Le nom de domaine m’appartient-il ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui. Le nom de domaine reste votre propriété, même si on le gère pour vous. Vous n’avez pas de compte à créer, et il vous suit si un jour vous changez de prestataire."}}, {"@type": "Question", "name": "Puis-je modifier mon site moi-même ?", "acceptedAnswer": {"@type": "Answer", "text": "Les petites modifications (un horaire, un prix, une photo) sont incluses dans la maintenance : vous nous les demandez et on les fait. Si vous changez souvent votre contenu, une option « modifications illimitées » existe. Votre espace client vous montre ce qui a été fait."}}, {"@type": "Question", "name": "Vais-je perdre mon site actuel pendant la refonte ?", "acceptedAnswer": {"@type": "Answer", "text": "Non. Votre site actuel reste en ligne pendant qu’on prépare le nouveau. On ne bascule qu’une fois la nouvelle version validée par vous."}}, {"@type": "Question", "name": "Et si je veux ajouter des fonctions plus tard ?", "acceptedAnswer": {"@type": "Answer", "text": "C’est prévu. Réservation en ligne, boutique, paiement, nouvelle langue : ça s’ajoute à votre site existant, sur devis, sans tout refaire."}}]}</script>
 </head>
 <body class="fx-lock">
 
@@ -501,7 +503,7 @@
       <a href="#contact">Contact</a>
       <div class="lang-sel" id="langSel" role="group" aria-label="Choix de la langue"></div>
       <a href="espace-client.html" class="espace-lien">Espace client</a>
-      <a href="#contact" class="btn primary" style="padding:11px 20px">Devis gratuit</a>
+      <a href="#contact" class="btn primary" style="padding:11px 20px" data-rdv-open>Réserver un appel</a>
     </div>
     <button class="hamb" id="hamb" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
@@ -747,6 +749,27 @@
 </section>
 
 <!-- AVANT / APRÈS -->
+<!-- MAQUETTES SUR ÉCRAN -->
+<section class="sec" id="maquettes">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 data-reveal>Votre site, sur un vrai écran</h2>
+      <p data-reveal="blur" data-delay="120">Faites défiler la page : chaque maquette est une page entière de nos démonstrations, vue sur ordinateur et sur téléphone, comme vos clients la verront.</p>
+    </div>
+    <div data-mq data-reveal>
+      <div class="mq-tabs" role="tablist" aria-label="Choisir un métier"><button class="mq-tab" role="tab" type="button" data-k="restaurant" data-href="demos/vitrines/restaurant/index.html" aria-selected="true" tabindex="0">Restaurant</button><button class="mq-tab" role="tab" type="button" data-k="fitness" data-href="demos/vitrines/fitness/index.html" aria-selected="false" tabindex="-1">Fitness</button><button class="mq-tab" role="tab" type="button" data-k="immobilier" data-href="demos/vitrines/immobilier/index.html" aria-selected="false" tabindex="-1">Immobilier</button><button class="mq-tab" role="tab" type="button" data-k="automobile" data-href="demos/vitrines/automobile/index.html" aria-selected="false" tabindex="-1">Automobile</button><button class="mq-tab" role="tab" type="button" data-k="kine" data-href="demos/kinesitherapie-kelmen/index.html" aria-selected="false" tabindex="-1">Kinésithérapie</button></div>
+      <div class="mq-stage">
+        <div class="mq-laptop">
+          <div class="mq-lid"><div class="mq-screen"><img class="mq-pc" src="assets/maquettes/restaurant-pc.jpg" width="1280" height="4200" alt="Page d’accueil et carte d’un site de restaurant, vue sur ordinateur" decoding="async"></div></div>
+          <div class="mq-base" aria-hidden="true"></div>
+        </div>
+        <div class="mq-phone"><div class="mq-pscreen"><img class="mq-tel" src="assets/maquettes/restaurant-tel.jpg" width="390" height="2530" alt="Le même site de restaurant, vue sur téléphone" decoding="async"></div></div>
+      </div>
+      <p class="mq-cap"><b class="mq-cap-nom">Restaurant</b> · maquette de démonstration, pas un client réel · <a class="mq-cap-lien" href="demos/vitrines/restaurant/index.html">Ouvrir la démo</a></p>
+    </div>
+  </div>
+</section>
+
 <section class="sec" id="refonte">
   <div class="wrap">
     <div class="sec-head">
@@ -1026,6 +1049,30 @@
   </div>
 </section>
 
+<!-- FAQ -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="sec-head" style="margin-inline:auto;text-align:center">
+      <h2 data-reveal>Les questions qu’on nous pose avant de commencer</h2>
+      <p data-reveal="blur" data-delay="120">Les réponses directes, sans jargon. Une autre question ? Réservez un appel de 15 minutes.</p>
+    </div>
+    <div class="faq-list">
+      <details class="faq" name="faq" data-reveal><summary>Quels contenus dois-je fournir pour mon site ?</summary><div class="faq-r"><p>Votre logo, vos textes et vos photos, si vous en avez. Ce qui manque, on le prévoit ensemble à la découverte : vous n’avez pas à tout préparer avant de nous appeler. Les zones d’image sont maquettées en attendant vos photos.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>Combien de temps faut-il pour avoir mon site ?</summary><div class="faq-r"><p>Le développement se compte en jours, pas en mois, une fois la maquette validée. Vous voyez le design avant que la moindre ligne de code ne soit écrite, et vous suivez l’avancement à chaque étape.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>Combien ça coûte ?</summary><div class="faq-r"><p>À partir de <b>990 €</b> pour un site Essentiel, <b>1 990 €</b> pour un Standard, <b>3 290 €</b> pour du sur-mesure. Montants hors TVA et hors maintenance, donnés pour situer. Le tarif exact est établi avec vous, le devis est gratuit.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>La maintenance est-elle obligatoire ?</summary><div class="faq-r"><p>Oui, c’est elle qui garde votre site en ligne : hébergement au Luxembourg, nom de domaine, sauvegardes, sécurité, support et petites modifications. Elle se paie au trimestre ou à l’année, jamais au mois. Le montant dépend de la formule et figure sur le devis, rien n’est caché.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>Le nom de domaine m’appartient-il ?</summary><div class="faq-r"><p>Oui. Le nom de domaine reste votre propriété, même si on le gère pour vous. Vous n’avez pas de compte à créer, et il vous suit si un jour vous changez de prestataire.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>Puis-je modifier mon site moi-même ?</summary><div class="faq-r"><p>Les petites modifications (un horaire, un prix, une photo) sont incluses dans la maintenance : vous nous les demandez et on les fait. Si vous changez souvent votre contenu, une option « modifications illimitées » existe. Votre espace client vous montre ce qui a été fait.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>Vais-je perdre mon site actuel pendant la refonte ?</summary><div class="faq-r"><p>Non. Votre site actuel reste en ligne pendant qu’on prépare le nouveau. On ne bascule qu’une fois la nouvelle version validée par vous.</p></div></details>
+      <details class="faq" name="faq" data-reveal><summary>Et si je veux ajouter des fonctions plus tard ?</summary><div class="faq-r"><p>C’est prévu. Réservation en ligne, boutique, paiement, nouvelle langue : ça s’ajoute à votre site existant, sur devis, sans tout refaire.</p></div></details>
+    </div>
+    <div class="faq-cta" data-reveal>
+      <p>Votre question n’est pas là ?<span>Un appel de 15 minutes, gratuit et sans engagement.</span></p>
+      <a href="#contact" class="btn primary" data-rdv-open>Réserver un appel</a>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="sec" id="contact">
   <div class="wrap">
@@ -1033,10 +1080,12 @@
       <span class="eyebrow" data-reveal="blur">Contact</span>
       <h2 data-reveal data-delay="120">Parlons de votre projet</h2>
       <p data-reveal="blur" data-delay="240">Un devis gratuit, sans engagement, sous 24 h. Dites-nous ce dont vous avez besoin.</p>
+      <p data-reveal="blur" data-delay="320" style="margin-top:18px"><a href="#contact" class="btn ghost" data-rdv-open>Ou réservez un appel de 15 minutes</a></p>
     </div>
     <div class="contact-grid">
       <div class="cinfo" data-reveal="left">
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="ci-l">Email</div><div class="ci-v">nsdevelopment26@gmail.com</div></div></div>
+        <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg></div><div><div class="ci-l">WhatsApp</div><div class="ci-v"><a href="https://wa.me/352621757113?text=Bonjour%2C%20je%20vous%20%C3%A9cris%20depuis%20le%20site%20NS%20Development." target="_blank" rel="noopener" style="color:inherit">+352 621 757 113</a></div></div></div>
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="ci-l">Zone</div><div class="ci-v">Luxembourg & alentours</div></div></div>
         <div class="cline"><div class="ci-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="ci-l">Réponse</div><div class="ci-v">Sous 24 h ouvrées</div></div></div>
         <div class="cline" style="border-bottom:none"><div class="ci-ic"><svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/></svg></div><div><div class="ci-l">Réseaux</div><div class="ci-res"><a href="https://www.instagram.com/nsdevelopment.lu/" target="_blank" rel="noopener">@nsdevelopment.lu</a><a href="https://www.instagram.com/samnsdevelopment/" target="_blank" rel="noopener">@samnsdevelopment</a></div></div></div>
@@ -1075,11 +1124,12 @@
       </div>
       <div class="foot-col">
         <h4>Navigation</h4>
-        <a href="#services">Services</a><a href="#demos">Exemples</a><a href="#method">Méthode</a><a href="#pricing">Tarifs</a><a href="#contact">Contact</a><a href="espace-client.html">Espace client</a>
+        <a href="#services">Services</a><a href="#demos">Exemples</a><a href="#method">Méthode</a><a href="#pricing">Tarifs</a><a href="#faq">Questions</a><a href="#contact">Contact</a><a href="espace-client.html">Espace client</a>
       </div>
       <div class="foot-col">
         <h4>Contact</h4>
         <a href="mailto:nsdevelopment26@gmail.com">nsdevelopment26@gmail.com</a>
+        <a href="https://wa.me/352621757113?text=Bonjour%2C%20je%20vous%20%C3%A9cris%20depuis%20le%20site%20NS%20Development." target="_blank" rel="noopener">WhatsApp +352 621 757 113</a>
         <a href="#contact">Devis gratuit</a>
         <span style="display:block;font-size:13.5px;color:var(--muted);padding:5px 0">Luxembourg</span>
       </div>
@@ -1290,5 +1340,28 @@
 <!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
 <script src="suivi.js" defer></script>
 <script src="reseaux.js?v=4" defer></script>
+<!-- RENDEZ-VOUS -->
+<dialog class="rdv" id="rdv" aria-labelledby="rdvT">
+  <button class="rdv-x" type="button" aria-label="Fermer">×</button>
+  <div class="rdv-in">
+    <h3 id="rdvT">Réserver un appel de 15 minutes</h3>
+    <p class="rdv-sub">Gratuit, sans engagement. On vous appelle pour comprendre votre projet et vous dire franchement ce qu’il vous faut.</p>
+    <span class="rdv-l" id="rdvJ">1. Choisissez un jour</span>
+    <div class="rdv-chips" data-rdv-jours role="group" aria-labelledby="rdvJ"></div>
+    <span class="rdv-l" id="rdvH">2. Choisissez une heure</span>
+    <div class="rdv-chips" data-rdv-heures role="group" aria-labelledby="rdvH"></div>
+    <span class="rdv-l">3. Comment vous joindre</span>
+    <div class="rdv-f">
+      <div><label for="rdvN">Votre nom</label><input id="rdvN" name="nom" type="text" autocomplete="name"></div>
+      <div><label for="rdvT2">Téléphone</label><input id="rdvT2" name="tel" type="tel" autocomplete="tel"></div>
+      <div style="grid-column:1/-1"><label for="rdvE">Email (facultatif)</label><input id="rdvE" name="email" type="email" autocomplete="email"></div>
+    </div>
+    <button class="btn primary rdv-ok" type="button" disabled>Demander ce créneau</button>
+    <div class="rdv-done" role="status"></div>
+    <p class="rdv-note">Le créneau est une demande : on vous confirme par message, sous 24 h ouvrées. Plus pressé ? <a href="https://wa.me/352621757113?text=Bonjour%2C%20je%20vous%20%C3%A9cris%20depuis%20le%20site%20NS%20Development." target="_blank" rel="noopener" style="color:var(--acc2);text-decoration:underline">Écrivez-nous sur WhatsApp</a>.</p>
+  </div>
+</dialog>
+
+<script src="ns-showcase.js?v=1" defer></script>
 </body>
 </html>
