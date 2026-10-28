@@ -1,54 +1,5 @@
-/* NS Development : maquettes sur écran + prise de rendez-vous. Ajouté le 28/10/2026. */
+/* NS Development : prise de rendez-vous. Ajouté le 28/10/2026. */
 (function(){
-  var reduit = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ===== Maquettes : la page défile dans l'écran quand on défile la page ===== */
-  var mq = document.querySelector('[data-mq]');
-  if (mq) {
-    var pc = mq.querySelector('.mq-pc'), tel = mq.querySelector('.mq-tel');
-    var ecranPc = mq.querySelector('.mq-screen'), ecranTel = mq.querySelector('.mq-pscreen');
-    var stage = mq.querySelector('.mq-stage'), cap = mq.querySelector('.mq-cap-nom'), lien = mq.querySelector('.mq-cap-lien');
-    var onglets = [].slice.call(mq.querySelectorAll('.mq-tab'));
-    var cur = {a:0, b:0}, cible = 0, enCours = false;
-
-    function course(img, ecran){ return Math.max(0, img.offsetHeight - ecran.offsetHeight); }
-    function mesure(){
-      var r = stage.getBoundingClientRect(), vh = window.innerHeight;
-      var p = (vh - r.top) / (vh + r.height);
-      cible = Math.min(1, Math.max(0, (p - .12) / .66));
-    }
-    function dessine(){
-      cur.a += (cible - cur.a) * .12;
-      cur.b += (Math.min(1, cible * 1.08) - cur.b) * .12;
-      pc.style.transform = 'translate3d(0,' + (-cur.a * course(pc, ecranPc)).toFixed(1) + 'px,0)';
-      tel.style.transform = 'translate3d(0,' + (-cur.b * course(tel, ecranTel)).toFixed(1) + 'px,0)';
-      if (Math.abs(cible - cur.a) > .001 || Math.abs(cible - cur.b) > .01) requestAnimationFrame(dessine); else enCours = false;
-    }
-    function lance(){ mesure(); if (reduit) return; if (!enCours) { enCours = true; requestAnimationFrame(dessine); } }
-    window.addEventListener('scroll', lance, {passive:true});
-    window.addEventListener('resize', lance);
-
-    function choisis(btn, focus){
-      onglets.forEach(function(b){ b.setAttribute('aria-selected', b === btn ? 'true' : 'false'); b.tabIndex = b === btn ? 0 : -1; });
-      var k = btn.getAttribute('data-k');
-      pc.src = 'assets/maquettes/' + k + '-pc.jpg';
-      tel.src = 'assets/maquettes/' + k + '-tel.jpg';
-      cap.textContent = btn.textContent;
-      lien.href = btn.getAttribute('data-href');
-      cur.a = cur.b = 0; lance();
-      if (focus) btn.focus();
-    }
-    onglets.forEach(function(b, i){
-      b.addEventListener('click', function(){ choisis(b); });
-      b.addEventListener('keydown', function(e){
-        var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-        if (d) { e.preventDefault(); choisis(onglets[(i + d + onglets.length) % onglets.length], true); }
-      });
-    });
-    pc.addEventListener('load', lance); tel.addEventListener('load', lance);
-    lance();
-  }
-
   /* ===== Rendez-vous : on propose un créneau, la demande part par e-mail ===== */
   var dlg = document.getElementById('rdv');
   if (!dlg || !dlg.showModal) return;
