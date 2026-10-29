@@ -130,6 +130,11 @@
   .colonne .liste { max-height: 64vh; overflow-y: auto; }
   .pc { background: var(--carte); border: 1px solid var(--ligne); border-left: 5px solid var(--statut, #fff); border-radius: 12px;
     padding: 9px 10px; margin-bottom: 6px; cursor: pointer; font-size: 13px; }
+  /* Médaille du premier client signé (29/10/2026, MB Cars). */
+  .medaille { display: inline-flex; align-items: center; justify-content: center; width: 1.15em; height: 1.15em; margin-left: .4em;
+    border-radius: 50%; vertical-align: .08em; font: 800 .66em/1 system-ui, sans-serif; color: #4a3500; letter-spacing: 0; cursor: help;
+    background: radial-gradient(circle at 32% 28%, #fff6c9 0, #f6d56a 38%, #d9a41f 72%, #b07d0f 100%);
+    box-shadow: 0 0 0 1.5px #f3d77a inset, 0 1px 2px rgba(120, 85, 0, .45); }
   .pc-nom { font-weight: 700; font-size: 14px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .pc-meta { color: var(--doux); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
   .pc-bas { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 6px; margin-top: 5px; align-items: baseline; }
@@ -1192,6 +1197,10 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Premier client signé de NS Development : MB Cars (P0188), devis DEV-2026-0005 accepté le 29/10/2026.
+const PREMIER_CLIENT = 'P0188';
+const medaille = p => p && p.id === PREMIER_CLIENT ? '<span class="medaille" title="Premier client signé · 29/10/2026" aria-label="Premier client signé">1</span>' : '';
+
 // ---------------------------------------------------------------------------
 // Dates (format du Sheets : « 2026-09-23 14:00 »)
 // ---------------------------------------------------------------------------
@@ -1352,7 +1361,7 @@ function carteRiche(p, droite, entree) {
       + (nbNotes ? `${notes ? ' · ' : ''}<span class="faible">${nbNotes} note${nbNotes > 1 ? 's' : ''} d’appel, toutes dans la fiche</span>` : '')] : null,
   ].filter(Boolean);
   return `<div class="lp" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
-    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
+    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}${medaille(p)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
       ${droite || ''}</div>
     <dl class="lp-grille">${lignes.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
     ${liensRapides(p, true)}
@@ -1366,7 +1375,7 @@ function carteRiche(p, droite, entree) {
 function carteCompacte(p) {
   const m = metierDe(p), tel = lienTel(p.telephone);
   return `<div class="pc" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
-    <div class="pc-nom">${esc(p.entreprise)}</div>
+    <div class="pc-nom">${esc(p.entreprise)}${medaille(p)}</div>
     <div class="pc-meta">${esc([p.secteur || (m && m.metier), p.commune, p.gerant].filter(Boolean).join(' · ') || '—')}</div>
     ${vueEquipe() ? `<div class="pc-meta"><span class="qui ${respDe(p) ? '' : 'libre'}">${esc(respDe(p) || 'libre')}</span></div>` : ''}
     <div class="pc-bas">${tel ? `<a href="${tel}" data-stop="1">${esc(String(p.telephone).split(/\s*[\/;]\s*|\s+ou\s+/)[0])}</a>` : '<span class="pc-meta">sans tél.</span>'}
@@ -2131,7 +2140,7 @@ function vuePipeline() {
     const tel = lienTel(p.telephone), wa = telInternational(p.telephone), m = metierDe(p), r = respDe(p);
     const sous = [p.gerant, p.secteur || (m && m.metier)].filter(Boolean).join(' · '), nbN = notesDe(p).length + (p.notes ? 1 : 0);
     return `<tr data-id="${esc(p.id)}">
-      <td><div class="v-qui">${avatar(p.entreprise)}<div><b>${esc(p.entreprise)}</b><small>${esc(sous || '—')}${nbN ? ' · 📝 ' + nbN : ''}</small></div></div></td>
+      <td><div class="v-qui">${avatar(p.entreprise)}<div><b>${esc(p.entreprise)}${medaille(p)}</b><small>${esc(sous || '—')}${nbN ? ' · 📝 ' + nbN : ''}</small></div></div></td>
       <td class="v-hm"><span class="v-faible">${esc(p.commune || '—')}</span></td>
       <td><span class="v-st" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span></td>
       <td class="v-hm">${tel ? `<a class="v-tel" href="${tel}" data-stop="1">${esc(String(p.telephone).split(/\s*[\/;]\s*|\s+ou\s+/)[0])}</a>` : '<span class="v-faible">—</span>'}</td>
@@ -3006,7 +3015,7 @@ function rendreFiche(edition) {
   const f = document.getElementById('fiche');
   f.innerHTML = `<div class="feuille" id="feuille">
     <div class="feuille-tete"><div class="poignee"></div>${bandeauSession(p)}
-      <div class="ligne1"><div><h1>${esc(p.entreprise)}</h1>
+      <div class="ligne1"><div><h1>${esc(p.entreprise)}${medaille(p)}</h1>
         <div class="sous"><span class="pastille" style="--statut:${st.color}">${esc(st.label)}</span>
         ${p.rappel ? ' · ' + esc(cle(p) === 'rdv' ? 'RDV ' : 'rappel ') + esc(dateCourte(p.rappel)) : ''}</div>
         <div class="sous">${esc([p.secteur || (m && m.metier), p.commune].filter(Boolean).join(' · '))}${p.gerant ? ' · <b>' + esc(p.gerant) + '</b>' : ''}</div></div>
