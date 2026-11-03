@@ -462,11 +462,11 @@ const NS_I18N = {
      de:"✓ Danke! Ihr E-Mail-Programm öffnet sich mit der vorausgefüllten Anfrage. Senden Sie sie ab, wir antworten innerhalb von 24 Stunden.",
      en:"✓ Thank you! Your mail app will open with your request pre-filled. Send it and we'll reply within 24 hours.",
      pt:"✓ Obrigado! O seu email vai abrir com o pedido pré-preenchido. Envie-o e respondemos em 24 h."},
-  "Une erreur est survenue. Écrivez-nous directement à nsdevelopment26@gmail.com":
-    {lb:"Et ass e Feeler geschitt. Schreift eis direkt op nsdevelopment26@gmail.com",
-     de:"Ein Fehler ist aufgetreten. Schreiben Sie uns direkt an nsdevelopment26@gmail.com",
-     en:"Something went wrong. Write to us directly at nsdevelopment26@gmail.com",
-     pt:"Ocorreu um erro. Escreva-nos diretamente para nsdevelopment26@gmail.com"},
+  "Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu":
+    {lb:"Et ass e Feeler geschitt. Schreift eis direkt op info@nsdevelopment.lu",
+     de:"Ein Fehler ist aufgetreten. Schreiben Sie uns direkt an info@nsdevelopment.lu",
+     en:"Something went wrong. Write to us directly at info@nsdevelopment.lu",
+     pt:"Ocorreu um erro. Escreva-nos diretamente para info@nsdevelopment.lu"},
 
   /* ---------- Footer ---------- */
   "Création de sites web modernes pour les commerçants, restaurants et indépendants du Luxembourg.":

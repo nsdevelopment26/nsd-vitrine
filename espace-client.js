@@ -182,6 +182,21 @@
     { texte: "Facture NS-2026-0087 réglée", date: "1 juillet", icone: "carte" }
   ];
 
+  /* Vrai client connecté : passe à true quand chargerDonneesClient trouve sa fiche.
+     Ce qui n'a pas encore de source réelle (statistiques, demandes, activité du site)
+     laisse alors place à un état vide honnête : jamais un chiffre de démo devant un client. */
+  var REEL = false;
+  var DOCS_REELS = [];    // PDF du bucket « documents » : { titre, meta, type, chemin }
+  var DEVIS_REELS = [];
+  var CONTACT_MAIL = "info@nsdevelopment.lu";
+
+  /* Bloc « rien encore » des vues sans données réelles. */
+  function etatVide(icone, titre, texte) {
+    return '<article class="carte vide" data-reveal data-delay="60" style="text-align:center;padding:34px 22px">' +
+      '<span class="pastille grande" style="margin:0 auto 14px">' + ico(icone, 19) + "</span>" +
+      "<h3>" + titre + '</h3><p class="sous" style="max-width:420px;margin:8px auto 0">' + texte + "</p></article>";
+  }
+
   /* ---------------------------------------------------------- */
   /* ICÔNES (SVG en ligne, aucun chargement externe)             */
   /* ---------------------------------------------------------- */
@@ -330,7 +345,60 @@
       (action || "") + "</header>";
   }
 
+  function vueAccueilReel() {
+    var fil = [];
+    FACTURES.forEach(function (f) {
+      fil.push({ texte: "Facture " + f.numero + (estPayee(f) ? " réglée" : " émise"), date: f.date, icone: "carte" });
+    });
+    DEVIS_REELS.forEach(function (d) {
+      if (d.statut === "accepté") fil.push({ texte: "Devis " + d.numero + " accepté", date: frDateLong(d.date_emission), icone: "checkRond" });
+    });
+    var activite = fil.map(function (a) {
+      return '<li><span class="pastille">' + ico(a.icone, 15) + "</span>" +
+        "<span><b>" + esc(a.texte) + "</b><em>" + a.date + "</em></span></li>";
+    }).join("");
+
+    return enTete(
+      esc(CLIENT.etablissement),
+      "Bonjour " + esc(CLIENT.prenom) + ".",
+      esc(CLIENT.ville) + (CLIENT.depuis ? " · " + CLIENT.depuis : ""),
+      '<div class="avatar" aria-hidden="true">' + esc((CLIENT.prenom[0] || "") + (CLIENT.nom[0] || "")) + "</div>"
+    ) +
+
+    (CLIENT.site
+      ? '<article class="carte lueur site" data-reveal data-delay="80">' +
+          '<div class="site-tete"><span class="enligne"><i class="pulse"></i>En ligne</span></div>' +
+          '<p class="domaine">' + esc(CLIENT.site) + "</p>" +
+          '<div class="site-btns">' +
+            '<a class="bt bt-plein" href="https://' + esc(CLIENT.site) + '" target="_blank" rel="noopener">' + ico("lien", 16) + "Voir mon site</a>" +
+            '<button class="bt bt-vide" data-aller="demandes">' + ico("crayon", 16) + "Demander une modif</button>" +
+          "</div></article>"
+      : '<article class="carte lueur site" data-reveal data-delay="80">' +
+          '<div class="site-tete"><span class="chip">' + ico("outil", 13) + "En préparation</span></div>" +
+          '<p class="domaine">Votre site est en cours de création</p>' +
+          '<p class="sous">Nous vous prévenons dès qu\'il est en ligne. Vos documents et vos factures sont déjà disponibles ici.</p>' +
+          '<div class="site-btns"><button class="bt bt-vide" data-aller="documents">' + ico("telecharger", 16) + "Mes documents</button></div>" +
+        "</article>") +
+
+    '<div class="titre-section" data-reveal><h2>Ma maintenance</h2></div>' +
+    '<article class="carte ns-lift abo" data-reveal data-aller="factures" role="button" tabindex="0">' +
+      '<div class="abo-tete">' +
+        '<span class="pastille grande">' + ico("bouclier", 19) + "</span>" +
+        "<div><h3>Formule " + esc(CLIENT.formule) + "</h3>" +
+        '<p class="sous">Hébergement, maintenance, SEO local, modifications</p></div>' +
+        '<div class="abo-prix"><b>' + euros(abonnementMontant()) + "</b><em>" + abonnementPeriode() + "</em></div>" +
+      "</div><hr>" +
+      '<div class="abo-bas">' + ico("calendrier", 14) + "<span>" + echeanceTexte() + "</span>" + ico("fleche", 15) + "</div>" +
+    "</article>" +
+
+    (activite
+      ? '<div class="titre-section" data-reveal><h2>Activité récente</h2></div>' +
+        '<article class="carte" data-reveal><ul class="fil">' + activite + "</ul></article>"
+      : "");
+  }
+
   function vueAccueil() {
+    if (REEL) return vueAccueilReel();
     var kpis = KPIS.map(function (k) {
       return '<article class="carte kpi">' +
         '<div class="kpi-tete"><span class="lbl">' + k.label + "</span>" + ico(k.icone, 15) + "</div>" +
@@ -394,6 +462,10 @@
   }
 
   function vueStats(periode) {
+    if (REEL) return enTete("Statistiques", "Votre audience.", "") +
+      etatVide("hausse", "Pas encore de chiffres",
+        CLIENT.site ? "La mesure d'audience vient d'être installée sur votre site. Les premiers chiffres apparaîtront ici dans quelques jours."
+                    : "Les statistiques de visite apparaîtront ici dès la mise en ligne de votre site.");
     // 0 est une période valide (7 jours) : ne pas utiliser « || 1 » ici.
     if (typeof periode !== "number") periode = 1;
     var serie = periode === 0 ? VISITEURS.slice(-7)
@@ -485,6 +557,7 @@
     }).join("") : '<p class="sous" style="padding:10px 2px">Aucune facture pour l\'instant. Elles apparaîtront ici dès leur émission.</p>';
 
     var inclus = INCLUS.map(function (l) {
+      if (REEL && /^Modifications/.test(l)) l = "Modifications du site, selon votre contrat";
       return '<li>' + ico("checkRond", 15) + "<span>" + l + "</span></li>";
     }).join("");
 
@@ -533,6 +606,12 @@
   }
 
   function vueDemandes() {
+    if (REEL) return enTete("Modifications", "Vos demandes.",
+        "Une modification à faire ? Écrivez-la ici, elle nous arrive directement par mail.") +
+      '<div data-reveal data-delay="60"><button class="bt bt-plein large ns-shine" id="ecNouvelle">' +
+        ico("plus", 17) + "Nouvelle demande</button></div>" +
+      etatVide("demandes", "Aucune demande pour l'instant",
+        "Votre interlocuteur vous répond par mail sous 24 h ouvrées, du lundi au vendredi.");
     var enCours = DEMANDES.filter(function (d) { return d.statut !== "faite"; }).length;
     var faites = DEMANDES.filter(function (d) { return d.statut === "faite"; }).length;
 
@@ -572,7 +651,70 @@
     '<div class="pile" id="ecListeDemandes">' + cartes + "</div>";
   }
 
+  function vueDocumentsReel() {
+    var infos = [
+      ["Nom de domaine", CLIENT.site || "en préparation"],
+      ["Titulaire", CLIENT.etablissement],
+      ["Formule", CLIENT.formule + " · " + euros(abonnementMontant()) + abonnementPeriode().replace("/ ", "/")]
+    ].map(function (l) {
+      return '<li><span class="sous">' + l[0] + "</span><b>" + esc(l[1]) + "</b></li>";
+    }).join("");
+
+    var apparence = { contrat: { ic: "factures", cl: "acc" }, devis: { ic: "etiquette", cl: "ok" }, facture: { ic: "carte", cl: "" } };
+    var groupes = [
+      { titre: "Contrat et devis", types: ["contrat", "devis"] },
+      { titre: "Factures", types: ["facture"] }
+    ].map(function (g) {
+      var items = DOCS_REELS.filter(function (d) { return g.types.indexOf(d.type) !== -1; }).map(function (d) {
+        var a = apparence[d.type];
+        return '<article class="carte ligne ns-lift" data-doc="' + esc(d.chemin) + '" role="button" tabindex="0">' +
+          '<span class="pastille ' + a.cl + '">' + ico(a.ic, 17) + "</span>" +
+          '<span class="ligne-txt"><b>' + esc(d.titre) + "</b><em>" + esc(d.meta) + "</em></span>" +
+          ico("telecharger", 18) + "</article>";
+      }).join("");
+      return items ? '<div class="titre-section" data-reveal><h2>' + g.titre + "</h2></div>" +
+        '<div class="pile" data-stagger="70">' + items + "</div>" : "";
+    }).join("");
+
+    return enTete("Documents", "Vos documents.",
+      "Contrat, devis et factures. Tout est archivé ici, accessible à tout moment.") +
+
+    '<article class="carte lueur" data-reveal data-delay="60">' +
+      '<div class="projet-tete"><div><h3>' + esc(CLIENT.etablissement) + "</h3>" +
+      '<p class="sous">' + esc(CLIENT.metier) + " · " + esc(CLIENT.ville) + "</p></div>" +
+      '<span class="chip">Formule ' + esc(CLIENT.formule) + "</span></div><hr>" +
+      '<ul class="infos">' + infos + "</ul>" +
+    "</article>" +
+    (groupes || etatVide("telecharger", "Vos documents arrivent", "Votre contrat, vos devis et vos factures apparaîtront ici dès leur émission.")) +
+
+    '<div class="titre-section" data-reveal><h2>Une question ?</h2></div>' +
+    '<article class="carte" data-reveal>' +
+      "<p>Votre interlocuteur chez NS Development répond du lundi au vendredi, de 9h à 18h.</p>" +
+      '<div class="contacts">' +
+        '<a class="contact" href="mailto:' + CONTACT_MAIL + '">' + ico("enveloppe", 17) + CONTACT_MAIL + "</a>" +
+      "</div>" +
+    "</article>" +
+
+    '<p class="pied-note" data-reveal>NS Development SARL-S · 2, rue de la fontaine, L-4988 Sanem<br>RCS B310037 · autorisation d\'établissement 10196211 / 0</p>';
+  }
+
+  /* Ouvre un PDF du bucket par lien signé (5 minutes). L'onglet est ouvert tout de
+     suite, au clic : ouvert après l'attente réseau, Safari iPhone le bloquerait. */
+  async function ouvrirDocument(chemin) {
+    var sb = window.nsSupabase;
+    var onglet = window.open("", "_blank");
+    var res = sb ? await sb.storage.from("documents").createSignedUrl(chemin, 300) : null;
+    var url = res && res.data && res.data.signedUrl;
+    if (!url) {
+      if (onglet) onglet.close();
+      alert("Ce document n'est pas disponible pour le moment. Écrivez-nous à " + CONTACT_MAIL + ".");
+      return;
+    }
+    if (onglet) onglet.location = url; else window.location.href = url;
+  }
+
   function vueDocuments() {
+    if (REEL) return vueDocumentsReel();
     var infos = [
       ["Nom de domaine", CLIENT.site],
       ["Propriétaire du domaine", "Maison Vaurenne Sàrl"],
@@ -616,7 +758,7 @@
     '<article class="carte" data-reveal>' +
       "<p>Votre interlocuteur chez NS Development répond du lundi au vendredi, de 9h à 18h.</p>" +
       '<div class="contacts">' +
-        '<a class="contact" href="mailto:nsdevelopment26@gmail.com">' + ico("enveloppe", 17) + "nsdevelopment26@gmail.com</a>" +
+        '<a class="contact" href="mailto:info@nsdevelopment.lu">' + ico("enveloppe", 17) + "info@nsdevelopment.lu</a>" +
         '<a class="contact" href="index.html#contact">' + ico("demandes", 17) + "Écrire à NS Development</a>" +
       "</div>" +
     "</article>" +
@@ -651,6 +793,11 @@
     document.body.classList.remove("fige");
   }
 
+  function pdfFacture(f) {
+    var d = DOCS_REELS.filter(function (x) { return x.type === "facture" && x.numero === f.numero; })[0];
+    return d ? d.chemin : "";
+  }
+
   function ficheFacture(id) {
     var f = FACTURES.filter(function (x) { return x.id === id; })[0];
     if (!f) return;
@@ -672,7 +819,9 @@
       '<span class="sous">TVA luxembourgeoise 17 % · n° TVA Intra. LU37686640</span></div>' +
       '<ul class="mod-lignes">' + lignes + "</ul>" +
       '<div class="mod-btns">' +
-        '<button class="bt bt-plein large" data-fermer>' + ico("telecharger", 16) + "Télécharger le PDF</button>" +
+        (REEL
+          ? (pdfFacture(f) ? '<button class="bt bt-plein large" data-fermer data-doc="' + esc(pdfFacture(f)) + '">' + ico("telecharger", 16) + "Télécharger le PDF</button>" : "")
+          : '<button class="bt bt-plein large" data-fermer>' + ico("telecharger", 16) + "Télécharger le PDF</button>") +
         '<button class="bt bt-vide large" data-fermer>Fermer</button>' +
       "</div>"
     );
@@ -714,6 +863,13 @@
       var objet = modaleCorps.querySelector("#ecObjet").value.trim();
       var detail = modaleCorps.querySelector("#ecDetail").value.trim();
       if (objet.length < 3 || detail.length < 5) return;
+      if (REEL) {
+        location.href = "mailto:" + CONTACT_MAIL +
+          "?subject=" + encodeURIComponent("Demande de modification · " + CLIENT.etablissement + " · " + type + " · " + objet) +
+          "&body=" + encodeURIComponent(detail);
+        fermerModale();
+        return;
+      }
 
       DEMANDES.unshift({
         id: "d" + (DEMANDES.length + 1),
@@ -803,12 +959,29 @@
           if (c.abonnement_moyen) CLIENT.moyen = c.abonnement_moyen;
           if (c.contact_prenom) CLIENT.prenom = c.contact_prenom;
           if (c.contact_nom) CLIENT.nom = c.contact_nom;
+
+          /* À partir d'ici, plus aucune valeur de démo ne doit survivre. */
+          REEL = true;
+          CLIENT.id = c.id;
+          CLIENT.site = c.site_domaine || "";
+          CLIENT.metier = c.metier || "";
+          CLIENT.ville = c.ville || "";
+          CLIENT.echeance = c.abonnement_echeance || "";
+          CLIENT.depuis = "";
+          if (c.abonnement_montant_standard) CLIENT.formulePrixAn = Number(c.abonnement_montant_standard);
+          /* Fiche sans prénom séparé (« Bruno Alexandre Da Silva Moutinho ») : le premier mot sert de prénom. */
+          if (!c.contact_prenom) {
+            var mots = String(c.contact_nom || c.nom_etablissement || "").trim().split(/\s+/);
+            CLIENT.prenom = mots[0] || "";
+            CLIENT.nom = mots.slice(1).join(" ") || CLIENT.prenom;
+          }
+          FACTURES = [];
         }
         var rf = await sb.from("factures")
           .select("id, numero, date_emission, total_ttc, montant_paye, statut, factures_lignes(designation, ordre)")
           .order("date_emission", { ascending: false });
         if (rf && rf.data) {
-          FACTURES = rf.data.map(function (f) {
+          FACTURES = rf.data.filter(function (f) { return f.statut !== "brouillon"; }).map(function (f) {
             var ls = (f.factures_lignes || []).slice().sort(function (a, b) { return (a.ordre || 0) - (b.ordre || 0); });
             var libelle = ls.length ? (ls[0].designation + (ls.length > 1 ? " + " + (ls.length - 1) + " ligne" + (ls.length > 2 ? "s" : "") : "")) : ("Facture " + (f.numero || ""));
             var paye = (f.statut === "payée" || f.statut === "payee");
@@ -819,7 +992,43 @@
             };
           });
         }
+        if (REEL) {
+          var rd = await sb.from("devis").select("id, numero, statut, date_emission").not("numero", "is", null).order("date_emission");
+          DEVIS_REELS = (rd && rd.data) || [];
+          var premiere = FACTURES.length ? rf.data[rf.data.length - 1].date_emission : null;
+          if (premiere) CLIENT.depuis = "client depuis " + frDateLong(premiere).replace(/^\d+ /, "");
+          await chargerDocuments(sb);
+        }
       } catch (e) { /* échec réseau : on garde l'affichage par défaut */ }
+    }
+
+    /* PDF rangés par la synchro des dossiers (<client_id>/devis|factures|contrat/…pdf).
+       Le statut et la date viennent de la base, le fichier du bucket. */
+    async function chargerDocuments(sb) {
+      var types = { devis: "devis", factures: "facture", contrat: "contrat" };
+      DOCS_REELS = [];
+      for (var dossier in types) {
+        var r = await sb.storage.from("documents").list(CLIENT.id + "/" + dossier, { sortBy: { column: "name", order: "desc" } });
+        ((r && r.data) || []).forEach(function (o) {
+          if (!/\.pdf$/i.test(o.name)) return;
+          var numero = o.name.replace(/\.pdf$/i, "");
+          var type = types[dossier], meta = "PDF";
+          if (type === "contrat") {
+            var dv = DEVIS_REELS.filter(function (d) { return d.numero === numero.replace(/^CTR/, "DEV"); })[0];
+            meta = "PDF · contrat de prestation" + (dv ? " · devis " + dv.numero : "");
+          } else if (type === "devis") {
+            var d = DEVIS_REELS.filter(function (x) { return x.numero === numero; })[0];
+            if (d) meta = "PDF · " + d.statut + " · " + frDateLong(d.date_emission);
+          } else {
+            var f = FACTURES.filter(function (x) { return x.numero === numero; })[0];
+            if (f) meta = "PDF · " + (estPayee(f) ? "réglée" : "à régler") + " · " + f.date;
+          }
+          DOCS_REELS.push({
+            type: type, numero: numero, chemin: CLIENT.id + "/" + dossier + "/" + o.name, meta: meta,
+            titre: (type === "contrat" ? "Contrat " : type === "devis" ? "Devis " : "Facture ") + numero
+          });
+        });
+      }
     }
 
     /* ------------------------------------------------------------------
@@ -1012,6 +1221,9 @@
       var seg = e.target.closest("[data-periode]");
       if (seg) { afficher("stats", parseInt(seg.getAttribute("data-periode"), 10)); return; }
 
+      var doc = e.target.closest("[data-doc]");
+      if (doc) { ouvrirDocument(doc.getAttribute("data-doc")); return; }
+
       var fact = e.target.closest("[data-facture]");
       if (fact) { ficheFacture(fact.getAttribute("data-facture")); return; }
 
@@ -1021,7 +1233,7 @@
     /* Accessibilité clavier sur les cartes cliquables */
     conteneur.addEventListener("keydown", function (e) {
       if (e.key !== "Enter" && e.key !== " ") return;
-      var cible = e.target.closest("[data-facture],[data-aller]");
+      var cible = e.target.closest("[data-facture],[data-aller],[data-doc]");
       if (!cible) return;
       e.preventDefault();
       cible.click();
@@ -1029,6 +1241,8 @@
 
     /* Fermeture de la modale */
     modale.addEventListener("click", function (e) {
+      var doc = e.target.closest("[data-doc]");
+      if (doc) ouvrirDocument(doc.getAttribute("data-doc"));
       if (e.target.hasAttribute("data-voile") || e.target.closest("[data-fermer]")) fermerModale();
     });
     document.addEventListener("keydown", function (e) {

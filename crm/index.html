@@ -3307,8 +3307,8 @@ function dateMessage(s) {
 // Chacun signe ses messages : les modèles sont écrits au nom de Samir, ils
 // passent au prénom de celui qui est connecté (Nelson : sa signature complète).
 const SIGNATURES = {
-  Sam: { prenom: 'Samir', texte: 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nSamir DINIS DA ROSA\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 621 757 113\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development' },
-  Nelson: { prenom: 'Nelson', texte: 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nNelson BARROSO\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 691 144 753\nE-mail : nsdevelopment26@gmail.com\nWeb & Mobile Development' },
+  Sam: { prenom: 'Samir', texte: 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nSamir DINIS DA ROSA\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 621 757 113\nE-mail : info@nsdevelopment.lu\nWeb & Mobile Development' },
+  Nelson: { prenom: 'Nelson', texte: 'Best Regards / Mat beschte Gréiss,\nBien cordialement,\n\nNelson BARROSO\nCo-gérant\nNS DEVELOPMENT SARL-S\n\nMobile : +352 691 144 753\nE-mail : info@nsdevelopment.lu\nWeb & Mobile Development' },
 };
 function signataire() { return SIGNATURES[S.moi && S.moi.nom] || SIGNATURES.Sam; }
 
@@ -4067,7 +4067,7 @@ var NSDocs = (function () {
   const EMETTEUR = () => ({
     nom: 'NS Development SARL-S', adresse: '2, rue de la fontaine, L-4988 Sanem',
     rcs: 'B310037', tva: 'LU37686640', autorisation: '10196211 / 0',
-    email: 'nsdevelopment26@gmail.com', tel: '+352 621 757 113',
+    email: 'info@nsdevelopment.lu', tel: '+352 621 757 113',
     gerants: 'Samir DINIS DA ROSA / Nelson BARROSO',
     iban: OPTS.iban || 'à compléter', bic: OPTS.bic || 'à compléter',
   });
