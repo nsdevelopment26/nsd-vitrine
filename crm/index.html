@@ -4447,6 +4447,10 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-ligne { display: grid; grid-template-columns: 1fr 56px 84px 30px; gap: 6px; margin-bottom: 6px; }
   .fx-ligne input { border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 15px; width: 100%; background: #fff; }
   .fx-ligne button { border: 0; background: none; font-size: 20px; color: var(--doux); }
+  .fx-fligne { display: grid; grid-template-columns: 1fr 56px 84px 30px; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .fx-fligne input { border: 1px solid var(--ligne); border-radius: 8px; padding: 9px 8px; font-size: 15px; width: 100%; background: #fff; }
+  .fx-fligne .fixe { font-size: 13px; font-weight: 600; line-height: 1.3; }
+  .fx-fligne button { border: 0; background: none; font-size: 20px; color: var(--doux); }
   .fx-totaux { background: var(--noir); color: #fff; border-radius: var(--rayon); padding: 12px 14px; margin-top: 12px; }
   .fx-totaux div { display: flex; justify-content: space-between; font-size: 14px; padding: 2px 0; }
   .fx-totaux div.gros { font-size: 17px; font-weight: 800; border-top: 1px solid #333; margin-top: 6px; padding-top: 8px; }
@@ -5203,6 +5207,7 @@ const Factu = (() => {
       ? ['<button class="btn large" data-fx="voir-facture-contrat" data-id="' + id + '">Facture + contrat rempli (PDF à envoyer)</button>',
          '<button class="btn clair large" data-fx="voir-facture" data-id="' + id + '">Facture seule</button>']
       : ['<button class="btn large" data-fx="voir-facture" data-id="' + id + '">Voir la facture (PDF)</button>'];
+    if (f.statut === 'brouillon' && !f.numero) act.push('<button class="btn clair large" data-fx="modifier-facture" data-id="' + id + '">Modifier la facture (ajouter ou changer une ligne)</button>');
     if (f.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="emettre" data-id="' + id + '">Émettre : attribuer le numéro légal</button>');
     if (f.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="infos-client" data-client="' + f.client_id + '" data-retour="facture:' + id + '">Corriger les infos du client</button>');
     if (factureSupprimable(id)) act.push('<button class="btn danger large" data-fx="suppr-facture" data-id="' + id + '">Supprimer ce brouillon</button>');
@@ -5215,6 +5220,74 @@ const Factu = (() => {
       + `<div class="bloc"><dl class="infos"><dt>Émise le</dt><dd>${fmtDate(f.date_emission)}</dd><dt>Échéance</dt><dd>${fmtDate(f.date_echeance)}</dd>
          <dt>Total TTC</dt><dd><b>${eur(f.total_ttc)} €</b></dd><dt>Déjà payé</dt><dd>${eur(f.montant_paye)} €</dd><dt>Reste dû</dt><dd><b>${eur(reste)} €</b></dd></dl></div>
          <div style="display:grid;gap:8px;margin-top:12px">${act.join('')}</div>${paiement}`);
+  }
+
+  // Modifier une facture brouillon (Nelson, 06/11/2026) : surtout la facture de solde, quand le
+  // client ajoute quelque chose entre la signature et la livraison. Sam change les montants,
+  // ajoute ou retire des lignes, l'échéance et les notes. La ligne « Acompte 50 % » ou
+  // « Solde 50 % » garde son libellé (c'est lui qui dit l'objet de la facture et si le contrat
+  // part avec) : son montant se change, elle ne se supprime pas. Une facture émise (numéro FAC)
+  // ne se modifie jamais : c'est la loi.
+  const FE = { id: null, lignes: [] };
+  const estLigneObjet = d => /^(Acompte|Solde) 50 %/.test(String(d || ''));
+  async function modifierFacture(id) {
+    const f = F.factures.find(x => x.id === id);
+    if (!f || f.statut !== 'brouillon' || f.numero) return toast('Seule une facture brouillon, sans numéro, se modifie.', true);
+    const { data: lignes, error } = await F.sb.from('factures_lignes').select('*').eq('facture_id', id).order('ordre');
+    if (error) return toast(error.message, true);
+    FE.id = id;
+    FE.lignes = (lignes || []).map(l => ({ designation: l.designation, quantite: Number(l.quantite) || 1, pu: Number(l.prix_unitaire_ht) || 0, fixe: estLigneObjet(l.designation) }));
+    feuille(tete('Modifier ' + (f.numero ? esc(f.numero) : 'la facture brouillon'), esc(f.clients ? f.clients.nom_etablissement : ''))
+      + `<form id="fx-facture-edit" data-id="${id}"><div class="bloc"><h3>Lignes</h3>
+         <div class="sous" style="margin-bottom:8px">Désignation · quantité · prix unitaire HT</div>
+         <div id="fx-flignes"></div>
+         <button type="button" class="btn clair" data-fx="fajout-ligne">＋ Ajouter une ligne</button></div>
+         <div class="bloc"><div class="fx-deux"><label class="champ">TVA %<input value="${eur(f.tva_taux).replace(/,00$/, '')}" disabled></label>
+         <label class="champ">Échéance<input name="echeance" type="date" value="${esc(f.date_echeance || '')}"></label></div>
+         <label class="champ">Notes (visibles sur la facture)<textarea name="notes">${esc(f.notes || '')}</textarea></label></div>
+         <div class="fx-totaux" id="fx-ftotaux"></div>
+         <button type="submit" class="btn large" style="margin-top:12px;width:100%">Enregistrer la facture</button>
+         <button type="button" class="btn clair large" style="margin-top:8px;width:100%" data-fx-facture="${id}">Annuler</button></form>`);
+    dessinerFLignes();
+  }
+  function dessinerFLignes() {
+    const z = document.getElementById('fx-flignes'); if (!z) return;
+    z.innerHTML = FE.lignes.map((l, i) => `<div class="fx-fligne" data-i="${i}">
+      ${l.fixe ? `<div class="fixe">${esc(l.designation)}</div>` : `<input data-k="designation" placeholder="Ex. page supplémentaire" value="${esc(l.designation)}">`}
+      <input data-k="quantite" type="number" min="0" step="0.01" value="${l.quantite}" aria-label="Quantité">
+      <input data-k="pu" type="number" step="0.01" placeholder="Prix HT" value="${l.pu}" aria-label="Prix unitaire HT">
+      ${l.fixe ? '<span></span>' : `<button type="button" data-fx="fsuppr-ligne" data-i="${i}" aria-label="Retirer la ligne">✕</button>`}</div>`).join('');
+    totauxFacture();
+  }
+  const r2 = n => Math.round(n * 100) / 100;
+  function totauxFacture() {
+    const z = document.getElementById('fx-ftotaux'), form = document.getElementById('fx-facture-edit'); if (!z || !form) return;
+    const f = F.factures.find(x => x.id === form.dataset.id) || {}, taux = Number(f.tva_taux) || 0;
+    const ht = r2(FE.lignes.reduce((s, l) => s + r2((Number(l.quantite) || 0) * (Number(l.pu) || 0)), 0)), tva = r2(ht * taux / 100);
+    z.innerHTML = `<div><span>Total HT</span><span>${eur(ht)} €</span></div><div><span>TVA ${eur(taux)} %</span><span>${eur(tva)} €</span></div>
+      <div class="gros"><span>Total TTC</span><span>${eur(r2(ht + tva))} €</span></div>`;
+  }
+  async function enregistrerFacture(form) {
+    const id = form.dataset.id;
+    const L = FE.lignes.map(l => ({ designation: String(l.designation || '').trim(), quantite: Number(l.quantite) || 0, pu: Number(l.pu) || 0 }));
+    if (!L.length) return toast('Il faut au moins une ligne.', true);
+    if (L.some(l => !l.designation)) return toast('Chaque ligne a besoin d’une désignation.', true);
+    if (L.some(l => l.quantite <= 0)) return toast('Quantité à 0 : retire la ligne plutôt.', true);
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+    const echec = m => { btn.disabled = false; btn.textContent = 'Enregistrer la facture'; toast(m, true); };
+    // Revérifié dans la base : si l'autre a émis la facture entre-temps, on ne touche à rien.
+    const { data: f, error: e0 } = await F.sb.from('factures').select('statut, numero, tva_taux').eq('id', id).single();
+    if (e0) return echec(e0.message);
+    if (f.statut !== 'brouillon' || f.numero) { await charger(); return echec('Cette facture vient d’être émise : elle ne se modifie plus.'); }
+    const FL = L.map((l, i) => ({ facture_id: id, designation: l.designation, quantite: l.quantite, prix_unitaire_ht: l.pu, montant_ht: r2(l.quantite * l.pu), ordre: i }));
+    const ht = r2(FL.reduce((s, l) => s + l.montant_ht, 0)), taux = Number(f.tva_taux) || 0;
+    const { error: e1 } = await F.sb.from('factures_lignes').delete().eq('facture_id', id);
+    if (e1) return echec(e1.message);
+    const { error: e2 } = await F.sb.from('factures_lignes').insert(FL);
+    if (e2) return echec('Lignes non enregistrées : ' + e2.message + '. Rouvre la facture et recommence.');
+    const { error: e3 } = await F.sb.from('factures').update({ total_ht: ht, total_ttc: r2(ht * (1 + taux / 100)), date_echeance: form.echeance.value || null, notes: form.notes.value.trim() || null }).eq('id', id);
+    if (e3) return echec(e3.message);
+    await charger(); toast('Facture modifiée. Vérifie le PDF, puis émets-la.'); ouvrirFacture(id);
   }
 
   async function emettre(id) {
@@ -5418,12 +5491,17 @@ const Factu = (() => {
     else if (act === 'relance-annuler') { F.formRelance = null; ouvrirDevis(id); }
     else if (act === 'facturer') facturer(id, a.dataset.objet);
     else if (act === 'emettre') emettre(id);
+    else if (act === 'modifier-facture') modifierFacture(id);
+    else if (act === 'fajout-ligne') { FE.lignes.push({ designation: '', quantite: 1, pu: '', fixe: false }); dessinerFLignes(); }
+    else if (act === 'fsuppr-ligne') { const i = Number(a.dataset.i); if (FE.lignes[i] && !FE.lignes[i].fixe) FE.lignes.splice(i, 1); dessinerFLignes(); }
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
     else if (act === 'sig-png') telechargerSignature();
     else if (act === 'imprimer') imprimerOuPartager(a);
     else if (act === 'onglet') { const u = URL.createObjectURL(new Blob([document.getElementById('fx-doc')._html], { type: 'text/html' })); window.open(u, '_blank'); }
   });
   document.addEventListener('input', e => {
+    const fl = e.target.closest('.fx-fligne');
+    if (fl) { FE.lignes[Number(fl.dataset.i)][e.target.dataset.k] = e.target.value; return totauxFacture(); }
     const l = e.target.closest('.fx-ligne');
     if (l) { D.lignes[Number(l.dataset.i)][e.target.dataset.k] = e.target.value; return calculer(); }
     const fr = e.target.closest('.fx-frais');
@@ -5451,6 +5529,7 @@ const Factu = (() => {
     if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
     if (e.target.id === 'fx-devis') { e.preventDefault(); enregistrerDevis(e.target); }
     if (e.target.id === 'fx-client') { e.preventDefault(); enregistrerClient(e.target); }
+    if (e.target.id === 'fx-facture-edit') { e.preventDefault(); enregistrerFacture(e.target); }
     if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
     if (e.target.id === 'fx-relance') { e.preventDefault(); enregistrerRelance(e.target); }
   });
