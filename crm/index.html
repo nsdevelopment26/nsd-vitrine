@@ -5258,6 +5258,9 @@ const Factu = (() => {
          <div class="sous" style="margin-bottom:8px">Désignation · quantité · prix unitaire HT</div>
          <div id="fx-flignes"></div>
          <button type="button" class="btn clair" data-fx="fajout-ligne">＋ Ajouter une ligne</button></div>
+         <div class="bloc"><h3>Options du devis, en un toucher</h3>
+         <div class="sous" style="margin-bottom:8px">Touche une option : elle s’ajoute avec son prix. Touche-la encore pour une unité de plus. Les modules ajoutent aussi ${eur(MODULE.trim)} € HT par trimestre à la maintenance, à prévenir le client.</div>
+         <div class="fx-chips">${OPTIONS.map((o, i) => `<button type="button" data-fx="fajout-opt" data-i="${i}">${esc(o.court)}<b>${eur(o.pu)} €${o.module ? ' + ' + eur(MODULE.trim) + ' €/trim.' : ''}</b></button>`).join('')}</div></div>
          <div class="bloc"><div class="fx-deux"><label class="champ">TVA %<input value="${eur(f.tva_taux).replace(/,00$/, '')}" disabled></label>
          <label class="champ">Échéance<input name="echeance" type="date" value="${esc(f.date_echeance || '')}"></label></div>
          <label class="champ">Notes (visibles sur la facture)<textarea name="notes">${esc(f.notes || '')}</textarea></label></div>
@@ -5509,6 +5512,14 @@ const Factu = (() => {
     else if (act === 'emettre') emettre(id);
     else if (act === 'modifier-facture') modifierFacture(id);
     else if (act === 'fajout-ligne') { FE.lignes.push({ designation: '', quantite: 1, pu: '', fixe: false }); dessinerFLignes(); }
+    else if (act === 'fajout-opt') {
+      // Options du devis en un toucher (Nelson, 09/11/2026) : nom et prix du catalogue, pas de saisie.
+      const o = OPTIONS[Number(a.dataset.i)]; if (!o) return;
+      const deja = FE.lignes.find(l => l.designation === o.n);
+      if (deja) { deja.quantite = (Number(deja.quantite) || 0) + 1; toast(o.court + ' : quantité ' + deja.quantite + '.'); }
+      else { FE.lignes.push({ designation: o.n, quantite: 1, pu: o.pu, fixe: false }); toast('Ligne ajoutée : ' + o.court + '.'); }
+      dessinerFLignes();
+    }
     else if (act === 'fsuppr-ligne') { const i = Number(a.dataset.i); if (FE.lignes[i] && !FE.lignes[i].fixe) FE.lignes.splice(i, 1); dessinerFLignes(); }
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
     else if (act === 'sig-png') telechargerSignature();
