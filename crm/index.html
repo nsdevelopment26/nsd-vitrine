@@ -3692,8 +3692,23 @@ function appelLeger(fn, ...args) {
 }
 function ficheOuverte() { const p = S.ouvert && S.data && S.data.prospects.find(x => x.id === S.ouvert); return p ? p.entreprise : ''; }
 
+// Présence réelle (09/11/2026, demandé par Nelson) : le téléphone réveillait l'appli en
+// arrière-plan toutes les ~15 min pendant 30 s, et chaque réveil comptait comme « ouvre le CRM ».
+// On n'est donc « sur le CRM » qu'après avoir touché l'écran depuis que l'appli est revenue
+// devant, et tant qu'on l'a touchée dans les 15 dernières minutes.
+const PRES_INACTIF_MS = 15 * 60 * 1000;
+PRES.geste = 0; PRES.devant = Date.now();
+function presenceReelle() { return PRES.geste > PRES.devant && Date.now() - PRES.geste < PRES_INACTIF_MS; }
+['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'].forEach(ev => window.addEventListener(ev, () => {
+  if (document.hidden) return;
+  const premier = !presenceReelle();
+  PRES.geste = Date.now();
+  if (premier) signalPresence('actif');
+}, { capture: true, passive: true }));
+
 async function signalPresence(etat) {
   if (!S.pin || !S.data || PRES.coupe || PRES.enVol) return;
+  if ((etat || 'actif') === 'actif' && !presenceReelle()) return;
   PRES.enVol = true;
   try { majPresence(await appelLeger('api_presence', S.pin, etat || 'actif', S.vue, ficheOuverte())); }
   catch (e) { if (/inconnue/i.test(e.message || '')) PRES.coupe = true; }
@@ -3748,8 +3763,9 @@ function majVoyants() {
   if (live) live.innerHTML = suiviLive(live.dataset.qui);
 }
 setInterval(() => { if (!document.hidden) signalPresence('actif'); else majVoyants(); }, PRES_INTERVALLE);
-document.addEventListener('visibilitychange', () => { if (document.hidden) signalDepart(); else { signalPresence('actif'); if (S.vue === 'suivi') chargerSuivi(); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) signalDepart(); else { PRES.devant = Date.now(); signalPresence('actif'); if (S.vue === 'suivi') chargerSuivi(); } });
 window.addEventListener('pagehide', signalDepart);
+window.addEventListener('pageshow', () => { PRES.devant = Date.now(); });
 
 // Chaque tap sur un numéro : l'heure exacte part au serveur. L'iPhone coupe souvent la
 // requête en passant au téléphone : elle repart au retour, avec la même heure et le même rid.
