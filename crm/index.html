@@ -3970,7 +3970,7 @@ var NSDocs = (function () {
       // Ajoutés le 09/11/2026 après le retour de MB Cars, pour tous les devis (Nelson).
       { n: 'Système de filtres (catalogue ou boutique) : filtres combinables par catégorie, état, budget et critères du métier, recherche et tri', court: 'Système de filtres', pu: 290 },
       { n: 'Studio photo automatique (véhicules) : la vraie photo détourée et posée dans le studio du garage, avec ombre et vitres', court: 'Studio photo auto', pu: 690,
-        alerte: 'Prix à confirmer par Nelson avant de le vendre. Sa maintenance (290 € HT par an annoncés) n’est pas encore comptée dans le devis.' },
+        rec: 'studio', alerte: 'Prix à confirmer par Nelson avant de le vendre. Sa maintenance s’ajoute d’office au devis (79 € HT par trimestre ou 290 € HT par an).' },
       { n: 'Espace de modification du site (textes, photos, horaires, prix)', court: 'Espace de modification', pu: 490, module: true,
         alerte: 'À construire : Nelson confirme le délai avant que tu l’annonces.' },
       { n: 'Assistant de chat pour les visiteurs (questions fréquentes, à toute heure)', court: 'Assistant de chat', pu: 390, module: true,
@@ -4003,6 +4003,9 @@ var NSDocs = (function () {
       { id: 'domaine', n: 'Nom de domaine supplémentaire', trim: 15, an: 55 },
       { id: 'seo', n: 'Suivi du référencement (rapport, 1 h d’ajustements, avis Google)', court: 'Suivi du référencement', trim: 75, an: 275 },
       { id: 'prio', n: 'Modifications prioritaires (1 h de plus par trimestre, sous 48 h ouvrées)', court: 'Modifications prioritaires', trim: 75, an: 275 },
+      // Liée à l'option Studio photo (rec: 'studio') : cochée et décochée avec elle, jamais vendue seule.
+      // 290 € HT par an fixés par Nelson (09/11/2026) ; le trimestre suit la règle des 11 mois payés sur 12 (290 × 3 / 11 = 79).
+      { id: 'studio', n: 'Maintenance du studio photo automatique', court: 'Maintenance studio photo', trim: 79, an: 290, lie: true },
     ],
     TAUX_HORAIRE: 70,
     INCLUS: 'Hébergement au Luxembourg, nom de domaine, 1 boîte mail pro, mises à jour, sécurité, sauvegardes, support, 1 h de petites modifications par trimestre et espace client.',
@@ -4367,7 +4370,7 @@ var NSDocs = (function () {
       return '<tr><td>' + box(ici) + x.cat + '</td>' + cellule(ici && !mtn.annuel, x.trim + ' € HT par trimestre') + cellule(ici && mtn.annuel, x.an + ' € HT par an') + '</tr>'; }).join('')
       + '<tr><td>' + box(nMod) + 'Par module vendu en option (nombre : ' + (nMod || '___') + ' )</td><td>+' + C.MODULE.trim + ' € HT l’unité</td><td>+' + C.MODULE.an + ' € HT l’unité</td></tr>'
       + (mtn && !mtn.cat ? '<tr><td>' + box(true) + 'Forfait convenu</td>' + cellule(!mtn.annuel, mtn.annuel ? '' : eur(mtn.montant) + ' € HT par trimestre') + cellule(mtn.annuel, mtn.annuel ? eur(mtn.montant) + ' € HT par an' : '') + '</tr>' : '');
-    const recurrentes = C.RECURRENTES.map(r => { const n = a.recurrentes.filter(x => x.libelle.indexOf(r.n) === 0).length;
+    const recurrentes = C.RECURRENTES.filter(r => !r.lie || a.recurrentes.some(x => x.libelle.indexOf(r.n) === 0)).map(r => { const n = a.recurrentes.filter(x => x.libelle.indexOf(r.n) === 0).length;
       const parUnite = r.id === 'mail' || r.id === 'domaine';
       return '<tr><td>' + box(n) + esc(r.n) + (parUnite ? ' (nombre : ' + (n || '___') + ' )' : '') + '</td><td>+' + r.trim + ' € HT' + (parUnite ? ' l’unité' : '') + '</td><td>+' + r.an + ' € HT' + (parUnite ? ' l’unité' : '') + '</td></tr>'; }).join('');
     const dom = domaine(c.site_domaine);
@@ -4542,6 +4545,7 @@ const Factu = (() => {
 
   // Catalogue : la grille du 30/09/2026, tenue dans Documents.html.
   const { FORMULES, OPTIONS, MAINTENANCE, MODULE, RECURRENTES } = NSDocs.CATALOGUE;
+  const recDe = o => RECURRENTES.find(r => r.id === o.rec) || { trim: 0, an: 0 };
   // 2 625 € pour un montant rond, 2 597,40 € dès qu'il y a des centimes (jamais « 2 597,4 »).
   const eur = n => { n = Math.round((Number(n) || 0) * 100) / 100; return n.toLocaleString('fr-FR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
   const isoJour = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -4999,14 +5003,14 @@ const Factu = (() => {
     const inclus = NSDocs.optionsIncluses(D.base);
     document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => inclus.includes(o.n)
       ? `<button type="button" class="inclus" disabled aria-disabled="true">✓ ${esc(o.court)}<b>Inclus dans ${esc(D.base)}</b></button>`
-      : chip('data-fx-opt', o.n, o.court + (o.alerte ? ' ⚠' : ''), eur(o.pu) + ' €' + (o.module ? ' + ' + MODULE.trim + ' €/trim.' : ''), D.opts[o.n])).join('')
+      : chip('data-fx-opt', o.n, o.court + (o.alerte ? ' ⚠' : ''), eur(o.pu) + ' €' + (o.module ? ' + ' + MODULE.trim + ' €/trim.' : '') + (o.rec ? ' + ' + eur(D.annuel ? recDe(o).an : recDe(o).trim) + (D.annuel ? ' €/an' : ' €/trim.') : ''), D.opts[o.n])).join('')
       + OPTIONS.filter(o => o.alerte && D.opts[o.n]).map(o => `<div class="fx-pas">⚠ ${esc(o.court)} : ${esc(o.alerte)}</div>`).join('');
     document.getElementById('fx-mtn-cat').innerHTML = MAINTENANCE.map(m => chip('data-fx-mtn', m.cat, m.cat, eur(m.trim) + ' € / trim.', D.mtnCat === m.cat)).join('');
     const nm = nbModules();
     document.getElementById('fx-mtn-mod').innerHTML = nm
       ? `Modules en option : <b>${nm}</b> × ${eur(D.annuel ? MODULE.an : MODULE.trim)} € = <b>${eur(nm * (D.annuel ? MODULE.an : MODULE.trim))} € HT ${D.annuel ? 'par an' : 'par trimestre'}</b>, ajoutés à la maintenance.`
       : 'Aucun module en option : pas de supplément.';
-    document.getElementById('fx-rec').innerHTML = RECURRENTES.map(r => chip('data-fx-rec', r.id, r.court || r.n, '+ ' + eur(D.annuel ? r.an : r.trim) + ' € ' + (D.annuel ? '/ an' : '/ trim.'), D.rec[r.id])).join('');
+    document.getElementById('fx-rec').innerHTML = RECURRENTES.filter(r => !r.lie).map(r => chip('data-fx-rec', r.id, r.court || r.n, '+ ' + eur(D.annuel ? r.an : r.trim) + ' € ' + (D.annuel ? '/ an' : '/ trim.'), D.rec[r.id])).join('');
     const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
     document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'trim', 'Trimestrielle (3 mois)', eur(m.trim) + ' € HT / trim.', !D.annuel)
       + chip('data-fx-per', 'an', 'Annuelle (11 mois + 1 offert)', eur(m.an) + ' € HT / an · éco. ' + eur(m.trim * 4 - m.an) + ' €', D.annuel) : '<div class="sous">Choisis la formule, ou une catégorie.</div>';
@@ -5263,8 +5267,8 @@ const Factu = (() => {
          <div id="fx-flignes"></div>
          <button type="button" class="btn clair" data-fx="fajout-ligne">＋ Ajouter une ligne</button></div>
          <div class="bloc"><h3>Options du devis, en un toucher</h3>
-         <div class="sous" style="margin-bottom:8px">Touche une option : elle s’ajoute avec son prix. Touche-la encore pour une unité de plus. Les modules ajoutent aussi ${eur(MODULE.trim)} € HT par trimestre à la maintenance, à prévenir le client.</div>
-         <div class="fx-chips">${OPTIONS.map((o, i) => `<button type="button" data-fx="fajout-opt" data-i="${i}">${esc(o.court)}<b>${eur(o.pu)} €${o.module ? ' + ' + eur(MODULE.trim) + ' €/trim.' : ''}</b></button>`).join('')}</div></div>
+         <div class="sous" style="margin-bottom:8px">Touche une option : elle s’ajoute avec son prix. Touche-la encore pour une unité de plus. Les modules ajoutent aussi ${eur(MODULE.trim)} € HT par trimestre à la maintenance (le studio photo a la sienne), à prévenir le client.</div>
+         <div class="fx-chips">${OPTIONS.map((o, i) => `<button type="button" data-fx="fajout-opt" data-i="${i}">${esc(o.court)}<b>${eur(o.pu)} €${o.module ? ' + ' + eur(MODULE.trim) + ' €/trim.' : ''}${o.rec ? ' + ' + eur(recDe(o).an) + ' €/an' : ''}</b></button>`).join('')}</div></div>
          <div class="bloc"><div class="fx-deux"><label class="champ">TVA %<input value="${eur(f.tva_taux).replace(/,00$/, '')}" disabled></label>
          <label class="champ">Échéance<input name="echeance" type="date" value="${esc(f.date_echeance || '')}"></label></div>
          <label class="champ">Notes (visibles sur la facture)<textarea name="notes">${esc(f.notes || '')}</textarea></label></div>
@@ -5481,7 +5485,9 @@ const Factu = (() => {
     const dv = t.closest('[data-fx-devis]'); if (dv) return ouvrirDevis(dv.dataset.fxDevis);
     const fc = t.closest('[data-fx-facture]'); if (fc) return ouvrirFacture(fc.dataset.fxFacture);
     const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) { D.mtnCat = catDe(D.base); NSDocs.optionsIncluses(D.base).forEach(n => delete D.opts[n]); } dessinerChoix(); return calculer(); }
-    const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true; dessinerChoix(); return calculer(); }
+    const o = t.closest('[data-fx-opt]'); if (o) { const k = o.dataset.fxOpt; if (D.opts[k]) delete D.opts[k]; else D.opts[k] = true;
+      const lien = OPTIONS.find(x => x.n === k); if (lien && lien.rec) { if (D.opts[k]) D.rec[lien.rec] = true; else delete D.rec[lien.rec]; }
+      dessinerChoix(); return calculer(); }
     const mc = t.closest('[data-fx-mtn]'); if (mc) { D.mtnCat = mc.dataset.fxMtn; dessinerChoix(); return calculer(); }
     const rc = t.closest('[data-fx-rec]'); if (rc) { const k = rc.dataset.fxRec; if (D.rec[k]) delete D.rec[k]; else D.rec[k] = true; dessinerChoix(); return calculer(); }
     const ge = t.closest('[data-fx-geste]'); if (ge) { D.geste = Number(ge.dataset.fxGeste); const i = document.querySelector('#fx-devis [name=geste]'); if (i) i.value = D.geste; dessinerChoix(); return calculer(); }
