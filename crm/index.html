@@ -3710,7 +3710,7 @@ async function signalPresence(etat) {
   if (!S.pin || !S.data || PRES.coupe || PRES.enVol) return;
   if ((etat || 'actif') === 'actif' && !presenceReelle()) return;
   PRES.enVol = true;
-  try { majPresence(await appelLeger('api_presence', S.pin, etat || 'actif', S.vue, ficheOuverte())); }
+  try { majPresence(await appelLeger('api_presence', S.pin, etat || 'actif', S.vue, ficheOuverte(), 'toucher')); }
   catch (e) { if (/inconnue/i.test(e.message || '')) PRES.coupe = true; }
   finally { PRES.enVol = false; }
 }
