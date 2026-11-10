@@ -86,9 +86,8 @@
 :root[data-theme="clair-b"] .dom-box,
 :root[data-theme="clair-b"] .globe-fact,
 :root[data-theme="clair-b"] .step{background:#ffffff}
-/* Logo : la tuile (logo-ns-tuile-header.png) est déjà noire avec le monogramme
-   en clair, elle se pose telle quelle sur le fond clair. Aucun filtre :
-   un brightness(0) écraserait le monogramme et donnerait un carré noir plein. */
+/* Logo : depuis le 10/11/2026, le header est un SVG en couleur du texte (currentColor),
+   il suit le thème tout seul. Aucun filtre sur d'éventuelles images de logo. */
 :root[data-theme="clair-b"] .brand img,
 :root[data-theme="clair-b"] .foot-brand img{filter:none}
 :root[data-theme="clair-b"] .fx-cycle .cy-word{background-image:linear-gradient(100deg,#0f1522,#2f6bff,#0f1522)}

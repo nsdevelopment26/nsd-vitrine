@@ -15,7 +15,7 @@
   /* ---------------- 1. Écran d'ouverture ----------------
      Piloté par le temps et non par requestAnimationFrame : rAF est
      gelé quand l'onglet est en arrière-plan, ce qui bloquerait l'écran.
-     Ici, l'écran se retire toujours, au plus tard après 2,2 s. */
+     Ici, l'écran se retire toujours, au plus tard après 4,2 s (animation du logo : 2,5 s). */
   function preload(){
     const el = document.getElementById('fxPreload');
     const done = ()=>{
@@ -29,18 +29,38 @@
     if(!el || reduce){ document.body.classList.remove('fx-lock'); if(el) el.remove(); return; }
 
     const bar = el.querySelector('.pl-bar i'), num = el.querySelector('.pl-num');
-    const t0 = performance.now(), DUR = 1500;
-    let raf;
+    const vid = el.querySelector('.pl-video');
+    let raf, fini = false, DUR = 1500;
+    const t0 = performance.now();
     const tick = ()=>{
-      const p = clamp((performance.now()-t0)/DUR,0,1)*100;
+      const p = vid && el.classList.contains('avec-intro') && vid.duration
+        ? clamp(vid.currentTime / vid.duration, 0, 1) * 100
+        : clamp((performance.now()-t0)/DUR,0,1)*100;
       bar.style.width = p+'%';
       if(num) num.textContent = String(Math.round(p)).padStart(3,'0');
-      if(p<100) raf = requestAnimationFrame(tick);
+      if(p<100 && !fini) raf = requestAnimationFrame(tick);
     };
+    const finir = ()=>{
+      if(fini) return; fini = true;
+      cancelAnimationFrame(raf); if(bar) bar.style.width='100%'; if(num) num.textContent='100';
+      setTimeout(done, 250);                   // la dernière image reste un instant, puis l'écran monte
+    };
+    // Sans animation (vidéo absente, refusée, mode économie d'énergie) : logo fixe et 1,6 s comme avant.
+    const sansIntro = ()=>{ el.classList.remove('avec-intro'); setTimeout(finir, Math.max(0, 1600-(performance.now()-t0))); };
+    if(vid){
+      el.classList.add('avec-intro');
+      vid.addEventListener('ended', finir, {once:true});
+      vid.addEventListener('error', sansIntro, {once:true});
+      const essai = vid.play();
+      if(essai && essai.catch) essai.catch(sansIntro);
+      // la vidéo doit démarrer vite : sinon on n'attend pas le réseau
+      setTimeout(()=>{ if(!fini && vid.currentTime === 0) sansIntro(); }, 900);
+      setTimeout(finir, 3600);                 // plafond : 2,5 s d'animation + marge
+    } else {
+      setTimeout(finir, 1600);
+    }
     raf = requestAnimationFrame(tick);
-    // Retrait garanti par une horloge indépendante de rAF
-    setTimeout(()=>{ cancelAnimationFrame(raf); if(bar) bar.style.width='100%'; if(num) num.textContent='100'; done(); }, 1600);
-    setTimeout(done, 2200); // filet ultime
+    setTimeout(done, 4200); // filet ultime
   }
 
   /* ---------------- 2. Curseur sur-mesure ---------------- */
