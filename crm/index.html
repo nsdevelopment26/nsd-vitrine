@@ -1140,7 +1140,7 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 //   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
 // - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
 // - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
-const ECRITURES = ['api_relance_ajouter', 'api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer', 'api_recue_creer', 'api_recue_payee'];
+const ECRITURES = ['api_relance_ajouter', 'api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer', 'api_recue_creer', 'api_recue_modifier', 'api_recue_payee'];
 const attendreVisible = () => document.hidden ? new Promise(ok => {
   const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
   document.addEventListener('visibilitychange', f);
@@ -5398,13 +5398,13 @@ const Factu = (() => {
   // Le CRM établit sa facture en autofacturation, numérotée dans sa propre série (TST-2026-001…),
   // et la sort en PDF ; elle la signe « bon pour accord ». Données dans l'onglet « Factures reçues »
   // du Sheets (Code.gs, api_recues…), jamais dans Supabase : ce n'est pas une facture de NSD.
-  const FR = { prestataires: [], factures: [], tournages: [], iban: '', note: '' };
+  const FR = { prestataires: [], factures: [], tournages: [], iban: '', note: '', edit: null };
   async function ouvrirRecues() {
     try { Object.assign(FR, await appel('api_recues', S.pin)); }
     catch (e) { return toast(e.message || String(e), true); }
     const p = FR.prestataires[0] || {};
     const derniere = FR.factures.find(x => x.prestataire === p.id && x.iban);
-    FR.tournages = [{ date: isoJour(new Date()), heures: 4 }]; FR.iban = derniere ? derniere.iban : ''; FR.note = '';
+    FR.tournages = [{ date: isoJour(new Date()), heures: 4 }]; FR.iban = derniere ? derniere.iban : ''; FR.note = ''; FR.edit = null;
     dessinerRecue();
   }
   function lireFormRecue() {
@@ -5419,7 +5419,7 @@ const Factu = (() => {
     const total = FR.tournages.reduce((s, t) => s + (Number(String(t.heures).replace(',', '.')) || 0) * taux, 0);
     const liste = FR.factures.filter(x => x.prestataire === p.id);
     feuille(tete('Facture de ' + esc(p.prenom || 'la prestataire'), 'C’est elle qui facture NS Development · ' + eur(taux) + ' € de l’heure')
-      + `<form id="fx-recue"><div class="bloc"><h3>Tournages à facturer</h3>
+      + `<form id="fx-recue">${FR.edit ? `<div class="fx-alerte" style="background:#fff8e1;border-color:#f3d98b">Modification de <b>${esc((FR.factures.find(x => x.id === FR.edit) || {}).numero || '')}</b> : même numéro, même date. Refais-la signer si elle l’avait déjà signée.</div>` : ''}<div class="bloc"><h3>${FR.edit ? 'Tournages de la facture' : 'Tournages à facturer'}</h3>
          <div class="sous" style="margin-bottom:8px">Date du tournage et heures de présence notées sur le relevé du jour (du rendez-vous à la fin).</div>
          ${FR.tournages.map((t, i) => `<div class="fx-deux" data-recue-i="${i}" style="align-items:end">
            <label class="champ">Tournage<input name="date" type="date" required value="${esc(t.date)}"></label>
@@ -5428,23 +5428,34 @@ const Factu = (() => {
          <button type="button" class="btn clair" data-fx="recue-ajout">＋ Un autre tournage sur la même facture</button></div>
          <div class="bloc"><label class="champ">IBAN de ${esc(p.prenom || 'la prestataire')} (à son nom)<input name="iban" autocomplete="off" placeholder="LU.." value="${esc(FR.iban)}"></label>
          <label class="champ">Note (facultatif, visible sur la facture)<input name="note" value="${esc(FR.note)}"></label></div>
-         <div class="fx-totaux"><div class="gros"><span>Net à payer</span><span>${eur(total)} €</span></div><div><span>TVA</span><span>non applicable</span></div></div>
-         <button type="submit" class="btn large" style="margin-top:12px;width:100%">Créer la facture et le PDF</button></form>
+         <div class="fx-totaux"><div class="gros"><span>Net à payer</span><span id="fx-recue-total">${eur(total)} €</span></div><div><span>TVA</span><span>non applicable</span></div></div>
+         <button type="submit" class="btn large" style="margin-top:12px;width:100%">${FR.edit ? 'Enregistrer les modifications' : 'Créer la facture et le PDF'}</button>
+         ${FR.edit ? '<button type="button" class="btn clair large" style="margin-top:8px;width:100%" data-fx="recue-annuler">Annuler la modification</button>' : ''}</form>
        ${liste.length ? `<div class="bloc"><h3>Ses factures</h3>${liste.map(x => `<div class="fx-carte"><div class="corps" data-fx="recue-voir" data-id="${esc(x.id)}" style="cursor:pointer">
          <div class="nom">${esc(x.numero)}</div><div class="meta">${joursRecue(x).map(j => fmtDate(j.date) + ' · ' + eur(j.heures).replace(/,00$/, '') + ' h').join(', ')}
          <span class="fx-st ${x.statut === 'payée' ? 'payee' : 'envoyee'}">${esc(x.statut)}${x.payee ? ' le ' + fmtDate(x.payee) : ''}</span></div></div>
-         <div class="mt">${eur(x.montant)} €${x.statut !== 'payée' ? `<div><button type="button" class="btn clair" data-fx="recue-payee" data-id="${esc(x.id)}" style="margin-top:4px;padding:4px 10px;font-size:12px">Virement fait</button></div>` : ''}</div></div>`).join('')}</div>` : ''}`);
+         <div class="mt">${eur(x.montant)} €${x.statut !== 'payée' ? `<div style="display:flex;gap:4px;justify-content:flex-end;margin-top:4px"><button type="button" class="btn clair" data-fx="recue-modifier" data-id="${esc(x.id)}" style="padding:4px 10px;font-size:12px">Modifier</button><button type="button" class="btn clair" data-fx="recue-payee" data-id="${esc(x.id)}" style="padding:4px 10px;font-size:12px">Virement fait</button></div>` : ''}</div></div>`).join('')}</div>` : ''}`);
   }
   async function creerRecue(form) {
     lireFormRecue();
     const p = FR.prestataires[0] || {};
     const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Création…';
     try {
-      const ligne = await appel('api_recue_creer', S.pin, { prestataire: p.id, tournages: FR.tournages, iban: FR.iban, note: FR.note });
-      FR.factures.unshift(ligne);
-      toast('Facture ' + ligne.numero + ' créée. Fais-la signer par ' + (p.prenom || 'la prestataire') + '.');
-      dessinerRecue(); voirRecue(ligne.id);
-    } catch (e) { btn.disabled = false; btn.textContent = 'Créer la facture et le PDF'; toast(e.message || String(e), true); }
+      if (FR.edit) {
+        const id = FR.edit;
+        FR.factures = await appel('api_recue_modifier', S.pin, id, { tournages: FR.tournages, iban: FR.iban, note: FR.note });
+        const x = FR.factures.find(f => f.id === id) || {};
+        toast('Facture ' + (x.numero || '') + ' modifiée.');
+        FR.edit = null; FR.tournages = [{ date: isoJour(new Date()), heures: 4 }]; FR.note = '';
+        dessinerRecue(); voirRecue(id);
+      } else {
+        const ligne = await appel('api_recue_creer', S.pin, { prestataire: p.id, tournages: FR.tournages, iban: FR.iban, note: FR.note });
+        FR.factures.unshift(ligne);
+        toast('Facture ' + ligne.numero + ' créée. Fais-la signer par ' + (p.prenom || 'la prestataire') + '.');
+        FR.tournages = [{ date: isoJour(new Date()), heures: 4 }]; FR.note = '';
+        dessinerRecue(); voirRecue(ligne.id);
+      }
+    } catch (e) { btn.disabled = false; btn.textContent = FR.edit ? 'Enregistrer les modifications' : 'Créer la facture et le PDF'; toast(e.message || String(e), true); }
   }
   function voirRecue(id) {
     const x = FR.factures.find(f => f.id === id); if (!x) return;
@@ -5659,6 +5670,10 @@ const Factu = (() => {
     else if (act === 'recue-ajout') { lireFormRecue(); FR.tournages.push({ date: '', heures: 4 }); dessinerRecue(); }
     else if (act === 'recue-suppr') { lireFormRecue(); FR.tournages.splice(Number(a.dataset.i), 1); dessinerRecue(); }
     else if (act === 'recue-voir') voirRecue(id);
+    else if (act === 'recue-modifier') { const x = FR.factures.find(f => f.id === id); if (!x) return;
+      FR.edit = id; FR.tournages = joursRecue(x); FR.iban = x.iban; FR.note = x.note; dessinerRecue();
+      const v = document.querySelector('#fx-voile .feuille'); if (v) v.scrollTop = 0; }
+    else if (act === 'recue-annuler') { FR.edit = null; FR.tournages = [{ date: isoJour(new Date()), heures: 4 }]; FR.note = ''; dessinerRecue(); }
     else if (act === 'recue-payee') payerRecue(id, a);
     else if (act === 'fsuppr-ligne') { const i = Number(a.dataset.i); if (FE.lignes[i] && !FE.lignes[i].fixe) FE.lignes.splice(i, 1); dessinerFLignes(); }
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
@@ -5667,6 +5682,8 @@ const Factu = (() => {
     else if (act === 'onglet') { const u = URL.createObjectURL(new Blob([document.getElementById('fx-doc')._html], { type: 'text/html' })); window.open(u, '_blank'); }
   });
   document.addEventListener('input', e => {
+    if (e.target.closest('#fx-recue')) { lireFormRecue(); const z = document.getElementById('fx-recue-total'), p = FR.prestataires[0] || {};
+      if (z) z.textContent = eur(FR.tournages.reduce((t, x) => t + (Number(String(x.heures).replace(',', '.')) || 0) * (Number(p.taux) || 0), 0)) + ' €'; return; }
     const fl = e.target.closest('.fx-fligne');
     if (fl) { FE.lignes[Number(fl.dataset.i)][e.target.dataset.k] = e.target.value; return totauxFacture(); }
     const l = e.target.closest('.fx-ligne');
