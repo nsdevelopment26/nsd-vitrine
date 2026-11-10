@@ -1140,7 +1140,7 @@ function lire(k) { try { return localStorage.getItem('crmnsd_' + k) || ''; } cat
 //   fois (plus d'appel compté deux fois, plus de Perdu au 2e « pas de réponse ») ;
 // - une requête qui traîne est coupée au bout de 30 s au lieu de bloquer le bouton ;
 // - chaque écriture fait monter S.ecritures : un rechargement parti avant est ignoré.
-const ECRITURES = ['api_relance_ajouter', 'api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer'];
+const ECRITURES = ['api_relance_ajouter', 'api_logger', 'api_modifier', 'api_ajouter', 'api_reel_ajouter', 'api_partage', 'api_audience_ajouter', 'api_charge_enregistrer', 'api_agenda_ecrire', 'api_agenda_supprimer', 'api_recue_creer', 'api_recue_payee'];
 const attendreVisible = () => document.hidden ? new Promise(ok => {
   const f = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', f); ok(); } };
   document.addEventListener('visibilitychange', f);
@@ -4431,6 +4431,55 @@ var NSDocs = (function () {
     return page('Contrat ' + (d.numero ? d.numero.replace(/^DEV/, 'CTR') : 'brouillon') + ' · ' + (c.nom_etablissement || ''), contratCorps(d, lignes, c, signataire, null, signer), CSS_CONTRAT());
   }
 
+  // Facture d'une prestataire personne physique (Tatjana, demandée par Nelson le 10/11/2026) : c'est
+  // ELLE qui facture NS Development ses heures de tournage. Le CRM l'établit en autofacturation, au nom
+  // et pour le compte de la prestataire, qui la valide en signant. Ses coordonnées et son IBAN ne sont
+  // jamais écrits dans ce fichier (publié sur la vitrine) : ils viennent de Code.gs, après le code d'accès.
+  // f : { numero, date, tournages: [{ date, heures }], taux, iban, note } ; p : { nom, adresse, email }.
+  function docFactureRecueHTML(f, p) {
+    const E = EMETTEUR(), m = n => eur(n) + ' €';
+    const T = (f.tournages || []).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    const taux = Number(f.taux) || 0;
+    const total = arr(T.reduce((s, t) => s + arr((Number(t.heures) || 0) * taux), 0));
+    const heures = T.reduce((s, t) => s + (Number(t.heures) || 0), 0);
+    const dernier = T.length ? T[T.length - 1].date : f.date;
+    const ech = new Date(String(dernier) + 'T12:00:00'); ech.setDate(ech.getDate() + 15);
+    const echeance = fmtDate(ech.toISOString().slice(0, 10));
+    const jours = T.map(t => fmtDate(t.date)).join(', ');
+    const meta = [['Facture N°', f.numero || 'à numéroter'], ['Date', fmtDate(f.date)], ['Échéance', echeance]];
+    const vide = v => v ? esc(v) : '<span style="color:#b8c0ce">à compléter</span>';
+    const tete = '<header class="head"><div class="brand"><div><div class="n">' + esc(p.nom || '') + '</div><div class="s">PRESTATAIRE · PERSONNE PHYSIQUE</div><div class="l">Autofacturation</div></div></div>'
+      + '<div class="doc-label"><h1>FACTURE</h1><div class="doc-meta">' + meta.map(x => '<div class="k">' + x[0] + '</div><div class="v">' + esc(x[1]) + '</div>').join('') + '</div></div></header>';
+    const parties = '<div class="parties"><div class="party"><div class="eyebrow">Émetteur (prestataire)</div><div class="who">' + esc(p.nom || '') + '</div>'
+      + '<div class="r">' + vide(p.adresse) + '</div><div class="r">Email : ' + vide(p.email) + '</div><div class="r">Personne physique, sans numéro de TVA</div></div>'
+      + '<div class="party"><div class="eyebrow">Facturé à</div><div class="who">' + E.nom + '</div><div class="r">' + E.adresse + '</div>'
+      + '<div class="r">RCS Luxembourg : ' + E.rcs + '</div><div class="r">N° TVA Intra. : ' + E.tva + '</div><div class="r">Email : ' + E.email + '</div></div></div>';
+    const lignes = T.length ? T.map(t => '<tr><td><div class="nm">Participation au tournage vidéo du ' + fmtDate(t.date) + '</div>'
+      + '<div style="font-size:11.5px;color:var(--muted)">Prestation de figuration devant la caméra (image et voix), cachet horaire</div></td>'
+      + '<td class="num">' + eur(t.heures).replace(/,00$/, '') + ' h</td><td class="num">' + m(taux) + '</td><td class="num">' + m(arr((Number(t.heures) || 0) * taux)) + '</td></tr>').join('')
+      : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucun tournage</td></tr>';
+    const signe = (lbl, nom) => '<div style="flex:1;border:1px solid var(--line-strong);border-radius:10px;padding:10px 12px;min-height:92px">'
+      + '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700">' + lbl + '</div>'
+      + '<div style="font-size:12px;margin-top:2px">' + nom + '</div><div style="font-size:11px;color:var(--muted);margin-top:34px">Date et signature</div></div>';
+    const corps = '<div class="sheet">' + tete + parties
+      + '<section>' + sec(1, 'Détail de la prestation', 'heures de présence notées sur le relevé du jour')
+      + '<table class="detail"><thead><tr><th>Désignation</th><th class="num">Durée</th><th class="num">Taux horaire</th><th class="num">Montant</th></tr></thead><tbody>' + lignes + '</tbody></table></section>'
+      + '<section>' + sec(2, 'Récapitulatif', 'montants en euros') + '<div class="page2"><div class="cond">'
+      + '<p><b>Règlement :</b> virement bancaire sur le compte de la prestataire, IBAN ' + vide(f.iban) + ', au plus tard le <b>' + echeance + '</b> (15 jours après le tournage).</p>'
+      + '<p><b>Libellé du virement :</b> « Facture ' + esc(f.numero || '') + ', cachet tournage du ' + esc(jours) + ' ».</p>'
+      + '<p><b>Base :</b> cachet fixe de ' + m(taux) + ' par heure de présence, prévu par l’autorisation de droit à l’image et de participation aux tournages signée avec NS Development. Il rémunère la participation et les autorisations d’image et de voix ; aucune autre somme n’est due.</p>'
+      + '<p><b>TVA non applicable :</b> prestation occasionnelle d’une personne physique non assujettie à la TVA.</p>'
+      + '<p><b>Autofacturation :</b> facture établie par NS Development SARL-S au nom et pour le compte de la prestataire, qui l’accepte en la signant. La prestataire déclare elle-même ce revenu (art. 9 de l’autorisation).</p>'
+      + (f.note ? '<p><b>Note :</b> ' + esc(f.note) + '</p>' : '') + '</div>'
+      + '<div class="recap"><div class="r"><span class="rl">Heures</span><span class="rv">' + eur(heures).replace(/,00$/, '') + ' h</span></div>'
+      + '<div class="r"><span class="rl">Total</span><span class="rv">' + m(total) + '</span></div>'
+      + '<div class="r"><span class="rl">TVA</span><span class="rv">non applicable</span></div>'
+      + '<div class="r total"><span class="rl">NET À PAYER</span><span class="rv">' + m(total) + '</span></div></div></div></section>'
+      + '<div style="display:flex;gap:14px;margin-top:18px;break-inside:avoid">' + signe('La prestataire, bon pour accord', esc(p.nom || '')) + signe('Pour NS Development SARL-S', 'Co-gérant') + '</div>'
+      + '<footer><div class="soc">' + esc(p.nom || '') + '</div>Facture d’une personne physique, établie en autofacturation par ' + E.nom + ' · ' + E.adresse + ' · RCS Luxembourg ' + E.rcs + '</footer></div>';
+    return page('Facture ' + (f.numero || '') + ' · ' + (p.nom || ''), corps);
+  }
+
   return {
     CATALOGUE, optionsIncluses, modulesVendus, ligneMaintenance, lireMaintenance, ligneRecurrente, estRecurrente, estMaintenance, estFrais, estGeste, ligneGeste, ligneFrais, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
@@ -4439,6 +4488,8 @@ var NSDocs = (function () {
     // Le contrat seul, rempli. signataire : 'Sam' ou 'Nelson' (celui qui envoie).
     contrat(d, lignes, c, options, signataire, signer) { regler(options); return docContratHTML(d, lignes || [], c || {}, signataire, signer); },
     contratDisponible: () => typeof NSContrat !== 'undefined',
+    // Facture qu'une prestataire personne physique adresse à NS Development (autofacturation).
+    factureRecue: (f, p) => docFactureRecueHTML(f || {}, p || {}),
     // Le cachet et la signature seuls (export PNG dans entreprise/identite-visuelle/signature-contrat/).
     cachet: taille => cachetSVG(taille || 200), MANUSCRIT, CSS_SIGNE: () => CSS_SIGNE(), signature: (signataire, date, num) => signatureNSD(signataire, date, num), CSS_CONTRAT: () => CSS_CONTRAT(),
   };
@@ -4657,7 +4708,7 @@ const Factu = (() => {
         <div class="kpi"><div class="v">${eur(du)} €</div><div class="l">à encaisser TTC</div></div>
         <div class="kpi"><div class="v">${enAttente.length}</div><div class="l">devis en attente de réponse</div></div></div>
       ${F.menage ? `<div class="fx-alerte" style="background:#fff8e1;border-color:#f3d98b">Touche les devis et factures à supprimer. Une facture émise (avec numéro FAC) ne se supprime pas : c'est un document légal. Un devis déjà facturé non plus.</div>`
-        : `<div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button><button class="btn clair" data-fx="menage">Supprimer…</button></div>`}
+        : `<div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button><button class="btn clair" data-fx="recues">Facture de Tatjana</button><button class="btn clair" data-fx="menage">Supprimer…</button></div>`}
       ${F.menage ? '' : blocRelances()}
       ${aEmettre.length ? section('Factures à émettre', 'brouillons sans numéro', aEmettre.map(carteFacture).join('')) : ''}
       ${impayees.length ? section('Factures à encaisser', impayees.length + '', impayees.map(carteFacture).join('')) : ''}
@@ -5341,6 +5392,73 @@ const Factu = (() => {
     await charger(); toast('Paiement enregistré.'); ouvrirFacture(id);
   }
 
+
+  // ------------------------------------------------------------------ factures reçues (Tatjana)
+  // Nelson, 10/11/2026 : c'est Tatjana qui nous facture ses heures de tournage (25 € de l'heure).
+  // Le CRM établit sa facture en autofacturation, numérotée dans sa propre série (TST-2026-001…),
+  // et la sort en PDF ; elle la signe « bon pour accord ». Données dans l'onglet « Factures reçues »
+  // du Sheets (Code.gs, api_recues…), jamais dans Supabase : ce n'est pas une facture de NSD.
+  const FR = { prestataires: [], factures: [], tournages: [], iban: '', note: '' };
+  async function ouvrirRecues() {
+    try { Object.assign(FR, await appel('api_recues', S.pin)); }
+    catch (e) { return toast(e.message || String(e), true); }
+    const p = FR.prestataires[0] || {};
+    const derniere = FR.factures.find(x => x.prestataire === p.id && x.iban);
+    FR.tournages = [{ date: isoJour(new Date()), heures: 4 }]; FR.iban = derniere ? derniere.iban : ''; FR.note = '';
+    dessinerRecue();
+  }
+  function lireFormRecue() {
+    const f = document.getElementById('fx-recue'); if (!f) return;
+    f.querySelectorAll('[data-recue-i]').forEach(r => { const i = Number(r.dataset.recueI);
+      FR.tournages[i] = { date: r.querySelector('[name=date]').value, heures: r.querySelector('[name=heures]').value }; });
+    FR.iban = f.iban.value; FR.note = f.note.value;
+  }
+  const joursRecue = x => String(x.tournages || '').split(';').filter(Boolean).map(j => { const [date, heures] = j.split(':'); return { date, heures: Number(heures) || 0 }; });
+  function dessinerRecue() {
+    const p = FR.prestataires[0] || {}, taux = Number(p.taux) || 0;
+    const total = FR.tournages.reduce((s, t) => s + (Number(String(t.heures).replace(',', '.')) || 0) * taux, 0);
+    const liste = FR.factures.filter(x => x.prestataire === p.id);
+    feuille(tete('Facture de ' + esc(p.prenom || 'la prestataire'), 'C’est elle qui facture NS Development · ' + eur(taux) + ' € de l’heure')
+      + `<form id="fx-recue"><div class="bloc"><h3>Tournages à facturer</h3>
+         <div class="sous" style="margin-bottom:8px">Date du tournage et heures de présence notées sur le relevé du jour (du rendez-vous à la fin).</div>
+         ${FR.tournages.map((t, i) => `<div class="fx-deux" data-recue-i="${i}" style="align-items:end">
+           <label class="champ">Tournage<input name="date" type="date" required value="${esc(t.date)}"></label>
+           <label class="champ">Heures<input name="heures" type="number" min="0.25" max="16" step="0.25" inputmode="decimal" required value="${esc(String(t.heures))}"></label>
+           ${FR.tournages.length > 1 ? `<button type="button" class="btn clair" data-fx="recue-suppr" data-i="${i}" style="margin-bottom:10px">Retirer</button>` : ''}</div>`).join('')}
+         <button type="button" class="btn clair" data-fx="recue-ajout">＋ Un autre tournage sur la même facture</button></div>
+         <div class="bloc"><label class="champ">IBAN de ${esc(p.prenom || 'la prestataire')} (à son nom)<input name="iban" autocomplete="off" placeholder="LU.." value="${esc(FR.iban)}"></label>
+         <label class="champ">Note (facultatif, visible sur la facture)<input name="note" value="${esc(FR.note)}"></label></div>
+         <div class="fx-totaux"><div class="gros"><span>Net à payer</span><span>${eur(total)} €</span></div><div><span>TVA</span><span>non applicable</span></div></div>
+         <button type="submit" class="btn large" style="margin-top:12px;width:100%">Créer la facture et le PDF</button></form>
+       ${liste.length ? `<div class="bloc"><h3>Ses factures</h3>${liste.map(x => `<div class="fx-carte"><div class="corps" data-fx="recue-voir" data-id="${esc(x.id)}" style="cursor:pointer">
+         <div class="nom">${esc(x.numero)}</div><div class="meta">${joursRecue(x).map(j => fmtDate(j.date) + ' · ' + eur(j.heures).replace(/,00$/, '') + ' h').join(', ')}
+         <span class="fx-st ${x.statut === 'payée' ? 'payee' : 'envoyee'}">${esc(x.statut)}${x.payee ? ' le ' + fmtDate(x.payee) : ''}</span></div></div>
+         <div class="mt">${eur(x.montant)} €${x.statut !== 'payée' ? `<div><button type="button" class="btn clair" data-fx="recue-payee" data-id="${esc(x.id)}" style="margin-top:4px;padding:4px 10px;font-size:12px">Virement fait</button></div>` : ''}</div></div>`).join('')}</div>` : ''}`);
+  }
+  async function creerRecue(form) {
+    lireFormRecue();
+    const p = FR.prestataires[0] || {};
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Création…';
+    try {
+      const ligne = await appel('api_recue_creer', S.pin, { prestataire: p.id, tournages: FR.tournages, iban: FR.iban, note: FR.note });
+      FR.factures.unshift(ligne);
+      toast('Facture ' + ligne.numero + ' créée. Fais-la signer par ' + (p.prenom || 'la prestataire') + '.');
+      dessinerRecue(); voirRecue(ligne.id);
+    } catch (e) { btn.disabled = false; btn.textContent = 'Créer la facture et le PDF'; toast(e.message || String(e), true); }
+  }
+  function voirRecue(id) {
+    const x = FR.factures.find(f => f.id === id); if (!x) return;
+    const p = FR.prestataires.find(y => y.id === x.prestataire) || {};
+    montrerDoc(NSDocs.factureRecue({ numero: x.numero, date: x.date, tournages: joursRecue(x), taux: Number(x.taux) || 0, iban: x.iban, note: x.note }, p));
+  }
+  async function payerRecue(id, btn) {
+    const x = FR.factures.find(f => f.id === id); if (!x) return;
+    if (!confirm('Le virement de ' + eur(x.montant) + ' € pour ' + x.numero + ' est parti ?')) return;
+    btn.disabled = true;
+    try { FR.factures = await appel('api_recue_payee', S.pin, id, isoJour(new Date())); toast(x.numero + ' notée payée.'); dessinerRecue(); }
+    catch (e) { btn.disabled = false; toast(e.message || String(e), true); }
+  }
+
   // ------------------------------------------------------------------ documents
   // type : 'devis', 'facture', 'contrat' (id du devis) ou 'facture-contrat' (la facture, suivie du contrat de son devis).
   async function voir(type, id) {
@@ -5357,6 +5475,10 @@ const Factu = (() => {
       if (e2) return toast(e2.message, true);
       html = NSDocs.facture(doc, lignes || [], cc, S.data.banque, { devis: doc.devis, lignes: lignesDevis || [], signataire: qui, client: cc, signer: reglageSig().contrat }, signeur('facture'));
     } else html = docFactureHTML(doc, lignes || [], cc);
+    montrerDoc(html);
+  }
+  function montrerDoc(html) {
+    const ancien = document.getElementById('fx-doc'); if (ancien) ancien.remove();
     const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
     v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">PDF / Partager</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
     document.body.appendChild(v);
@@ -5533,6 +5655,11 @@ const Factu = (() => {
       else { FE.lignes.push({ designation: o.n, quantite: 1, pu: o.pu, fixe: false }); toast('Ligne ajoutée : ' + o.court + '.'); }
       dessinerFLignes();
     }
+    else if (act === 'recues') ouvrirRecues();
+    else if (act === 'recue-ajout') { lireFormRecue(); FR.tournages.push({ date: '', heures: 4 }); dessinerRecue(); }
+    else if (act === 'recue-suppr') { lireFormRecue(); FR.tournages.splice(Number(a.dataset.i), 1); dessinerRecue(); }
+    else if (act === 'recue-voir') voirRecue(id);
+    else if (act === 'recue-payee') payerRecue(id, a);
     else if (act === 'fsuppr-ligne') { const i = Number(a.dataset.i); if (FE.lignes[i] && !FE.lignes[i].fixe) FE.lignes.splice(i, 1); dessinerFLignes(); }
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
     else if (act === 'sig-png') telechargerSignature();
@@ -5572,6 +5699,7 @@ const Factu = (() => {
     if (e.target.id === 'fx-facture-edit') { e.preventDefault(); enregistrerFacture(e.target); }
     if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
     if (e.target.id === 'fx-relance') { e.preventDefault(); enregistrerRelance(e.target); }
+    if (e.target.id === 'fx-recue') { e.preventDefault(); creerRecue(e.target); }
   });
 
   // donnees : lu par l'objectif du mois (Stats), en lecture seule.
