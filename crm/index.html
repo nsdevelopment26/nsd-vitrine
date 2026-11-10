@@ -240,6 +240,9 @@
   .bandeau-installer { display: block; background: #35d29a; color: #0f0f10; font-weight: 700; font-size: 14px; text-align: center;
     padding: 10px 16px; text-decoration: none; }
   .logo-connexion { width: 64px; height: 64px; border-radius: 16px; margin-bottom: 18px; }
+  /* Logo officiel vectoriel sans fond (pack du 10/11/2026), en vert CRM */
+  #ecran-connexion > svg.logo-nsd-connexion { display: block; width: 92px; height: auto; margin: 0 auto 22px; filter: drop-shadow(0 14px 30px rgba(53,210,154,.35)); }
+  .logo svg.logo-nsd { display: block; height: 20px; width: auto; }
   .connexion h1 { margin: 0 0 6px; }
   .connexion p { color: var(--doux); margin: 0 0 22px; }
   .code { letter-spacing: .4em; text-align: center; font-size: 24px !important; }
@@ -1072,7 +1075,7 @@
   Pour avoir le logo NS sur l’écran d’accueil, ouvre l’appli ici puis ajoute-la depuis Safari →</a>
 
 <div id="ecran-connexion" class="connexion cache">
-  <img class="logo-connexion" src="icones/nsd-vert-tuile-96.png" alt="NS Development" width="64" height="64">
+  <svg class="logo-nsd-connexion" viewBox="0 0 359.28 210.18" role="img" aria-label="NS Development"><defs><linearGradient id="logo-nsd-connexion-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent-l, #7ff0c4)"/><stop offset="1" stop-color="var(--accent, #35d29a)"/></linearGradient></defs><path fill="url(#logo-nsd-connexion-g)" d="M233.89 125.75Q225.27 125.75 217.36 131.86Q209.46 137.96 201.02 147.48Q192.57 157.01 182.69 167.96Q172.81 178.92 160.06 188.44Q147.3 197.96 130.42 204.07Q113.53 210.18 91.62 210.18Q61.44 210.18 41.14 198.32Q20.84 186.47 10.42 167.6Q-0 148.74 -0 127.9V17.6H107.78V46.35Q107.78 53.53 108.5 61.44Q109.22 69.34 113.17 74.73Q117.13 80.12 127.18 80.12Q135.81 80.12 142.1 74.37Q148.38 68.62 154.31 59.46Q160.24 50.3 167.78 40.06Q175.33 29.82 186.11 20.66Q196.89 11.5 213.05 5.75Q229.22 -0 252.93 -0Q283.83 -0 307.9 11.86Q331.97 23.71 345.63 45.63Q359.28 67.54 359.28 97.72V205.15H251.5V163.83Q251.5 144.79 247.72 135.27Q243.95 125.75 233.89 125.75Z"/></svg>
   <h1>CRM NSD</h1>
   <p>La prospection de NS Development, reliée au Google Sheets.</p>
   <label class="champ">Code d’accès
@@ -1084,7 +1087,7 @@
 <div id="app" class="cache">
   <header class="barre"><div class="barre-int">
     <div class="barre-haut">
-      <div class="logo"><img src="icones/nsd-vert-tuile-96.png" alt="NS Development"> CRM</div>
+      <div class="logo"><svg class="logo-nsd" viewBox="0 0 359.28 210.18" role="img" aria-label="NS Development"><defs><linearGradient id="logo-nsd-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent-l, #7ff0c4)"/><stop offset="1" stop-color="var(--accent, #35d29a)"/></linearGradient></defs><path fill="url(#logo-nsd-g)" d="M233.89 125.75Q225.27 125.75 217.36 131.86Q209.46 137.96 201.02 147.48Q192.57 157.01 182.69 167.96Q172.81 178.92 160.06 188.44Q147.3 197.96 130.42 204.07Q113.53 210.18 91.62 210.18Q61.44 210.18 41.14 198.32Q20.84 186.47 10.42 167.6Q-0 148.74 -0 127.9V17.6H107.78V46.35Q107.78 53.53 108.5 61.44Q109.22 69.34 113.17 74.73Q117.13 80.12 127.18 80.12Q135.81 80.12 142.1 74.37Q148.38 68.62 154.31 59.46Q160.24 50.3 167.78 40.06Q175.33 29.82 186.11 20.66Q196.89 11.5 213.05 5.75Q229.22 -0 252.93 -0Q283.83 -0 307.9 11.86Q331.97 23.71 345.63 45.63Q359.28 67.54 359.28 97.72V205.15H251.5V163.83Q251.5 144.79 247.72 135.27Q243.95 125.75 233.89 125.75Z"/></svg> CRM</div>
       <div class="barre-droite">
         <button class="theme" data-action="theme" aria-label="Basculer entre mode clair et mode sombre" title="Mode clair / sombre">
           <svg class="lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>

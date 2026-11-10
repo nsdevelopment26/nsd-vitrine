@@ -78,9 +78,9 @@
     gap:26px;padding:56px 24px;text-align:center;transition:opacity .38s ease,transform .38s ease}
   #ecConnexion.parti{opacity:0;transform:scale(.97)}
   .marque{display:flex;flex-direction:column;align-items:center;gap:13px}
-  /* Le logo est la tuile de la marque (assets/logo-ns-tuile-header.png), jamais un
-     carré dégradé reconstruit en CSS. Aucun filtre : la tuile est déjà noire. */
-  .mono-ns{width:66px;height:66px;display:block;object-fit:contain}
+  /* Logo officiel vectoriel sans fond (assets/nsd-logo-*.svg, pack 10/11/2026). */
+  .logo-ec{height:84px;width:auto;display:block}
+  .logo-ec-rail{height:24px;width:auto;display:block}
   .marque b{font-family:var(--disp);font-weight:700;font-size:15px}
   .marque b em{font-style:normal;color:var(--soft);font-weight:500}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc2);
@@ -129,7 +129,6 @@
   .rail{position:sticky;top:0;height:100dvh;display:flex;flex-direction:column;gap:26px;padding:26px 18px;
     border-right:1px solid var(--line);background:rgba(13,13,16,.72);backdrop-filter:blur(14px)}
   .rail-marque{display:flex;align-items:center;gap:11px;padding:0 8px}
-  .rail-marque .mono-ns{width:40px;height:40px}
   .rail-marque b{font-family:var(--disp);font-weight:700;font-size:14px}
   .rail-marque b em{font-style:normal;color:var(--soft);font-weight:500}
   .rail nav{display:flex;flex-direction:column;gap:4px}
@@ -412,8 +411,7 @@
 <!-- ============ CONNEXION ============ -->
 <section id="ecConnexion">
   <div class="marque" data-reveal="scale">
-    <img class="mono-ns" src="assets/logo-ns-tuile-header.png" alt="">
-    <b>NS <em>Development</em></b>
+    <img class="logo-ec" src="assets/nsd-logo-blanc.svg" alt="NS Development">
   </div>
 
   <div data-reveal data-delay="140">
@@ -461,8 +459,7 @@
 <div id="ecApp" hidden>
   <aside class="rail">
     <div class="rail-marque">
-      <img class="mono-ns" src="assets/logo-ns-tuile-header.png" alt="">
-      <b>NS <em>Development</em></b>
+      <img class="logo-ec-rail" src="assets/nsd-logo-horizontal-blanc.svg" alt="NS Development">
     </div>
 
     <nav aria-label="Navigation de l'espace client">

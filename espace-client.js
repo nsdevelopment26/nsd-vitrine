@@ -144,7 +144,7 @@
   var INCLUS = [
     "Hébergement et nom de domaine",
     "Maintenance technique et sécurité",
-    "Sauvegardes quotidiennes",
+    "Sauvegardes régulières",
     "Suivi du référencement local",
     "Modifications illimitées raisonnables"
   ];
@@ -1156,15 +1156,17 @@
       infoCo("Si un compte existe pour cette adresse, un lien pour choisir un nouveau mot de passe vient d'y être envoyé. Pensez à regarder les indésirables.");
     });
 
-    var modeRecuperation = /type=recovery/.test(window.location.hash) && !/error_description=/.test(window.location.hash);
+    /* Même formulaire pour le lien d'invitation (premier accès d'un client) : type=invite. */
+    var modeInvitation = /type=invite/.test(window.location.hash);
+    var modeRecuperation = /type=(recovery|invite)/.test(window.location.hash) && !/error_description=/.test(window.location.hash);
     if (modeRecuperation) {
       var formCo = document.getElementById("ecForm-connexion");
       var formNouveau = document.createElement("form");
       formNouveau.className = "form-co";
       formNouveau.id = "ecForm-nouveau";
       formNouveau.innerHTML =
-        '<p style="margin:0 0 6px;font-size:15px"><strong>Choisissez votre nouveau mot de passe.</strong> 8 caractères minimum.</p>' +
-        '<div class="champ"><label for="ecMdp1">Nouveau mot de passe</label><div class="box">' +
+        '<p style="margin:0 0 6px;font-size:15px"><strong>' + (modeInvitation ? "Bienvenue. Choisissez votre mot de passe." : "Choisissez votre nouveau mot de passe.") + '</strong> 8 caractères minimum.</p>' +
+        '<div class="champ"><label for="ecMdp1">' + (modeInvitation ? "Mot de passe" : "Nouveau mot de passe") + '</label><div class="box">' +
         '<input id="ecMdp1" type="password" autocomplete="new-password" minlength="8" required></div></div>' +
         '<div class="champ"><label for="ecMdp2">Confirmez-le</label><div class="box">' +
         '<input id="ecMdp2" type="password" autocomplete="new-password" minlength="8" required></div></div>' +
