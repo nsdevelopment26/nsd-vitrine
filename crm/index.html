@@ -5488,13 +5488,60 @@ const Factu = (() => {
     } else html = docFactureHTML(doc, lignes || [], cc);
     montrerDoc(html);
   }
+  // Le PDF se fabrique dès l'ouverture du document, dans un cadre caché (Nelson, 10/11/2026) :
+  // l'iPhone n'ouvre le menu Partager que juste après le toucher ; quand on fabriquait le PDF
+  // au moment du toucher (1 à 3 s), Safari refusait le partage. Le bouton ne fait plus que
+  // partager un fichier déjà prêt, en vrai PDF (WhatsApp, mail, Fichiers…).
   function montrerDoc(html) {
     const ancien = document.getElementById('fx-doc'); if (ancien) ancien.remove();
     const v = document.createElement('div'); v.className = 'fx-doc'; v.id = 'fx-doc';
-    v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button><button class="btn clair" data-fx="imprimer">PDF / Partager</button><button class="btn clair" data-fx="onglet">Nouvel onglet</button></div><iframe title="Document"></iframe>';
+    const ordi = !matchMedia('(pointer: coarse)').matches;
+    v.innerHTML = '<div class="outils"><button class="btn clair" data-fx="fermer-doc">Fermer</button>'
+      + '<button class="btn" data-fx="partager-pdf" disabled>PDF en préparation…</button>'
+      + (ordi ? '<button class="btn clair" data-fx="enregistrer-pdf" disabled>Enregistrer</button><button class="btn clair" data-fx="imprimer">Imprimer</button>' : '')
+      + '</div><iframe title="Document"></iframe>';
     document.body.appendChild(v);
     v.querySelector('iframe').srcdoc = html;
     v._html = html;
+    v._pdf = preparerPdf(html).then(fichier => {
+      if (v.isConnected) v.querySelectorAll('[data-fx=partager-pdf],[data-fx=enregistrer-pdf]').forEach(b => { b.disabled = false; if (b.dataset.fx === 'partager-pdf') b.textContent = 'Partager le PDF'; });
+      v._fichier = fichier; return fichier;
+    }).catch(e => {
+      if (v.isConnected) { const b = v.querySelector('[data-fx=partager-pdf]'); b.disabled = false; b.textContent = 'Réessayer le PDF'; b.dataset.erreur = '1'; }
+      v._erreur = e; throw e;
+    });
+    v._pdf.catch(() => {});
+  }
+  // Cadre caché à la largeur d'une page A4, hors écran : l'aperçu ne bouge pas pendant la fabrication.
+  async function preparerPdf(html) {
+    const f = document.createElement('iframe');
+    f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
+    f.style.cssText = 'position:fixed;left:-10000px;top:0;width:703px;height:1100px;border:0;visibility:hidden';
+    document.body.appendChild(f);
+    try {
+      await new Promise(ok => { f.onload = ok; f.srcdoc = html; });
+      try { await f.contentDocument.fonts.ready; } catch (e) {}
+      const nom = (f.contentDocument.title || 'document').replace(/[\\/:*?"<>|]+/g, '-').trim() + '.pdf';
+      const blob = await pdfTelephone(f);
+      return new File([blob], nom, { type: 'application/pdf' });
+    } finally { f.remove(); }
+  }
+  function enregistrerFichier(fichier) {
+    const a = document.createElement('a'); a.href = URL.createObjectURL(fichier); a.download = fichier.name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  }
+  // Appelé directement par le toucher, sans attente avant navigator.share.
+  function partagerPdf(btn) {
+    const v = document.getElementById('fx-doc'); if (!v) return;
+    if (btn.dataset.erreur) { montrerDoc(v._html); return; }
+    const fichier = v._fichier; if (!fichier) return toast('Le PDF se prépare encore, une seconde…');
+    if (navigator.canShare && navigator.canShare({ files: [fichier] })) {
+      navigator.share({ files: [fichier], title: fichier.name.replace(/\.pdf$/, '') }).catch(e => {
+        if (e.name === 'AbortError') return;
+        // Partage refusé par le navigateur : on enregistre le fichier à la place.
+        enregistrerFichier(fichier); toast('Partage indisponible ici : le PDF a été enregistré.');
+      });
+    } else { enregistrerFichier(fichier); toast('PDF enregistré dans tes téléchargements.'); }
   }
 
   // Sur téléphone, l'impression ne marche pas dans l'appli installée (Sam, 21/10/2026) :
@@ -5542,22 +5589,9 @@ const Factu = (() => {
       return pdf.output('blob');
     } finally { css.remove(); f.style.cssText = style; }
   }
-  async function imprimerOuPartager(btn) {
+  function imprimer() {
     const f = document.querySelector('#fx-doc iframe'); if (!f) return;
-    if (!matchMedia('(pointer: coarse)').matches) { f.contentWindow.focus(); f.contentWindow.print(); return; }
-    const avant = btn.textContent; btn.disabled = true; btn.textContent = 'PDF…';
-    try {
-      const nom = (f.contentDocument.title || 'document').replace(/[\\/:*?"<>|]+/g, '-').trim() + '.pdf';
-      const blob = await pdfTelephone(f);
-      const fichier = new File([blob], nom, { type: 'application/pdf' });
-      if (navigator.canShare && navigator.canShare({ files: [fichier] })) {
-        try { await navigator.share({ files: [fichier], title: nom.replace(/\.pdf$/, '') }); }
-        catch (e) { if (e.name !== 'AbortError') throw e; }
-      } else {
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nom; document.body.appendChild(a); a.click(); a.remove();
-      }
-    } catch (e) { toast('PDF : ' + (e.message || e), true); }
-    btn.disabled = false; btn.textContent = avant;
+    f.contentWindow.focus(); f.contentWindow.print();
   }
 
   const docDevisHTML = (d, l, c) => NSDocs.devis(d, l, c, S.data.banque, signeur('devis'));
@@ -5678,7 +5712,9 @@ const Factu = (() => {
     else if (act === 'fsuppr-ligne') { const i = Number(a.dataset.i); if (FE.lignes[i] && !FE.lignes[i].fixe) FE.lignes.splice(i, 1); dessinerFLignes(); }
     else if (act === 'fermer-doc') document.getElementById('fx-doc').remove();
     else if (act === 'sig-png') telechargerSignature();
-    else if (act === 'imprimer') imprimerOuPartager(a);
+    else if (act === 'imprimer') imprimer();
+    else if (act === 'partager-pdf') partagerPdf(a);
+    else if (act === 'enregistrer-pdf') { const v = document.getElementById('fx-doc'); if (v && v._fichier) enregistrerFichier(v._fichier); }
     else if (act === 'onglet') { const u = URL.createObjectURL(new Blob([document.getElementById('fx-doc')._html], { type: 'text/html' })); window.open(u, '_blank'); }
   });
   document.addEventListener('input', e => {
