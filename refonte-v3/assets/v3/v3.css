@@ -1273,7 +1273,8 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
   .heb-texte,.heb-objet{grid-column:1 / -1}
   .heb-objet{height:300px}
   .heb-chiffres{grid-template-columns:1fr 1fr 1fr}
-  .hb-signe{width:120vw;right:-20vw;bottom:110px}
+  .hb-signe{display:none}
+  .hb-voile{background:linear-gradient(0deg,rgba(8,8,8,.94) 0%,rgba(8,8,8,.72) 45%,rgba(8,8,8,.62) 100%)}
   .hb-bas .coord{display:none}
 }
 @media (max-width:560px){
