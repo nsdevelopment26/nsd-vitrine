@@ -126,7 +126,7 @@ function start() {
   const gl = probe.getContext('webgl2') || probe.getContext('webgl');
   if (!gl) return;
   const plusTard = window.requestIdleCallback || (f => setTimeout(f, 600));
-  plusTard(() => import('./gimbal3d.js?v=7')
+  plusTard(() => import('./gimbal3d.js?v=9')
     .then(m => m.init(document.getElementById('gl'), state, stage))
     .then(() => { html.classList.add('x3d'); html.classList.remove('x2d'); })
     .catch(err => { console.warn('NSD 360 : 3D indisponible, image utilisée à la place.', err); }));

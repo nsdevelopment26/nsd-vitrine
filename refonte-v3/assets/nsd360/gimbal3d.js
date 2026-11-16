@@ -13,10 +13,10 @@ import { RoomEnvironment } from '../vendor/three/RoomEnvironment.js';
 
 const W = 0.715, H = 1.466, D = 0.0825, R = 0.105;           // iPhone
 const SCREEN_W = 0.664, SCREEN_H = SCREEN_W * 844 / 390;       // écran au format des images (390 x 844)
-const MODEL_TOP = H / 2, MODEL_BOTTOM = -2.62;                 // hauteur totale du modèle
+const MODEL_TOP = H / 2, MODEL_BOTTOM = -3.2;                 // hauteur totale du modèle
 
 /* Poses par temps de l'expérience : lacet de l'ensemble, panoramique, inclinaison, roulis (radians) */
-const YAW  = [-0.78, 0.82, 0.55, -0.62, -0.86, 0.80, -0.74, 0.70, 0.30];
+const YAW  = [-0.78, 0.82, 0.62, -0.66, -0.86, 0.80, -0.74, 0.70, 0.62];
 const PAN  = [ 0.10,-0.12,-0.04, 0.08, 0.12,-0.12, 0.10,-0.10,-0.06];
 const TILT = [-0.05, 0.09,-0.13, 0.04,-0.06, 0.09,-0.05, 0.06, 0.00];
 const ROLL = [ 0.00, 0.05,-0.08, 0.00, 0.04,-0.05, 0.00, 0.03, 0.00];
@@ -140,49 +140,103 @@ export async function init(canvas, state, stage) {
   const root = new THREE.Group(); scene.add(root);
   const model = new THREE.Group(); root.add(model);
 
-  // poignée (profil tourné : arrondie en bas, légèrement évasée)
-  const prof = [];
-  for (let i = 0; i <= 20; i++) { const a = (i / 20) * Math.PI / 2; prof.push(new THREE.Vector2(0.168 * Math.sin(a), -2.62 + 0.09 * (1 - Math.cos(a)))); }
-  prof.push(new THREE.Vector2(0.168, -2.2), new THREE.Vector2(0.158, -1.5), new THREE.Vector2(0.15, -1.17), new THREE.Vector2(0.132, -1.12), new THREE.Vector2(0, -1.12));
-  const handle = new THREE.Mesh(new THREE.LatheGeometry(prof, 64), M.shell);
-  const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.172, 0.62, 64, 1, true), M.grip); grip.position.y = -2.0;
-  const hz = -0.6; // la poignée et le moteur panoramique sont derrière le téléphone
-  const handleG = new THREE.Group(); handleG.position.z = hz; handleG.add(handle, grip); model.add(handleG);
-  // panneau de commande face avant de la poignée
-  const panel = box(0.17, 0.36, 0.06, 0.025, M.pad); panel.position.set(0, -1.5, 0.13); handleG.add(panel);
-  const stick = cyl(0.03, 0.034, 0.03, M.shell, 24); stick.rotation.x = Math.PI / 2; stick.position.set(0, -1.42, 0.165); handleG.add(stick);
-  const stickTop = new THREE.Mesh(new THREE.SphereGeometry(0.03, 24, 16), M.shell); stickTop.position.set(0, -1.42, 0.18); handleG.add(stickTop);
-  const rec = cyl(0.028, 0.028, 0.012, M.ring, 24); rec.rotation.x = Math.PI / 2; rec.position.set(0, -1.56, 0.163); handleG.add(rec);
-  const recDot = cyl(0.014, 0.014, 0.004, M.ledRed, 20); recDot.rotation.x = Math.PI / 2; recDot.position.set(0, -1.56, 0.17); handleG.add(recDot);
-  for (let i = 0; i < 4; i++) { const l = cyl(0.006, 0.006, 0.004, i < 3 ? M.led : M.pad, 10); l.rotation.x = Math.PI / 2; l.position.set(-0.03 + i * 0.02, -1.65, 0.163); handleG.add(l); }
+  /* Gimbal reproduit sur celui de la vidéo de l'accueil (demande de Nelson, 16/11) :
+     stabilisateur 3 axes pour appareil photo, même architecture et mêmes proportions,
+     avec le téléphone posé sur le plateau à la place de l'appareil.
+     Repère du modèle : centre du téléphone en (0,0,0), écran vers +z (côté opérateur = spectateur).
+     Proportions relevées sur la vidéo (1 unité = 10 cm) : plateau 0,82 au-dessus du moteur panoramique,
+     moteur de roulis 0,87 en arrière de l'axe de la poignée et 0,14 sous le plateau,
+     moteur d'inclinaison 0,6 au-dessus du plateau, sur le côté. */
+  const hz = 0;                                   // l'axe de la poignée passe sous le centre du téléphone
+  const yPlate = -H / 2 - 0.06;                   // dessus du plateau, juste sous le téléphone
+  const yPan = yPlate - 0.82;                     // dessus du moteur panoramique
+  const yRoll = yPlate - 0.14, zRoll = 0.87;      // moteur de roulis, côté opérateur
+  const xTilt = W / 2 + 0.3, yTilt = yPlate + 0.6; // moteur d'inclinaison, sur le côté droit
 
-  // moteur panoramique (axe vertical) au sommet de la poignée
-  const panMotor = motor(0.135, 0.13); panMotor.position.set(0, -1.05, hz); model.add(panMotor);
-  const panPivot = new THREE.Group(); panPivot.position.set(0, -1.05, hz); model.add(panPivot);
-  // bras vertical vers le moteur de roulis
-  const armV = box(0.12, 1.02, 0.085, 0.012, M.shell); armV.position.set(0, 0.55, -0.02); panPivot.add(armV);
-  const elbow = box(0.12, 0.12, 0.18, 0.016, M.shell); elbow.position.set(0, 1.05, 0.02); panPivot.add(elbow);
-  // moteur de roulis (axe Z, aligné sur le centre du téléphone)
-  const rollMotor = motor(0.1, 0.12); rollMotor.rotation.x = Math.PI / 2; rollMotor.position.set(0, 1.05, 0.15); panPivot.add(rollMotor);
-  const rollPivot = new THREE.Group(); rollPivot.position.set(0, 1.05, 0.15); panPivot.add(rollPivot);
-  // dans rollPivot, le centre du téléphone est en (0, 0, -hz - 0.15) = (0, 0, 0.45)
-  const pz = -hz - 0.15;
-  const armA = box(0.62, 0.08, 0.08, 0.012, M.shell); armA.position.set(0.31, 0, 0.08); rollPivot.add(armA);
-  const filetA = box(0.5, 0.012, 0.084, 0.004, M.red); filetA.position.set(0.34, 0.02, 0.08); rollPivot.add(filetA);
-  const armB = box(0.11, 0.11, 0.38, 0.012, M.shell); armB.position.set(0.62, 0, 0.24); rollPivot.add(armB);
-  const filetB = box(0.114, 0.014, 0.3, 0.004, M.red); filetB.position.set(0.62, 0.03, 0.25); rollPivot.add(filetB);
-  const filetC = box(0.006, 0.026, 0.3, 0.002, M.red); filetC.position.set(0.678, 0.012, 0.25); rollPivot.add(filetC);
-  // moteur d'inclinaison (axe X) sur le côté du téléphone
-  const tiltMotor = motor(0.105, 0.11); tiltMotor.rotation.z = Math.PI / 2; tiltMotor.position.set(0.6, 0, pz - 0.085); rollPivot.add(tiltMotor);
-  const tiltPivot = new THREE.Group(); tiltPivot.position.set(0.6, 0, pz - 0.085); rollPivot.add(tiltPivot);
-  // pince : bras derrière le téléphone + mâchoires sur les bords
-  const clampArm = box(0.6, 0.085, 0.035, 0.015, M.shell); clampArm.position.set(-0.3, 0, 0.005); tiltPivot.add(clampArm);
-  const clampBar = box(W + 0.09, 0.12, 0.04, 0.018, M.shell); clampBar.position.set(-0.6, 0, 0.025); tiltPivot.add(clampBar);
+  const Z = new THREE.Vector3(0, 0, 1);
+  // barre à arêtes vives tendue entre deux points (bras usinés de la vidéo)
+  const bar = (a, b, w, h, m, parent, o) => {
+    const A = new THREE.Vector3(...a).sub(o), B = new THREE.Vector3(...b).sub(o);
+    const L = A.distanceTo(B), mesh = box(w, h, L + w * 0.6, Math.min(w, h) * 0.18, m);
+    mesh.position.copy(A).add(B).multiplyScalar(0.5); mesh.quaternion.setFromUnitVectors(Z, B.clone().sub(A).normalize());
+    parent.add(mesh); return mesh;
+  };
+
+  /* ---------- Poignée ---------- */
+  const handleG = new THREE.Group(); model.add(handleG);
+  // poignée ronde caoutchoutée, fond arrondi
+  const prof = [];
+  for (let i = 0; i <= 16; i++) { const a = (i / 16) * Math.PI / 2; prof.push(new THREE.Vector2(0.2 * Math.sin(a), MODEL_BOTTOM + 0.09 * (1 - Math.cos(a)))); }
+  prof.push(new THREE.Vector2(0.2, yPan - 1.1), new THREE.Vector2(0.208, yPan - 0.7), new THREE.Vector2(0.24, yPan - 0.62), new THREE.Vector2(0, yPan - 0.62));
+  handleG.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 56), M.grip));
+  // tête ronde, plus large que la poignée, panneau de commande côté opérateur
+  const head = cyl(0.29, 0.27, 0.56, M.shell, 64); head.position.y = yPan - 0.36; handleG.add(head);
+  const band1 = ringAt(0.282, 0.008, M.ring); band1.rotation.x = Math.PI / 2; band1.position.y = yPan - 0.62; handleG.add(band1);
+  const panneau = box(0.3, 0.36, 0.06, 0.03, M.shell); panneau.position.set(0, yPan - 0.33, 0.27); handleG.add(panneau);
+  const ecran = box(0.17, 0.11, 0.012, 0.01, M.bezel); ecran.position.set(0, yPan - 0.24, 0.302); handleG.add(ecran);
+  for (let i = 0; i < 3; i++) { const l = box(0.02, 0.008, 0.004, 0.002, M.led); l.position.set(-0.05 + i * 0.045, yPan - 0.24 + (i === 1 ? 0.025 : -0.015), 0.309); handleG.add(l); }
+  const joy = new THREE.Mesh(new THREE.SphereGeometry(0.03, 24, 16), M.shell); joy.position.set(-0.06, yPan - 0.41, 0.305); handleG.add(joy);
+  const joyR = ringAt(0.04, 0.005, M.ring); joyR.position.set(-0.06, yPan - 0.41, 0.302); handleG.add(joyR);
+  const rec = cyl(0.028, 0.028, 0.014, M.shell, 24); rec.rotation.x = Math.PI / 2; rec.position.set(0.07, yPan - 0.41, 0.302); handleG.add(rec);
+  const recDot = cyl(0.018, 0.018, 0.004, M.ledRed, 20); recDot.rotation.x = Math.PI / 2; recDot.position.set(0.07, yPan - 0.41, 0.31); handleG.add(recDot);
+  const trig = box(0.09, 0.16, 0.06, 0.025, M.pad); trig.position.set(0, yPan - 0.52, -0.27); handleG.add(trig);
+
+  /* ---------- Poignée latérale inclinée (comme dans la vidéo) ---------- */
+  const xs = -0.2, yb = yPan - 0.4, zh = 1.18;
+  const H0 = new THREE.Vector3();
+  bar([xs, yb, 0.2], [xs, yb, zh], 0.09, 0.24, M.shell, handleG, H0);                      // équerre
+  [-1, 1].forEach(s => { const fente = box(0.004, 0.08, 0.36, 0.035, M.pad); fente.position.set(xs + s * 0.047, yb, 0.62); handleG.add(fente); });
+  const charn = motor(0.19, 0.13); charn.rotation.z = Math.PI / 2; charn.position.set(xs - 0.02, yb, zh); handleG.add(charn);   // charnière ronde
+  const gr = bar([xs, yb + 0.1, zh + 0.02], [xs, yPan + 1.2, zh + 0.66], 0.18, 0.27, M.grip, handleG, H0);     // poignée inclinée
+  const capot = bar([xs, yPan + 1.12, zh + 0.63], [xs, yPan + 1.27, zh + 0.69], 0.19, 0.28, M.shell, handleG, H0);
+  for (let i = 0; i < 4; i++) { const l = box(0.004, 0.012, 0.026, 0.002, M.led); l.position.set(xs - 0.096, yPan + 1.12 - i * 0.045, zh + 0.6 - i * 0.017 - 0.06); handleG.add(l); }
+
+  /* ---------- Moteur panoramique + bras en L à filet rouge ---------- */
+  const panMotor = motor(0.27, 0.08); panMotor.position.set(0, yPan - 0.07, 0); model.add(panMotor);
+  const panPivot = new THREE.Group(); panPivot.position.set(0, yPan, 0); model.add(panPivot);
+  const P0 = new THREE.Vector3(0, yPan, 0);
+  // platine sur le moteur, puis bras qui part vers l'arrière et remonte en courbe jusqu'au moteur de roulis
+  const platine = box(0.2, 0.05, 0.56, 0.02, M.shell); platine.position.z = -0.08; panPivot.add(platine);
+  const lH = bar([0, yPan + 0.03, -0.24], [0, yPan + 0.03, 0.62], 0.1, 0.075, M.shell, panPivot, P0);
+  const lC = bar([0, yPan + 0.03, 0.6], [0, yPan + 0.2, 0.74], 0.1, 0.075, M.shell, panPivot, P0);
+  const lD = bar([0, yPan + 0.18, 0.73], [0, yRoll - 0.17, zRoll], 0.1, 0.075, M.shell, panPivot, P0);
+  // le filet rouge court sur les deux flancs du bras
   [-1, 1].forEach(s => {
-    const jaw = box(0.03, 0.13, D + 0.075, 0.012, M.shell); jaw.position.set(-0.6 + s * (W / 2 + 0.017), 0, 0.085 - 0.04 + 0.0125); tiltPivot.add(jaw);
-    const pad = box(0.008, 0.11, D, 0.003, M.pad); pad.position.set(-0.6 + s * (W / 2 + 0.003), 0, 0.085); tiltPivot.add(pad);
+    bar([s * 0.051, yPan + 0.03, -0.2], [s * 0.051, yPan + 0.03, 0.62], 0.004, 0.018, M.red, panPivot, P0);
+    bar([s * 0.051, yPan + 0.03, 0.6], [s * 0.051, yPan + 0.2, 0.74], 0.004, 0.018, M.red, panPivot, P0);
+    bar([s * 0.051, yPan + 0.18, 0.73], [s * 0.051, yRoll - 0.2, zRoll], 0.004, 0.018, M.red, panPivot, P0);
   });
-  phone.position.set(-0.6, 0, 0.085); tiltPivot.add(phone);
+  // moteur de roulis (axe avant-arrière), gros disque côté opérateur
+  const rollMotor = motor(0.17, 0.15); rollMotor.rotation.x = Math.PI / 2; rollMotor.position.set(0, yRoll - P0.y, zRoll + 0.02); panPivot.add(rollMotor);
+  const rollPivot = new THREE.Group(); rollPivot.position.set(0, yRoll - P0.y, zRoll); panPivot.add(rollPivot);
+  const R0 = new THREE.Vector3(0, yRoll, zRoll);
+
+  /* ---------- Bras de roulis : part sur la droite, se coude et monte au moteur d'inclinaison ---------- */
+  bar([0.06, yRoll + 0.04, zRoll - 0.08], [xTilt, yTilt - 0.2, 0.22], 0.15, 0.12, M.shell, rollPivot, R0);
+  bar([xTilt, yTilt - 0.24, 0.26], [xTilt, yTilt - 0.02, 0.04], 0.15, 0.12, M.shell, rollPivot, R0);
+  // moteur d'inclinaison (axe latéral), le plus gros disque, sur le côté du téléphone
+  const tiltMotor = motor(0.2, 0.13); tiltMotor.rotation.z = Math.PI / 2; tiltMotor.position.set(xTilt - R0.x, yTilt - R0.y, 0.06 - R0.z); rollPivot.add(tiltMotor);
+  const tiltPivot = new THREE.Group(); tiltPivot.position.set(xTilt - 0.1 - R0.x, yTilt - R0.y, 0.06 - R0.z); rollPivot.add(tiltPivot);
+  const T0 = new THREE.Vector3(xTilt - 0.1, yTilt, 0.06);
+
+  /* ---------- Équerre, plateau à queue d'aronde et pince du téléphone ---------- */
+  const tb = (w, h, d, r, m, x, y, z) => { const b = box(w, h, d, r, m); b.position.set(x - T0.x, y - T0.y, z - T0.z); tiltPivot.add(b); return b; };
+  tb(0.09, yTilt - yPlate + 0.12, 0.2, 0.02, M.shell, xTilt - 0.17, (yTilt + yPlate) / 2 - 0.05, 0.02);   // équerre verticale
+  tb(xTilt + W / 2 + 0.02, 0.07, 0.24, 0.015, M.shell, (xTilt - 0.17 - W / 2 - 0.1) / 2 + 0.02, yPlate - 0.1, 0.02); // bras du plateau
+  tb(W + 0.24, 0.045, 0.44, 0.01, M.shell, 0, yPlate - 0.04, -0.02);                                     // plateau
+  tb(W + 0.26, 0.012, 0.04, 0.004, M.ring, 0, yPlate - 0.02, 0.2);                                       // rail métal
+  tb(W + 0.26, 0.012, 0.04, 0.004, M.ring, 0, yPlate - 0.02, -0.24);
+  const lev = tb(0.05, 0.03, 0.2, 0.012, M.red, -W / 2 - 0.16, yPlate - 0.06, 0.06); lev.rotation.y = 0.35;  // levier rouge du plateau
+  const knob = cyl(0.045, 0.045, 0.06, M.shell, 24); knob.position.set(xTilt - 0.17 - T0.x, yPlate + 0.2 - T0.y, 0.14 - T0.z); knob.rotation.x = Math.PI / 2; tiltPivot.add(knob);
+  // pince : pied sur le plateau, montant derrière le téléphone, mâchoires sur les bords
+  tb(0.18, 0.08, 0.14, 0.02, M.shell, 0, yPlate + 0.02, -0.06);
+  tb(0.12, 0.62, 0.04, 0.015, M.shell, 0, yPlate + 0.32, -D / 2 - 0.03);
+  tb(W + 0.09, 0.11, 0.04, 0.018, M.shell, 0, -0.18, -D / 2 - 0.03);
+  [-1, 1].forEach(s => {
+    tb(0.03, 0.13, D + 0.075, 0.012, M.shell, s * (W / 2 + 0.017), -0.18, -0.01);
+    tb(0.008, 0.11, D, 0.003, M.pad, s * (W / 2 + 0.003), -0.18, 0);
+  });
+  phone.position.set(-T0.x, -T0.y, -T0.z); tiltPivot.add(phone);
 
   // ombre de contact sous la poignée
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.9), new THREE.MeshBasicMaterial({ map: contactShadowTexture(), transparent: true, depthWrite: false, toneMapped: false }));
