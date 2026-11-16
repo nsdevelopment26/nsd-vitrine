@@ -1088,6 +1088,35 @@ html:not(.intro-joue) .intro{display:none}
   .audela-txt li{grid-template-columns:1fr;gap:2px}
 }
 
+
+/* =====================================================================
+   OBJETS 3D (un par page, voir objets3d.js)
+   ===================================================================== */
+.objet3d{position:absolute;pointer-events:none}
+.objet3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .9s var(--ease)}
+.objet3d.pret canvas{opacity:1}
+.objet-repli{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .6s;animation:flotte 7s ease-in-out infinite}
+.objet3d.pret .objet-repli{opacity:0}
+@keyframes flotte{50%{transform:translateY(-10px) rotate(-.6deg)}}
+/* accueil : le portable prend la place de la composition d'écrans une fois prêt */
+.objet-hero{top:calc(var(--nav) - 10px);right:calc(var(--gut) * -1);bottom:clamp(60px,9vh,100px);width:min(60vw,900px);z-index:2}
+.hero .compo{transition:opacity .8s var(--ease)}
+.hero.objet-actif .compo{opacity:0;pointer-events:none}
+/* pages intérieures : l'objet à droite du titre */
+.page-tete.avec-objet{position:relative;min-height:min(100svh,940px);display:flex;flex-direction:column;justify-content:flex-end}
+.page-tete.avec-objet h1,.page-tete.avec-objet .pt-bas{max-width:58%}
+.page-tete.avec-objet .pt-bas .lede,.page-tete.avec-objet .pt-meta{grid-column:1 / -1}
+.page-tete .objet3d{top:calc(var(--nav) + 12px);right:var(--gut);bottom:24px;width:min(42%,640px)}
+@media (max-width:1100px){
+  .objet-hero{display:none}
+}
+@media (max-width:980px){
+  .page-tete.avec-objet{min-height:0;display:block}
+  .page-tete.avec-objet h1,.page-tete.avec-objet .pt-bas{max-width:none}
+  .page-tete .objet3d{position:relative;top:auto;right:auto;bottom:auto;width:100%;height:clamp(240px,62vw,380px);margin-top:28px}
+}
+@media (prefers-reduced-motion:reduce){.objet-repli{animation:none}}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0ms!important}
   .js [data-r],.js [data-r] > *,.js .titre-r > span,.js .compo .ecran figure,.js .compo figcaption{opacity:1!important;transform:none!important;clip-path:none!important}

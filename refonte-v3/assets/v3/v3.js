@@ -13,6 +13,7 @@
   const T = s => (window.nsT ? window.nsT(s) : s);
   const retraduire = () => { if (window.nsRetranslate) window.nsRetranslate(); };
   const FL = '<svg class="fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
+  const ICI_JS = document.currentScript && document.currentScript.src;
   const FLX = '<svg class="fl ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
 
   /* ---------- 1. Écran d'ouverture : l'animation du logo, une fois par visite ---------- */
@@ -350,6 +351,19 @@
       }
     });
     dlg.addEventListener('cancel', e => { e.preventDefault(); fermer(); });
+  })();
+
+  /* ---------- 11 bis. Objets 3D (ordinateur seulement, chargés quand le navigateur est libre) ---------- */
+  (function objets(){
+    const els = $$('[data-objet]').filter(e => e.querySelector('canvas'));
+    if (!els.length || reduit || innerWidth <= 980 || !ICI_JS) return;
+    const essai = doc.createElement('canvas');
+    if (!(essai.getContext('webgl2') || essai.getContext('webgl'))) return;
+    const lancer = () => import(new URL('objets3d.js?v=1', ICI_JS).href)
+      .then(m => els.forEach(el => m.monter(el).then(ok => { if (ok) { el.classList.add('pret'); const h = el.closest('.hero'); if (h) h.classList.add('objet-actif'); } })))
+      .catch(err => console.warn('Objets 3D indisponibles, images utilisées.', err));
+    const plusTard = window.requestIdleCallback || (f => setTimeout(f, 700));
+    introPrete.then(() => plusTard(lancer, { timeout: 2500 }));
   })();
 
   /* ---------- 12. Avant / après ---------- */
