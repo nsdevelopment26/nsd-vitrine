@@ -1,0 +1,25 @@
+{
+  "nom": "Ashcombe Lorant",
+  "activite": "cabinet d'avocats d'affaires",
+  "commune": "Luxembourg, Kirchberg",
+  "telephone": "+352 27 00 00 00 (numéro de démonstration)",
+  "horaires_texte": "L'accueil répond du lundi au vendredi, de 8 h à 19 h. La ligne d'urgence pénale répond le soir et le week-end (horaires de démonstration).",
+  "services_texte": "Six domaines : contentieux des affaires, arbitrage international, fusions et acquisitions, fonds et réglementation, pénal des affaires, clients privés. En haut de la page, tirez un dossier pour voir l'associé qui le tient et ce qu'il couvre.",
+  "prix_texte": "Les honoraires sont annoncés par écrit avant de commencer, dans la note qui suit le premier rendez-vous. Rien n'est facturé sans votre accord.",
+  "urgence_texte": "Perquisition, convocation, gel d'avoirs : appelez la ligne d'urgence pénale, affichée sous le titre de la page. Un associé vous rappelle.",
+  "zone_texte": "Le cabinet reçoit au Kirchberg, à Luxembourg. Les rendez-vous peuvent aussi se tenir en visio ou par téléphone, en français, anglais, allemand, luxembourgeois ou portugais.",
+  "contact_texte": "Le formulaire « Premier contact » prend trois minutes. Ce que vous écrivez est couvert par le secret professionnel dès l'envoi, même si vous ne nous confiez pas l'affaire. Ne détaillez pas encore : quelques lignes suffisent.",
+  "suggestions": [
+    "J'ai une perquisition en cours",
+    "Combien coûte un premier rendez-vous ?",
+    "Vous parlez portugais ?"
+  ],
+  "demo_regles": [
+    { "mots": ["perquisition", "urgent", "urgence", "convoc", "police", "juge", "gel"], "cle": "urgence_texte" },
+    { "mots": ["horaire", "ouvert", "heure", "quand", "samedi", "soir"], "cle": "horaires_texte" },
+    { "mots": ["prix", "tarif", "honoraire", "cout", "coût", "combien", "facture"], "cle": "prix_texte" },
+    { "mots": ["portugais", "anglais", "allemand", "luxembourgeois", "langue", "visio", "adresse", "ou etes", "où êtes", "kirchberg"], "cle": "zone_texte" },
+    { "mots": ["domaine", "arbitrage", "fusion", "fonds", "succession", "contentieux", "litige", "penal", "pénal"], "cle": "services_texte" },
+    { "mots": ["rendez", "rdv", "contact", "ecrire", "écrire", "secret", "confidentiel"], "cle": "contact_texte" }
+  ]
+}

@@ -210,6 +210,15 @@ const NS_I18N = {
   "Mur en 3D": {lb:"Mauer a 3D", de:"Wand in 3D", en:"3D wall", pt:"Parede em 3D"},
   "Gestes d'urgence": {lb:"Noutfall-Handgrëffer", de:"Erste Handgriffe", en:"Emergency steps", pt:"Gestos de urgência"},
   "Devis avec photos": {lb:"Devis mat Fotoen", de:"Angebot mit Fotos", en:"Quotes with photos", pt:"Orçamento com fotos"},
+  "Cabinet d'avocats": {lb:"Affekotecabinet", de:"Anwaltskanzlei", en:"Law firm", pt:"Escritório de advogados"},
+  "Un fichier de dossiers en 3D : on tire un onglet, le dossier s'ouvre sur l'associé qui le tient. Équipe filtrée par domaine et par langue, premier contact confidentiel avec agenda.":
+    {lb:"E Fichier mat Dossieren a 3D: een zitt un engem Reider, an den Dossier geet op beim Associé, deen en hält. Equipe gefiltert no Domaine an no Sprooch, vertraulechen éischte Kontakt mat Agenda.",
+     de:"Eine Aktenablage in 3D: Man zieht an einem Reiter, und die Akte öffnet sich beim zuständigen Partner. Team nach Fachgebiet und Sprache filterbar, vertraulicher Erstkontakt mit Terminkalender.",
+     en:"A 3D file drawer: pull a tab and the folder opens on the partner who handles it. Team filterable by practice area and language, confidential first contact with a booking calendar.",
+     pt:"Um arquivo de processos em 3D: puxa-se um separador e o processo abre-se no sócio responsável. Equipa filtrada por área e por língua, primeiro contacto confidencial com agenda."},
+  "Dossiers en 3D": {lb:"Dossieren a 3D", de:"Akten in 3D", en:"3D case files", pt:"Processos em 3D"},
+  "Associés": {lb:"Associéen", de:"Partner", en:"Partners", pt:"Sócios"},
+  "Premier contact": {lb:"Éischte Kontakt", de:"Erstkontakt", en:"First contact", pt:"Primeiro contacto"},
   "Fiduciaire & comptable": {lb:"Fiduciaire & Comptabel", de:"Treuhand & Buchhaltung", en:"Accountancy firm", pt:"Fiduciária & contabilidade"},
   "Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.":
     {lb:"Gastronomesch Tafel: Menüen, illustréiert Kaart, Wäikeller an eng Online-Reservatioun déi e vollen Service wierklech spaart.",
