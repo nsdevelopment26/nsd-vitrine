@@ -498,7 +498,7 @@ html:not(.intro-joue) .intro{display:none}
 /* Les reels (reseaux.js) : vraies vidéos de nos deux comptes */
 .reels{margin-top:clamp(96px,11vw,160px);padding-top:clamp(40px,5vw,64px);border-top:1px solid var(--night-line)}
 .reels-tete{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px;margin-bottom:32px}
-.reels-tete h3{font-size:clamp(28px,2.8vw,40px);max-width:16em}
+.reels-tete h2,.reels-tete h3{font-size:clamp(28px,2.8vw,40px);max-width:16em}
 .reels-tete p{color:var(--night-mute);font-size:15px;margin-top:10px;max-width:30em}
 .rl-tabs{display:flex;gap:0;border:1px solid var(--night-line)}
 .rl-tab{display:flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;text-align:left;font-size:14px;color:var(--night-mute);transition:background .3s,color .3s}

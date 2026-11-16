@@ -126,6 +126,7 @@
       b.setAttribute('aria-expanded', v ? 'true' : 'false');
       b.setAttribute('aria-label', v ? 'Fermer le menu' : 'Ouvrir le menu');
       r.setAttribute('aria-hidden', v ? 'false' : 'true');
+      r.inert = !v;
       html.style.overflow = v ? 'hidden' : '';
       if (v) { $('#tete').classList.remove('cache'); setTimeout(() => { const a = $('nav a', r); a && a.focus({ preventScroll: true }); }, 300); }
     };
