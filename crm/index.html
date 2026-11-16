@@ -1561,9 +1561,44 @@ function vueJourPasse(j) {
 function vueJourAVenir(j) {
   const prevus = S.data.prospects.filter(p => String(p.rappel).startsWith(j) && !['perdu', 'signe'].includes(cle(p)) && aLui(p))
     .sort((a, b) => a.rappel.localeCompare(b.rappel));
-  return section('Rappels et RDV prévus', prevus.length ? prevus.length + ' prévus' : '',
-    prevus.length ? grille(prevus.map(p => carteRiche(p, droite((cle(p) === 'rdv' ? 'RDV ' : '') + heure(p.rappel)))).join(''))
-      : '<div class="vide">Rien de prévu ce jour-là pour l’instant. Les rappels posés depuis la fiche d’un prospect apparaîtront ici.</div>');
+  if (!prevus.length) return section('Rien de prévu', '', '<div class="vide">Rien de prévu ce jour-là pour l’instant. Les rappels posés depuis la fiche d’un prospect et la journée préparée par Tom (la veille au soir) apparaîtront ici.</div>');
+  const G = groupesPrevus(prevus);
+  const bloc = (titre, l, info, f) => l.length ? section(titre, l.length + ' ' + info, grille(l.map(f).join(''))) : '';
+  return bloc('RDV', G.rdv, 'prévu' + (G.rdv.length > 1 ? 's' : ''), p => carteRiche(p, droite('RDV ' + heure(p.rappel))))
+    + bloc('Rappels convenus', G.rappels, 'promis', p => carteRiche(p, droite(heure(p.rappel))))
+    + bloc('Appels du jour', G.appels, 'dans la grille', p => carteRiche(p, droite(heure(p.rappel))))
+    + blocLiens(G.liens, p => heure(p.rappel));
+}
+
+// Une liste de prospects datés, rangée par nature (16/11/2026, Nelson : « tout est mélangé »).
+// Avant, RDV, rappels promis, relances de liens WhatsApp et appels à froid de la grille
+// tombaient dans une seule liste triée par l'heure.
+function groupesPrevus(l) {
+  const k = p => cle(p);
+  return {
+    rdv: l.filter(p => k(p) === 'rdv'),
+    rappels: l.filter(p => ['rappel', 'negociation'].includes(k(p))),
+    liens: l.filter(p => k(p) === 'lien'),
+    appels: l.filter(p => ['a_appeler', 'sans_reponse'].includes(k(p))),
+  };
+}
+// Qui a envoyé le lien, et quand : le dernier « Lien envoyé » du Journal.
+function lienDe(p) {
+  const e = historique(p.id).find(x => x.resultat === 'Lien envoyé');
+  return e ? { par: parDe(e), date: e.date } : { par: '', date: p.dernier || '' };
+}
+// Les liens à relancer, en deux blocs : ceux de Nelson (WhatsApp) et ceux de Sam (après un appel).
+function blocLiens(l, quand) {
+  if (!l.length) return '';
+  const qui = {}; l.forEach(p => { const n = lienDe(p).par || 'Inconnu'; (qui[n] = qui[n] || []).push(p); });
+  const noms = Object.keys(qui).sort((a, b) => (a === S.espace ? -1 : b === S.espace ? 1 : a.localeCompare(b)));
+  return noms.map(n => {
+    const titre = n === 'Nelson' ? 'Liens WhatsApp de Nelson à relancer' : n === 'Inconnu' ? 'Liens envoyés à relancer' : 'Liens envoyés par ' + n + ' à relancer';
+    return section(titre, qui[n].length + ' en attente de réponse', grille(qui[n].map(p => {
+      const d = lienDe(p);
+      return carteRiche(p, droite(quand(p), 'lien du ' + (d.date ? dateCourte(d.date) : '?'), String(p.rappel || '').slice(0, 10) < aujourdhui() && !!p.rappel));
+    }).join('')));
+  }).join('');
 }
 
 // Les listes de la journée, dans l'ordre où on les traite. La session d'appels lit les mêmes.
@@ -1575,6 +1610,11 @@ function listesJour() {
   // Plus de section « En retard » (Nelson, 27/10/2026) : un rappel passé, d'aujourd'hui ou des jours d'avant,
   // reste dans « Rappels et RDV du jour », en tête, jusqu'à ce qu'il soit noté.
   const duJour = avecRappel.filter(p => p.rappel.slice(0, 10) <= jour).sort((a, b) => a.rappel.localeCompare(b.rappel));
+  // Rangés par nature (16/11/2026) : un appel à froid de la grille d'un jour passé n'est pas une promesse,
+  // il ne passe plus devant les rappels du jour, il attend dans « Pas appelés les jours d'avant ».
+  const G = groupesPrevus(duJour);
+  const appelsJour = G.appels.filter(p => p.rappel.slice(0, 10) === jour);
+  const pasFaits = G.appels.filter(p => p.rappel.slice(0, 10) < jour);
   const aDater = actifs.filter(p => cle(p) === 'rappel' && !p.rappel);
   // Devis et négociations sans prochain point (posés avant le 17/10/2026, quand la date était facultative).
   const negoSansDate = actifs.filter(p => cle(p) === 'negociation' && !p.rappel).sort((a, b) => String(a.dernier).localeCompare(String(b.dernier)));
@@ -1584,17 +1624,20 @@ function listesJour() {
   const maintenantOk = froids.filter(p => dansCreneau(p)).sort(ordre);
   const plusTard = froids.filter(p => !dansCreneau(p) && prochainCreneau(p)).sort((a, b) => prochainCreneau(a).localeCompare(prochainCreneau(b)) || ordre(a, b));
   const il2j = new Date(); il2j.setDate(il2j.getDate() - 2);
-  const relances = actifs.filter(p => cle(p) === 'lien' && !p.rappel && String(p.dernier || '') < fmt(il2j))
-    .sort((a, b) => String(a.dernier).localeCompare(String(b.dernier)));
+  // Liens à relancer : relance datée arrivée, ou sans date et envoyé il y a plus de 2 jours.
+  const relances = G.liens.concat(actifs.filter(p => cle(p) === 'lien' && !p.rappel && String(p.dernier || '') < fmt(il2j))
+    .sort((a, b) => String(a.dernier).localeCompare(String(b.dernier))));
   const vusDemo = S.data.prospects.filter(p => visible(p) && chaud(p))
     .sort((a, b) => vuesDe(b).derniere.localeCompare(vuesDe(a).derniere));
   // Un prospect qui vient d'ouvrir sa démo n'apparaît plus aussi dans les listes froides.
   const chauds = new Set(vusDemo.map(p => p.id)), froid = l => l.filter(p => !chauds.has(p.id));
-  return { now, jour, negoSansDate, duJour, aDater, maintenantOk: froid(maintenantOk), plusTard: froid(plusTard), relances: froid(relances), vusDemo };
+  return { now, jour, negoSansDate, duJour, rdv: froid(G.rdv), rappels: froid(G.rappels), appelsJour: froid(appelsJour), pasFaits: froid(pasFaits),
+    aDater, maintenantOk: froid(maintenantOk), plusTard: froid(plusTard), relances: froid(relances), vusDemo };
 }
 
 function vueAujourdhui() {
-  const { jour, negoSansDate, duJour, aDater, maintenantOk, plusTard, relances, vusDemo } = listesJour();
+  const { jour, negoSansDate, rdv, rappels, appelsJour, pasFaits, aDater, maintenantOk, plusTard, relances, vusDemo } = listesJour();
+  const quand = p => p.rappel.slice(0, 10) < jour ? dateCourte(p.rappel) : heure(p.rappel);
 
   let h = '';
   // Ils ont ouvert la démo et personne ne les a rappelés depuis : c'est maintenant qu'ils l'ont en tête.
@@ -1613,18 +1656,26 @@ function vueAujourdhui() {
         <button data-action="ouvrir-devis" data-id="${esc(d.id)}">Noter la relance</button></div></div>`; }).join('')));
   if (negoSansDate.length) h += section('Devis en cours sans prochain point', negoSansDate.length + ' à relancer',
     grille(negoSansDate.map(p => carteRiche(p, droite('à relancer', p.dernier ? 'vu ' + dateCourte(p.dernier) : '', true))).join('')));
-  h += section('Rappels et RDV du jour', duJour.length ? duJour.length + ' prévus' : '',
-    duJour.length ? grille(duJour.map(p => carteRiche(p, droite((cle(p) === 'rdv' ? 'RDV ' : '') + (p.rappel.slice(0, 10) < jour ? dateCourte(p.rappel) : heure(p.rappel))))).join(''))
-      : '<div class="vide">Aucun rappel prévu pour le reste de la journée.</div>');
+  // Ordre (16/11/2026) : RDV, rappels promis, grille du jour, liens à relancer, puis le reste.
+  // Un RDV ou un rappel passé reste en tête de son bloc, en rouge, jusqu'à ce qu'il soit noté (règle du 27/10/2026).
+  if (rdv.length) h += section('RDV du jour', rdv.length + ' RDV', grille(rdv.map(p => carteRiche(p, droite('RDV ' + quand(p), '', p.rappel.slice(0, 10) < jour))).join('')));
+  if (rappels.length) h += section('Rappels convenus', rappels.length + ' promis', grille(rappels.map(p => carteRiche(p, droite(quand(p), '', p.rappel.slice(0, 10) < jour))).join('')));
+  if (appelsJour.length) h += section('Appels du jour', appelsJour.length + ' dans la grille', grille(appelsJour.map(p => carteRiche(p, droite(heure(p.rappel)))).join('')));
+  if (!rdv.length && !rappels.length && !appelsJour.length) h += section('Prévu aujourd’hui', '', '<div class="vide">Aucun RDV, rappel ni appel prévu aujourd’hui.</div>');
   if (aDater.length) h += section('Rappels sans date', 'à dater', grille(aDater.map(p => carteRiche(p, droite('à dater'))).join('')));
   h += section('À appeler maintenant', maintenantOk.length + ' dans leur créneau',
     maintenantOk.length ? grille(maintenantOk.slice(0, S.plusJour).map(p => carteRiche(p, cle(p) === 'sans_reponse' ? droite(p.nb + '×', 'sans réponse') : '')).join(''))
       + (maintenantOk.length > S.plusJour ? '<button class="plus" data-action="plus">Afficher plus</button>' : '')
       : '<div class="vide">Personne dans son créneau d’appel à cette heure. Regarde « Plus tard ».</div>');
-  if (relances.length) h += section('Liens envoyés à relancer', relances.length + ' sans relance prévue',
-    grille(relances.map(p => carteRiche(p, droite('à relancer', p.dernier ? 'lien ' + dateCourte(p.dernier) : ''))).join('')));
+  h += blocLiens(relances, p => p.rappel ? quand(p) : 'à relancer');
   if (plusTard.length) h += section('Plus tard aujourd’hui', plusTard.length + ' prospects',
     grille(plusTard.slice(0, 15).map(p => carteRiche(p, droite('à ' + prochainCreneau(p).replace(':', ' h ')))).join('')));
+  // Les appels de la grille des jours passés qui n'ont pas été faits : repliés, pour ne pas noyer la journée.
+  if (pasFaits.length) h += section('Pas appelés les jours d’avant', pasFaits.length + ' de la grille',
+    S.voirPasFaits ? grille(pasFaits.slice(0, S.plusJour).map(p => carteRiche(p, droite(dateCourte(p.rappel), 'pas appelé', true))).join(''))
+      + (pasFaits.length > S.plusJour ? '<button class="plus" data-action="plus">Afficher plus</button>' : '')
+      + '<button class="plus" data-action="pas-faits">Replier</button>'
+      : '<button class="plus" data-action="pas-faits">Afficher les ' + pasFaits.length + '</button>');
   return h;
 }
 
@@ -1647,7 +1698,8 @@ function objectifJour() { const o = OBJECTIF_JOUR[S.espace]; return o ? o[new Da
 // Qui appeler ensuite : avec un numéro, pas encore proposé dans cette session, pas recontacté depuis son début.
 function fileSession(depuis) {
   const L = listesJour(), dans15 = fmt(new Date(Date.now() + 15 * 6e4)), vus = new Set(SESSION.actif ? SESSION.vus : []);
-  const tous = [...L.vusDemo, ...L.duJour.filter(p => p.rappel <= dans15), ...L.maintenantOk, ...L.relances, ...L.negoSansDate];
+  const du = l => l.filter(p => p.rappel <= dans15);
+  const tous = [...L.vusDemo, ...du(L.rdv), ...du(L.rappels), ...du(L.appelsJour), ...L.maintenantOk, ...L.relances, ...L.negoSansDate, ...L.pasFaits];
   return tous.filter((p, i) => tous.indexOf(p) === i && !vus.has(p.id) && telInternational(p.telephone) && String(p.dernier || '') < depuis);
 }
 function carteSession(duJour) {
@@ -3548,6 +3600,7 @@ document.addEventListener('click', e => {
   else if (act === 'sess-passer') suivantSession();
   else if (act === 'sess-fin') finSession(false);
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
+  else if (act === 'pas-faits') { S.voirPasFaits = !S.voirPasFaits; rendre(); }
   else if (act === 'theme') basculerTheme();
   else if (act === 'argent-periode') { S.argentPeriode = a.dataset.p; rendre(); }
   else if (act === 'aller-factu') { S.vue = 'factu'; window.scrollTo(0, 0); rendre(); Factu.recharger(); }
