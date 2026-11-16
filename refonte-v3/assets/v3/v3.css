@@ -927,6 +927,13 @@ html:not(.intro-joue) .intro{display:none}
 }
 
 
+
+/* Haut des pages intérieures : affiché dès la première image (meilleur affichage principal),
+   un glissement court remplace le masque */
+.js .page-tete [data-r],.js .page-tete .titre-r > span{opacity:1;transform:none;transition:none;animation:ptEntree .7s var(--ease) both;animation-delay:var(--d,0ms)}
+.js .page-tete .titre-r{overflow:visible}
+@keyframes ptEntree{from{transform:translateY(18px)}}
+
 /* =====================================================================
    PAGES INTÉRIEURES ET LIENS ENTRE LES PAGES
    ===================================================================== */
