@@ -1202,7 +1202,7 @@ h1 em,h2 em,h3 em,.svc-btn .nom em,.suite-titre em{color:var(--or-fonce)}
 .hero-bio h1 em{color:var(--or);padding-right:.05em}
 .hero-bio .lede{color:#dedbd3;max-width:34em;margin-bottom:34px}
 .hero-bio .lien{color:#f5f3ee}
-.hb-signe{position:absolute;z-index:1;right:calc(var(--gut) * -1);top:calc(var(--nav) + 6vh);width:min(46vw,760px);opacity:.12;color:var(--or-clair);pointer-events:none;mix-blend-mode:screen}
+.hb-signe{position:absolute;z-index:1;right:max(var(--gut),calc((100vw - var(--max)) / 2 + var(--gut)));top:calc(var(--nav) + 9vh);width:min(38vw,600px);opacity:.16;color:var(--or-clair);pointer-events:none;mix-blend-mode:screen}
 .hb-signe svg{width:100%;height:auto}
 .hb-bas{position:relative;z-index:2;display:flex;justify-content:space-between;gap:20px;padding-block:18px 22px;border-top:1px solid rgba(255,255,255,.12)}
 .hb-bas p{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#b9b5ab}
@@ -1283,6 +1283,17 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
   .heb-chiffres li + li{padding-left:0;border-left:0}
 }
 
+
+/* en-tête : jamais de bouton sur deux lignes entre 1100 et 1280 px */
+.tete .acces,.tete .btn,.menu a{white-space:nowrap}
+@media (max-width:1280px) and (min-width:1101px){
+  .tete-in{gap:14px;grid-template-columns:auto 1fr auto}
+  .menu{justify-self:center}
+  .menu a{padding:10px 8px}
+  .menu a::after{left:8px;right:8px}
+  .tete .acces{padding:0 10px}
+  .tete .btn{padding:0 12px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0ms!important}
   .js [data-r],.js [data-r] > *,.js .titre-r > span,.js .compo .ecran figure,.js .compo figcaption{opacity:1!important;transform:none!important;clip-path:none!important}
