@@ -1,716 +1,322 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Maison Lonvière — Coiffure, barbier &amp; institut · Luxembourg</title>
+<meta name="description" content="Maison Lonvière, salon de coiffure, barbier et institut de beauté à Luxembourg : choisissez votre couleur en la voyant, consultez les tarifs et réservez en ligne. Maquette concept NS Development.">
+<meta name="theme-color" content="#0e2723">
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<meta name="description" content="Salon de coiffure, barbier, institut de beauté et toilettage à Luxembourg. Prenez rendez-vous en ligne en trente secondes, sept jours sur sept.">
 <link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/salon/">
-
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_LU">
 <meta property="og:site_name" content="Maison Lonvière">
-<meta property="og:title" content="Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg">
-<meta property="og:description" content="Prenez rendez-vous en ligne en trente secondes. Coiffure, barbier, beauté et toilettage sous un même toit.">
-<meta property="og:image" content="photos/salon-interieur.jpg">
+<meta property="og:title" content="Maison Lonvière — Coiffure, barbier &amp; institut · Luxembourg">
+<meta property="og:description" content="Un nuancier vivant : passez la main dans la chevelure, choisissez une nuance, réservez.">
+<meta property="og:image" content="photos/salon.webp">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Maison Lonvière — Salon de coiffure, barbier &amp; beauté · Luxembourg">
-<meta name="twitter:description" content="Prenez rendez-vous en ligne en trente secondes. Coiffure, barbier, beauté et toilettage sous un même toit.">
-<meta name="twitter:image" content="photos/salon-interieur.jpg">
-<meta name="theme-color" content="#2a1d28">
-
-<link rel="stylesheet" href="../../../assets/fonts/polices-2a68898199.css">
-<link rel="stylesheet" href="ns-motion.css">
-<script src="ns-motion.js" defer></script>
-<script src="prestations.js" defer></script>
-
-<style>
-:root{
-  --paper:#f6f1ea;
-  --paper-2:#efe6da;
-  --ink:#2a1d28;
-  --ink-soft:#6b5a66;
-  --rose:#a94b38;--rose-l:#cd7360;
-  --rose-d:#8e3d2d;
-  --sauge:#7f9179;
-  --line:#e0d3c3;
-  --shadow:0 24px 60px -28px rgba(42,29,40,.38);
-  --ns-progress-color:#c4614c;
-  --ns-g1:#c4614c; --ns-g2:#7f9179;
-  --wrap:1180px;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;background:var(--paper);color:var(--ink);
-  font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;
-  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-img{max-width:100%;display:block}
-a{color:inherit}
-.wrap{width:min(var(--wrap),calc(100% - 44px));margin-inline:auto}
-h1,h2,h3,.disp{font-family:"Bodoni Moda",Georgia,serif;font-weight:600;line-height:1.06;letter-spacing:-.012em;margin:0}
-h1{font-size:clamp(3rem,7.6vw,5.6rem)}
-h2{font-size:clamp(2.1rem,4.2vw,3.35rem)}
-h3{font-size:1.28rem;line-height:1.25}
-p{margin:0 0 1em}
-h2+p{margin-top:1.15rem}
-.eyebrow{
-  font-family:Manrope;font-size:.71rem;font-weight:700;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--rose);margin-bottom:.9rem;
-}
-.muted{color:var(--ink-soft)}
-:focus-visible{outline:3px solid var(--rose);outline-offset:3px;border-radius:2px}
-
-/* ---------- boutons : angle droit, bordure épaisse ---------- */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
-  font-family:Manrope;font-weight:700;font-size:.93rem;letter-spacing:.02em;
-  padding:1.02rem 1.7rem;border:2px solid var(--ink);background:var(--ink);color:var(--paper);
-  text-decoration:none;cursor:pointer;border-radius:0;
-  transition:background .28s,color .28s,transform .28s,border-color .28s;
-}
-.btn:hover{background:var(--rose);border-color:var(--rose);transform:translateY(-2px)}
-.btn.ghost{background:transparent;color:var(--ink)}
-.btn.ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.btn.block{width:100%}
-.arrow-btn{
-  width:56px;height:56px;border-radius:50%;border:2px solid var(--ink);
-  background:transparent;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;
-  font-size:1.15rem;cursor:pointer;text-decoration:none;flex:none;
-  transition:background .28s,color .28s,transform .28s;
-}
-.arrow-btn:hover{background:var(--ink);color:var(--paper);transform:rotate(-45deg)}
-.tel-link{
-  font-weight:700;text-decoration:none;border-bottom:2px solid var(--rose);
-  padding-bottom:2px;white-space:nowrap;
-}
-.tel-link:hover{color:var(--rose)}
-
-/* ---------- navigation ---------- */
-nav{
-  position:fixed;inset:0 0 auto 0;z-index:70;
-  padding:1.15rem 0;transition:background .35s,box-shadow .35s,padding .35s;
-  pointer-events:none;                 /* le ruban transparent n'avale pas les clics */
-}
-nav .nav-in>*{pointer-events:auto}     /* mais logo, liens et burger restent cliquables */
-nav.ns-solid{pointer-events:auto}      /* opaque = vraie surface, elle bloque normalement */
-nav.ns-solid{background:rgba(246,241,234,.93);backdrop-filter:blur(14px);
-  box-shadow:0 1px 0 var(--line);padding:.72rem 0}
-.nav-in{display:flex;align-items:center;justify-content:space-between;gap:1.4rem}
-.logo{font-family:"Bodoni Moda",serif;font-weight:700;font-size:1.32rem;letter-spacing:.01em;text-decoration:none}
-.logo em{font-style:italic;color:var(--rose)}
-.nav-links{display:flex;gap:1.9rem;align-items:center}
-.nav-links a{font-size:.9rem;font-weight:600;text-decoration:none}
-.nav-cta{padding:.72rem 1.25rem;font-size:.85rem}
-.burger{display:none;width:46px;height:46px;border:2px solid var(--ink);background:transparent;
-  cursor:pointer;flex-direction:column;gap:5px;align-items:center;justify-content:center}
-.burger span{width:20px;height:2px;background:var(--ink);display:block}
-
-/* panneau mobile : display:none quand fermé, donc totalement inerte */
-#mobile-menu{
-  display:none;position:fixed;inset:0;z-index:69;background:var(--paper);
-  padding:6.5rem 26px 2rem;
-}
-#mobile-menu.open{display:block}
-#mobile-menu a{display:block;font-family:"Bodoni Moda",serif;font-size:2rem;
-  padding:.55rem 0;text-decoration:none;border-bottom:1px solid var(--line)}
-
-/* ---------- hero split asymétrique ---------- */
-.hero{padding:9.5rem 0 5rem;position:relative;overflow:hidden}
-.hero::before{
-  content:"";position:absolute;top:-16%;right:-14%;width:52vw;height:52vw;max-width:620px;max-height:620px;
-  background:radial-gradient(circle at 35% 35%,rgba(196,97,76,.17),transparent 66%);
-  border-radius:50%;pointer-events:none;
-}
-.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:3.6rem;align-items:center;position:relative}
-.hero-grid>*{min-width:0}
-.hero h1{margin:.5rem 0 1.1rem}
-.hero h1 em{font-style:italic;color:var(--rose)}
-.hero .lede{font-size:1.1rem;max-width:33ch;color:var(--ink-soft)}
-.hero-secondary{display:flex;align-items:center;gap:1.1rem;margin-top:1.6rem;font-size:.95rem}
-
-/* carte de réservation */
-.book{
-  background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
-  padding:1.7rem 1.6rem 1.55rem;margin-top:2.1rem;max-width:min(440px,100%);
-}
-.book h2{font-family:Manrope;font-size:.75rem;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--ink-soft);margin-bottom:1.1rem}
-.book-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
-.field{display:flex;flex-direction:column;gap:.32rem;min-width:0}
-.field label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}
-.field select,.field input{
-  font-family:Manrope;font-size:.94rem;color:var(--ink);
-  padding:.72rem .7rem;border:1.5px solid var(--line);background:var(--paper);border-radius:0;
-  width:100%;min-width:0;                /* sinon le select impose la largeur de son option la plus longue */
-}
-.field select:focus,.field input:focus{border-color:var(--rose);outline:none}
-.book .btn{margin-top:.55rem}
-.book-note{font-size:.79rem;color:var(--ink-soft);margin:.8rem 0 0;text-align:center}
-.book-done{
-  display:none;margin-top:.9rem;padding:.85rem .9rem;background:rgba(127,145,121,.16);
-  border-left:3px solid var(--sauge);font-size:.89rem;
-}
-.book-done.on{display:block}
-
-/* composition visuelle du hero */
-.hero-art{position:relative;min-height:520px}
-.frame{
-  position:absolute;border:1px solid var(--line);overflow:hidden;
-  background:var(--paper-2);box-shadow:var(--shadow);margin:0;
-}
-.frame img{width:100%;height:100%;object-fit:cover}
-.f-1{top:0;right:4%;width:63%;height:70%}
-.f-2{bottom:0;left:0;width:52%;height:46%}
-.badge{
-  position:absolute;top:62%;right:0;background:var(--paper);border:2px solid var(--ink);
-  padding:.85rem 1.05rem;box-shadow:var(--shadow);
-}
-.badge b{display:block;font-family:"Bodoni Moda",serif;font-size:1.5rem;line-height:1.2;margin-bottom:.15rem}
-.badge i{font-style:normal;font-size:.71rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
-
-/* ---------- bandeau défilant ---------- */
-.band{background:var(--ink);color:var(--paper);padding:1.15rem 0;margin-top:2.5rem}
-.band .ns-marquee__track>span{
-  font-family:"Bodoni Moda",serif;font-size:1.5rem;padding:0 1.6rem;white-space:nowrap;
-}
-.band em{font-style:italic;color:var(--rose)}
-  /* Sur l'encre sombre, le rose accessible tombe a 2.9:1 :
-     les sections sombres basculent sur la variante claire. */
-  .band,.proof,footer{--rose:var(--rose-l)}
-
-/* ---------- sections ---------- */
-section{padding:6.2rem 0}
-.sec-head{max-width:640px;margin-bottom:3rem}
-.sec-head p{color:var(--ink-soft);margin-top:1.15rem}
-
-/* prestations : onglets */
-.tabs{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2.4rem}
-.tab{
-  font-family:Manrope;font-weight:700;font-size:.88rem;padding:.72rem 1.25rem;
-  border:2px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;border-radius:0;
-  transition:all .25s;
-}
-.tab:hover{border-color:var(--ink);color:var(--ink)}
-.tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
-.panel{display:none}
-.panel.on{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:2.6rem 3.4rem}
-.price-list{border-top:2px solid var(--ink);padding-top:1.1rem}
-.price-list h3{margin-bottom:.9rem}
-.price-row{
-  display:flex;align-items:baseline;gap:.8rem;padding:.72rem 0;border-bottom:1px solid var(--line);
-}
-.price-row .n{font-weight:600}
-.price-row .d{display:block;font-size:.84rem;color:var(--ink-soft);font-weight:400}
-.price-row .dots{flex:1;border-bottom:1px dotted rgba(42,29,40,.28);transform:translateY(-4px)}
-.price-row .p{font-family:"Bodoni Moda",serif;font-size:1.15rem;font-weight:600;white-space:nowrap}
-
-/* prestations : recherche et filtres */
-.pr-outils{margin-bottom:2rem}
-.pr-q{display:flex;align-items:center;gap:.7rem;border:2px solid var(--line);padding:.8rem 1.1rem;background:transparent}
-.pr-q:focus-within{border-color:var(--ink)}
-.pr-q input{flex:1;min-width:0;border:0;background:transparent;outline:none;font-family:Manrope,system-ui,sans-serif;font-size:.95rem;color:var(--ink)}
-.pr-q input::placeholder{color:var(--ink-soft)}
-.pr-buds{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
-.pr-bud{font-family:Manrope,system-ui,sans-serif;font-size:.82rem;font-weight:600;padding:.5rem 1rem;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;transition:all .25s}
-.pr-bud:hover{border-color:var(--ink);color:var(--ink)}
-.pr-bud.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
-.pr-compte{font-size:.85rem;color:var(--ink-soft);margin-top:.9rem}
-#pr-liste{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:2.6rem 3.4rem}
-#pr-liste .price-row{animation:pr-in .4s cubic-bezier(.2,.7,.2,1) both}
-@keyframes pr-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:none}}
-@media(prefers-reduced-motion:reduce){#pr-liste .price-row{animation:none}}
-.pr-vide{grid-column:1/-1;text-align:center;padding:3.5rem 1.5rem;border:1px dashed var(--line)}
-.pr-vide b{font-family:"Bodoni Moda",serif;font-size:1.5rem;display:block;margin-bottom:.6rem}
-.pr-vide p{color:var(--ink-soft);max-width:34rem;margin:0 auto 1.4rem}
-
-/* ---------- comparateur avant / après ---------- */
-.compare-sec{background:var(--paper-2)}
-.compare{
-  position:relative;max-width:900px;margin:0 auto;aspect-ratio:16/10;
-  overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);
-  touch-action:none;cursor:ew-resize;user-select:none;
-}
-.cmp-layer{position:absolute;inset:0;display:flex;align-items:flex-end;padding:1.4rem}
-.cmp-after{background:url("photos/apres.jpg") center/cover no-repeat var(--paper-2)}
-.cmp-before{background:url("photos/avant.jpg") center/cover no-repeat var(--paper-2);
-  clip-path:inset(0 50% 0 0)}
-.cmp-tag{
-  font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  background:var(--paper);color:var(--ink);padding:.42rem .8rem;
-}
-.cmp-after .cmp-tag{margin-left:auto}
-.cmp-handle{
-  position:absolute;top:0;bottom:0;left:50%;width:3px;background:var(--paper);
-  transform:translateX(-50%);pointer-events:none;
-}
-.cmp-knob{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:56px;height:56px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);
-  display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;
-  box-shadow:var(--shadow);pointer-events:none;
-}
-.compare-hint{text-align:center;font-size:.85rem;color:var(--ink-soft);margin-top:1.1rem}
-
-/* ---------- équipe ---------- */
-.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem}
-.member{background:#fff;border:1px solid var(--line);overflow:hidden;transition:transform .35s,box-shadow .35s}
-.member:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
-.member .por{aspect-ratio:3/4;position:relative;background:var(--paper-2)}
-.member .por img{width:100%;height:100%;object-fit:cover}
-.m-body{padding:1.25rem 1.3rem 1.45rem}
-.m-body .role{font-size:.75rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--rose);margin-bottom:.4rem}
-.m-body p{font-size:.9rem;color:var(--ink-soft);margin:.5rem 0 1rem}
-.m-body a{font-size:.86rem;font-weight:700;text-decoration:none;border-bottom:2px solid var(--rose);padding-bottom:2px}
-
-/* ---------- preuve ---------- */
-.proof{background:var(--ink);color:var(--paper)}
-.proof .eyebrow{color:#e8a08d}
-.proof-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:4rem;align-items:center}
-.proof p{color:#d4c6cf}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem 1.6rem}
-.stat b{display:block;font-family:"Bodoni Moda",serif;font-size:clamp(2.6rem,5vw,3.6rem);line-height:1.12;color:var(--paper)}
-.stat i{font-style:normal;display:block;margin-top:.45rem;font-size:.78rem;font-weight:600;
-  letter-spacing:.13em;text-transform:uppercase;color:#b6a2b0}
-
-/* ---------- infos & accès ---------- */
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.4rem}
-.hours{border-top:2px solid var(--ink);padding-top:1.1rem}
-.hours div{display:flex;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px solid var(--line);font-size:.95rem}
-.hours div b{font-weight:600}
-.hours .closed{color:var(--ink-soft)}
-.contact-block{margin-top:2rem;display:flex;flex-direction:column;gap:.55rem;font-size:1rem}
-.contact-block a{text-decoration:none;font-weight:600}
-.contact-block a:hover{color:var(--rose)}
-.map{
-  border:1px solid var(--line);background:
-    repeating-linear-gradient(0deg,transparent 0 38px,rgba(42,29,40,.07) 38px 39px),
-    repeating-linear-gradient(90deg,transparent 0 38px,rgba(42,29,40,.07) 38px 39px),
-    var(--paper-2);
-  min-height:340px;position:relative;display:flex;align-items:center;justify-content:center;
-}
-.pin{width:20px;height:20px;border-radius:50% 50% 50% 0;background:var(--rose);transform:rotate(-45deg);
-  box-shadow:0 0 0 8px rgba(196,97,76,.2)}
-.map figcaption{position:absolute;bottom:0;left:0;right:0;padding:.7rem .9rem;background:var(--paper);
-  border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-soft)}
-
-/* ---------- CTA final ---------- */
-.final{background:var(--rose);color:#fff;text-align:center}
-.final h2{max-width:15ch;margin:0 auto 1.4rem}
-.final p{max-width:46ch;margin:0 auto 2rem;color:rgba(255,255,255,.9)}
-.final .btn{background:#fff;border-color:#fff;color:var(--rose)}
-.final .btn:hover{background:var(--ink);border-color:var(--ink);color:#fff}
-.final .tel-link{color:#fff;border-color:rgba(255,255,255,.6)}
-
-/* ---------- footer ---------- */
-footer{background:var(--ink);color:#cbbcc6;padding:3.4rem 0 2.6rem;font-size:.9rem}
-.foot-in{display:flex;flex-wrap:wrap;gap:1.4rem;justify-content:space-between;align-items:center}
-footer a{color:#cbbcc6}
-.sig{font-size:.83rem;color:#9c8b98}
-.sig b{color:var(--paper)}
-
-/* ---------- responsive ---------- */
-@media(max-width:960px){
-  .hero-grid,.proof-grid,.info-grid{grid-template-columns:1fr;gap:2.6rem}
-  .hero-art{min-height:400px;order:-1}
-  .book{max-width:none}
-  .nav-links{display:none}
-  .burger{display:flex}
-  .hero{padding-top:7.2rem}
-  section{padding:4.4rem 0}
-}
-@media(max-width:520px){
-  body{font-size:16px}
-  .wrap{width:calc(100% - 32px)}
-  .book-row{grid-template-columns:1fr}
-  .stats{grid-template-columns:1fr}
-  .compare{aspect-ratio:4/5}
-  .hero-art{min-height:330px}
-  .badge{top:auto;bottom:8%}
-}
-</style>
+<meta name="twitter:title" content="Maison Lonvière — Coiffure, barbier &amp; institut · Luxembourg">
+<meta name="twitter:image" content="photos/salon.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lonviere.css">
+<link rel="modulepreload" href="vendor/three.module.min.js">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"HairSalon","name":"Maison Lonvière","description":"Salon de coiffure, barbier et institut de beauté (maquette concept NS Development).","telephone":"+352 27 00 00 00","email":"bonjour@lonviere.example","address":{"@type":"PostalAddress","streetAddress":"Adresse à compléter","postalCode":"L-0000","addressLocality":"Luxembourg","addressCountry":"LU"},"openingHours":["Tu-We 09:00-19:00","Th 09:00-20:00","Fr 09:00-19:00","Sa 08:30-16:00"]}
+</script>
+<script>
+  /* Avant tout affichage : l'intro se joue-t-elle ? (une fois par session,
+     jamais avec « réduire les animations », ni si l'URL vise une section) */
+  (function () {
+    var d = document.documentElement, vue = false;
+    try { vue = sessionStorage.getItem('lonviere-intro') === '1'; } catch (e) {}
+    var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var gl = (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
+    d.classList.add('js');
+    if (!gl) d.classList.add('sans-3d');
+    if (!calme && !vue && !location.hash) d.classList.add('en-intro');
+  })();
+</script>
 </head>
 <body>
 
-<div class="ns-progress"></div>
+<a class="evite" href="#contenu">Aller au contenu</a>
 
-<nav data-nav-solid aria-label="Navigation principale">
-  <div class="wrap nav-in">
-    <a class="logo" href="#accueil">Maison <em>Lonvière</em></a>
-    <div class="nav-links">
-      <a class="ns-link" href="#prestations">Prestations</a>
-      <a class="ns-link" href="#resultats">Avant / après</a>
-      <a class="ns-link" href="#equipe">L'équipe</a>
-      <a class="ns-link" href="#acces">Horaires &amp; accès</a>
-      <a class="btn nav-cta" href="#accueil">Prendre rendez-vous</a>
-    </div>
-    <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
-<div id="mobile-menu" aria-hidden="true">
-  <div class="wrap">
-    <a href="#prestations">Prestations</a>
-    <a href="#resultats">Avant / après</a>
-    <a href="#equipe">L'équipe</a>
-    <a href="#acces">Horaires &amp; accès</a>
-    <a href="#accueil">Prendre rendez-vous</a>
-  </div>
+<!-- Ouverture : une mèche descend, le nom se dessine, puis un coup de ciseaux ouvre le salon -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-moitie intro-haut"></div>
+  <div class="intro-moitie intro-bas"></div>
+  <svg class="intro-meche" viewBox="0 0 40 600" preserveAspectRatio="none">
+    <path d="M20 0 C 34 80, 6 150, 20 230 S 34 380, 18 460 S 8 560, 22 600"/>
+  </svg>
+  <p class="intro-nom"><span>Maison</span><b>Lonvière</b></p>
+  <svg class="intro-coupe" viewBox="0 0 1000 1000" preserveAspectRatio="none"><path d="M-20 640 L1020 360"/></svg>
+  <button type="button" class="intro-passer" id="intro-passer">Passer l'intro</button>
 </div>
 
-<!-- ============ HERO : split asymétrique + carte de réservation ============ -->
-<header class="hero" id="accueil">
-  <div class="wrap hero-grid">
-
-    <div>
-      <div class="eyebrow" data-reveal="blur">Coiffure · Barbier · Beauté · Toilettage</div>
-      <h1><span data-split>Votre place</span><br><em data-reveal="blur" data-delay="460">est réservée.</em></h1>
-      <p class="lede" data-reveal data-delay="820">
-        Quatre univers sous un même toit, au cœur de Luxembourg. Et un rendez-vous
-        qui se prend en trente secondes, même à minuit.
-      </p>
-
-      <form class="book" id="book" data-reveal="up" data-delay="980" novalidate>
-        <h2>Réserver en ligne</h2>
-        <div class="field" style="margin-bottom:.75rem">
-          <label for="b-presta">Prestation</label>
-          <select id="b-presta" name="prestation">
-            <option>Coupe femme &amp; brushing</option>
-            <option>Coupe homme</option>
-            <option>Barbe &amp; rasage traditionnel</option>
-            <option>Coloration</option>
-            <option>Soin du visage</option>
-            <option>Beauté des mains</option>
-            <option>Toilettage chien ou chat</option>
-          </select>
-        </div>
-        <div class="book-row">
-          <div class="field">
-            <label for="b-date">Date</label>
-            <input type="date" id="b-date" name="date">
-          </div>
-          <div class="field">
-            <label for="b-heure">Heure</label>
-            <select id="b-heure" name="heure">
-              <option>09:00</option><option>10:30</option><option>12:00</option>
-              <option>14:00</option><option>15:30</option><option>17:00</option><option>18:30</option>
-            </select>
-          </div>
-        </div>
-        <button type="submit" class="btn block ns-shine">Voir les disponibilités</button>
-        <p class="book-note">Confirmation immédiate par SMS. Annulation libre jusqu'à 24 h avant.</p>
-        <div class="book-done" id="book-done" role="status"></div>
-      </form>
-
-      <div class="hero-secondary" data-reveal data-delay="1120">
-        <a class="arrow-btn" href="#prestations" aria-label="Voir les prestations">↓</a>
-        <span class="muted">Ou par téléphone au <a class="tel-link" href="tel:+352000000">+352 00 00 00</a></span>
-      </div>
-    </div>
-
-    <div class="hero-art" data-reveal="right" data-delay="240">
-      <figure class="frame f-1" data-parallax="0.06">
-        <img src="photos/salon-interieur.jpg" width="1200" height="800"
-             alt="Le salon Maison Lonvière : postes de coiffage et bacs de lavage">
-      </figure>
-      <figure class="frame f-2" data-parallax="0.1">
-        <img src="photos/salon-equipe.jpg" width="900" height="600"
-             alt="L'équipe de Maison Lonvière au travail devant les miroirs">
-      </figure>
-      <div class="badge" data-reveal="scale" data-delay="900">
-        <b>7j/7</b><i>Réservable en ligne</i>
-      </div>
-    </div>
-
-  </div>
+<header class="nav" id="nav">
+  <a href="#nuancier" class="logo" aria-label="Maison Lonvière, retour en haut">
+    <svg viewBox="0 0 24 32" aria-hidden="true"><path d="M7 2c5 6-4 11 1 17s-3 9 0 11M13 2c5 6-4 11 1 17s-3 9 0 11M19 2c4 6-3 11 1 17"/></svg>
+    <span>Lonvière</span>
+  </a>
+  <span class="concept" title="Maquette de démonstration NS Development">Concept</span>
+  <nav class="nav-liens" aria-label="Rubriques">
+    <a href="#nuancier">Nuancier</a>
+    <a href="#prestations">Tarifs</a>
+    <a href="#salon">Le salon</a>
+    <a href="#equipe">L'équipe</a>
+    <a href="#acces">Accès</a>
+  </nav>
+  <button type="button" class="mes" id="mes-ouvrir" aria-haspopup="dialog">Mes rendez-vous <b id="mes-n">0</b></button>
+  <a href="#reserver" class="btn btn-nav">Réserver</a>
+  <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><i></i><i></i></button>
 </header>
 
-<div class="band">
-  <div class="ns-marquee">
-    <div class="ns-marquee__track">
-      <span>Coupe &amp; couleur</span><span><em>·</em></span>
-      <span>Barbier</span><span><em>·</em></span>
-      <span>Soin du visage</span><span><em>·</em></span>
-      <span>Beauté des mains</span><span><em>·</em></span>
-      <span>Toilettage</span><span><em>·</em></span>
-    </div>
-  </div>
+<div class="menu" id="menu" hidden>
+  <nav aria-label="Menu">
+    <a href="#nuancier">Le nuancier</a>
+    <a href="#prestations">Prestations et tarifs</a>
+    <a href="#salon">Le salon</a>
+    <a href="#equipe">L'équipe</a>
+    <a href="#reserver">Réserver</a>
+    <a href="#acces">Horaires et accès</a>
+  </nav>
+  <button type="button" class="menu-mes" id="menu-mes">Mes rendez-vous</button>
+  <a class="menu-tel" href="tel:+35227000000">+352 27 00 00 00</a>
 </div>
 
-<!-- ============ PRESTATIONS & TARIFS ============ -->
-<section id="prestations">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow" data-reveal>Prestations &amp; tarifs</div>
-      <h2 data-split>Tout est affiché, rien n'est caché.</h2>
-      <p data-reveal data-delay="140">
-        Nos tarifs sont visibles avant même de pousser la porte. C'est plus simple pour vous,
-        et ça nous évite de répondre trente fois par jour à la même question au téléphone.
-      </p>
+<main id="contenu">
+
+<!-- ============ Le nuancier vivant ============ -->
+<section class="nuancier" id="nuancier" aria-labelledby="t-nuancier">
+  <canvas id="meche" class="meche" aria-hidden="true"></canvas>
+  <div class="nuancier-texte">
+    <h1 id="t-nuancier">La couleur se choisit <em>en la voyant.</em></h1>
+    <p class="chapo">Coiffure, barbier et institut, au cœur de Luxembourg. Passez la main dans la chevelure, puis essayez une nuance.</p>
+
+    <div class="swatches" role="group" aria-label="Nuances">
+      <button type="button" class="swatch" data-nuance="naturel" aria-pressed="true"><i></i><span>Votre couleur</span></button>
+      <button type="button" class="swatch" data-nuance="polaire" aria-pressed="false"><i></i><span>Polaire</span></button>
+      <button type="button" class="swatch" data-nuance="miel" aria-pressed="false"><i></i><span>Miel</span></button>
+      <button type="button" class="swatch" data-nuance="cuivre" aria-pressed="false"><i></i><span>Cuivré</span></button>
+      <button type="button" class="swatch" data-nuance="glace" aria-pressed="false"><i></i><span>Glacé</span></button>
+      <button type="button" class="swatch" data-nuance="noir" aria-pressed="false"><i></i><span>Noir</span></button>
     </div>
 
-    <div class="pr-outils" data-reveal>
-      <div class="pr-q">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="currentColor" stroke-width="1.5"/><path d="M10.6 10.6 15 15" stroke="currentColor" stroke-width="1.5"/></svg>
-        <label for="pr-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Chercher une prestation</label>
-        <input id="pr-q" type="search" placeholder="Une prestation, un soin, un tarif...">
-      </div>
-      <div class="pr-buds">
-        <button type="button" class="pr-bud" data-bud="-30" aria-pressed="false">Moins de 30 &euro;</button>
-        <button type="button" class="pr-bud" data-bud="30-60" aria-pressed="false">30 &agrave; 60 &euro;</button>
-        <button type="button" class="pr-bud" data-bud="60+" aria-pressed="false">Plus de 60 &euro;</button>
-        <button type="button" class="pr-bud" data-bud="devis" aria-pressed="false">Sur devis</button>
-      </div>
-      <div class="pr-compte" id="pr-compte"></div>
+    <div class="choix" aria-live="polite">
+      <p class="choix-nom" id="choix-nom">Votre couleur</p>
+      <p class="choix-mot" id="choix-mot">On la sublime, sans la changer.</p>
+      <p class="choix-info"><span id="choix-tech">Soin profond</span> <span id="choix-duree">30 min</span> <span id="choix-prix">36 €</span></p>
+      <a href="#reserver" class="btn" id="choix-cta" data-presta="soin">Réserver cette prestation</a>
     </div>
+  </div>
+  <p class="indice" id="indice"><span class="indice-souris">Passez la souris dans la chevelure</span><span class="indice-doigt">Glissez le doigt dans la chevelure</span></p>
+</section>
 
-    <div class="tabs" role="tablist" aria-label="Univers de prestations" data-stagger="80">
-      <button class="tab" role="tab" data-u="Coiffure" aria-selected="true">Coiffure</button>
-      <button class="tab" role="tab" data-u="Barbier" aria-selected="false">Barbier</button>
-      <button class="tab" role="tab" data-u="Institut" aria-selected="false">Institut</button>
-      <button class="tab" role="tab" data-u="Toilettage" aria-selected="false">Toilettage</button>
-    </div>
+<!-- ============ Aujourd'hui ============ -->
+<div class="bandeau" aria-label="Infos pratiques">
+  <p><b id="auj">Ouvert aujourd'hui</b> <span id="auj-detail"></span></p>
+  <p>Adresse à compléter, L-0000 Luxembourg</p>
+  <p><a href="tel:+35227000000">+352 27 00 00 00</a></p>
+</div>
 
-    <div id="pr-liste"></div>
+<!-- ============ Le salon ============ -->
+<section class="salon" id="salon" aria-labelledby="t-salon">
+  <figure class="salon-photo" data-parallaxe>
+    <img src="photos/salon.webp" srcset="photos/salon-960.webp 960w, photos/salon.webp 1920w" sizes="100vw" width="1920" height="1086" alt="Le salon : murs laqués vert bouteille, trois miroirs en arche, fauteuils en velours rose et sol en marbre blanc" loading="lazy">
+  </figure>
+  <div class="salon-texte">
+    <h2 id="t-salon">Trois métiers, une seule maison.</h2>
+    <p>Un salon au calme, des rendez-vous qui ne se chevauchent pas, et le temps de regarder vos cheveux avant d'y toucher. On vous dit ce qui vous ira, et aussi ce qui ne vous ira pas.</p>
+  </div>
+  <div class="univers" data-apparition>
+    <a class="univ" href="#prestations" data-univers="Coiffure">
+      <img src="photos/couleurs-560.webp" srcset="photos/couleurs-560.webp 560w, photos/couleurs.webp 880w" sizes="(max-width: 820px) 80vw, 30vw" width="880" height="1100" alt="Le bar à couleurs : six mèches témoins, du blond polaire au noir, suspendues à une barre" loading="lazy">
+      <span class="univ-nom">Coiffure &amp; couleur</span>
+      <span class="univ-txt">Coupes, balayages, couleurs pleines, soins.</span>
+    </a>
+    <a class="univ" href="#prestations" data-univers="Barbier">
+      <img src="photos/barbier-560.webp" srcset="photos/barbier-560.webp 560w, photos/barbier.webp 880w" sizes="(max-width: 820px) 80vw, 30vw" width="880" height="1100" alt="Le coin barbier : fauteuil en cuir vert, rasoir et serviette chaude sur le marbre" loading="lazy">
+      <span class="univ-nom">Barbier</span>
+      <span class="univ-txt">Dégradés, barbe, rasage au coupe-chou.</span>
+    </a>
+    <a class="univ" href="#prestations" data-univers="Institut">
+      <img src="photos/institut-560.webp" srcset="photos/institut-560.webp 560w, photos/institut.webp 880w" sizes="(max-width: 820px) 80vw, 30vw" width="880" height="1100" alt="La cabine de l'institut : table de soin au linge blanc et plaid en velours rose" loading="lazy">
+      <span class="univ-nom">Institut</span>
+      <span class="univ-txt">Visage, regard, mains et pieds.</span>
+    </a>
   </div>
 </section>
 
-<!-- ============ AVANT / APRÈS ============ -->
-<section id="resultats" class="compare-sec">
-  <div class="wrap">
-    <div class="sec-head" style="max-width:660px">
-      <div class="eyebrow" data-reveal>Avant / après</div>
-      <h2 data-split>Le résultat parle mieux que nous.</h2>
-      <p data-reveal data-delay="140">
-        Faites glisser le curseur. Sur votre site, ce sont vos propres transformations qui
-        s'affichent ici, et c'est ce que vos futurs clients regardent en premier.
-      </p>
-    </div>
+<!-- ============ Prestations et tarifs ============ -->
+<section class="tarifs" id="prestations" aria-labelledby="t-tarifs">
+  <div class="tarifs-tete">
+    <h2 id="t-tarifs">Les tarifs, affichés avant de pousser la porte.</h2>
+    <p>Choisissez une prestation : elle passe directement dans la réservation.</p>
+  </div>
 
-    <div class="compare" id="compare" role="slider" tabindex="0"
-         aria-label="Comparateur avant après" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-      <div class="cmp-layer cmp-after"><span class="cmp-tag">Après</span></div>
-      <div class="cmp-layer cmp-before" id="cmp-before"><span class="cmp-tag">Avant</span></div>
-      <div class="cmp-handle" id="cmp-handle"><span class="cmp-knob">⇔</span></div>
+  <div class="outils">
+    <div class="onglets" role="tablist" aria-label="Univers">
+      <button type="button" role="tab" class="onglet" data-u="Coiffure" aria-selected="true">Coiffure</button>
+      <button type="button" role="tab" class="onglet" data-u="Barbier" aria-selected="false">Barbier</button>
+      <button type="button" role="tab" class="onglet" data-u="Institut" aria-selected="false">Institut</button>
     </div>
-    <p class="compare-hint">Glissez avec le doigt ou la souris, ou utilisez les flèches du clavier.</p>
+    <label class="cherche"><span class="sr">Chercher une prestation</span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg>
+      <input type="search" id="cherche" placeholder="Balayage, barbe, sourcils…" autocomplete="off">
+    </label>
+    <div class="filtres">
+      <label><span>Budget</span>
+        <select id="f-budget">
+          <option value="">Tous les prix</option>
+          <option value="-40">Moins de 40 €</option>
+          <option value="40-80">De 40 à 80 €</option>
+          <option value="80+">Plus de 80 €</option>
+          <option value="devis">Sur devis</option>
+        </select>
+      </label>
+      <label><span>Durée</span>
+        <select id="f-duree">
+          <option value="">Toutes les durées</option>
+          <option value="45">45 min ou moins</option>
+          <option value="90">1 h 30 ou moins</option>
+          <option value="91">Plus d'1 h 30</option>
+        </select>
+      </label>
+    </div>
+  </div>
+  <p class="compte" id="compte" aria-live="polite"></p>
+  <div class="liste" id="liste"></div>
+  <p class="note">Tarifs de démonstration, à remplacer par les vôtres. Le prix final dépend de la longueur et de l'épaisseur des cheveux, il est annoncé avant de commencer.</p>
+</section>
+
+<!-- ============ Le geste ============ -->
+<section class="geste" aria-label="Le geste">
+  <figure class="geste-photo" data-parallaxe>
+    <img src="photos/coupe.webp" srcset="photos/coupe-960.webp 960w, photos/coupe.webp 1600w" sizes="100vw" width="1600" height="905" alt="Une coiffeuse coupe les cheveux mouillés d'une cliente, peigne et ciseaux en main" loading="lazy">
+  </figure>
+  <p class="geste-phrase" data-apparition>On regarde d'abord.<br>On coupe ensuite.</p>
+</section>
+
+<!-- ============ L'équipe ============ -->
+<section class="equipe" id="equipe" aria-labelledby="t-equipe">
+  <div class="equipe-tete">
+    <h2 id="t-equipe">On réserve une personne, pas un créneau.</h2>
+    <p>Chacun a son agenda. Si vous avez vos habitudes, gardez-les.</p>
+  </div>
+  <div class="portraits" id="portraits"></div>
+</section>
+
+<!-- ============ Réservation ============ -->
+<section class="reserver" id="reserver" aria-labelledby="t-reserver">
+  <div class="reserver-tete">
+    <h2 id="t-reserver">Votre rendez-vous, en quatre gestes.</h2>
+    <p>Démonstration : le rendez-vous est gardé sur cet appareil, rien n'est envoyé.</p>
+  </div>
+
+  <div class="resa">
+    <form class="etapes" id="resa-form" novalidate>
+      <fieldset class="etape" id="e-presta">
+        <legend><b>1</b> La prestation</legend>
+        <label class="sr" for="r-presta">Prestation</label>
+        <select id="r-presta" required></select>
+      </fieldset>
+
+      <fieldset class="etape" id="e-avec">
+        <legend><b>2</b> Avec qui</legend>
+        <div class="pastilles" id="r-avec"></div>
+      </fieldset>
+
+      <fieldset class="etape" id="e-jour">
+        <legend><b>3</b> Le jour et l'heure</legend>
+        <div class="jours" id="r-jours" role="group" aria-label="Jour"></div>
+        <div class="heures" id="r-heures" role="group" aria-label="Heure"></div>
+      </fieldset>
+
+      <fieldset class="etape" id="e-qui">
+        <legend><b>4</b> Vos coordonnées</legend>
+        <div class="champs">
+          <div class="champ"><label for="r-prenom">Prénom</label><input id="r-prenom" autocomplete="given-name" required></div>
+          <div class="champ"><label for="r-tel">Téléphone</label><input id="r-tel" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+352 621 00 00 00"></div>
+          <div class="champ large"><label for="r-note">Une précision <span>(facultatif)</span></label><input id="r-note" placeholder="Longueur, photo d'inspiration, allergie…"></div>
+        </div>
+      </fieldset>
+      <p class="erreur" id="r-erreur" role="alert"></p>
+    </form>
+
+    <aside class="recap" aria-labelledby="recap-titre">
+      <p class="recap-titre" id="recap-titre">Récapitulatif</p>
+      <dl>
+        <div><dt>Prestation</dt><dd id="rc-presta">À choisir</dd></div>
+        <div><dt>Avec</dt><dd id="rc-avec">Sans préférence</dd></div>
+        <div><dt>Quand</dt><dd id="rc-quand">À choisir</dd></div>
+        <div><dt>Durée</dt><dd id="rc-duree">–</dd></div>
+        <div><dt>Prix</dt><dd id="rc-prix">–</dd></div>
+      </dl>
+      <button type="submit" form="resa-form" class="btn btn-plein">Confirmer le rendez-vous</button>
+      <p class="recap-aide">Annulation gratuite jusqu'à 24 h avant.</p>
+    </aside>
+  </div>
+
+  <div class="confirme" id="confirme" hidden tabindex="-1">
+    <p class="confirme-titre">C'est noté, <span id="cf-prenom"></span>.</p>
+    <p id="cf-detail"></p>
+    <div class="confirme-actions">
+      <button type="button" class="btn" id="cf-ics">Ajouter à mon agenda</button>
+      <button type="button" class="lien" id="cf-autre">Prendre un autre rendez-vous</button>
+    </div>
   </div>
 </section>
 
-<!-- ============ ÉQUIPE ============ -->
-<section id="equipe">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow" data-reveal>L'équipe</div>
-      <h2 data-split>On choisit sa personne, pas juste un créneau.</h2>
-      <p data-reveal data-delay="140">
-        Chacun a sa spécialité et son agenda. Vous réservez directement avec celle ou celui
-        que vous connaissez.
-      </p>
-    </div>
-
-    <div class="team" data-stagger="120">
-      <article class="member">
-        <div class="por"><img src="photos/equipe-coloriste.jpg" width="700" height="933"
-             loading="lazy" alt="Camille, coloriste, au brushing sur une cliente"></div>
-        <div class="m-body">
-          <div class="role">Coloriste</div>
-          <h3>Camille</h3>
-          <p>Balayages et couleurs végétales. Quinze ans de métier, dont six à Paris.</p>
-          <a href="#accueil">Réserver avec Camille</a>
-        </div>
-      </article>
-      <article class="member">
-        <div class="por"><img src="photos/equipe-barbier.jpg" width="700" height="933"
-             loading="lazy" alt="Nuno, barbier, taille une barbe aux ciseaux"></div>
-        <div class="m-body">
-          <div class="role">Barbier</div>
-          <h3>Nuno</h3>
-          <p>Dégradés nets et rasage au coupe-chou. Le samedi, réservez tôt.</p>
-          <a href="#accueil">Réserver avec Nuno</a>
-        </div>
-      </article>
-      <article class="member">
-        <div class="por"><img src="photos/equipe-esthetique.jpg" width="700" height="933"
-             loading="lazy" alt="Léa, esthéticienne, applique un soin du visage au pinceau"></div>
-        <div class="m-body">
-          <div class="role">Esthéticienne</div>
-          <h3>Léa</h3>
-          <p>Soins du visage et onglerie. Formée aux protocoles anti-âge.</p>
-          <a href="#accueil">Réserver avec Léa</a>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ============ PREUVE ============ -->
-<section class="proof">
-  <div class="wrap proof-grid">
+<!-- ============ Accès ============ -->
+<section class="acces" id="acces" aria-labelledby="t-acces">
+  <h2 id="t-acces">Nous trouver.</h2>
+  <div class="acces-grille">
     <div>
-      <div class="eyebrow" data-reveal>La maison</div>
-      <h2 data-split>Un salon de quartier, tenu comme une maison.</h2>
-      <p data-reveal data-delay="160">
-        Maison Lonvière a ouvert avec une idée simple : un client qui repart content revient,
-        et il en amène un autre. Pas de vente forcée, pas de produit poussé au comptoir.
-      </p>
-      <p data-reveal data-delay="240">
-        Nous travaillons sur rendez-vous pour que personne n'attende, et nous gardons chaque
-        semaine des créneaux libres pour les imprévus.
-      </p>
+      <h3>Horaires</h3>
+      <table class="horaires" id="horaires"><caption class="sr">Horaires d'ouverture</caption><tbody></tbody></table>
     </div>
-    <div class="stats" data-stagger="140">
-      <div class="stat"><b data-count="14" data-suffix=" ans">0</b><i>Au même endroit</i></div>
-      <div class="stat"><b data-count="4800" data-suffix="+">0</b><i>Rendez-vous par an</i></div>
-      <div class="stat"><b>4,9</b><i>Note moyenne Google</i></div>
-      <div class="stat"><b data-count="7" data-suffix="j/7">0</b><i>Réservation en ligne</i></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ HORAIRES & ACCÈS ============ -->
-<section id="acces">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow" data-reveal>Horaires &amp; accès</div>
-      <h2 data-split>Nous trouver, nous joindre.</h2>
-    </div>
-    <div class="info-grid">
-      <div data-reveal="left">
-        <div class="hours">
-          <div><b>Lundi</b><span class="closed">Fermé</span></div>
-          <div><b>Mardi – Vendredi</b><span>09:00 – 19:00</span></div>
-          <div><b>Samedi</b><span>08:30 – 17:00</span></div>
-          <div><b>Dimanche</b><span class="closed">Fermé</span></div>
-        </div>
-        <div class="contact-block">
-          <span class="muted">Adresse à compléter par le client</span>
-          <a href="tel:+352000000">+352 00 00 00</a>
-          <a href="mailto:contact@maison-lonviere.example">contact@maison-lonviere.example</a>
-        </div>
-        <p style="margin-top:1.6rem"><a class="btn ghost" href="#accueil">Prendre rendez-vous</a></p>
-      </div>
-      <figure class="map" data-reveal="right" data-delay="120" style="margin:0">
-        <div class="pin" aria-hidden="true"></div>
-        <figcaption>Emplacement du salon. Sur un site publié, cette zone accueille la carte interactive.</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CTA FINAL ============ -->
-<section class="final">
-  <div class="wrap">
-    <h2 data-split>Réservez pendant que vous y pensez.</h2>
-    <p data-reveal data-delay="200">
-      Vingt secondes maintenant, et votre créneau est bloqué. Pas d'attente, pas de rappel à passer.
-    </p>
-    <p data-reveal data-delay="300">
-      <a class="btn ns-shine" href="#accueil">Choisir mon créneau</a>
-    </p>
-    <p data-reveal data-delay="380" style="margin-top:1.4rem;font-size:.95rem">
-      Ou appelez-nous au <a class="tel-link" href="tel:+352000000">+352 00 00 00</a>
-    </p>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap foot-in">
     <div>
-      <div class="logo" style="color:var(--paper);display:block;margin-bottom:.3rem">Maison <em>Lonvière</em></div>
-      <div class="sig">Salon de coiffure, barbier, institut &amp; toilettage · Luxembourg</div>
+      <h3>Adresse</h3>
+      <p>Adresse à compléter<br>L-0000 Luxembourg</p>
+      <p class="petit">Parking et arrêts de bus à compléter.</p>
     </div>
-    <div class="sig">
-      Démonstration · Réalisé par <b>NS Development</b>
+    <div>
+      <h3>Contact</h3>
+      <p><a href="tel:+35227000000">+352 27 00 00 00</a><br><a href="mailto:bonjour@lonviere.example">bonjour@lonviere.example</a></p>
+      <p class="petit">On répond au téléphone entre deux clients : laissez un message, on rappelle.</p>
     </div>
   </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <p class="pied-marque">Maison Lonvière</p>
+  <p>Maquette concept réalisée par <b>NS Development</b>, création de sites web au Luxembourg. Salon, équipe, prestations et tarifs fictifs.</p>
+  <p class="credits">Photos et portraits générés pour la maquette (Higgsfield), personnes fictives. Chevelure en 3D dessinée en code avec Three.js (licence MIT).</p>
 </footer>
 
-<script>
-(function(){
-  "use strict";
+<!-- Mes rendez-vous -->
+<div class="voile" id="voile" hidden></div>
+<aside class="tiroir" id="mes" role="dialog" aria-modal="true" aria-labelledby="mes-titre" hidden>
+  <button type="button" class="fermer" data-fermer aria-label="Fermer">×</button>
+  <h2 id="mes-titre">Mes rendez-vous</h2>
+  <ol id="mes-liste"></ol>
+</aside>
 
-  /* ---- menu mobile : totalement inerte une fois fermé (display:none) ---- */
-  var burger = document.getElementById('burger');
-  var menu   = document.getElementById('mobile-menu');
-  function setMenu(open){
-    menu.classList.toggle('open', open);
-    menu.setAttribute('aria-hidden', open ? 'false' : 'true');
-    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
-    document.body.style.overflow = open ? 'hidden' : '';
-  }
-  burger.addEventListener('click', function(){ setMenu(!menu.classList.contains('open')); });
-  menu.addEventListener('click', function(e){ if(e.target.tagName === 'A') setMenu(false); });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setMenu(false); });
-
-  /* ---- onglets prestations ---- */
-  /* pilotés par prestations.js */
-
-  /* ---- comparateur avant / après, souris + doigt + clavier ---- */
-  var cmp    = document.getElementById('compare');
-  var before = document.getElementById('cmp-before');
-  var handle = document.getElementById('cmp-handle');
-  var dragging = false;
-
-  function setPos(pct){
-    pct = Math.max(0, Math.min(100, pct));
-    before.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
-    handle.style.left = pct + '%';
-    cmp.setAttribute('aria-valuenow', Math.round(pct));
-  }
-  function fromEvent(e){
-    var r = cmp.getBoundingClientRect();
-    var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
-    setPos(x / r.width * 100);
-  }
-  cmp.addEventListener('pointerdown', function(e){
-    dragging = true; cmp.setPointerCapture(e.pointerId); fromEvent(e);
-  });
-  cmp.addEventListener('pointermove', function(e){ if(dragging) fromEvent(e); });
-  cmp.addEventListener('pointerup',    function(){ dragging = false; });
-  cmp.addEventListener('pointercancel',function(){ dragging = false; });
-  cmp.addEventListener('keydown', function(e){
-    var now = parseFloat(cmp.getAttribute('aria-valuenow')) || 50;
-    if(e.key === 'ArrowRight'){ e.preventDefault(); setPos(now + 4); }
-    if(e.key === 'ArrowLeft'){  e.preventDefault(); setPos(now - 4); }
-  });
-  setPos(50);
-
-  /* ---- formulaire de réservation (démonstration, sans envoi) ---- */
-  var form = document.getElementById('book');
-  var done = document.getElementById('book-done');
-  var dateInput = document.getElementById('b-date');
-  var d = new Date(); d.setDate(d.getDate() + 1);
-  dateInput.value = d.toISOString().slice(0,10);
-  dateInput.min = new Date().toISOString().slice(0,10);
-
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    var presta = document.getElementById('b-presta').value;
-    var heure  = document.getElementById('b-heure').value;
-    var jour   = dateInput.value ? new Date(dateInput.value + 'T00:00:00')
-                   .toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}) : 'la date choisie';
-    done.textContent = 'Créneau disponible : ' + presta + ', ' + jour + ' à ' + heure +
-                       '. Sur un site en ligne, la confirmation partirait par SMS immédiatement.';
-    done.classList.add('on');
-  });
-})();
-</script>
+<script src="data.js"></script>
+<script src="site.js"></script>
+<script type="module">if (!document.documentElement.classList.contains("sans-3d")) import("./meche3d.js").catch(function () { document.documentElement.classList.add("sans-3d"); });</script>
 
 <!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
 <script src="nsd-chat.js" defer
         data-site="salon"
         data-nom="Maison Lonvière"
-        data-accent="#c4614c"
-        data-encre="#101014"
+        data-accent="#f2b8ab"
+        data-encre="#0e2723"
         data-fiche="fiche-chat.json"
-        data-bienvenue="Bonjour ! Une question sur nos prestations, nos horaires ou pour prendre rendez-vous ?"></script>
+        data-bienvenue="Bonjour ! Une question sur les tarifs, les couleurs ou un rendez-vous ?"></script>
 <!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
 <script src="../../../suivi.js" defer></script>
 <!-- Pop-up réseaux NS Development (demos/nsd-reseaux.js) -->

@@ -1,16 +1,16 @@
 {
   "nom": "Maison Lonvière",
-  "activite": "salon de coiffure, barbier, institut et toilettage",
+  "activite": "salon de coiffure, barbier et institut de beauté",
   "commune": "Luxembourg",
-  "telephone": "+352 00 00 00",
-  "horaires_texte": "Nous sommes ouverts du mardi au vendredi de 9h à 19h, et le samedi de 8h30 à 17h. Fermé le dimanche et le lundi.",
-  "services_texte": "Quatre univers sous le même toit : coiffure, barbier, institut de beauté et toilettage. Côté barbier, dégradés nets et rasage au coupe-chou.",
-  "prix_texte": "Nos prestations se répartissent en trois gammes : moins de 30 €, de 30 à 60 €, et plus de 60 € selon la prestation et la longueur.",
-  "reservation_texte": "La réservation se fait en ligne, directement depuis le bouton « Prendre rendez-vous » de cette page. Le samedi, réservez tôt : c'est le jour qui part le plus vite.",
-  "contact_texte": "Vous pouvez nous appeler au +352 00 00 00, ou réserver en ligne depuis cette page.",
+  "telephone": "+352 27 00 00 00",
+  "horaires_texte": "Nous sommes ouverts le mardi, le mercredi et le vendredi de 9h à 19h, le jeudi jusqu'à 20h, et le samedi de 8h30 à 16h. Fermé le dimanche et le lundi.",
+  "services_texte": "Trois métiers sous le même toit : coiffure et couleur, barbier, et institut de beauté. Pour la couleur, essayez les nuances directement en haut de la page, sur la chevelure en 3D.",
+  "prix_texte": "Tous les tarifs sont affichés dans la rubrique Tarifs, avec un filtre par budget et par durée. Par exemple : coupe et brushing 58 €, dégradé 40 €, soin éclat 68 €, balayage dès 120 €. Ce sont des tarifs de démonstration.",
+  "reservation_texte": "La réservation se fait en ligne, en quatre gestes : la prestation, avec qui, le jour et l'heure, puis votre prénom et votre téléphone. Vous pouvez annuler gratuitement jusqu'à 24 h avant.",
+  "contact_texte": "Vous pouvez nous appeler au +352 27 00 00 00, nous écrire à bonjour@lonviere.example, ou réserver en ligne depuis cette page.",
   "suggestions": [
     "Vous êtes ouverts le lundi ?",
-    "Combien coûte une coupe ?",
+    "Combien coûte un balayage ?",
     "Comment prendre rendez-vous ?"
   ],
   "demo_regles": [
@@ -42,7 +42,8 @@
         "cout",
         "combien",
         "coupe",
-        "budget"
+        "budget",
+        "balayage"
       ],
       "cle": "prix_texte"
     },
@@ -51,7 +52,8 @@
         "barbier",
         "coiffure",
         "institut",
-        "toilettage",
+        "couleur",
+        "nuance",
         "service",
         "prestation",
         "faites"
