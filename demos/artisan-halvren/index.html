@@ -3,287 +3,332 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#17191c">
 <title>Halvren — Plomberie, chauffage, serrurerie, électricité · Luxembourg</title>
-<meta name="description" content="Dépannage et travaux au Luxembourg : fuite d'eau, panne de courant, porte claquée, chauffage en panne. Un numéro, une demande de devis avec photo, un prix annoncé avant de venir.">
+<meta name="description" content="Halvren, dépannage et travaux dans le sud et le centre du Luxembourg : fuite, radiateur froid, panne de courant, porte claquée. Promenez la lampe sur le mur, on vous dit quoi faire. Maquette concept NS Development.">
+<meta name="theme-color" content="#0e1626">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/artisan-halvren/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_LU">
 <meta property="og:site_name" content="Halvren">
-<meta property="og:title" content="Halvren — Dépannage plomberie, chauffage, serrurerie, électricité">
-<meta property="og:description" content="Fuite, panne, porte claquée : choisissez votre problème, appelez, ou envoyez une photo pour un devis.">
-<meta property="og:image" content="og.jpg">
+<meta property="og:title" content="Halvren — Ce qui lâche derrière vos murs">
+<meta property="og:description" content="Plomberie, chauffage, serrurerie, électricité. Promenez la lampe sur le mur : on vous dit quoi faire en attendant, et quand on arrive.">
+<meta property="og:image" content="photos/couloir.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Halvren — Dépannage au Luxembourg">
-<meta name="twitter:description" content="Fuite, panne, porte claquée : un numéro, un devis avec photo, un prix annoncé avant de venir.">
-<meta name="twitter:image" content="og.jpg">
-<meta name="robots" content="noindex">
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<link rel="stylesheet" href="../../assets/fonts/polices-d824aad280.css">
-<link rel="stylesheet" href="ns-motion.css">
-<link rel="stylesheet" href="halvren.css?v=20261023d">
+<meta name="twitter:image" content="photos/couloir.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="halvren.css">
+<link rel="modulepreload" href="vendor/three.module.min.js">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Plumber","name":"Halvren","description":"Plomberie, chauffage, serrurerie, électricité (maquette concept NS Development).","areaServed":"Sud et centre du Luxembourg","address":{"@type":"PostalAddress","streetAddress":"Adresse à compléter","addressCountry":"LU"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"07:00","closes":"22:00"}]}
+</script>
+<script>
+  /* Avant tout affichage : l'ouverture se joue-t-elle ? (une fois par session, jamais avec
+     « réduire les animations », ni si l'URL vise une section, ni sans 3D) */
+  (function () {
+    var d = document.documentElement, vue = false;
+    try { vue = sessionStorage.getItem('halvren-intro') === '1'; } catch (e) {}
+    var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var gl = (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
+    d.classList.add('js');
+    if (!gl) d.classList.add('sans-3d');
+    if (gl && !calme && !vue && !location.hash && !location.search) d.classList.add('en-intro');
+  })();
+</script>
 </head>
-<body>
-<div class="ns-progress"></div>
-<div class="demo-tag">Site de démonstration · nom et contenus fictifs</div>
+<body class="accueil">
 
-<nav class="top" data-nav-solid aria-label="Navigation principale">
-  <div class="wrap nav-in">
-    <a class="logo" href="index.html" aria-label="Halvren, accueil">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="#ff5b1f"/><path d="M14 46V18h8v11h20V18h8v28h-8V36H22v10z" fill="#17191c"/></svg>
-      HALVREN
-    </a>
-    <div class="nav-links">
-      <a class="ns-link" href="plomberie.html">Plomberie</a>
-      <a class="ns-link" href="chauffage.html">Chauffage</a>
-      <a class="ns-link" href="serrurerie.html">Serrurerie</a>
-      <a class="ns-link" href="electricite.html">Électricité</a>
-      <a class="ns-link" href="#devis">Devis</a>
-      <a class="nav-call" href="#appel" data-appel>Appeler</a>
-      <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><span></span></button>
-    </div>
-  </div>
-</nav>
-<div class="menu" id="menu">
-  <a href="plomberie.html"><small>01</small>Plomberie</a>
-  <a href="chauffage.html"><small>02</small>Chauffage</a>
-  <a href="serrurerie.html"><small>03</small>Serrurerie</a>
-  <a href="electricite.html"><small>04</small>Électricité</a>
-  <a href="#chantiers"><small>→</small>Chantiers</a>
-  <a href="#devis"><small>→</small>Devis avec photo</a>
+<a class="evite" href="#contenu">Aller au contenu</a>
+
+<!-- Ouverture : la lampe s'allume dans le noir et trouve ce qui passe dans le mur -->
+<div class="intro" id="intro">
+  <p class="intro-nom" aria-hidden="true">Halvren</p>
+  <p class="intro-sous" aria-hidden="true">Ce qui lâche derrière vos murs, on le trouve.</p>
+  <button type="button" class="intro-passer" id="intro-passer">Passer l'intro</button>
 </div>
 
-<header class="hero" id="haut">
-  <div class="wrap hero-grid">
-    <div>
-      <h1 data-split>Un problème&nbsp;?<br><em>On décroche.</em></h1>
-      <p class="lead" data-reveal data-delay="150">Plomberie, chauffage, serrurerie, électricité. Dites-nous ce qui se passe, on vous dit quoi faire en attendant et quand on arrive.</p>
-      <a class="alt ns-link" href="#devis" data-reveal data-delay="250">Pas urgent ? Demandez un devis avec une photo →</a>
-    </div>
-    <div class="outil" data-reveal="right" data-delay="200">
-      <h2>Quel est votre problème&nbsp;?</h2>
-      <div class="puces" role="group" aria-label="Choisir un problème">
-        <button class="puce" type="button" data-pb="fuite" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>Fuite d'eau</button>
-        <button class="puce" type="button" data-pb="courant" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Panne de courant</button>
-        <button class="puce" type="button" data-pb="porte" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3M21 12v2"/></svg>Porte claquée</button>
-        <button class="puce" type="button" data-pb="chauffage" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 20V8M9 20V8M14 20V8M19 20V8M2 20h20M2 8h20"/></svg>Plus de chauffage</button>
-      </div>
-      <div class="reponse" aria-live="polite" id="reponse"></div>
-      <a class="appeler ns-shine" href="#appel" data-appel><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>Appeler maintenant</a>
-    </div>
-  </div>
+<header class="barre" id="barre">
+  <a class="marque" href="index.html" aria-label="Halvren, accueil">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="3" fill="#152036"/><path d="M12 9v22M28 9v22" stroke="#d98a5a" stroke-width="4.4" stroke-linecap="round"/><path d="M12 20h16" stroke="#d98a5a" stroke-width="3"/><circle cx="20" cy="20" r="4.2" fill="#152036" stroke="#eceef0" stroke-width="2"/></svg>
+    <span>Halvren</span>
+  </a>
+  <span class="concept" title="Maquette de démonstration : nom et contenus fictifs">Concept</span>
+  <nav class="nav" aria-label="Navigation principale">
+    <a href="plomberie.html">Plomberie</a>
+    <a href="chauffage.html">Chauffage</a>
+    <a href="serrurerie.html">Serrurerie</a>
+    <a href="electricite.html">Électricité</a>
+    <a href="#devis">Devis</a>
+  </nav>
+  <a class="plaque petite" href="#appel" data-appel><span>Appeler</span></a>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><span></span></button>
 </header>
-
-<div class="reass">
-  <ul class="wrap" data-stagger="100">
-    <li data-reveal><span class="statut" data-statut><span class="point" aria-hidden="true"></span><span><b class="etat">7 j / 7</b> <span class="detail">de 7 h à 22 h</span></span></span></li>
-    <li data-reveal><b>Prix annoncé</b> avant de venir</li>
-    <li data-reveal><b>Devis écrit</b> avant tout travaux</li>
-  </ul>
+<div class="menu" id="menu" hidden>
+  <a href="plomberie.html"><small>Eau</small>Plomberie</a>
+  <a href="chauffage.html"><small>Chaleur</small>Chauffage</a>
+  <a href="serrurerie.html"><small>Serrure</small>Serrurerie</a>
+  <a href="electricite.html"><small>Courant</small>Électricité</a>
+  <a href="#chantiers"><small>Avant, après</small>Chantiers</a>
+  <a href="#devis"><small>Pas urgent</small>Devis avec photo</a>
 </div>
 
-<section class="bloc" id="services">
-  <div class="wrap">
-    <h2 class="titre" data-reveal>Quatre métiers, un seul numéro</h2>
-    <p class="sous" data-reveal>Le dépannage le jour même, et les vrais travaux quand ça peut attendre : salle de bain, chaudière, tableau électrique, serrures.</p>
-    <div class="services" data-stagger="110">
-      <a class="serv" href="plomberie.html" data-reveal><span class="serv-photo"><img src="photos/plomberie.webp" alt="" width="960" height="960" loading="lazy"></span><div class="num">01</div><h3>Plomberie</h3><ul><li>Fuites et dégâts des eaux</li><li>WC, évier, douche bouchés</li><li>Chauffe-eau</li><li>Salle de bain complète</li></ul><span class="voir">Voir la page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
-      <a class="serv" href="chauffage.html" data-reveal><span class="serv-photo"><img src="photos/chauffage.webp" alt="" width="960" height="960" loading="lazy"></span><div class="num">02</div><h3>Chauffage</h3><ul><li>Chaudière en panne</li><li>Entretien annuel</li><li>Radiateurs froids, purge</li><li>Pompe à chaleur</li></ul><span class="voir">Voir la page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
-      <a class="serv" href="serrurerie.html" data-reveal><span class="serv-photo"><img src="photos/serrurerie.webp" alt="" width="960" height="960" loading="lazy"></span><div class="num">03</div><h3>Serrurerie</h3><ul><li>Porte claquée</li><li>Clés perdues ou cassées</li><li>Changement de cylindre</li><li>Porte blindée</li></ul><span class="voir">Voir la page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
-      <a class="serv" href="electricite.html" data-reveal><span class="serv-photo"><img src="photos/electricite.webp" alt="" width="960" height="960" loading="lazy"></span><div class="num">04</div><h3>Électricité</h3><ul><li>Panne et disjoncteur</li><li>Tableau électrique</li><li>Prises et éclairage</li><li>Mise en conformité</li></ul><span class="voir">Voir la page <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
-    </div>
-  </div>
-</section>
+<main id="contenu">
 
-<section class="bloc sombre">
-  <div class="wrap">
-    <h2 class="titre" data-reveal>Comment ça se passe</h2>
-    <p class="sous" data-reveal>Pas de surprise sur la facture : vous savez avant, pas après.</p>
-    <div class="ligne" data-stagger="130">
-      <div class="etape" data-reveal><h3>Vous appelez</h3><p>Ou vous envoyez une photo depuis le formulaire. On comprend le problème avant de prendre la route.</p></div>
-      <div class="etape" data-reveal><h3>On annonce le prix</h3><p>Le déplacement et le diagnostic sont annoncés au téléphone. Vous dites oui, on vient.</p></div>
-      <div class="etape" data-reveal><h3>On répare</h3><p>Les travaux en plus font l'objet d'un devis écrit. Facture détaillée, garantie sur la pièce posée.</p></div>
-    </div>
-  </div>
-</section>
+<!-- HERO : le mur et le diagnostic -->
+<section class="hero" id="haut" aria-labelledby="titre">
+  <div class="hero-texte">
+    <h1 id="titre">Ce qui lâche derrière vos murs, <em>on le trouve.</em></h1>
+    <p class="chapo">Plomberie, chauffage, serrurerie, électricité dans le sud et le centre du Luxembourg. Promenez la lampe sur le mur ou dites-nous ce qui se passe&nbsp;: on vous dit quoi faire en attendant.</p>
 
-<section class="bloc" id="chantiers">
-  <div class="wrap">
-    <h2 class="titre" data-reveal>Avant, après</h2>
-    <p class="sous" data-reveal>Glissez pour voir. Sur le vrai site, ce sont les photos de vos chantiers : le meilleur argument d’un artisan.</p>
-    <div class="filtres" role="group" aria-label="Filtrer les chantiers" data-reveal>
-      <button class="filtre" type="button" data-m="tous" aria-pressed="true">Tous</button>
-      <button class="filtre" type="button" data-m="Plomberie" aria-pressed="false">Plomberie</button>
-      <button class="filtre" type="button" data-m="Chauffage" aria-pressed="false">Chauffage</button>
-      <button class="filtre" type="button" data-m="Serrurerie" aria-pressed="false">Serrurerie</button>
-      <button class="filtre" type="button" data-m="Électricité" aria-pressed="false">Électricité</button>
-    </div>
-    <div class="galerie" id="galerie">
-      <div data-reveal="scale">
-        <div class="compare sc-sdb" id="grand">
-          <div class="face avant"><span class="etiq">Avant</span></div>
-          <div class="face apres"><span class="etiq">Après</span></div>
-          <div class="poignee"></div>
-          <input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après">
-        </div>
-        <p class="legende" id="grand-legende" aria-live="polite">Salle de bain des années 70 refaite : douche à l’italienne, meuble suspendu. Photos d’illustration : sur votre site, ce sont vos chantiers.</p>
-      </div>
-      <div class="vignettes" data-stagger="90">
-        <button class="vig" type="button" data-sc="sc-sdb" data-m="Plomberie" data-legende="Salle de bain des années 70 refaite : douche à l’italienne, meuble suspendu. Photos d’illustration : sur votre site, ce sont vos chantiers." aria-pressed="true">
-          <span class="mini sc-sdb" aria-hidden="true"><span class="face avant"></span><span class="face apres"></span></span>
-          <span><b>Salle de bain</b><small>Plomberie · Esch-sur-Alzette</small></span>
-        </button>
-        <button class="vig" type="button" data-sc="sc-chaud" data-m="Chauffage" data-legende="Radiateurs en fonte remplacés par des radiateurs à panneaux. Photos d’illustration : sur votre site, ce sont vos chantiers." aria-pressed="false">
-          <span class="mini sc-chaud" aria-hidden="true"><span class="face avant"></span><span class="face apres"></span></span>
-          <span><b>Radiateurs remplacés</b><small>Chauffage · Differdange</small></span>
-        </button>
-        <button class="vig" type="button" data-sc="sc-porte" data-m="Serrurerie" data-legende="Ancienne porte en bois remplacée par une porte isolante, serrure multipoints et cylindre de sûreté. Photos d’illustration : sur votre site, ce sont vos chantiers." aria-pressed="false">
-          <span class="mini sc-porte" aria-hidden="true"><span class="face avant"></span><span class="face apres"></span></span>
-          <span><b>Porte d’entrée</b><small>Serrurerie · Bertrange</small></span>
-        </button>
-        <button class="vig" type="button" data-sc="sc-tab" data-m="Électricité" data-legende="Tableau à fusibles remplacé par un tableau aux normes, différentiels compris. Photos d’illustration : sur votre site, ce sont vos chantiers." aria-pressed="false">
-          <span class="mini sc-tab" aria-hidden="true"><span class="face avant"></span><span class="face apres"></span></span>
-          <span><b>Tableau refait</b><small>Électricité · Dudelange</small></span>
-        </button>
+    <div class="diag">
+      <p class="diag-q" id="diag-q">Où est le problème&nbsp;?</p>
+      <div class="pannes" role="group" aria-labelledby="diag-q" id="pannes"></div>
+      <div class="diag-rep" id="diag-rep" aria-live="polite"></div>
+      <div class="diag-actions">
+        <a class="plaque" href="#appel" data-appel><span>Appeler maintenant</span></a>
+        <a class="lien" href="#devis" id="diag-devis">Pas urgent&nbsp;? Devis avec photo</a>
       </div>
     </div>
   </div>
+
+  <div class="scene" data-mur data-panneau=".hero-texte">
+    <canvas tabindex="0" aria-label="Le mur en 3D : déplacez la lampe à la souris, au doigt ou avec les flèches du clavier pour voir les tuyaux, les câbles et la serrure. Les quatre repères ouvrent le diagnostic."></canvas>
+    <img class="scene-repli" src="photos/couloir.webp" srcset="photos/couloir-m.webp 960w, photos/couloir.webp 1920w" sizes="(max-width: 820px) 100vw, 60vw" alt="Couloir d'appartement la nuit, une lampe torche éclaire le mur" width="1920" height="1080">
+    <p class="scene-aide" aria-hidden="true"><span class="souris">Promenez la lampe sur le mur</span><span class="doigt">Glissez le doigt sur le mur</span></p>
+  </div>
 </section>
 
-<div class="zone" id="zone">
-  <p>On intervient partout dans le sud et le centre du pays</p>
-  <div class="ns-marquee" aria-hidden="true">
-    <div class="ns-marquee__track">
-      <span>Esch-sur-Alzette</span><span>Differdange</span><span>Dudelange</span><span>Pétange</span><span>Bettembourg</span><span>Luxembourg</span><span>Strassen</span><span>Bertrange</span><span>Mamer</span><span>Hesperange</span><span>Mersch</span><span>Sanem</span>
-      <span>Esch-sur-Alzette</span><span>Differdange</span><span>Dudelange</span><span>Pétange</span><span>Bettembourg</span><span>Luxembourg</span><span>Strassen</span><span>Bertrange</span><span>Mamer</span><span>Hesperange</span><span>Mersch</span><span>Sanem</span>
-    </div>
-  </div>
+<!-- Ouvert maintenant -->
+<div class="etat" aria-label="Disponibilité">
+  <p><span class="voyant" data-statut aria-hidden="true"></span><b data-statut-texte>On décroche de 7 h à 22 h, 7 jours sur 7</b></p>
+  <p><b>Prix du déplacement</b> annoncé au téléphone</p>
+  <p><b>Devis écrit</b> avant tout travaux</p>
 </div>
 
-<section class="bloc">
-  <div class="wrap verif">
-    <div>
-      <h2 class="titre" data-reveal>On vient chez vous ?</h2>
-      <p class="sous" data-reveal>Tapez votre commune, la réponse est immédiate.</p>
+<!-- LES QUATRE MÉTIERS : un réseau qui se trace au défilement -->
+<section class="metiers" id="metiers" aria-labelledby="t-metiers">
+  <div class="metiers-tete" data-r>
+    <h2 id="t-metiers">Quatre métiers, <em>un seul numéro.</em></h2>
+    <p>Le dépannage le jour même, et les vrais travaux quand ça peut attendre. Un artisan qui connaît l'eau, la chaleur, le courant et les serrures sait aussi ce qui se passe quand l'un touche l'autre.</p>
+  </div>
+  <span class="reseau" aria-hidden="true"></span>
+  <ol class="liste-metiers">
+    <li class="metier" data-reseau="eau">
+      <a href="plomberie.html">
+        <span class="m-num">Eau</span>
+        <span class="m-nom">Plomberie</span>
+        <span class="m-quoi">Fuites et dégâts des eaux · WC, évier, douche bouchés · chauffe-eau · salle de bain complète</span>
+        <span class="m-photo"><img src="photos/sdb-m.webp" alt="" width="560" height="700" loading="lazy"></span>
+        <span class="m-fleche" aria-hidden="true">→</span>
+      </a>
+    </li>
+    <li class="metier" data-reseau="chaleur">
+      <a href="chauffage.html">
+        <span class="m-num">Chaleur</span>
+        <span class="m-nom">Chauffage</span>
+        <span class="m-quoi">Chaudière en panne · entretien annuel · radiateurs froids, purge · pompe à chaleur</span>
+        <span class="m-photo"><img src="photos/chaufferie-m.webp" alt="" width="560" height="700" loading="lazy"></span>
+        <span class="m-fleche" aria-hidden="true">→</span>
+      </a>
+    </li>
+    <li class="metier" data-reseau="serrure">
+      <a href="serrurerie.html">
+        <span class="m-num">Serrure</span>
+        <span class="m-nom">Serrurerie</span>
+        <span class="m-quoi">Porte claquée · clé perdue ou cassée · changement de cylindre · porte blindée</span>
+        <span class="m-photo"><img src="photos/porte-m.webp" alt="" width="560" height="700" loading="lazy"></span>
+        <span class="m-fleche" aria-hidden="true">→</span>
+      </a>
+    </li>
+    <li class="metier" data-reseau="courant">
+      <a href="electricite.html">
+        <span class="m-num">Courant</span>
+        <span class="m-nom">Électricité</span>
+        <span class="m-quoi">Panne, disjoncteur qui saute · tableau électrique · prises et éclairage · mise en conformité</span>
+        <span class="m-photo"><img src="photos/tableau-m.webp" alt="" width="560" height="700" loading="lazy"></span>
+        <span class="m-fleche" aria-hidden="true">→</span>
+      </a>
+    </li>
+  </ol>
+</section>
+
+<!-- COMMENT ÇA SE PASSE : la camionnette, puis quatre temps -->
+<section class="deroule" id="deroule" aria-labelledby="t-deroule">
+  <figure class="deroule-photo">
+    <img src="photos/camionnette.webp" srcset="photos/camionnette-m.webp 800w, photos/camionnette.webp 1600w" sizes="(max-width: 820px) 100vw, 55vw" alt="Camionnette d'artisan bleu marine garée le soir dans une rue pavée, la porte latérale ouverte sur les outils rangés" width="1600" height="905" loading="lazy">
+  </figure>
+  <div class="deroule-texte" data-r>
+    <h2 id="t-deroule">Vous savez le prix <em>avant</em>, pas après.</h2>
+    <ol class="temps">
+      <li><b>Vous appelez</b><p>Ou vous envoyez une photo depuis le formulaire. On comprend le problème avant de prendre la route.</p></li>
+      <li><b>On annonce le prix</b><p>Le déplacement et le diagnostic sont annoncés au téléphone. Vous dites oui, on part.</p></li>
+      <li><b>On arrive avec la bonne pièce</b><p>La camionnette est rangée pour réparer sur place : cuivre, raccords, cylindres, disjoncteurs.</p></li>
+      <li><b>Un devis écrit pour la suite</b><p>Les travaux en plus font l'objet d'un devis écrit et gratuit. Facture détaillée, photos pour l'assurance.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- AVANT, APRÈS -->
+<section class="chantiers" id="chantiers" aria-labelledby="t-chantiers">
+  <div class="chantiers-tete" data-r>
+    <h2 id="t-chantiers">Avant, après.</h2>
+    <p>Glissez la barre pour comparer. Sur votre site, ce sont vos chantiers : le meilleur argument d'un artisan.</p>
+    <div class="filtres" role="group" aria-label="Filtrer les chantiers par métier">
+      <button type="button" data-m="tous" aria-pressed="true">Tous</button>
+      <button type="button" data-m="Plomberie" aria-pressed="false">Plomberie</button>
+      <button type="button" data-m="Chauffage" aria-pressed="false">Chauffage</button>
+      <button type="button" data-m="Serrurerie" aria-pressed="false">Serrurerie</button>
+      <button type="button" data-m="Électricité" aria-pressed="false">Électricité</button>
     </div>
-    <div data-reveal>
-      <form id="verif" role="search" aria-label="Vérifier si votre commune est desservie">
-        <label class="sr" for="commune-v">Votre commune</label>
+  </div>
+  <div class="chantiers-corps">
+    <div class="compare" id="compare" data-r>
+      <img class="c-apres" src="photos/av-sdb-apres.webp" alt="" width="900" height="1125" loading="lazy">
+      <img class="c-avant" src="photos/av-sdb-avant.webp" alt="" width="900" height="1125" loading="lazy">
+      <span class="c-etiq c-g" aria-hidden="true">Avant</span><span class="c-etiq c-d" aria-hidden="true">Après</span>
+      <span class="c-ligne" aria-hidden="true"></span>
+      <input type="range" min="0" max="100" value="50" aria-label="Comparer avant et après" id="compare-curseur">
+    </div>
+    <div class="chantiers-liste" data-r style="--d:.12s">
+      <p class="c-legende" id="c-legende" aria-live="polite"></p>
+      <ul class="vignettes" id="vignettes"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ZONE -->
+<section class="zone" id="zone" aria-labelledby="t-zone">
+  <div class="zone-tete" data-r>
+    <h2 id="t-zone">On vient chez vous&nbsp;?</h2>
+    <form class="verif" id="verif" role="search" aria-label="Vérifier si votre commune est desservie">
+      <label for="commune-v">Votre commune</label>
+      <div class="verif-ligne">
         <input id="commune-v" list="communes" autocomplete="address-level2" placeholder="Ex. : Bettembourg">
-        <datalist id="communes"></datalist>
-        <button type="submit">Vérifier</button>
-      </form>
+        <button class="plaque" type="submit"><span>Vérifier</span></button>
+      </div>
+      <datalist id="communes"></datalist>
       <p class="verdict" id="verdict" aria-live="polite"></p>
-    </div>
-  </div>
-</section>
-
-<section class="bloc">
-  <div class="wrap">
-    <h2 class="titre" data-reveal>Ils nous ont appelés</h2>
-    <p class="sous" data-reveal>Avis fictifs, pour la démonstration. Sur le vrai site, vos avis Google s'affichent ici.</p>
-    <div class="avis" data-stagger="120">
-      <div class="avi" data-reveal><div class="stars">★★★★★</div><p>Porte claquée à 21 h, en rentrant du travail. Trouvé sur Google, rappelé en deux minutes, ouvert sans rien abîmer.</p><b>Morgane L.</b><small>Serrurerie · Esch-sur-Alzette</small></div>
-      <div class="avi" data-reveal><div class="stars">★★★★★</div><p>Le prix du déplacement annoncé au téléphone, et c'est ce que j'ai payé. Rare.</p><b>Paulo F.</b><small>Plomberie · Differdange</small></div>
-      <div class="avi" data-reveal><div class="stars">★★★★★</div><p>J'ai envoyé la photo du tableau, ils savaient déjà quelle pièce prendre en arrivant.</p><b>Claire M.</b><small>Électricité · Bertrange</small></div>
-    </div>
-  </div>
-</section>
-
-<section class="bloc sombre" id="devis">
-  <div class="wrap">
-    <h2 class="titre" data-reveal>Un devis en deux minutes</h2>
-    <p class="sous" data-reveal>Pas urgent ? Trois questions et une photo, réponse dans la journée. Les photos ne quittent votre téléphone qu’à l’envoi.</p>
-    <div class="devis-grid">
-      <form class="form" id="form" novalidate data-reveal>
-      <div class="pas" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span></div>
-      <div class="etape-f on" data-e="1">
-        <h3>C’est pour quoi ?</h3>
-        <div class="choix">
-          <label><input type="radio" name="type" value="Plomberie" checked>Plomberie</label>
-          <label><input type="radio" name="type" value="Chauffage">Chauffage</label>
-          <label><input type="radio" name="type" value="Serrurerie">Serrurerie</label>
-          <label><input type="radio" name="type" value="Électricité">Électricité</label>
-        </div>
-        <div class="urg" role="radiogroup" aria-label="Quand">
-          <label><input type="radio" name="quand" value="Cette semaine" checked>Cette semaine</label>
-          <label><input type="radio" name="quand" value="Ce mois-ci">Ce mois-ci</label>
-          <label><input type="radio" name="quand" value="Pas pressé">Pas pressé</label>
-        </div>
-      </div>
-      <div class="etape-f" data-e="2">
-        <h3>Décrivez en une phrase</h3>
-        <label class="champ">Ce qui se passe<textarea id="desc" rows="3" placeholder="Ex. : le chauffe-eau fait du bruit et l’eau sort tiède"></textarea></label>
-        <label class="photo"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="4"/></svg><span>Ajouter une ou plusieurs photos</span><input type="file" id="photos" accept="image/*" multiple></label>
-        <div class="photos-ok" id="apercu"></div>
-      </div>
-      <div class="etape-f" data-e="3">
-        <h3>Où vous joindre</h3>
-        <label class="champ">Votre nom<input type="text" id="nom" autocomplete="name"></label>
-        <label class="champ">Téléphone<input type="tel" id="tel" autocomplete="tel" placeholder="Ex. : 621 000 000"></label>
-        <label class="champ">Commune<input type="text" id="commune" autocomplete="address-level2"></label>
-      </div>
-      <div class="etape-f" data-e="4">
-        <h3>On vérifie ensemble</h3>
-        <ul class="recap" id="recap"></ul>
-      </div>
-      <div class="etape-f" data-e="5" aria-live="polite">
-        <h3>C’est envoyé</h3>
-        <p class="merci">Sur le vrai site, la demande arrive à l’instant sur le téléphone de l’artisan, <b>photos comprises</b>. Ici, c’est une démonstration : rien n’est envoyé.</p>
-      </div>
-      <div class="btns">
-        <button class="retour" type="button" id="prec" hidden>← Retour</button>
-        <button class="btn" type="button" id="suiv">Continuer</button>
-      </div>
     </form>
-      <div data-reveal>
-        <ul class="recoit">
-          <li><b>1</b><div><h3>Un appel, pas un robot</h3><p>L’artisan vous rappelle lui-même, avec votre photo sous les yeux.</p></div></li>
-          <li><b>2</b><div><h3>Un prix écrit</h3><p>Le devis détaille les pièces et la main-d’œuvre. Gratuit, sans engagement.</p></div></li>
-          <li><b>3</b><div><h3>Une date</h3><p>Vous choisissez le jour des travaux, du lundi au vendredi.</p></div></li>
-        </ul>
-        <a class="tel ns-link" href="#appel" data-appel>C’est urgent ? Appelez plutôt →</a>
-      </div>
-    </div>
   </div>
+  <div class="zone-communes" id="zone-communes" data-r></div>
 </section>
 
-<section class="bloc" id="appel">
-  <div class="wrap">
-    <h2 class="titre" data-reveal>Infos</h2>
-    <div class="infos" data-stagger="100">
-      <div data-reveal><h3>Téléphone</h3><p>Le numéro de l'artisan, cliquable depuis le téléphone. <a href="#appel" data-appel>Appeler</a></p></div>
-      <div data-reveal><h3>Horaires</h3><p>Dépannage 7 j / 7, de 7 h à 22 h.<br>Travaux sur rendez-vous, du lundi au vendredi.</p></div>
-      <div data-reveal><h3>Zone</h3><p>Sud et centre du Luxembourg. Au-delà, on vous le dit au téléphone, sans détour.</p></div>
-    </div>
+<!-- DEVIS -->
+<section class="devis" id="devis" aria-labelledby="t-devis">
+  <div class="devis-tete" data-r>
+    <h2 id="t-devis">Pas urgent&nbsp;? <em>Un devis en deux minutes.</em></h2>
+    <p>Trois questions et une photo, réponse dans la journée. Les photos ne quittent votre téléphone qu'à l'envoi.</p>
+    <figure class="devis-photo"><img src="photos/mains-cuivre-m.webp" alt="Mains d'un plombier qui serrent un raccord sur un tuyau de cuivre" width="560" height="700" loading="lazy"></figure>
   </div>
+  <form class="form" id="form" novalidate data-r style="--d:.12s">
+    <ol class="pas" aria-hidden="true"><li class="on">Métier</li><li>Problème</li><li>Contact</li><li>Envoi</li></ol>
+    <fieldset class="etape on" data-e="1">
+      <legend>C'est pour quoi&nbsp;?</legend>
+      <div class="choix">
+        <label><input type="radio" name="type" value="Plomberie" checked><span>Plomberie</span></label>
+        <label><input type="radio" name="type" value="Chauffage"><span>Chauffage</span></label>
+        <label><input type="radio" name="type" value="Serrurerie"><span>Serrurerie</span></label>
+        <label><input type="radio" name="type" value="Électricité"><span>Électricité</span></label>
+      </div>
+      <p class="sous-l" id="l-quand">Quand&nbsp;?</p>
+      <div class="choix fin" role="radiogroup" aria-labelledby="l-quand">
+        <label><input type="radio" name="quand" value="Cette semaine" checked><span>Cette semaine</span></label>
+        <label><input type="radio" name="quand" value="Ce mois-ci"><span>Ce mois-ci</span></label>
+        <label><input type="radio" name="quand" value="Pas pressé"><span>Pas pressé</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="etape" data-e="2">
+      <legend>Décrivez en une phrase</legend>
+      <div class="champ"><label for="desc">Ce qui se passe</label><textarea id="desc" rows="3" placeholder="Ex. : le chauffe-eau fait du bruit et l'eau sort tiède"></textarea></div>
+      <div class="champ"><label class="photo" for="photos"><span id="photos-txt">Ajouter une ou plusieurs photos</span></label><input type="file" id="photos" accept="image/*" multiple></div>
+      <div class="apercu" id="apercu"></div>
+    </fieldset>
+    <fieldset class="etape" data-e="3">
+      <legend>Où vous joindre</legend>
+      <div class="champ"><label for="nom">Votre nom</label><input type="text" id="nom" autocomplete="name"></div>
+      <div class="champ"><label for="tel">Téléphone</label><input type="tel" id="tel" autocomplete="tel" placeholder="Ex. : 621 000 000"></div>
+      <div class="champ"><label for="commune">Commune</label><input type="text" id="commune" list="communes" autocomplete="address-level2"></div>
+    </fieldset>
+    <fieldset class="etape" data-e="4">
+      <legend>On vérifie ensemble</legend>
+      <dl class="recap" id="recap"></dl>
+    </fieldset>
+    <div class="etape" data-e="5" aria-live="polite">
+      <p class="legende-fin">Demande enregistrée</p>
+      <p class="merci" id="merci"></p>
+    </div>
+    <div class="btns">
+      <button class="retour" type="button" id="prec" hidden>Retour</button>
+      <button class="plaque" type="button" id="suiv"><span>Continuer</span></button>
+    </div>
+  </form>
 </section>
 
-<footer>
-  <div class="wrap">
-    <div class="pied">
-      <div>
-        <a class="logo" href="index.html" aria-label="Halvren, accueil"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="#ff5b1f"/><path d="M14 46V18h8v11h20V18h8v28h-8V36H22v10z" fill="#17191c"/></svg>HALVREN</a>
-        <p>Plomberie, chauffage, serrurerie, électricité. Dépannage 7 j / 7 de 7 h à 22 h, travaux sur rendez-vous, dans le sud et le centre du Luxembourg.</p>
-      </div>
-      <div><h3>Métiers</h3><ul><li><a href="plomberie.html">Plomberie</a></li><li><a href="chauffage.html">Chauffage</a></li><li><a href="serrurerie.html">Serrurerie</a></li><li><a href="electricite.html">Électricité</a></li></ul></div>
-      <div><h3>Raccourcis</h3><ul><li><a href="#appel" data-appel>Appeler</a></li><li><a href="#devis">Devis avec photo</a></li><li><a href="#chantiers">Avant, après</a></li><li><a href="#zone">Zone d’intervention</a></li></ul></div>
-    </div>
-    <div class="signe">
-      <span>Halvren · site de démonstration, nom, avis et contenus fictifs</span>
-      <span>Photos : Unsplash, licence Unsplash · Réalisé par <a href="../../index.html">NS Development</a></span>
-    </div>
+<!-- INFOS -->
+<section class="infos" id="infos" aria-labelledby="t-infos">
+  <h2 id="t-infos" class="sr">Infos pratiques</h2>
+  <div><h3>Téléphone</h3><p>Le numéro de l'artisan, cliquable depuis le téléphone.</p><a class="lien" href="#appel" data-appel>Appeler</a></div>
+  <div><h3>Horaires</h3><p>Dépannage 7 jours sur 7, de 7 h à 22 h.<br>Travaux sur rendez-vous, du lundi au vendredi.</p></div>
+  <div><h3>Zone</h3><p>Sud et centre du Luxembourg. Au-delà, on vous le dit au téléphone, sans détour.</p></div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="pied-haut">
+    <a class="marque" href="index.html" aria-label="Halvren, accueil">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="3" fill="#152036"/><path d="M12 9v22M28 9v22" stroke="#d98a5a" stroke-width="4.4" stroke-linecap="round"/><path d="M12 20h16" stroke="#d98a5a" stroke-width="3"/><circle cx="20" cy="20" r="4.2" fill="#152036" stroke="#eceef0" stroke-width="2"/></svg>
+      <span>Halvren</span>
+    </a>
+    <ul>
+      <li><a href="plomberie.html">Plomberie</a></li><li><a href="chauffage.html">Chauffage</a></li>
+      <li><a href="serrurerie.html">Serrurerie</a></li><li><a href="electricite.html">Électricité</a></li>
+    </ul>
+    <ul>
+      <li><a href="#chantiers">Avant, après</a></li><li><a href="#zone">Zone d'intervention</a></li>
+      <li><a href="#devis">Devis avec photo</a></li><li><a href="#appel" data-appel>Appeler</a></li>
+    </ul>
+  </div>
+  <div class="pied-bas">
+    <p>Halvren est une maquette concept : nom, horaires, zone et chantiers sont fictifs, les photos sont des illustrations générées. Adresse et numéro à compléter.</p>
+    <p>Réalisé par <a href="../../index.html">NS Development</a></p>
   </div>
 </footer>
 
-<div class="barre">
-  <a href="#appel" data-appel>📞 Appeler</a>
+<div class="barre-mobile">
+  <a href="#appel" data-appel>Appeler</a>
   <a href="#devis">Devis</a>
 </div>
-<div class="toast" id="toast" role="status"></div>
 
-<script src="ns-motion.js?v=20261022" defer></script>
-<script src="halvren.js?v=20261023" defer></script>
+<dialog class="fiche-appel" id="fiche-appel" aria-labelledby="fa-titre">
+  <p class="fa-titre" id="fa-titre">Appeler Halvren</p>
+  <p>Sur le vrai site, ce bouton compose directement le numéro de l'artisan, depuis le téléphone comme depuis l'ordinateur.</p>
+  <p class="fa-num">Numéro à compléter</p>
+  <p class="fa-petit">Maquette de démonstration : aucun appel n'est passé.</p>
+  <form method="dialog"><button class="plaque" type="submit"><span>Compris</span></button></form>
+</dialog>
+
+<p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+<script src="data.js"></script>
+<script src="site.js"></script>
+<script type="module">if (!document.documentElement.classList.contains("sans-3d")) import("./mur3d.js").catch(function () { document.documentElement.classList.add("sans-3d"); document.documentElement.classList.remove("en-intro"); });</script>
+
+<!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
+<script src="nsd-chat.js" defer
+        data-site="artisan-halvren"
+        data-nom="Halvren"
+        data-accent="#d98a5a"
+        data-encre="#0e1626"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour ! Une fuite, une panne, une porte claquée ? Dites-moi ce qui se passe."></script>
+<!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
+<script src="../../suivi.js" defer></script>
 <!-- Pop-up réseaux NS Development (demos/nsd-reseaux.js) -->
 <script src="../nsd-reseaux.js" defer></script>
+<script src="../../mesure.js" data-cle="ee061dbeff20414096" data-domaine="nsdevelopment.lu" data-api="https://atgykykesntvporvbvuf.supabase.co/functions/v1/collecte" defer></script>
 </body>
 </html>

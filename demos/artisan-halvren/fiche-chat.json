@@ -1,0 +1,25 @@
+{
+  "nom": "Halvren",
+  "activite": "artisan plombier, chauffagiste, serrurier et électricien",
+  "commune": "sud et centre du Luxembourg",
+  "telephone": "à compléter",
+  "horaires_texte": "Dépannage 7 jours sur 7, de 7 h à 22 h. Les travaux se font sur rendez-vous, du lundi au vendredi (horaires de démonstration).",
+  "services_texte": "Plomberie (fuites, débouchage, chauffe-eau, salle de bain), chauffage (chaudière, radiateurs, entretien, pompe à chaleur), serrurerie (porte claquée, cylindre, porte blindée) et électricité (panne, tableau, prises, mise en conformité).",
+  "prix_texte": "Le prix du déplacement et du diagnostic est annoncé au téléphone avant de partir. Les travaux font l'objet d'un devis écrit et gratuit.",
+  "urgence_texte": "Pour une urgence, appelez : en attendant, coupez l'eau à la vanne s'il y a une fuite, ou relevez une seule fois la manette tombée au tableau. En haut de la page, touchez la panne sur le mur : les gestes s'affichent.",
+  "zone_texte": "On intervient dans le sud et le centre du Luxembourg. Tapez votre commune dans la rubrique « On vient chez vous ? » pour le savoir tout de suite.",
+  "contact_texte": "Pas urgent ? Le formulaire de devis prend deux minutes et accepte les photos. Urgent ? Le bouton Appeler, en haut de la page.",
+  "suggestions": [
+    "J'ai une fuite, je fais quoi ?",
+    "Vous venez à Esch ?",
+    "Combien coûte le déplacement ?"
+  ],
+  "demo_regles": [
+    { "mots": ["fuite", "eau", "panne", "courant", "urgent", "urgence", "porte", "claque", "disjonct"], "cle": "urgence_texte" },
+    { "mots": ["horaire", "ouvert", "ferme", "dimanche", "soir", "nuit", "quand"], "cle": "horaires_texte" },
+    { "mots": ["prix", "tarif", "cout", "combien", "deplacement"], "cle": "prix_texte" },
+    { "mots": ["commune", "zone", "venez", "esch", "luxembourg", "differdange", "ville"], "cle": "zone_texte" },
+    { "mots": ["service", "faites", "chaudiere", "salle", "tableau", "serrure"], "cle": "services_texte" },
+    { "mots": ["contact", "appeler", "telephone", "joindre", "devis"], "cle": "contact_texte" }
+  ]
+}

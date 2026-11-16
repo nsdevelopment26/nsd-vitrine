@@ -202,13 +202,13 @@ const NS_I18N = {
      pt:"Loja com Apple Pay, um configurador onde o cliente coloca o seu logótipo numa T-shirt e um catálogo de impressão para folhear, em três línguas."},
   "Configurateur textile": {lb:"Textil-Konfigurator", de:"Textil-Konfigurator", en:"Apparel configurator", pt:"Configurador têxtil"},
   "Artisan & dépannage": {lb:"Handwierker & Depannage", de:"Handwerk & Notdienst", en:"Trades & call-outs", pt:"Artesão & reparações"},
-  "Une page par métier, chacune avec son outil : manomètre de chaudière, tableau électrique, robinet d'arrêt pas à pas. Devis avec photos et chantiers avant/après à filtrer.":
-    {lb:"Eng Säit pro Beruff, all mat sengem Tool: Manometer vum Kessel, Sicherungskaascht, Waasserhunn Schrëtt fir Schrëtt. Devis mat Fotoen a Chantiere virdrun/nodrun zum Filteren.",
-     de:"Eine Seite pro Gewerk, jede mit ihrem Werkzeug: Heizungsmanometer, Sicherungskasten, Haupthahn Schritt für Schritt. Angebot mit Fotos und filterbare Vorher-nachher-Baustellen.",
-     en:"One page per trade, each with its own tool: boiler pressure gauge, fuse box, stopcock step by step. Quote requests with photos and filterable before/after jobs.",
-     pt:"Uma página por ofício, cada uma com a sua ferramenta: manómetro da caldeira, quadro elétrico, torneira de corte passo a passo. Orçamento com fotos e obras antes/depois com filtros."},
-  "5 pages métiers": {lb:"5 Beruffssäiten", de:"5 Gewerkseiten", en:"5 trade pages", pt:"5 páginas de ofícios"},
-  "Outils de diagnostic": {lb:"Diagnos-Tools", de:"Diagnose-Werkzeuge", en:"Diagnostic tools", pt:"Ferramentas de diagnóstico"},
+  "Un mur la nuit, en 3D : la lampe torche ouvre le plâtre et montre tuyaux, câbles et serrure. On touche la panne, les gestes d'urgence s'affichent. Devis avec photos, chantiers avant/après.":
+    {lb:"Eng Mauer an der Nuecht, a 3D: d'Täschelämpchen mécht de Gips op a weist Päifen, Kabelen a Schlass. Een tippt op d'Pann, an déi éischt Handgrëffer erschéngen. Devis mat Fotoen, Chantiere virdrun/nodrun.",
+     de:"Eine Wand bei Nacht, in 3D: Die Taschenlampe öffnet den Putz und zeigt Rohre, Kabel und Schloss. Ein Tipp auf die Panne, und die ersten Handgriffe erscheinen. Angebot mit Fotos, Vorher-nachher-Baustellen.",
+     en:"A wall at night, in 3D: the torch opens the plaster to show pipes, cables and the lock. Tap the fault and the emergency steps appear. Quotes with photos, before/after jobs.",
+     pt:"Uma parede à noite, em 3D: a lanterna abre o reboco e mostra canos, cabos e fechadura. Toca-se na avaria e aparecem os gestos de urgência. Orçamento com fotos, obras antes/depois."},
+  "Mur en 3D": {lb:"Mauer a 3D", de:"Wand in 3D", en:"3D wall", pt:"Parede em 3D"},
+  "Gestes d'urgence": {lb:"Noutfall-Handgrëffer", de:"Erste Handgriffe", en:"Emergency steps", pt:"Gestos de urgência"},
   "Devis avec photos": {lb:"Devis mat Fotoen", de:"Angebot mit Fotos", en:"Quotes with photos", pt:"Orçamento com fotos"},
   "Fiduciaire & comptable": {lb:"Fiduciaire & Comptabel", de:"Treuhand & Buchhaltung", en:"Accountancy firm", pt:"Fiduciária & contabilidade"},
   "Table gastronomique : menus, carte photographiée, cave, et réservation en ligne qui bloque vraiment un service complet.":
