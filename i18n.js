@@ -158,8 +158,16 @@ const NS_I18N = {
   "Agence immobilière": {lb:"Immobilienagence", de:"Immobilienagentur", en:"Estate agency", pt:"Agência imobiliária"},
   "Chaleureux et élégant : carte en ligne, réservation et ambiance de bistro.":
     {lb:"Waarm an elegant: Kaart online, Reservatioun a Bistro-Stëmmung.", de:"Warm und elegant: Online-Karte, Reservierung und Bistro-Atmosphäre.", en:"Warm and elegant: online menu, booking and bistro atmosphere.", pt:"Acolhedor e elegante: menu online, reservas e ambiente de bistrô."},
-  "Brut et énergique : programmes, planning des cours et essai gratuit.":
-    {lb:"Roh an energesch: Programmer, Coursesplang a gratis Test.", de:"Roh und energiegeladen: Programme, Kursplan und Probetraining.", en:"Raw and energetic: programmes, class schedule and free trial.", pt:"Cru e enérgico: programas, horário das aulas e aula grátis."},
+  "La semaine du studio en relief : chaque cours est un bloc, sa hauteur dit l'intensité, un clic réserve la place. Coachs, abonnements et séance d'essai offerte.":
+    {lb:"D'Woch vum Studio a 3D: all Cours ass e Block, seng Héicht weist d'Intensitéit, e Klick reservéiert d'Plaz. Coachen, Abonnementer a gratis Probestonn.",
+     de:"Die Studiowoche in 3D: Jeder Kurs ist ein Block, seine Höhe zeigt die Intensität, ein Klick reserviert den Platz. Coaches, Abos und kostenloses Probetraining.",
+     en:"The studio's week in 3D: every class is a block, its height shows the intensity, one click books the spot. Coaches, memberships and a free first session.",
+     pt:"A semana do estúdio em 3D: cada aula é um bloco, a altura mostra a intensidade, um clique reserva o lugar. Treinadores, assinaturas e primeira aula grátis."},
+  "Le bouquet se compose en relief : on choisit ses tiges, il se noue et tourne sous la main, le prix suit. Boutique du jour, retrait ou livraison, mariage et deuil.":
+    {lb:"De Bouquet gëtt a 3D zesummegestallt: Dir wielt Är Stengelen, e gëtt gebonnen an dréint sech ënner der Hand, de Präis rechent mat. Butték vum Dag, ofhuelen oder liwweren, Hochzäit an Trauer.",
+     de:"Der Strauß entsteht in 3D: Stiele auswählen, er wird gebunden und dreht sich unter der Hand, der Preis rechnet mit. Tagesauswahl, Abholung oder Lieferung, Hochzeit und Trauer.",
+     en:"The bouquet is built in 3D: pick your stems, it gets tied and turns under your hand, the price follows. Today's shop, pick-up or delivery, weddings and funerals.",
+     pt:"O ramo compõe-se em 3D: escolhe as hastes, ele é atado e gira sob a mão, o preço acompanha. Loja do dia, levantamento ou entrega, casamentos e funerais."},
   "Technique et premium : catalogue de véhicules et prise de rendez-vous.":
     {lb:"Technesch a premium: Gefierer-Katalog a Rendez-vousen.", de:"Technisch und hochwertig: Fahrzeugkatalog und Terminbuchung.", en:"Technical and premium: vehicle catalogue and appointment booking.", pt:"Técnico e premium: catálogo de veículos e marcação de horários."},
   "Raffiné et haut de gamme : annonces, estimation et capture de contacts.":
@@ -169,6 +177,11 @@ const NS_I18N = {
   "Planning": {lb:"Plang", de:"Kursplan", en:"Schedule", pt:"Horário"},
   "Programmes": {lb:"Programmer", de:"Programme", en:"Programmes", pt:"Programas"},
   "Essai gratuit": {lb:"Gratis Test", de:"Probetraining", en:"Free trial", pt:"Aula grátis"},
+  "Planning en 3D": {lb:"Plang a 3D", de:"Kursplan in 3D", en:"3D schedule", pt:"Horário em 3D"},
+  "Abonnements": {lb:"Abonnementer", de:"Abos", en:"Memberships", pt:"Assinaturas"},
+  "Bouquet en 3D": {lb:"Bouquet a 3D", de:"Strauß in 3D", en:"3D bouquet", pt:"Ramo em 3D"},
+  "Commande en ligne": {lb:"Online bestellen", de:"Online bestellen", en:"Online ordering", pt:"Encomenda online"},
+  "Retrait ou livraison": {lb:"Ofhuelen oder Liwwerung", de:"Abholung oder Lieferung", en:"Pick-up or delivery", pt:"Levantamento ou entrega"},
   "Catalogue": {lb:"Katalog", de:"Katalog", en:"Catalogue", pt:"Catálogo"},
   "Prise de RDV": {lb:"Rendez-vous", de:"Terminbuchung", en:"Appointments", pt:"Marcações"},
   "Annonces": {lb:"Annoncen", de:"Angebote", en:"Listings", pt:"Anúncios"},
