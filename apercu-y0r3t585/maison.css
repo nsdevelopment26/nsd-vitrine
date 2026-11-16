@@ -82,7 +82,7 @@
 .m-rencontre .legende{grid-area:2/1/3/2;align-self:start;max-width:20em;display:grid;gap:14px;font-size:15px;color:var(--texte);position:relative;z-index:3;padding-right:20px}
 .m-rencontre .tourner{width:100%;max-width:420px;margin-top:0}
 @media (max-width:860px){
-  .m-rencontre .m-scene{grid-template-columns:1fr;grid-template-rows:none}
+  .m-rencontre .m-scene{grid-template-columns:minmax(0,1fr);grid-template-rows:none}
   .m-rencontre .mot.un,.m-rencontre .mot.deux,.m-rencontre .mot.trois,.m-rencontre .cadre-360,.m-rencontre .legende{grid-area:auto;justify-self:center;text-align:center}
   .m-rencontre .mot{font-size:min(11.5vw,90px)}
   .m-rencontre .visionneuse{height:min(70vh,620px)}
@@ -182,3 +182,61 @@
 .m-pied a:hover{color:var(--accent)}
 .m-pied .bas{margin-top:44px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--doux)}
 @media (max-width:700px){.m-pied .grille{grid-template-columns:1fr 1fr}}
+
+/* ============================================================
+   MAWI en « Maison » : vert militaire, rose poudré, filet doré.
+   Grands titres en capitales fines (Josefin Sans), comme le logo.
+   ============================================================ */
+.maison.mawi{
+  --fond:#f8f4ee; --fond-2:#ece4d8; --encre:#22261a; --texte:#3a3e2c; --doux:#5f624c;
+  --accent:#434a2b; --accent-2:#59613a; --sombre:#33381f; --sur-sombre:#f3dcd2; --sur-sombre-doux:#e3c7b9;
+  --or:#b68a4c; --filet:rgba(34,38,26,.15); --logo:#434a2b;
+  --serif:"Josefin Sans", "Futura", sans-serif;
+}
+.maison.mawi .annonce{background:var(--accent)}
+.maison.mawi .m-nav .logo{width:150px;height:42px}
+.maison.mawi .m-categories a{font-weight:200;letter-spacing:.1em;line-height:1.05}
+.maison.mawi .m-categories a:hover,.maison.mawi .m-categories a:focus-visible{font-style:normal;color:var(--accent)}
+.maison.mawi .m-categories small{display:block;font:500 12px/1.4 var(--corps);letter-spacing:.16em;color:var(--doux);margin-top:6px}
+.maison.mawi .filet-or{display:block;width:72px;height:1px;background:var(--or);margin:0 auto}
+.maison.mawi .m-hero h1{font-family:var(--corps);text-transform:none;font-weight:400;font-size:clamp(22px,2.2vw,32px);line-height:1.3;max-width:14em;letter-spacing:.02em}
+.maison.mawi .m-hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 55%}
+.maison.mawi .m-hero::before{content:"";position:absolute;inset:0 0 auto;height:150px;z-index:5;pointer-events:none;background:linear-gradient(180deg,rgba(248,244,238,.8),transparent)}
+.maison.mawi .m-rencontre .mot{font-weight:200;letter-spacing:.06em}
+.maison.mawi .m-rencontre .mot.trois{font-style:normal;color:var(--accent)}
+.maison.mawi .visionneuse{aspect-ratio:1288/1608;height:min(72vh,700px);background:var(--fond-2)}
+.maison.mawi .visionneuse .badge360{border-color:var(--accent);color:var(--accent)}
+.maison.mawi .m-produits h2,.maison.mawi .m-manifeste h2,.maison.mawi .m-collage .centre h2,.maison.mawi .m-banniere h2{font-weight:300;letter-spacing:.08em;text-transform:uppercase}
+.maison.mawi .m-manifeste h2{font-size:clamp(28px,3.6vw,52px);line-height:1.2}
+.maison.mawi .m-manifeste h2 em{font-style:normal;color:var(--accent)}
+.maison.mawi .piece h3{font-family:var(--corps);font-weight:500;font-size:15px;letter-spacing:.04em}
+.maison.mawi .m-duo figcaption b{font-weight:300;letter-spacing:.14em;text-transform:uppercase;font-size:clamp(22px,2.2vw,32px)}
+
+/* Les six collections, bord à bord */
+.m-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.m-six a{position:relative;display:block;aspect-ratio:1;overflow:hidden;color:var(--encre);text-decoration:none}
+.m-six img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ns-ease)}
+.m-six a:hover img{transform:scale(1.05)}
+.m-six .bientot{position:absolute;top:10px;left:10px;background:var(--fond);padding:6px 9px;font:500 11.5px/1 var(--corps);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+@media (max-width:860px){.m-six{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.m-six-tete{text-align:center;padding-block:clamp(70px,9vw,120px) 36px;display:grid;gap:16px;justify-items:center}
+.m-six-tete h2{font:300 clamp(28px,3.4vw,48px)/1.15 var(--serif);letter-spacing:.1em;text-transform:uppercase;color:var(--encre)}
+
+/* Cercle privé sur la photo du logo */
+.m-cercle{position:relative;overflow:hidden;color:var(--sur-sombre);background:var(--sombre)}
+.m-cercle{min-height:min(80vh,720px);display:grid;background:radial-gradient(120% 90% at 70% 15%,#5b6239,#3a3f23 55%,#2a2e18)}
+.m-cercle .feuillage{opacity:.45;z-index:0}
+.m-cercle .texte{position:relative!important;z-index:2}
+.m-cercle .texte{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:18px;padding-inline:max(20px,env(safe-area-inset-left,0px))}
+.m-cercle h2{font:300 clamp(28px,3.8vw,54px)/1.15 var(--serif);letter-spacing:.08em;text-transform:uppercase;color:#fbefe9;max-width:16em}
+.m-cercle p{color:#f3e3da;max-width:30em}
+.m-cercle form{display:flex;gap:16px;align-items:flex-end;border-bottom:1px solid #f3dcd2;width:min(100%,460px)}
+.m-cercle input{flex:1;min-width:0;border:0;background:transparent;color:#fbefe9;font:500 12px/1 var(--corps);letter-spacing:.14em;text-transform:uppercase;padding:14px 0}
+.m-cercle input::placeholder{color:#e9d3c8}
+.m-cercle button{border:0;background:none;color:#fbefe9;font:500 12px/1 var(--corps);letter-spacing:.14em;text-transform:uppercase;padding:14px 0;cursor:pointer}
+.m-cercle .merci{color:#fbefe9;font-size:15px;min-height:1.4em}
+@media (max-width:700px){.m-cercle{min-height:560px}}
+
+@media (max-width:860px){.maison.mawi .m-rencontre .mot{font-size:min(9.5vw,70px);letter-spacing:.02em}}
+@media (max-width:860px){.m-rencontre .visionneuse,.maison.mawi .m-rencontre .visionneuse{width:100%;height:auto;max-height:none}.maison.milea .m-rencontre .visionneuse{width:min(100%,380px)}}
+@media (max-width:860px){.m-rencontre .cadre-360{width:100%}}
