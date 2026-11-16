@@ -359,11 +359,17 @@
     if (!els.length || reduit || innerWidth <= 980 || !ICI_JS) return;
     const essai = doc.createElement('canvas');
     if (!(essai.getContext('webgl2') || essai.getContext('webgl'))) return;
-    const lancer = () => import(new URL('objets3d.js?v=1', ICI_JS).href)
+    const lancer = () => import(new URL('objets3d.js?v=2', ICI_JS).href)
       .then(m => els.forEach(el => m.monter(el).then(ok => { if (ok) { el.classList.add('pret'); const h = el.closest('.hero'); if (h) h.classList.add('objet-actif'); } })))
       .catch(err => console.warn('Objets 3D indisponibles, images utilisées.', err));
-    const plusTard = window.requestIdleCallback || (f => setTimeout(f, 700));
-    introPrete.then(() => plusTard(lancer, { timeout: 2500 }));
+    // au premier geste du visiteur (souris, défilement), sinon 2,5 s après le chargement
+    let parti = false;
+    const go = () => { if (parti) return; parti = true; ['pointermove', 'scroll', 'keydown'].forEach(e => removeEventListener(e, go)); (window.requestIdleCallback || (f => setTimeout(f, 50)))(lancer, { timeout: 800 }); };
+    introPrete.then(() => {
+      ['pointermove', 'scroll', 'keydown'].forEach(e => addEventListener(e, go, { passive: true, once: true }));
+      const tard = () => setTimeout(go, 2500);
+      if (doc.readyState === 'complete') tard(); else addEventListener('load', tard, { once: true });
+    });
   })();
 
   /* ---------- 12. Avant / après ---------- */

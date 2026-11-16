@@ -328,6 +328,8 @@ function buildTerminal(renderer, M) {
   };
 }
 
+const souffle = () => new Promise(r => setTimeout(r, 0));   // rend la main au navigateur entre deux étapes
+
 const BUILDERS = { laptop: buildLaptop, phone: buildPhone, serveur: buildServeur, terminal: buildTerminal };
 
 /* ================================================================ Moteur */
@@ -340,6 +342,7 @@ export async function monter(el, opts = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
+  await souffle();
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -348,8 +351,10 @@ export async function monter(el, opts = {}) {
   const rim = new THREE.DirectionalLight(0xffffff, 0.9); rim.position.set(4, 2, -5); scene.add(rim);
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d4cc, 0.5));
 
+  await souffle();
   const M = materials();
   const obj = build(renderer, M);
+  await souffle();
   const holder = new THREE.Group(); holder.add(obj.root); scene.add(holder);
   const shadow = new THREE.Mesh(new THREE.PlaneGeometry(obj.size * 1.15, obj.size * 0.7), new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false, toneMapped: false }));
   shadow.rotation.x = -Math.PI / 2; shadow.position.y = -obj.size * 0.36; scene.add(shadow);
@@ -369,6 +374,9 @@ export async function monter(el, opts = {}) {
   }
   resize(); new ResizeObserver(resize).observe(el);
   await obj.ready;
+  // compilation des matières hors du fil principal quand le navigateur le permet
+  if (renderer.compileAsync) { try { await renderer.compileAsync(scene, camera); } catch (e) {} }
+  await souffle();
 
   // progression : 0 quand le haut de la section est en haut de l'écran, 1 quand elle est sortie
   const zone = el.closest('[data-objet-zone]') || el.parentElement;
