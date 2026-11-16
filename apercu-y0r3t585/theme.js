@@ -106,7 +106,8 @@
   document.querySelectorAll("[data-ajouter]").forEach(function (b) {
     b.addEventListener("click", function () {
       n++;
-      pastille.textContent = n; pastille.classList.add("on");
+      if (pastille) { pastille.textContent = n; pastille.classList.add("on"); }
+      document.querySelectorAll(".pastille-texte").forEach(function (x) { x.textContent = n; });
       var teinte = document.querySelector('.teinte[aria-pressed="true"]');
       liste.innerHTML = "<p>" + n + " × " + b.dataset.ajouter + (teinte ? ", " + teinte.textContent.trim().toLowerCase() : "") + "</p><p class=\"vide\">Démonstration : sur la vraie boutique, le paiement passe par Shopify.</p>";
       ouvrir();
@@ -153,6 +154,14 @@
       document.querySelectorAll("[data-filtre]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       var f = b.dataset.filtre;
       document.querySelectorAll("[data-catalogue] .piece").forEach(function (p) { p.hidden = !(f === "tout" || p.dataset.type === f); });
+    });
+  });
+
+  /* Liens de catégorie qui filtrent la grille */
+  document.querySelectorAll("[data-va-filtre]").forEach(function (l) {
+    l.addEventListener("click", function () {
+      var b = document.querySelector('[data-filtre="' + l.dataset.vaFiltre + '"]');
+      if (b) b.click();
     });
   });
 
