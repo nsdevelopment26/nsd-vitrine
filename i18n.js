@@ -177,6 +177,12 @@ const NS_I18N = {
   "Planning": {lb:"Plang", de:"Kursplan", en:"Schedule", pt:"Horário"},
   "Programmes": {lb:"Programmer", de:"Programme", en:"Programmes", pt:"Programas"},
   "Essai gratuit": {lb:"Gratis Test", de:"Probetraining", en:"Free trial", pt:"Aula grátis"},
+  "Un nuancier vivant : on passe la main dans une chevelure en 3D, on choisit une nuance, elle se recolore. Tarifs affichés, équipe et rendez-vous en ligne.":
+    {lb:"E liewegen Nuancier: d'Hand duerch eng 3D-Fris fueren, eng Nuance wielen, a si kritt déi nei Faarf. Präisser ze gesinn, Equipe a Rendez-vous online.",
+     de:"Eine lebendige Farbkarte: mit der Hand durch eine 3D-Frisur streichen, einen Farbton wählen, und sie färbt sich neu. Preise sichtbar, Team und Online-Termine.",
+     en:"A living colour chart: run your hand through 3D hair, pick a shade and watch it change colour. Clear prices, the team and online booking.",
+     pt:"Um catálogo de cores vivo: passa-se a mão por um cabelo em 3D, escolhe-se um tom e ele muda de cor. Preços à vista, equipa e marcações online."},
+  "Nuancier en 3D": {lb:"Nuancier a 3D", de:"Farbkarte in 3D", en:"3D colour chart", pt:"Cores em 3D"},
   "Planning en 3D": {lb:"Plang a 3D", de:"Kursplan in 3D", en:"3D schedule", pt:"Horário em 3D"},
   "Abonnements": {lb:"Abonnementer", de:"Abos", en:"Memberships", pt:"Assinaturas"},
   "Bouquet en 3D": {lb:"Bouquet a 3D", de:"Strauß in 3D", en:"3D bouquet", pt:"Ramo em 3D"},
