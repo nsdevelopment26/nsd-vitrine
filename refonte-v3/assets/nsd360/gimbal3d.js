@@ -17,7 +17,7 @@ const MODEL_TOP = H / 2, MODEL_BOTTOM = -2.62;                 // hauteur totale
 
 /* Poses par temps de l'expérience : lacet de l'ensemble, panoramique, inclinaison, roulis (radians) */
 const YAW  = [-0.78, 0.82, 0.55, -0.62, -0.86, 0.80, -0.74, 0.70, 0.30];
-const PAN  = [ 0.36,-0.40,-0.12, 0.30, 0.42,-0.42, 0.36,-0.34,-0.18];
+const PAN  = [ 0.10,-0.12,-0.04, 0.08, 0.12,-0.12, 0.10,-0.10,-0.06];
 const TILT = [-0.05, 0.09,-0.13, 0.04,-0.06, 0.09,-0.05, 0.06, 0.00];
 const ROLL = [ 0.00, 0.05,-0.08, 0.00, 0.04,-0.05, 0.00, 0.03, 0.00];
 /* Ampleur du mouvement de transition entre deux temps (le premier fait un tour complet : 360°) */
@@ -65,9 +65,10 @@ export async function init(canvas, state, stage) {
 
   /* ---------- Matières ---------- */
   const M = {
-    shell: new THREE.MeshPhysicalMaterial({ color: 0x2b2c2f, roughness: 0.42, metalness: 0.2, clearcoat: 0.35, clearcoatRoughness: 0.45 }),
-    grip: new THREE.MeshStandardMaterial({ color: 0x1d1e20, roughness: 0.82, metalness: 0.05 }),
-    ring: new THREE.MeshStandardMaterial({ color: 0xb9bcc1, roughness: 0.22, metalness: 1 }),
+    shell: new THREE.MeshPhysicalMaterial({ color: 0x151617, roughness: 0.58, metalness: 0.28, clearcoat: 0.15, clearcoatRoughness: 0.6 }),
+    red: new THREE.MeshStandardMaterial({ color: 0xc8202a, roughness: 0.4, metalness: 0.1, emissive: 0x3a0508 }),
+    grip: new THREE.MeshStandardMaterial({ color: 0x0c0c0d, roughness: 0.9, metalness: 0.02 }),
+    ring: new THREE.MeshStandardMaterial({ color: 0x55585d, roughness: 0.32, metalness: 1 }),
     pad: new THREE.MeshStandardMaterial({ color: 0x111112, roughness: 0.95 }),
     led: new THREE.MeshBasicMaterial({ color: 0xffffff }),
     ledRed: new THREE.MeshBasicMaterial({ color: 0xff3b30 }),
@@ -159,17 +160,20 @@ export async function init(canvas, state, stage) {
   const panMotor = motor(0.135, 0.13); panMotor.position.set(0, -1.05, hz); model.add(panMotor);
   const panPivot = new THREE.Group(); panPivot.position.set(0, -1.05, hz); model.add(panPivot);
   // bras vertical vers le moteur de roulis
-  const armV = box(0.11, 1.02, 0.08, 0.03, M.shell); armV.position.set(0, 0.55, -0.02); panPivot.add(armV);
-  const elbow = box(0.11, 0.11, 0.18, 0.04, M.shell); elbow.position.set(0, 1.05, 0.02); panPivot.add(elbow);
+  const armV = box(0.12, 1.02, 0.085, 0.012, M.shell); armV.position.set(0, 0.55, -0.02); panPivot.add(armV);
+  const elbow = box(0.12, 0.12, 0.18, 0.016, M.shell); elbow.position.set(0, 1.05, 0.02); panPivot.add(elbow);
   // moteur de roulis (axe Z, aligné sur le centre du téléphone)
   const rollMotor = motor(0.1, 0.12); rollMotor.rotation.x = Math.PI / 2; rollMotor.position.set(0, 1.05, 0.15); panPivot.add(rollMotor);
   const rollPivot = new THREE.Group(); rollPivot.position.set(0, 1.05, 0.15); panPivot.add(rollPivot);
   // dans rollPivot, le centre du téléphone est en (0, 0, -hz - 0.15) = (0, 0, 0.45)
   const pz = -hz - 0.15;
-  const armA = box(0.62, 0.075, 0.075, 0.03, M.shell); armA.position.set(0.31, 0, 0.08); rollPivot.add(armA);
-  const armB = box(0.075, 0.075, 0.36, 0.03, M.shell); armB.position.set(0.6, 0, 0.24); rollPivot.add(armB);
+  const armA = box(0.62, 0.08, 0.08, 0.012, M.shell); armA.position.set(0.31, 0, 0.08); rollPivot.add(armA);
+  const filetA = box(0.5, 0.012, 0.084, 0.004, M.red); filetA.position.set(0.34, 0.02, 0.08); rollPivot.add(filetA);
+  const armB = box(0.11, 0.11, 0.38, 0.012, M.shell); armB.position.set(0.62, 0, 0.24); rollPivot.add(armB);
+  const filetB = box(0.114, 0.014, 0.3, 0.004, M.red); filetB.position.set(0.62, 0.03, 0.25); rollPivot.add(filetB);
+  const filetC = box(0.006, 0.026, 0.3, 0.002, M.red); filetC.position.set(0.678, 0.012, 0.25); rollPivot.add(filetC);
   // moteur d'inclinaison (axe X) sur le côté du téléphone
-  const tiltMotor = motor(0.075, 0.09); tiltMotor.rotation.z = Math.PI / 2; tiltMotor.position.set(0.6, 0, pz - 0.085); rollPivot.add(tiltMotor);
+  const tiltMotor = motor(0.105, 0.11); tiltMotor.rotation.z = Math.PI / 2; tiltMotor.position.set(0.6, 0, pz - 0.085); rollPivot.add(tiltMotor);
   const tiltPivot = new THREE.Group(); tiltPivot.position.set(0.6, 0, pz - 0.085); rollPivot.add(tiltPivot);
   // pince : bras derrière le téléphone + mâchoires sur les bords
   const clampArm = box(0.6, 0.085, 0.035, 0.015, M.shell); clampArm.position.set(-0.3, 0, 0.005); tiltPivot.add(clampArm);
