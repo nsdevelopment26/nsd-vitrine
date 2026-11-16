@@ -1,0 +1,789 @@
+- generic [active] [ref=e1]:
+  - link "Aller à l'exploration de l'immeuble" [ref=e2] [cursor=pointer]:
+    - /url: "#immeuble"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "HORIZON, retour en haut" [ref=e5] [cursor=pointer]:
+        - /url: "#haut"
+        - text: HORIZON
+      - list [ref=e9]:
+        - listitem [ref=e10]:
+          - link "Explorer" [ref=e11] [cursor=pointer]:
+            - /url: "#immeuble"
+        - listitem [ref=e12]:
+          - link "Maisons" [ref=e13] [cursor=pointer]:
+            - /url: "#maisons"
+        - listitem [ref=e14]:
+          - link "Plans" [ref=e15] [cursor=pointer]:
+            - /url: "#plans"
+        - listitem [ref=e16]:
+          - link "Nos biens" [ref=e17] [cursor=pointer]:
+            - /url: "#biens"
+        - listitem [ref=e18]:
+          - link "Vendre" [ref=e19] [cursor=pointer]:
+            - /url: "#vendre"
+        - listitem [ref=e20]:
+          - link "Contact" [ref=e21] [cursor=pointer]:
+            - /url: "#contact"
+      - link "Estimer mon bien" [ref=e22] [cursor=pointer]:
+        - /url: "#estimation"
+        - text: Estimer mon bien
+        - generic [aria-hidden] [ref=e23]: →
+  - main [ref=e24]:
+    - region "Accueil" [ref=e25]:
+      - figure [ref=e26]:
+        - 'img "La Résidence Lumen au Kirchberg : façade blanche, balcons vitrés et penthouse sous auvent, en fin de journée" [ref=e27]'
+      - paragraph [aria-hidden] [ref=e28]:
+        - text: Trouvez bien plus qu'une adresse.
+        - generic [ref=e29]: RÉSIDENCE LUMEN · KIRCHBERG · ÉLÉVATION 1:200
+      - button "Passer l'introduction" [ref=e30] [cursor=pointer]
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - paragraph [ref=e35]: 01 · Explorer
+        - heading "Choisissez votre appartement depuis la façade." [level=2] [ref=e36]:
+          - generic [ref=e37]: Choisissez
+          - generic [ref=e39]: votre
+          - generic [ref=e41]: appartement
+          - generic [ref=e43]:
+            - generic [ref=e44]: depuis
+            - generic [ref=e46]: la
+            - generic [ref=e48]: façade.
+      - paragraph [ref=e50]: "Survolez un étage, ouvrez-le, entrez dans un logement : la façade s'efface, le plan se dresse, les pièces apparaissent. Chaque fenêtre de la Résidence Lumen est un appartement réel du catalogue."
+    - region "Résidence Lumen, exploration en trois dimensions" [ref=e51]:
+      - generic [ref=e52]:
+        - generic "Maquette 3D de la Résidence Lumen. Utilisez la liste des étages pour naviguer au clavier." [ref=e53]
+        - generic:
+          - navigation "Où suis-je dans l'immeuble" [ref=e54]:
+            - button "Résidence Lumen" [ref=e55] [cursor=pointer]
+          - group "Mode de vue" [ref=e56]:
+            - button "Façade" [pressed] [ref=e57] [cursor=pointer]
+            - button "Étage" [ref=e58] [cursor=pointer]
+            - button "Éclatée" [ref=e59] [cursor=pointer]
+            - button "Intérieur" [ref=e60] [cursor=pointer]
+        - generic [aria-hidden]:
+          - heading [level=3]: Résidence Lumen
+          - paragraph: KIRCHBERG · R+6 · 16 LOGEMENTS
+        - paragraph: Survolez un étage, cliquez pour l'ouvrir. Glissez pour tourner autour.
+      - list "Étages de la résidence" [ref=e61]:
+        - listitem [ref=e62]:
+          - button "06 1 logement · 1 disponible" [ref=e63] [cursor=pointer]:
+            - generic [ref=e64]: "06"
+            - generic [ref=e65]: 1 logement · 1 disponible
+        - listitem [ref=e66]:
+          - button "05 3 logements · 1 disponible" [ref=e67] [cursor=pointer]:
+            - generic [ref=e68]: "05"
+            - generic [ref=e69]: 3 logements · 1 disponible
+        - listitem [ref=e70]:
+          - button "04 3 logements · 1 disponible" [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: "04"
+            - generic [ref=e73]: 3 logements · 1 disponible
+        - listitem [ref=e74]:
+          - button "03 3 logements · 2 disponibles" [ref=e75] [cursor=pointer]:
+            - generic [ref=e76]: "03"
+            - generic [ref=e77]: 3 logements · 2 disponibles
+        - listitem [ref=e78]:
+          - button "02 3 logements · 1 disponible" [ref=e79] [cursor=pointer]:
+            - generic [ref=e80]: "02"
+            - generic [ref=e81]: 3 logements · 1 disponible
+        - listitem [ref=e82]:
+          - button "01 3 logements · aucun disponible" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]: "01"
+            - generic [ref=e85]: 3 logements · aucun disponible
+        - listitem [ref=e86]:
+          - button "RDC Hall d'accueil · conciergerie" [ref=e87] [cursor=pointer]:
+            - generic [ref=e88]: RDC
+            - generic [ref=e89]: Hall d'accueil · conciergerie
+      - complementary [aria-hidden] [ref=e90]
+    - region "Maisons et propriétés" [ref=e91]:
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - paragraph [ref=e95]: 02 · Maisons
+            - heading "Faites le tour avant la visite." [level=2] [ref=e96]:
+              - generic [ref=e97]: Faites
+              - generic [ref=e99]: le
+              - generic [ref=e101]: tour
+              - generic [ref=e103]:
+                - generic [ref=e104]: avant
+                - generic [ref=e106]: la
+                - generic [ref=e108]: visite.
+          - paragraph [ref=e110]: Tournez autour de la maison, approchez la façade, la terrasse, la piscine, le jardin. D'une propriété à l'autre, la précédente redevient dessin, la suivante se construit.
+        - generic [ref=e111]:
+          - tablist "Choisir une propriété"
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - 'generic "Maquette 3D de la propriété sélectionnée : glissez pour tourner autour." [ref=e114]'
+          - group "Navigation" [ref=e115]:
+            - button "Propriété précédente" [ref=e116] [cursor=pointer]: ←
+            - button "Propriété suivante" [ref=e117] [cursor=pointer]: →
+            - button "S'éloigner" [ref=e118] [cursor=pointer]: −
+            - button "S'approcher" [ref=e119] [cursor=pointer]: +
+          - generic:
+            - paragraph [ref=e120]
+            - group "Points de vue" [ref=e121]:
+              - button "Vue d'ensemble" [pressed] [ref=e122] [cursor=pointer]
+              - button "Façade" [ref=e123] [cursor=pointer]
+              - button "Terrasse" [ref=e124] [cursor=pointer]
+              - button "Piscine" [ref=e125] [cursor=pointer]
+              - button "Jardin" [ref=e126] [cursor=pointer]
+        - complementary [ref=e127]
+    - region "Du plan au logement" [ref=e128]:
+      - generic [ref=e129]:
+        - generic [ref=e130]:
+          - paragraph [ref=e131]: 03 · Plans
+          - heading "Du trait à la lumière." [level=2] [ref=e132]
+          - list [ref=e133]:
+            - listitem [ref=e134]:
+              - generic [ref=e135]: "01"
+              - generic [ref=e136]: Le trait
+              - paragraph [ref=e137]: L'architecte pose les murs, les cloisons, les portes, les cotes. Le plan type A, 118 m², trois chambres.
+            - listitem [ref=e138]:
+              - generic [ref=e139]: "02"
+              - generic [ref=e140]: Le volume
+              - paragraph: Le plan se couche, les murs montent. On lit enfin les distances, les passages, la lumière qui traverse.
+            - listitem [ref=e141]:
+              - generic [ref=e142]: "03"
+              - generic [ref=e143]: La matière
+              - paragraph: "Les sols, les meubles, les usages : le même plan, habité."
+            - listitem [ref=e144]:
+              - generic [ref=e145]: "04"
+              - generic [ref=e146]: La vie
+              - paragraph: Et vous voilà dans le séjour, face au balcon.
+        - generic [ref=e148]:
+          - img [ref=e187]:
+            - generic [ref=e188]: Terrasse · 24 m²
+            - generic [ref=e202]:
+              - generic [ref=e203]: Séjour · cuisine
+              - generic [ref=e204]: 44,8 m²
+              - generic [ref=e205]: Suite
+              - generic [ref=e206]: 17,3 m²
+              - generic [ref=e207]: Bain
+              - generic [ref=e208]: 7,9 m²
+              - generic [ref=e209]: Dégagement
+              - generic [ref=e210]: 14 m²
+              - generic [ref=e211]: Chambre 2
+              - generic [ref=e212]: 20,2 m²
+              - generic [ref=e213]: Douche
+              - generic [ref=e214]: 5,2 m²
+              - generic [ref=e215]: Chambre 3
+              - generic [ref=e216]: 24,6 m²
+            - generic [ref=e217]:
+              - generic [ref=e218]: 10,00 m
+              - generic [ref=e219]: 14,00 m
+          - generic:
+            - img "Le plan type A meublé, vu en coupe isométrique"
+            - img "Séjour d'un appartement type A de la Résidence Lumen, baies vitrées sur le balcon"
+          - paragraph [ref=e220]: PLAN TYPE A · 1:100
+    - region "Nos biens" [ref=e221]:
+      - generic [ref=e223]:
+        - generic [ref=e224]:
+          - paragraph [ref=e225]: 04 · Nos biens
+          - heading "Trouvez votre bien." [level=2] [ref=e226]:
+            - generic [ref=e227]: Trouvez
+            - generic [ref=e229]:
+              - generic [ref=e230]: votre
+              - generic [ref=e232]: bien.
+        - paragraph [ref=e234]: "Acheter ou louer, un quartier, un budget, une référence : la sélection se recompose à chaque critère, et l'adresse de la page garde votre recherche pour la partager."
+      - search "Filtrer les biens" [ref=e235]:
+        - generic [ref=e236]:
+          - group "Type de transaction" [ref=e237]:
+            - button "Acheter" [pressed] [ref=e238] [cursor=pointer]
+            - button "Louer" [ref=e239] [cursor=pointer]
+          - generic [ref=e240]:
+            - generic [ref=e241]: Localité
+            - combobox "Localité" [ref=e242] [cursor=pointer]:
+              - option "Tout le pays" [selected]
+              - option "Belair"
+              - option "Bertrange"
+              - option "Bridel"
+              - option "Esch-sur-Alzette"
+              - option "Hollerich"
+              - option "Kirchberg"
+              - option "Limpertsberg"
+              - option "Mamer"
+              - option "Merl"
+              - option "Mersch"
+              - option "Strassen"
+          - generic [ref=e243]:
+            - generic [ref=e244]: Type
+            - combobox "Type" [ref=e245] [cursor=pointer]:
+              - option "Tous les types" [selected]
+              - option "Appartement"
+              - option "Duplex"
+              - option "Loft"
+              - option "Maison"
+              - option "Penthouse"
+              - option "Terrain"
+              - option "Villa"
+          - generic [ref=e246]:
+            - generic [ref=e247]: Chambres
+            - combobox "Chambres" [ref=e248] [cursor=pointer]:
+              - option "Indifférent" [selected]
+              - option "1 et +"
+              - option "2 et +"
+              - option "3 et +"
+              - option "4 et +"
+              - option "5 et +"
+          - generic [ref=e249]:
+            - generic [ref=e250]: Surface
+            - combobox "Surface" [ref=e251] [cursor=pointer]:
+              - option "Indifférent" [selected]
+              - option "50 m² et +"
+              - option "80 m² et +"
+              - option "100 m² et +"
+              - option "150 m² et +"
+              - option "200 m² et +"
+          - generic [ref=e252]:
+            - generic [ref=e253]: Budget max
+            - combobox "Budget max" [ref=e254] [cursor=pointer]:
+              - option "Sans limite" [selected]
+              - option "500 000 €"
+              - option "800 000 €"
+              - option "1 000 000 €"
+              - option "1 500 000 €"
+              - option "2 000 000 €"
+              - option "3 000 000 €"
+          - generic [ref=e255]:
+            - generic [ref=e256]: Référence ou mot-clé
+            - searchbox "Référence ou mot-clé" [ref=e257]
+      - generic [ref=e258]:
+        - generic [ref=e259]:
+          - generic [ref=e260]: 17biens à la vente
+          - generic [ref=e261]:
+            - generic [ref=e262]: Trier
+            - combobox "Trier" [ref=e263]:
+              - option "Nouveautés" [selected]
+              - option "Prix croissant"
+              - option "Prix décroissant"
+              - option "Surface"
+        - generic [ref=e264]:
+          - article [ref=e265]:
+            - generic [ref=e266]:
+              - generic [ref=e267]: À vendre · neuf
+              - link "Voir dans l'immeuble" [ref=e268] [cursor=pointer]:
+                - /url: "#immeuble"
+              - img "Appartement 02.01, Kirchberg" [ref=e269]
+            - paragraph [ref=e270]:
+              - generic [ref=e271]: Réf. LU-0201
+              - generic [ref=e272]: Kirchberg
+            - heading [level=3] [ref=e273]:
+              - link "Appartement 02.01" [ref=e274] [cursor=pointer]:
+                - /url: bien.html?ref=LU-0201
+            - paragraph [ref=e275]:
+              - generic [ref=e276]: 118 m²
+              - generic [ref=e277]: 3 ch.
+              - generic [ref=e278]: 2 sdb
+              - generic [ref=e279]: Terrasse 24 m²
+            - paragraph [ref=e280]: 1 120 000 €
+          - article [ref=e281]:
+            - generic [ref=e282]:
+              - generic [ref=e283]: À vendre · neuf
+              - link "Voir dans l'immeuble" [ref=e284] [cursor=pointer]:
+                - /url: "#immeuble"
+              - img "Appartement 03.02, Kirchberg" [ref=e285]
+            - paragraph [ref=e286]:
+              - generic [ref=e287]: Réf. LU-0302
+              - generic [ref=e288]: Kirchberg
+            - heading [level=3] [ref=e289]:
+              - link "Appartement 03.02" [ref=e290] [cursor=pointer]:
+                - /url: bien.html?ref=LU-0302
+            - paragraph [ref=e291]:
+              - generic [ref=e292]: 82 m²
+              - generic [ref=e293]: 2 ch.
+              - generic [ref=e294]: 1 sdb
+              - generic [ref=e295]: Balcon 16 m²
+            - paragraph [ref=e296]: 830 000 €
+          - article [ref=e297]:
+            - generic [ref=e298]:
+              - generic [ref=e299]: À vendre · neuf
+              - link "Voir dans l'immeuble" [ref=e300] [cursor=pointer]:
+                - /url: "#immeuble"
+              - img "Appartement 03.03, Kirchberg" [ref=e301]
+            - paragraph [ref=e302]:
+              - generic [ref=e303]: Réf. LU-0303
+              - generic [ref=e304]: Kirchberg
+            - heading [level=3] [ref=e305]:
+              - link "Appartement 03.03" [ref=e306] [cursor=pointer]:
+                - /url: bien.html?ref=LU-0303
+            - paragraph [ref=e307]:
+              - generic [ref=e308]: 118 m²
+              - generic [ref=e309]: 3 ch.
+              - generic [ref=e310]: 2 sdb
+              - generic [ref=e311]: Terrasse 24 m²
+            - paragraph [ref=e312]: 1 150 000 €
+          - article [ref=e313]:
+            - generic [ref=e314]:
+              - generic [ref=e315]: À vendre · neuf
+              - link "Voir dans l'immeuble" [ref=e316] [cursor=pointer]:
+                - /url: "#immeuble"
+              - img "Appartement 04.02, Kirchberg" [ref=e317]
+            - paragraph [ref=e318]:
+              - generic [ref=e319]: Réf. LU-0402
+              - generic [ref=e320]: Kirchberg
+            - heading [level=3] [ref=e321]:
+              - link "Appartement 04.02" [ref=e322] [cursor=pointer]:
+                - /url: bien.html?ref=LU-0402
+            - paragraph [ref=e323]:
+              - generic [ref=e324]: 82 m²
+              - generic [ref=e325]: 2 ch.
+              - generic [ref=e326]: 1 sdb
+              - generic [ref=e327]: Balcon 16 m²
+            - paragraph [ref=e328]: 850 000 €
+          - article [ref=e329]:
+            - generic [ref=e330]:
+              - generic [ref=e331]: À vendre · neuf
+              - link "Voir dans l'immeuble" [ref=e332] [cursor=pointer]:
+                - /url: "#immeuble"
+              - img "Appartement 05.01, Kirchberg" [ref=e333]
+            - paragraph [ref=e334]:
+              - generic [ref=e335]: Réf. LU-0501
+              - generic [ref=e336]: Kirchberg
+            - heading [level=3] [ref=e337]:
+              - link "Appartement 05.01" [ref=e338] [cursor=pointer]:
+                - /url: bien.html?ref=LU-0501
+            - paragraph [ref=e339]:
+              - generic [ref=e340]: 118 m²
+              - generic [ref=e341]: 3 ch.
+              - generic [ref=e342]: 2 sdb
+              - generic [ref=e343]: Terrasse 24 m²
+            - paragraph [ref=e344]: 1 210 000 €
+          - article [ref=e345]:
+            - generic [ref=e346]:
+              - generic [ref=e347]: À vendre · neuf
+              - link "Voir dans l'immeuble" [ref=e348] [cursor=pointer]:
+                - /url: "#immeuble"
+              - img "Penthouse 06.01, Kirchberg" [ref=e349]
+            - paragraph [ref=e350]:
+              - generic [ref=e351]: Réf. LU-0601
+              - generic [ref=e352]: Kirchberg
+            - heading [level=3] [ref=e353]:
+              - link "Penthouse 06.01" [ref=e354] [cursor=pointer]:
+                - /url: bien.html?ref=LU-0601
+            - paragraph [ref=e355]:
+              - generic [ref=e356]: 212 m²
+              - generic [ref=e357]: 3 ch.
+              - generic [ref=e358]: 3 sdb
+              - generic [ref=e359]: Terrasse panoramique 80 m²
+            - paragraph [ref=e360]: 2 950 000 €
+          - article [ref=e361]:
+            - generic [ref=e362]:
+              - generic [ref=e363]: À vendre · neuf
+              - link "Tourner autour" [ref=e364] [cursor=pointer]:
+                - /url: "#maisons"
+              - img "Maison Halde, Bridel" [ref=e365]
+            - paragraph [ref=e366]:
+              - generic [ref=e367]: Réf. HZ-134
+              - generic [ref=e368]: Bridel
+            - heading [level=3] [ref=e369]:
+              - link "Maison Halde" [ref=e370] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-134
+            - paragraph [ref=e371]:
+              - generic [ref=e372]: 210 m²
+              - generic [ref=e373]: 4 ch.
+              - generic [ref=e374]: 3 sdb
+              - generic [ref=e375]: Patio
+            - paragraph [ref=e376]: 1 690 000 €
+          - article [ref=e377]:
+            - generic [ref=e378]:
+              - generic [ref=e379]: À vendre
+              - link "Tourner autour" [ref=e380] [cursor=pointer]:
+                - /url: "#maisons"
+              - img "Villa Aster, Strassen" [ref=e381]
+            - paragraph [ref=e382]:
+              - generic [ref=e383]: Réf. HZ-131
+              - generic [ref=e384]: Strassen
+            - heading [level=3] [ref=e385]:
+              - link "Villa Aster" [ref=e386] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-131
+            - paragraph [ref=e387]:
+              - generic [ref=e388]: 285 m²
+              - generic [ref=e389]: 5 ch.
+              - generic [ref=e390]: 4 sdb
+              - generic [ref=e391]: Piscine
+            - paragraph [ref=e392]: 1 850 000 €
+          - article [ref=e393]:
+            - generic [ref=e394]:
+              - generic [ref=e395]: À vendre
+              - link "Tourner autour" [ref=e396] [cursor=pointer]:
+                - /url: "#maisons"
+              - img "Villa Bel-Orée, Mamer" [ref=e397]
+            - paragraph [ref=e398]:
+              - generic [ref=e399]: Réf. HZ-137
+              - generic [ref=e400]: Mamer
+            - heading [level=3] [ref=e401]:
+              - link "Villa Bel-Orée" [ref=e402] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-137
+            - paragraph [ref=e403]:
+              - generic [ref=e404]: 340 m²
+              - generic [ref=e405]: 6 ch.
+              - generic [ref=e406]: 4 sdb
+              - generic [ref=e407]: Toit-terrasse
+            - paragraph [ref=e408]: 2 450 000 €
+          - article [ref=e409]:
+            - generic [ref=e410]:
+              - generic [ref=e411]: À vendre · neuf
+              - img "Penthouse lumineux, Kirchberg" [ref=e412]
+            - paragraph [ref=e413]:
+              - generic [ref=e414]: Réf. HZ-118
+              - generic [ref=e415]: Kirchberg
+            - heading [level=3] [ref=e416]:
+              - link "Penthouse lumineux" [ref=e417] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-118
+            - paragraph [ref=e418]:
+              - generic [ref=e419]: 135 m²
+              - generic [ref=e420]: 3 ch.
+              - generic [ref=e421]: 2 sdb
+              - generic [ref=e422]: Terrasse
+            - paragraph [ref=e423]: 980 000 €
+          - article [ref=e424]:
+            - generic [ref=e425]:
+              - generic [ref=e426]: À vendre · neuf
+              - img "Appartement neuf, Merl" [ref=e427]
+            - paragraph [ref=e428]:
+              - generic [ref=e429]: Réf. HZ-142
+              - generic [ref=e430]: Merl
+            - heading [level=3] [ref=e431]:
+              - link "Appartement neuf" [ref=e432] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-142
+            - paragraph [ref=e433]:
+              - generic [ref=e434]: 92 m²
+              - generic [ref=e435]: 2 ch.
+              - generic [ref=e436]: 1 sdb
+              - generic [ref=e437]: Balcon
+            - paragraph [ref=e438]: 745 000 €
+          - article [ref=e439]:
+            - generic [ref=e440]:
+              - generic [ref=e441]: À vendre
+              - img "Maison de maître, Belair" [ref=e442]
+            - paragraph [ref=e443]:
+              - generic [ref=e444]: Réf. HZ-104
+              - generic [ref=e445]: Belair
+            - heading [level=3] [ref=e446]:
+              - link "Maison de maître" [ref=e447] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-104
+            - paragraph [ref=e448]:
+              - generic [ref=e449]: 240 m²
+              - generic [ref=e450]: 5 ch.
+              - generic [ref=e451]: 3 sdb
+              - generic [ref=e452]: Jardin
+            - paragraph [ref=e453]: 1 490 000 €
+          - article [ref=e454]:
+            - generic [ref=e455]:
+              - generic [ref=e456]: À vendre
+              - img "Duplex sous les toits, Limpertsberg" [ref=e457]
+            - paragraph [ref=e458]:
+              - generic [ref=e459]: Réf. HZ-155
+              - generic [ref=e460]: Limpertsberg
+            - heading [level=3] [ref=e461]:
+              - link "Duplex sous les toits" [ref=e462] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-155
+            - paragraph [ref=e463]:
+              - generic [ref=e464]: 118 m²
+              - generic [ref=e465]: 3 ch.
+              - generic [ref=e466]: 2 sdb
+              - generic [ref=e467]: Charme
+            - paragraph [ref=e468]: 895 000 €
+          - article [ref=e469]:
+            - generic [ref=e470]:
+              - generic [ref=e471]: À vendre
+              - img "Maison mitoyenne, Bertrange" [ref=e472]
+            - paragraph [ref=e473]:
+              - generic [ref=e474]: Réf. HZ-160
+              - generic [ref=e475]: Bertrange
+            - heading [level=3] [ref=e476]:
+              - link "Maison mitoyenne" [ref=e477] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-160
+            - paragraph [ref=e478]:
+              - generic [ref=e479]: 165 m²
+              - generic [ref=e480]: 4 ch.
+              - generic [ref=e481]: 2 sdb
+              - generic [ref=e482]: Garage
+            - paragraph [ref=e483]: 1 120 000 €
+          - article [ref=e484]:
+            - generic [ref=e485]:
+              - generic [ref=e486]: À vendre
+              - img "Loft d'artiste, Hollerich" [ref=e487]
+            - paragraph [ref=e488]:
+              - generic [ref=e489]: Réf. HZ-173
+              - generic [ref=e490]: Hollerich
+            - heading [level=3] [ref=e491]:
+              - link "Loft d'artiste" [ref=e492] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-173
+            - paragraph [ref=e493]:
+              - generic [ref=e494]: 140 m²
+              - generic [ref=e495]: 2 ch.
+              - generic [ref=e496]: 1 sdb
+              - generic [ref=e497]: Volume
+            - paragraph [ref=e498]: 820 000 €
+          - article [ref=e499]:
+            - generic [ref=e500]:
+              - generic [ref=e501]: À vendre
+              - img "Terrain à bâtir, Mersch" [ref=e502]
+            - paragraph [ref=e503]:
+              - generic [ref=e504]: Réf. HZ-181
+              - generic [ref=e505]: Mersch
+            - heading [level=3] [ref=e506]:
+              - link "Terrain à bâtir" [ref=e507] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-181
+            - paragraph [ref=e508]:
+              - generic [ref=e509]: 620 m²
+              - generic [ref=e510]: Constructible
+            - paragraph [ref=e511]: 495 000 €
+          - article [ref=e512]:
+            - generic [ref=e513]:
+              - generic [ref=e514]: À vendre
+              - img "Appartement vue Alzette, Esch-sur-Alzette" [ref=e515]
+            - paragraph [ref=e516]:
+              - generic [ref=e517]: Réf. HZ-190
+              - generic [ref=e518]: Esch-sur-Alzette
+            - heading [level=3] [ref=e519]:
+              - link "Appartement vue Alzette" [ref=e520] [cursor=pointer]:
+                - /url: bien.html?ref=HZ-190
+            - paragraph [ref=e521]:
+              - generic [ref=e522]: 76 m²
+              - generic [ref=e523]: 2 ch.
+              - generic [ref=e524]: 1 sdb
+              - generic [ref=e525]: Ascenseur
+            - paragraph [ref=e526]: 425 000 €
+    - region "Vendre son bien" [ref=e527]:
+      - generic [ref=e528]:
+        - generic [ref=e529]:
+          - generic [ref=e530]:
+            - paragraph [ref=e531]: 05 · Vendre
+            - heading "Votre bien mérite une autre perspective." [level=2] [ref=e532]:
+              - generic [ref=e533]: Votre
+              - generic [ref=e535]: bien
+              - generic [ref=e537]: mérite
+              - generic [ref=e539]:
+                - generic [ref=e540]: une
+                - generic [ref=e542]: autre
+                - generic [ref=e544]: perspective.
+          - paragraph [ref=e546]: "Ce que vous venez de voir, nous le faisons pour votre bien : plans redessinés, photographies, présentation en volume, diffusion ciblée. Et un seul interlocuteur jusqu'à l'acte."
+        - generic [ref=e547]:
+          - list [ref=e548]:
+            - listitem [ref=e549]:
+              - text: "01"
+              - generic [ref=e550]: Estimation
+              - paragraph [ref=e551]: Une valeur argumentée, comparée aux ventes récentes du quartier, remise par écrit.
+            - listitem [ref=e552]:
+              - text: "02"
+              - generic [ref=e553]: Accompagnement personnalisé
+              - paragraph [ref=e554]: Un conseiller dédié, joignable, qui connaît votre dossier par cœur.
+            - listitem [ref=e555]:
+              - text: "03"
+              - generic [ref=e556]: Mise en valeur
+              - paragraph [ref=e557]: Petits travaux, mise en scène, plans redessinés au propre.
+            - listitem [ref=e558]:
+              - text: "04"
+              - generic [ref=e559]: Photographie et présentation
+              - paragraph [ref=e560]: Photos professionnelles, et votre bien présenté en volume comme sur cette page.
+            - listitem [ref=e561]:
+              - text: "05"
+              - generic [ref=e562]: Diffusion des annonces
+              - paragraph [ref=e563]: "Portails, réseaux, fichier d'acquéreurs qualifiés : au bon public, pas partout."
+            - listitem [ref=e564]:
+              - text: "06"
+              - generic [ref=e565]: Organisation des visites
+              - paragraph [ref=e566]: Acquéreurs filtrés en amont, visites regroupées, compte rendu après chacune.
+            - listitem [ref=e567]:
+              - text: "07"
+              - generic [ref=e568]: Jusqu'à la signature
+              - paragraph [ref=e569]: "Offre, compromis, notaire : nous suivons chaque étape avec vous."
+          - form "Demande d'estimation" [ref=e570]:
+            - generic [ref=e571]:
+              - heading "Demander une estimation" [level=3] [ref=e572]
+              - generic [ref=e573]: Étape 1 / 3
+            - group "Quel bien souhaitez-vous faire estimer ?" [ref=e578]:
+              - generic [ref=e580]:
+                - generic [ref=e581] [cursor=pointer]:
+                  - radio "Appartement" [ref=e582]
+                  - generic [ref=e583]: Appartement
+                - generic [ref=e587] [cursor=pointer]:
+                  - radio "Maison" [ref=e588]
+                  - generic [ref=e589]: Maison
+                - generic [ref=e593] [cursor=pointer]:
+                  - radio "Villa" [ref=e594]
+                  - generic [ref=e595]: Villa
+                - generic [ref=e598] [cursor=pointer]:
+                  - radio "Terrain" [ref=e599]
+                  - generic [ref=e600]: Terrain
+              - alert
+              - generic [ref=e603]:
+                - generic [ref=e604]:
+                  - generic [ref=e605]: Localité
+                  - textbox "Localité" [ref=e606]:
+                    - /placeholder: Ex. Strassen
+                  - alert
+                - generic [ref=e607]:
+                  - generic [ref=e608]: Surface habitable (m²)
+                  - spinbutton "Surface habitable (m²)" [ref=e609]
+                  - alert
+            - button "Continuer" [ref=e611] [cursor=pointer]:
+              - text: Continuer
+              - generic [aria-hidden] [ref=e612]: →
+    - region "Notre accompagnement" [ref=e613]:
+      - generic [ref=e614]:
+        - generic [ref=e615]:
+          - generic [ref=e616]:
+            - paragraph [ref=e617]: 06 · Accompagnement
+            - heading "Un interlocuteur, cinq métiers." [level=2] [ref=e618]:
+              - generic [ref=e619]: Un
+              - generic [ref=e621]: interlocuteur,
+              - generic [ref=e623]:
+                - generic [ref=e624]: cinq
+                - generic [ref=e626]: métiers.
+          - paragraph [ref=e628]: "Achat, vente, location, estimation : la même exigence, du premier appel à la remise des clés."
+        - list [ref=e629]:
+          - listitem [ref=e630]:
+            - group [ref=e631]:
+              - generic "01 Achat" [ref=e632] [cursor=pointer]:
+                - generic [ref=e633]: "01"
+                - heading "Achat" [level=3] [ref=e634]
+              - text: + + +
+          - listitem [ref=e636]:
+            - group [ref=e637]:
+              - generic "02 Vente" [ref=e638] [cursor=pointer]:
+                - generic [ref=e639]: "02"
+                - heading "Vente" [level=3] [ref=e640]
+              - text: + + +
+          - listitem [ref=e642]:
+            - group [ref=e643]:
+              - generic "03 Location" [ref=e644] [cursor=pointer]:
+                - generic [ref=e645]: "03"
+                - heading "Location" [level=3] [ref=e646]
+              - text: + + +
+          - listitem [ref=e648]:
+            - group [ref=e649]:
+              - generic "04 Estimation" [ref=e650] [cursor=pointer]:
+                - generic [ref=e651]: "04"
+                - heading "Estimation" [level=3] [ref=e652]
+              - text: + + +
+          - listitem [ref=e654]:
+            - group [ref=e655]:
+              - generic "05 Accompagnement" [ref=e656] [cursor=pointer]:
+                - generic [ref=e657]: "05"
+                - heading "Accompagnement" [level=3] [ref=e658]
+              - text: + + +
+    - region "Contact" [ref=e660]:
+      - generic [ref=e662]:
+        - generic [ref=e663]:
+          - paragraph [ref=e664]: 07 · Contact
+          - heading "Parlons de votre prochaine adresse." [level=2] [ref=e665]:
+            - generic [ref=e666]: Parlons
+            - generic [ref=e668]: de
+            - generic [ref=e670]: votre
+            - generic [ref=e672]:
+              - generic [ref=e673]: prochaine
+              - generic [ref=e675]: adresse.
+          - generic [ref=e677]:
+            - generic [ref=e678]:
+              - term [ref=e679]: Téléphone
+              - definition [ref=e680]:
+                - link "+352 00 00 00" [ref=e681] [cursor=pointer]:
+                  - /url: tel:+35200000000
+            - generic [ref=e682]:
+              - term [ref=e683]: E-mail
+              - definition [ref=e684]:
+                - link "contact@horizon-immo.example" [ref=e685] [cursor=pointer]:
+                  - /url: mailto:contact@horizon-immo.example
+            - generic [ref=e686]:
+              - term [ref=e687]: Agence
+              - definition [ref=e688]: Avenue de la Liberté, Luxembourg
+            - generic [ref=e689]:
+              - term [ref=e690]: Horaires
+              - definition [ref=e691]: Lun – ven, 9 h – 19 h · sam. sur rendez-vous
+        - form "Nous écrire" [ref=e692]:
+          - heading "Nous écrire" [level=3] [ref=e693]
+          - generic [ref=e694]:
+            - generic [ref=e695]: Objet
+            - combobox "Objet" [ref=e696]:
+              - option "Une question sur un bien" [selected]
+              - option "Organiser une visite"
+              - option "Vendre mon bien"
+              - option "Mettre en location"
+              - option "Autre demande"
+          - generic [ref=e697]:
+            - generic [ref=e698]:
+              - generic [ref=e699]: Nom
+              - textbox "Nom" [ref=e700]
+              - alert
+            - generic [ref=e701]:
+              - generic [ref=e702]: Téléphone
+              - textbox "Téléphone" [ref=e703]:
+                - /placeholder: Facultatif
+          - generic [ref=e704]:
+            - generic [ref=e705]: E-mail
+            - textbox "E-mail" [ref=e706]
+            - alert
+          - generic [ref=e707]:
+            - generic [ref=e708]: Message
+            - textbox "Message" [ref=e709]
+            - alert
+          - generic [ref=e710]:
+            - checkbox "J'accepte que mes informations servent uniquement à me répondre." [ref=e711]
+            - text: J'accepte que mes informations servent uniquement à me répondre.
+          - alert
+          - button "Envoyer" [ref=e712] [cursor=pointer]:
+            - text: Envoyer
+            - generic [aria-hidden] [ref=e713]: →
+  - contentinfo [ref=e714]:
+    - generic [ref=e715]:
+      - generic [ref=e716]:
+        - generic [ref=e717]:
+          - link "HORIZON" [ref=e718] [cursor=pointer]:
+            - /url: "#haut"
+          - paragraph [ref=e722]: Agence immobilière au Luxembourg. Achat, vente, location, estimation.
+        - generic [ref=e723]:
+          - heading "Explorer" [level=4] [ref=e724]
+          - list [ref=e725]:
+            - listitem [ref=e726]:
+              - link "Résidence Lumen" [ref=e727] [cursor=pointer]:
+                - /url: "#immeuble"
+            - listitem [ref=e728]:
+              - link "Maisons" [ref=e729] [cursor=pointer]:
+                - /url: "#maisons"
+            - listitem [ref=e730]:
+              - link "Tous les biens" [ref=e731] [cursor=pointer]:
+                - /url: "#biens"
+        - generic [ref=e732]:
+          - heading "Propriétaires" [level=4] [ref=e733]
+          - list [ref=e734]:
+            - listitem [ref=e735]:
+              - link "Estimation" [ref=e736] [cursor=pointer]:
+                - /url: "#estimation"
+            - listitem [ref=e737]:
+              - link "Vendre" [ref=e738] [cursor=pointer]:
+                - /url: "#vendre"
+            - listitem [ref=e739]:
+              - link "Location" [ref=e740] [cursor=pointer]:
+                - /url: "#accompagnement"
+        - generic [ref=e741]:
+          - heading "Agence" [level=4] [ref=e742]
+          - list [ref=e743]:
+            - listitem [ref=e744]:
+              - link "+352 00 00 00" [ref=e745] [cursor=pointer]:
+                - /url: tel:+35200000000
+            - listitem [ref=e746]:
+              - link "E-mail" [ref=e747] [cursor=pointer]:
+                - /url: mailto:contact@horizon-immo.example
+            - listitem [ref=e748]: Avenue de la Liberté
+      - generic [ref=e749]:
+        - generic [ref=e750]: "Maquette de démonstration : agence, programme, biens et prix sont fictifs."
+        - generic [ref=e751]: Réalisé par NS Development — création de sites web au Luxembourg
+  - generic:
+    - button "Ouvrir la discussion"
+    - dialog "Discussion avec HORIZON Immobilier":
+      - generic:
+        - generic: H
+        - generic:
+          - generic: HORIZON Immobilier
+          - generic: Réponse immédiate
+      - log
+      - generic:
+        - textbox "Votre message":
+          - /placeholder: Écrivez votre question…
+        - button "Envoyer"
+      - generic:
+        - text: Assistant propulsé par
+        - link "NS Development":
+          - /url: https://nsdevelopment.lu

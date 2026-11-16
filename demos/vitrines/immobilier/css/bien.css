@@ -1,0 +1,81 @@
+/* HORIZON : fiche d'un bien (complète css/horizon.css). */
+.page-bien .nav { position: sticky; }
+.retour-mob { display: none; margin-left: auto; }
+.fiche-charge { padding: 140px var(--g); color: var(--gris); }
+.fil { display: flex; gap: 10px; align-items: center; font-family: var(--mono); font-size: 12px; color: var(--gris); padding-top: 22px; padding-bottom: 18px; }
+.fil a { text-decoration: none; } .fil a:hover { color: var(--encre); text-decoration: underline; }
+.fil i { font-style: normal; color: var(--trait); } .fil span { color: var(--encre); }
+.f-hero { position: relative; }
+.f-photo { height: min(74svh, 760px); min-height: 380px; overflow: hidden; background: var(--blanc-2); }
+.f-photo img { width: 100%; height: 100%; object-fit: cover; animation: f-zoom 2.4s var(--ease) both; transition: opacity .25s; }
+.f-photo img.change { opacity: 0; }
+@keyframes f-zoom { from { transform: scale(1.06); } }
+.f-titre { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-top: -120px; position: relative; }
+.f-titre > div:first-child { position: relative; background: var(--blanc); padding: 26px 34px 22px 0; min-width: min(100%, 560px); }
+.f-titre > div:first-child::before { content: ""; position: absolute; right: 100%; top: 0; bottom: 0; width: 100vw; background: var(--blanc); }
+.f-sur { font-size: 12px; color: var(--gris); }
+.f-titre h1 { font-size: clamp(40px, 6vw, 92px); font-weight: 300; letter-spacing: -.045em; line-height: .95; margin: 10px 0 12px; }
+.f-prix { font-size: clamp(22px, 2.4vw, 32px); font-weight: 560; letter-spacing: -.02em; }
+.f-prix small { font-size: 15px; color: var(--gris); font-weight: 400; }
+.f-modes { display: flex; border: 1px solid var(--encre); background: var(--blanc); margin-bottom: 22px; }
+.f-modes > * { padding: 12px 18px; font-size: 14px; font-weight: 500; text-decoration: none; }
+.f-modes span { background: var(--encre); color: var(--blanc); }
+.f-modes a:hover { background: var(--blanc-2); }
+.f-galerie { display: flex; gap: 8px; margin-top: 18px; }
+.f-galerie button { width: 128px; aspect-ratio: 4/3; overflow: hidden; outline-offset: 2px; opacity: .55; transition: opacity .3s; border: 1px solid transparent; }
+.f-galerie button[aria-pressed="true"] { opacity: 1; border-color: var(--encre); }
+.f-galerie button:hover { opacity: 1; }
+.f-galerie img { width: 100%; height: 100%; object-fit: cover; }
+.f-corps { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 6vw, 96px); padding-top: 64px; padding-bottom: 80px; align-items: start; }
+.f-gauche > section { padding: 32px 0; border-top: 1px solid var(--trait); display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; }
+.f-gauche > section:first-child { border-top: 1px solid var(--encre); }
+.f-gauche h2 { font-size: 15px; font-weight: 560; }
+.f-carac { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.f-carac div { padding: 10px 0; border-bottom: 1px solid var(--trait); }
+.f-carac div:nth-child(odd) { padding-right: 14px; }
+.f-carac dt { font-family: var(--mono); font-size: 12px; color: var(--gris); }
+.f-carac dd { font-size: 18px; font-weight: 500; }
+.f-desc { font-size: 19px; font-weight: 300; line-height: 1.55; letter-spacing: -.01em; }
+.f-equip { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.f-equip li { font-size: 13.5px; padding: 6px 12px; border: 1px solid var(--trait); }
+.f-plan { background: #fff; border: 1px solid var(--trait); padding: 12px; max-width: 520px; }
+.f-vide { color: var(--gris); }
+.f-pieces { list-style: none; }
+.f-pieces li { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--trait); }
+.f-pieces li.ext { color: var(--laiton); }
+.f-pieces .mono { font-size: 13px; }
+.f-note { font-size: 12px; color: var(--gris); padding-top: 18px; }
+.f-droite { position: sticky; top: 92px; display: grid; gap: 18px; }
+.f-form { padding: clamp(22px, 3vw, 34px); display: grid; gap: 16px; }
+.f-form h2 { font-size: 26px; font-weight: 300; letter-spacing: -.02em; }
+.f-form-sous { font-family: var(--mono); font-size: 12px; color: var(--sur-noir-2); margin-top: -8px; }
+.f-form textarea { resize: vertical; min-height: 80px; }
+.f-form input[type="date"] { color-scheme: dark; }
+.f-agence { border: 1px solid var(--trait); padding: 18px 20px; }
+.f-agence .mono { font-size: 12px; color: var(--gris); margin-bottom: 6px; }
+.f-agence a { text-decoration: none; font-weight: 500; }
+.f-agence a:hover { text-decoration: underline; }
+.f-sim { padding-bottom: 110px; }
+.f-sim h2 { font-size: clamp(28px, 3.4vw, 48px); font-weight: 300; letter-spacing: -.035em; padding: 28px 0 26px; border-top: 1px solid var(--encre); }
+.f-sim-l { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.5vw, 36px); }
+.f-sim-c { display: grid; gap: 8px; text-decoration: none; }
+.f-sim-c .ph { aspect-ratio: 4/3; overflow: hidden; background: var(--blanc-2); }
+.f-sim-c img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+.f-sim-c:hover img { transform: scale(1.04); }
+.f-sim-c .mono { font-size: 12px; color: var(--gris); }
+.f-sim-c b { font-size: 22px; font-weight: 300; letter-spacing: -.02em; }
+.introuvable { padding: 160px var(--g) 120px; }
+.introuvable h1 { font-size: clamp(36px, 5vw, 72px); font-weight: 300; letter-spacing: -.04em; }
+.introuvable p { color: var(--gris); margin: 14px 0 26px; }
+@media (max-width: 1180px) { .retour-mob { display: inline-flex; } .page-bien .burger { display: none; } }
+@media (max-width: 860px) {
+  .f-titre { margin-top: 0; }
+  .f-titre > div:first-child { padding: 22px 0 6px; }
+  .f-titre > div:first-child::before { display: none; }
+  .f-modes { margin-bottom: 0; width: 100%; } .f-modes > * { flex: 1; text-align: center; padding: 12px 8px; font-size: 13px; }
+  .f-galerie { overflow-x: auto; } .f-galerie button { flex: none; width: 104px; }
+  .f-corps { grid-template-columns: 1fr; padding-top: 32px; }
+  .f-gauche > section { grid-template-columns: 1fr; gap: 14px; padding: 24px 0; }
+  .f-droite { position: static; }
+  .f-sim-l { grid-template-columns: 1fr; }
+}

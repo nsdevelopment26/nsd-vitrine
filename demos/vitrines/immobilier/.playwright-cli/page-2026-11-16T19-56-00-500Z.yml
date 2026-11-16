@@ -1,0 +1,65 @@
+- generic [ref=e2]:
+  - tablist [ref=e4]:
+    - tab [selected] [ref=e5]:
+      - text: 01Villa Aster
+      - emphasis [ref=e6]: Strassen
+    - tab [ref=e7]:
+      - text: 02Maison Halde
+      - emphasis [ref=e8]: Bridel
+    - tab [ref=e9]:
+      - text: 03Villa Bel-Orée
+      - emphasis [ref=e10]: Mamer
+  - generic:
+    - button "Façade d'entrée" [ref=e11]
+    - button "Terrasse couverte" [ref=e12]
+    - button "Piscine 12 × 4 m" [ref=e13]
+    - button "Jardin paysager" [ref=e14]
+  - generic [ref=e15]:
+    - button "Ensemble" [pressed] [ref=e16]
+    - button "Façade" [ref=e17]
+    - button "Terrasse" [ref=e18]
+    - button "Piscine" [ref=e19]
+    - button "Jardin" [ref=e20]
+    - button "‹" [ref=e21]
+    - button "›" [ref=e22]
+    - button "+" [ref=e23]
+    - button "−" [ref=e24]
+  - paragraph [ref=e25]: Villa Aster · Strassen
+  - complementary [ref=e26]:
+    - paragraph [ref=e27]: Réf. HZ-131 · Strassen
+    - heading "Villa Aster" [level=3] [ref=e28]
+    - paragraph [ref=e29]: 1 850 000 €
+    - paragraph [ref=e30]: Deux volumes croisés, l'étage en porte-à-faux au-dessus de la terrasse, une piscine dans l'axe du séjour.
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - term [ref=e33]: Habitable
+        - definition [ref=e34]: 285 m²
+      - generic [ref=e35]:
+        - term [ref=e36]: Terrain
+        - definition [ref=e37]: 12 ares
+      - generic [ref=e38]:
+        - term [ref=e39]: Chambres
+        - definition [ref=e40]: "5"
+      - generic [ref=e41]:
+        - term [ref=e42]: Salles de bain
+        - definition [ref=e43]: "4"
+    - list [ref=e44]:
+      - listitem [ref=e45]: Piscine chauffée
+      - listitem [ref=e46]: Domotique
+      - listitem [ref=e47]: Garage double
+      - listitem [ref=e48]: Panneaux solaires
+      - listitem [ref=e49]: Cuisine ouverte
+    - generic [ref=e50]:
+      - link [ref=e51] [cursor=pointer]:
+        - /url: bien.html?ref=HZ-131&photo=0
+        - img "Villa Aster, vue extérieure" [ref=e52]
+      - link [ref=e53] [cursor=pointer]:
+        - /url: bien.html?ref=HZ-131&photo=1
+        - img "Villa Aster, intérieur" [ref=e54]
+    - generic [ref=e55]:
+      - link "Demander une visite" [ref=e56] [cursor=pointer]:
+        - /url: "#contact"
+      - link "Fiche complète" [ref=e57] [cursor=pointer]:
+        - /url: bien.html?ref=HZ-131
+        - text: Fiche complète →
+    - paragraph [ref=e58]: Bien fictif, présenté pour la démonstration.

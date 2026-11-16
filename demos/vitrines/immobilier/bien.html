@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche du bien — HORIZON Immobilier · Luxembourg</title>
+<meta name="description" content="Fiche détaillée d'un bien HORIZON Immobilier : photos, plan, caractéristiques et demande de visite. Maquette de démonstration NS Development.">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f4f4f2">
+<link rel="preload" href="fonts/HostGrotesk-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/horizon.css">
+<link rel="stylesheet" href="css/bien.css">
+</head>
+<body class="page-bien">
+<header class="nav solide" id="nav">
+  <div class="nav-in">
+    <a href="index.html" class="logo" aria-label="HORIZON, accueil">
+      <svg viewBox="0 0 30 18" aria-hidden="true"><rect x="10.5" y="1" width="9" height="14" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 5.7h9M10.5 10.3h9" stroke="currentColor" stroke-width="1.1"/><path d="M0 16.6h30" stroke="#7a6644" stroke-width="1.8"/></svg>
+      HORIZON
+    </a>
+    <ul class="nav-liens">
+      <li><a href="index.html#immeuble">Explorer</a></li>
+      <li><a href="index.html#maisons">Maisons</a></li>
+      <li><a href="index.html#biens" aria-current="true">Nos biens</a></li>
+      <li><a href="index.html#vendre">Vendre</a></li>
+      <li><a href="#visite">Visite</a></li>
+    </ul>
+    <a href="#visite" class="btn">Demander une visite <span class="fl" aria-hidden="true">→</span></a>
+    <a href="index.html#biens" class="lien retour-mob">← Biens</a>
+  </div>
+</header>
+
+<main id="fiche" class="fiche" aria-live="polite">
+  <p class="fiche-charge mono">Chargement de la fiche…</p>
+</main>
+
+<footer class="pied">
+  <div class="cadre">
+    <div class="pied-bas" style="margin-top:0;border-top:0;padding-top:0">
+      <span>Maquette de démonstration : agence, programme, biens et prix sont fictifs.</span>
+      <span>Réalisé par <b>NS Development</b> — création de sites web au Luxembourg</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data/biens.js"></script>
+<script src="js/plan-geo.js"></script>
+<script src="js/bien.js" defer></script>
+<script src="nsd-chat.js" defer
+        data-site="immobilier"
+        data-nom="HORIZON Immobilier"
+        data-accent="#7a6644"
+        data-encre="#121315"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour ! Une question sur ce bien ou une visite ?"></script>
+<script src="../../../suivi.js" defer></script>
+<script src="../../../mesure.js" data-cle="ee061dbeff20414096" data-domaine="nsdevelopment.lu" data-api="https://atgykykesntvporvbvuf.supabase.co/functions/v1/collecte" defer></script>
+</body>
+</html>

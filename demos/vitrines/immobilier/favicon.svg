@@ -1,8 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="HORIZON Immobilier">
-  <rect width="140" height="140" rx="24" fill="#1c2536"/>
-  <path d="M26 68 L70 32 L114 68" fill="none" stroke="#a4823a" stroke-width="11"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M40 66 V108 H100 V66" fill="none" stroke="#f4f1e9" stroke-width="10"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M62 108 V84 H78 V108" fill="none" stroke="#a4823a" stroke-width="9" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="HORIZON Immobilier">
+  <rect width="32" height="32" rx="6" fill="#121315"/>
+  <rect x="11" y="6" width="10" height="18" fill="none" stroke="#f4f4f2" stroke-width="2.2"/>
+  <path d="M11 12h10M11 18h10" stroke="#f4f4f2" stroke-width="1.6"/>
+  <path d="M4 25h24" stroke="#c4ab7c" stroke-width="2.6" stroke-linecap="square"/>
 </svg>

@@ -3,324 +3,374 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HORIZON Immobilier — Luxembourg</title>
+<title>HORIZON Immobilier — agence immobilière · Luxembourg</title>
+<meta name="description" content="HORIZON, agence immobilière au Luxembourg : explorez la Résidence Lumen étage par étage en 3D, visitez nos villas, trouvez votre bien, faites estimer le vôtre. Maquette de démonstration NS Development.">
 <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-<meta name="description" content="HORIZON Immobilier, agence immobilière au Luxembourg. Achat, vente, location et estimation de biens d'exception.">
-<link rel="stylesheet" href="../../../assets/fonts/polices-32a947776f.css">
-<link rel="stylesheet" href="ns-motion.css">
-<script src="ns-motion.js" defer></script>
-<script src="recherche.js" defer></script>
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--paper:#f4f1e9;--paper2:#ede8db;--ink:#1c2536;--navy:#22314f;--navy-d:#1a2540;--gold:#866a2f;--gold-l:#c19a4a;--soft:#686e7d;--line:#e0dac9;
-    --serif:'Cormorant Garamond',Georgia,serif;--sans:'Jost',system-ui,sans-serif;--tr:.5s cubic-bezier(.2,.7,.2,1);
-    --ns-dur:1.05s;--ns-ease:cubic-bezier(.2,.7,.2,1);--ns-g1:#a4823a;--ns-g2:#e0c07a}
-  html{scroll-behavior:smooth}
-  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;line-height:1.75;-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
-  h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.08}
-  .wrap{max-width:1160px;margin:0 auto;padding:0 30px}
-  .eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:500}
-  .btn{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;padding:15px 32px;transition:var(--tr)}
-  .btn.fill{background:var(--navy);color:var(--paper)}.btn.fill:hover{background:var(--navy-d)}
-  .btn.line{border:1px solid var(--ink);color:var(--ink)}.btn.line:hover{background:var(--ink);color:var(--paper)}
-  .btn.gold{border:1px solid var(--gold);color:var(--gold)}.btn.gold:hover{background:var(--gold);color:var(--paper)}
-
-  nav{position:fixed;inset:0 0 auto 0;z-index:50;height:88px;display:flex;align-items:center;transition:var(--tr)}
-  nav.ns-solid{background:rgba(244,241,233,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-  .nav-in{width:100%;max-width:1160px;margin:0 auto;padding:0 30px;display:flex;align-items:center;justify-content:space-between}
-  .logo{font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:12px}
-  .logo::before{content:"";width:30px;height:1px;background:var(--gold)}
-  .nav-links{display:flex;gap:38px;align-items:center}
-  .nav-links a{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:400}
-  .nav-links a:hover{color:var(--navy)}
-  .hamb{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink)}
-
-  /* ---- HERO « crépuscule » (refonte du 20/10/2026) ----
-     Le papier crème laisse la place à un bleu de fin de jour, une ligne
-     d'horizon dorée, et une fenêtre en arche où les biens se succèdent.
-     Plus de formulaire ni de bouton : on entre par un quartier. */
-  .hero{--gold-l:#d8b670;position:relative;overflow:hidden;min-height:100svh;display:flex;align-items:center;padding:130px 0 90px;color:var(--paper);
-    background:linear-gradient(180deg,#121a2e 0%,#1d2a47 58%,#2c3550 78%,#3a3a4a 100%)}
-  .hero::before{content:"";position:absolute;left:-10%;right:-10%;top:90%;height:60%;pointer-events:none;
-    background:radial-gradient(50% 40% at 62% 0%,rgba(224,192,122,.42),rgba(224,192,122,.08) 55%,transparent 75%)}
-  .hero::after{content:"";position:absolute;left:0;right:0;top:90%;height:1px;
-    background:linear-gradient(90deg,transparent,rgba(224,192,122,.7) 40%,rgba(224,192,122,.7) 70%,transparent);
-    transform:scaleX(0);animation:ligne 2.2s .3s cubic-bezier(.2,.7,.2,1) forwards}
-  @keyframes ligne{to{transform:scaleX(1)}}
-  .hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:center}
-  .hero .eyebrow{margin-bottom:26px;display:block;color:var(--gold-l)}
-  .hero h1{font-size:clamp(48px,6.2vw,88px);font-weight:500;letter-spacing:-.01em;color:#fbf8f1;line-height:1.02}
-  .hero h1 em{font-style:italic;color:var(--gold-l)}
-  .hero-txt>p{font-size:18px;color:rgba(244,241,233,.78);max-width:470px;margin:28px 0 40px;font-weight:300}
-  .quartiers{border-top:1px solid rgba(244,241,233,.16);padding-top:22px;max-width:560px}
-  .quartiers .f-lab{color:var(--gold-l);margin-bottom:14px}
-  .q-liste{display:flex;flex-wrap:wrap;gap:6px 26px}
-  .q-liste button{background:none;border:0;padding:4px 0;cursor:pointer;font-family:var(--serif);font-size:25px;font-style:italic;
-    color:#fbf8f1;position:relative;transition:color .4s var(--ns-ease)}
-  .q-liste button sup{font-family:var(--sans);font-style:normal;font-size:11px;color:var(--gold-l);margin-left:3px;letter-spacing:.06em}
-  .q-liste button::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:1px;background:var(--gold-l);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ns-ease)}
-  .q-liste button:hover{color:var(--gold-l)}.q-liste button:hover::after{transform:scaleX(1)}
-  .hero-alt{margin-top:26px;font-size:14.5px;color:rgba(244,241,233,.7)}
-  .hero-alt a{color:#fbf8f1;border-bottom:1px solid rgba(224,192,122,.6);padding-bottom:2px}
-
-  .arche{position:relative;justify-self:end;width:min(100%,430px)}
-  .arche-f{position:relative;aspect-ratio:3/4;border-radius:999px 999px 6px 6px;overflow:hidden;background:#24304c;
-    box-shadow:0 60px 90px -50px rgba(0,0,0,.8),0 0 0 1px rgba(224,192,122,.35);
-    clip-path:inset(100% 0 0 0 round 999px 999px 6px 6px);animation:arche 1.5s .2s cubic-bezier(.2,.7,.2,1) forwards}
-  @keyframes arche{to{clip-path:inset(0 0 0 0 round 999px 999px 6px 6px)}}
-  .arche-f img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);
-    transition:opacity 1.4s var(--ns-ease),transform 7s linear}
-  .arche-f img.on{opacity:1;transform:scale(1)}
-  .arche::before{content:"";position:absolute;inset:-18px -18px auto auto;width:100%;aspect-ratio:3/4;border-radius:999px 999px 6px 6px;
-    border:1px solid rgba(224,192,122,.3);pointer-events:none}
-  .arche-cap{position:absolute;left:-46px;bottom:38px;background:#fbf8f1;color:var(--ink);padding:18px 22px 16px;min-width:250px;
-    box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
-  .arche-cap .loc{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500}
-  .arche-cap b{display:block;font-family:var(--serif);font-size:25px;font-weight:600;line-height:1.1;margin:4px 0 2px}
-  .arche-cap .px{font-size:14px;color:var(--soft);font-variant-numeric:tabular-nums}
-  .arche-cap .px strong{color:var(--navy);font-weight:500}
-  .arche-cap .txt{transition:opacity .45s}
-  .arche-cap.fondu .txt{opacity:0}
-  .arche-bar{display:flex;gap:6px;margin-top:12px}
-  .arche-bar i{flex:1;height:2px;background:var(--line);position:relative;overflow:hidden}
-  .arche-bar i::after{content:"";position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left}
-  .arche-bar i.vu::after{transform:scaleX(1)}
-  .arche-bar i.on::after{animation:barre 5s linear forwards}
-  @keyframes barre{to{transform:scaleX(1)}}
-  /* nav posée sur le crépuscule tant qu'elle n'est pas opaque */
-  nav:not(.ns-solid) .logo{color:#fbf8f1}
-  nav:not(.ns-solid) .nav-links a{color:rgba(244,241,233,.78)}
-  nav:not(.ns-solid) .nav-links a:hover{color:#fff}
-  nav:not(.ns-solid) .hamb{color:#fbf8f1}
-  .nav-est{color:var(--gold)!important;border-bottom:1px solid currentColor;padding-bottom:3px}
-  nav:not(.ns-solid) .nav-est{color:var(--gold-l)!important}
-  @media(prefers-reduced-motion:reduce){.arche-f,.hero::after{animation:none;clip-path:none;transform:none}}
-
-  section{padding:110px 0}
-  .sec-head{text-align:center;max-width:640px;margin:0 auto 66px}
-  .sec-head h2{font-size:clamp(38px,5.5vw,64px);font-weight:500;margin:16px 0}
-  .sec-head p{color:var(--soft)}
-
-  .props{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
-  .prop{background:var(--paper);transition:var(--tr)}
-  .prop:hover{transform:translateY(-6px)}
-  .prop .img{aspect-ratio:4/3;background:linear-gradient(150deg,#e6e0d0,#d8d0bc);position:relative;overflow:hidden}
-  .prop .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s var(--ns-ease)}
-  .prop:hover .img img{transform:scale(1.05)}
-  .prop .tag{position:absolute;z-index:2;top:16px;left:16px;background:var(--paper);color:var(--navy);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 13px;font-weight:500}
-  .prop .body{padding:24px 4px 0}
-  .prop .loc{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-  .prop h3{font-size:26px;font-weight:500;margin-bottom:14px}
-  .prop .specs{display:flex;gap:22px;font-size:13px;color:var(--soft);padding-bottom:16px;border-bottom:1px solid var(--line)}
-  .prop .specs b{color:var(--ink);font-weight:500}
-  .prop .price{font-family:var(--serif);font-size:28px;color:var(--navy);font-weight:600;margin-top:16px}
-
-  .services{background:var(--navy);color:var(--paper)}
-  .services .eyebrow{color:var(--gold-l)}
-  .services .sec-head h2{color:var(--paper)}.services .sec-head p{color:rgba(244,241,233,.7)}
-  .sv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08)}
-  .sv{background:var(--navy);padding:44px 30px;transition:var(--tr)}
-  .sv:hover{background:var(--navy-d)}
-  .sv .no{font-family:var(--serif);font-size:22px;color:var(--gold-l);font-style:italic}
-  .sv h3{font-size:24px;font-weight:500;margin:16px 0 10px;color:var(--paper)}
-  .sv p{font-size:13.5px;color:rgba(244,241,233,.66);font-weight:300}
-
-  .est{text-align:center}
-  .est h2{font-size:clamp(40px,6vw,72px);font-weight:500;max-width:16ch;margin:16px auto 20px}
-  .est h2 em{font-style:italic;color:var(--gold)}
-  .est p{color:var(--soft);max-width:480px;margin:0 auto 38px}
-
-  footer{background:var(--ink);color:var(--paper);padding:64px 0 32px}
-  .foot-in{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px}
-  footer .logo{color:var(--paper)}
-  .foot-c{font-size:14px;color:rgba(244,241,233,.6);text-align:right;font-weight:300}
-  .made{margin-top:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;letter-spacing:.04em;color:rgba(244,241,233,.4)}.made b{color:var(--gold-l)}
-
-  /* accents propres à cette maquette : lent, feutré, haut de gamme */
-  /* le dégradé animé doit primer sur la couleur or de .hero h1 em */
-  .hero h1 em.ns-gradient-text{color:transparent;-webkit-text-fill-color:transparent}
-  .prop .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(28,37,54,.22));opacity:0;transition:opacity .6s var(--ns-ease)}
-  .prop:hover .img::after{opacity:1}
-  .prop .tag{transition:background .5s var(--ns-ease),color .5s var(--ns-ease)}
-  .prop:hover .tag{background:var(--gold);color:var(--paper)}
-  .prop .price{font-variant-numeric:tabular-nums}
-  .sv{position:relative}
-  .sv::before{content:"";position:absolute;left:0;top:0;width:2px;height:0;background:var(--gold);transition:height .55s var(--ns-ease)}
-  .sv:hover::before{height:100%}
-
-
-  /* ---------- Moteur de recherche ---------- */
-  section[id]{scroll-margin-top:96px}
-  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .f-lab{display:block;white-space:nowrap;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:7px}
-  .fld{appearance:none;-webkit-appearance:none;background:transparent;border:0;font-family:var(--sans);font-size:15px;font-weight:400;color:var(--ink);width:100%;cursor:pointer;outline-offset:5px;text-overflow:ellipsis}
-  select.fld{padding-right:22px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a4823a' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right center}
-
-
-  .tools{border:1px solid var(--line);background:var(--paper2);padding:24px 26px;margin-bottom:32px}
-  .tools-top{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-  .seg{display:inline-flex;border:1px solid var(--navy)}
-  .seg button{background:transparent;border:0;padding:12px 30px;font-family:var(--sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--navy);cursor:pointer;transition:var(--tr)}
-  .seg button.on{background:var(--navy);color:var(--paper)}
-  .seg button:not(.on):hover{background:rgba(34,49,79,.08)}
-  .qbox{flex:1 1 280px;display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--line);padding:11px 16px}
-  .qbox input{flex:1;min-width:0;border:0;background:transparent;font-family:var(--sans);font-size:15px;color:var(--ink);outline:none}
-  .tools-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:16px}
-  .tools-grid .f{background:var(--paper);border:1px solid var(--line);padding:12px 15px}
-
-  .res{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
-  .res-l{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-  .count{font-family:var(--serif);font-size:20px;color:var(--soft);line-height:1}
-  .count b{color:var(--navy);font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;margin-right:5px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{display:inline-flex;align-items:center;gap:9px;background:var(--navy);color:var(--paper);font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:8px 13px;border:0;cursor:pointer;transition:var(--tr)}
-  .chip:hover{background:var(--gold)}
-  .chip span[aria-hidden]{opacity:.55;font-size:10px}
-  .sort{display:flex;align-items:center;gap:12px}
-  .sort .f-lab{margin:0}
-  .sort .fld{width:auto}
-
-  .prop .dsc{font-size:14px;color:var(--soft);font-weight:300;margin:-4px 0 16px}
-  .prop .price{display:flex;align-items:baseline;gap:7px}
-  .prop .price .ref{margin-left:auto}
-  .prop .price .pm{font-family:var(--sans);font-size:14px;color:var(--soft)}
-  .prop .price .ref{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:400}
-  .prop .tag.new{left:auto;right:16px;background:var(--gold);color:var(--paper)}
-  .prop:hover .tag.new{background:var(--navy)}
-
-  #resultats .prop{display:flex;flex-direction:column}
-  #resultats .prop .body{flex:1;display:flex;flex-direction:column}
-  #resultats .prop .specs{margin-top:auto}
-  #resultats .prop{opacity:0;translate:0 26px;animation:card-in .6s var(--ns-ease) forwards;animation-delay:calc(var(--i,0)*65ms)}
-  @keyframes card-in{to{opacity:1;translate:none}}
-
-  .empty{grid-column:1/-1;text-align:center;padding:72px 30px;border:1px dashed var(--line);background:var(--paper2)}
-  .empty h3{font-size:28px;font-weight:500;margin:14px 0 10px}
-  .empty p{color:var(--soft);max-width:460px;margin:0 auto 26px}
-
-  @media(prefers-reduced-motion:reduce){#resultats .prop{opacity:1;translate:none;animation:none}}
-  @media(max-width:1040px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
-  @media(max-width:860px){.nav-links{display:none}.hamb{display:block}.props{grid-template-columns:1fr}.sv-grid{grid-template-columns:1fr 1fr}
-    .hero{min-height:auto;padding:120px 0 70px}.hero::before{display:none}.hero::after{top:auto;bottom:0}
-    .hero-in{grid-template-columns:1fr;gap:50px}.arche{justify-self:center;width:min(86%,360px)}.arche-cap{left:-22px;min-width:220px}
-    .q-liste button{font-size:22px}
-    .seg{width:100%}.seg button{flex:1;padding:12px 8px;letter-spacing:.1em}
-    .tools{padding:20px 18px}.tools-grid{grid-template-columns:1fr 1fr}
-    .res{align-items:flex-start}}
-  @media(max-width:520px){.tools-grid{grid-template-columns:1fr}}
-</style>
+<link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/vitrines/immobilier/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HORIZON Immobilier — Luxembourg">
+<meta property="og:description" content="Choisissez votre appartement depuis la façade. Une agence immobilière, en architecture interactive.">
+<meta property="og:image" content="photos/lumen-facade.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#f4f4f2">
+<link rel="preload" href="fonts/HostGrotesk-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="photos/lumen-facade.webp" imagesrcset="photos/lumen-facade-m.webp 1200w, photos/lumen-facade.webp 2400w" imagesizes="100vw" fetchpriority="high">
+<link rel="stylesheet" href="css/horizon.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"RealEstateAgent","name":"HORIZON Immobilier (démonstration)","description":"Maquette de démonstration réalisée par NS Development. Agence et biens fictifs.","telephone":"+352 00 00 00","email":"contact@horizon-immo.example","address":{"@type":"PostalAddress","streetAddress":"Avenue de la Liberté","addressLocality":"Luxembourg","addressCountry":"LU"},"areaServed":"Luxembourg"}
+</script>
 </head>
 <body>
-<nav data-nav-solid><div class="nav-in">
-  <a href="#" class="logo">Horizon</a>
-  <div class="nav-links"><a href="#biens" class="ns-link">Nos biens</a><a href="#services" class="ns-link">Services</a><a href="#estimation" class="ns-link">Estimation</a><a href="#contact" class="ns-link">Contact</a><a href="#estimation" class="nav-est">Estimer mon bien</a></div>
-  <button class="hamb">☰</button>
-</div></nav>
+<a class="sr" href="#immeuble">Aller à l'exploration de l'immeuble</a>
 
-<header class="hero"><div class="wrap hero-in">
-  <div class="hero-txt">
-    <span class="eyebrow" data-reveal="blur">Agence immobilière · Luxembourg</span>
-    <h1><span data-split data-delay="120">Voir plus loin</span><br><span data-split data-delay="420">que</span> <em data-reveal="blur" data-delay="640">quatre murs.</em></h1>
-    <p data-reveal="blur" data-delay="900">Achat, vente, location, estimation. Un conseiller qui connaît chaque rue du pays, et des biens choisis avec la même exigence que vous.</p>
-    <div class="quartiers" data-reveal data-delay="1080">
-      <span class="f-lab">Entrer par un quartier</span>
-      <div class="q-liste" id="hz-q"></div>
-    </div>
-    <p class="hero-alt" data-reveal data-delay="1200">Vous vendez plutôt ? <a href="#estimation">Estimation gratuite de votre bien</a></p>
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a href="#haut" class="logo" aria-label="HORIZON, retour en haut">
+      <svg viewBox="0 0 30 18" aria-hidden="true"><rect x="10.5" y="1" width="9" height="14" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 5.7h9M10.5 10.3h9" stroke="currentColor" stroke-width="1.1"/><path d="M0 16.6h30" stroke="#7a6644" stroke-width="1.8"/></svg>
+      HORIZON
+    </a>
+    <ul class="nav-liens">
+      <li><a href="#immeuble">Explorer</a></li>
+      <li><a href="#maisons">Maisons</a></li>
+      <li><a href="#plans">Plans</a></li>
+      <li><a href="#biens">Nos biens</a></li>
+      <li><a href="#vendre">Vendre</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#estimation" class="btn">Estimer mon bien <span class="fl" aria-hidden="true">→</span></a>
+    <button class="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu-mob"><span></span><span></span></button>
   </div>
-  <figure class="arche" data-reveal="right" data-delay="200" aria-label="Quelques biens du moment">
-    <div class="arche-f" id="arche">
-      <img class="on" src="photos/penthouse-kirchberg.jpg" alt="Façade et terrasses du penthouse au Kirchberg" data-loc="Kirchberg" data-nom="Penthouse lumineux" data-px="980 000 €" data-m2="135 m² · 3 chambres" fetchpriority="high">
-      <img src="photos/villa-strassen.jpg" alt="Villa contemporaine à Strassen, piscine et baies vitrées" data-loc="Strassen" data-nom="Villa contemporaine" data-px="1 850 000 €" data-m2="285 m² · 5 chambres" loading="lazy">
-      <img src="photos/maison-maitre-belair.jpg" alt="Salon de la maison de maître à Belair" data-loc="Belair" data-nom="Maison de maître" data-px="1 490 000 €" data-m2="240 m² · 5 chambres" loading="lazy">
-      <img src="photos/loft-hollerich.jpg" alt="Loft d'artiste à Hollerich" data-loc="Hollerich" data-nom="Loft d'artiste" data-px="820 000 €" data-m2="140 m² · 2 chambres" loading="lazy">
-    </div>
-    <figcaption class="arche-cap" id="arche-cap">
-      <div class="txt"><span class="loc">Kirchberg</span><b>Penthouse lumineux</b><span class="px"><strong>980 000 €</strong> · 135 m² · 3 chambres</span></div>
-      <div class="arche-bar"><i class="on"></i><i></i><i></i><i></i></div>
-    </figcaption>
+</header>
+<nav class="menu-mob" id="menu-mob" aria-label="Menu" inert>
+  <a href="#immeuble">Explorer <span>01</span></a>
+  <a href="#maisons">Maisons <span>02</span></a>
+  <a href="#plans">Plans <span>03</span></a>
+  <a href="#biens">Nos biens <span>04</span></a>
+  <a href="#vendre">Vendre <span>05</span></a>
+  <a href="#contact">Contact <span>06</span></a>
+  <a href="#estimation" class="btn">Estimer mon bien <span class="fl" aria-hidden="true">→</span></a>
+</nav>
+
+<main id="haut">
+<!-- ============ 01 · HERO : du trait d'architecte au bâtiment ============ -->
+<section class="hero intro" id="hero" aria-label="Accueil">
+  <div class="trace-grille" aria-hidden="true"></div>
+  <figure class="hero-photo">
+    <img src="photos/lumen-facade.webp" srcset="photos/lumen-facade-m.webp 1200w, photos/lumen-facade.webp 2400w" sizes="100vw" alt="La Résidence Lumen au Kirchberg : façade blanche, balcons vitrés et penthouse sous auvent, en fin de journée" width="2400" height="1357" fetchpriority="high">
+    <svg class="trace" viewBox="0 0 1768 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path style="--n:0" pathLength="1" d="M700 702L498 767M1220 875L1340 779M498 774L700 708M1340 786L1220 884M498 767L498 774M1220 875L498 767M498 774L1220 884M1220 884L1220 875M1340 779L1340 786M700 702L1340 779M1340 786L700 708M700 708L700 702M510 666L501 668M511 669L520 667M503 772L512 770M522 771L513 774M501 668L503 772M511 669L501 668M503 772L513 774M513 774L511 669M520 667L522 771M510 666L520 667M522 771L512 770M512 770L510 666M608 678L600 680M612 682L620 679M601 787L611 784M622 786L613 790M600 680L601 787M612 682L600 680M601 787L613 790M613 790L612 682M620 679L622 786M608 678L620 679M622 786L611 784M611 784L608 678M715 690L707 693M718 694L726 692M708 804L716 800M727 801L719 805M707 693L708 804M718 694L707 693M708 804L719 805M719 805L718 694M726 692L727 801M715 690L726 692M727 801L716 800M716 800L715 690M827 703L820 707M833 708L841 706M820 820L828 816M841 819L833 822M820 707L820 820M833 708L820 707M820 820L833 822M833 822L833 708M841 706L841 819M827 703L841 706M841 819L828 816M828 816L827 703M948 717L941 721M955 722L962 720M940 839L947 835M961 836L954 841M941 721L940 839M955 722L941 721M940 839L954 841M954 841L955 722M962 720L961 836M948 717L962 720M961 836L947 835M947 835L948 717M1078 732L1071 736M1086 738L1093 735M1070 858L1077 854M1090 856L1085 861M1071 736L1070 858M1086 738L1071 736M1070 858L1085 861M1085 861L1086 738M1093 735L1090 856M1078 732L1093 735M1090 856L1077 854M1077 854L1078 732M1216 749L1211 752M1227 755L1232 751M1208 879L1214 875M1230 877L1224 882M1211 752L1208 879M1227 755L1211 752M1208 879L1224 882M1224 882L1227 755M1232 751L1230 877M1216 749L1232 751M1230 877L1214 875M1214 875L1216 749M939 645L883 665M993 676L1043 655M883 759L938 735M1043 748L992 773M883 665L883 759M993 676L883 665M883 759L992 773M992 773L993 676M1043 655L1043 748M939 645L1043 655M1043 748L938 735M938 735L939 645"/><path style="--n:1" pathLength="1" d="M699 610L496 661M1222 745L1342 671M497 671L699 618M1342 680L1221 756M496 661L497 671M1222 745L496 661M497 671L1221 756M1221 756L1222 745M1342 671L1342 680M699 610L1342 671M1342 680L699 618M699 618L699 610M504 661L457 674M668 700L710 686M457 682L504 669M710 694L668 708M457 674L457 682M668 700L457 674M457 682L668 708M668 708L668 700M710 686L710 694M504 661L710 686M710 694L504 669M504 669L504 661M710 686L686 694M925 722L946 713M686 702L710 694M946 722L925 731M686 694L686 702M925 722L686 694M686 702L925 731M925 731L925 722M946 713L946 722M710 686L946 713M946 722L710 694M710 694L710 686M946 713L909 729M1189 763L1217 744M909 738L946 722M1217 755L1188 772M909 729L909 738M1189 763L909 729M909 738L1188 772M1188 772L1189 763M1217 744L1217 755M946 713L1217 744M1217 755L946 722M946 722L946 713M506 585L497 588M504 588L512 587M499 661L507 659M513 660L505 661M497 588L499 661M504 588L497 588M499 661L505 661M505 661L504 588M512 587L513 660M506 585L512 587M513 660L507 659M507 659L506 585M556 590L550 591M552 592L558 591M551 667L557 665M559 666L553 667M550 591L551 667M552 592L550 591M551 667L553 667M553 667L552 592M558 591L559 666M556 590L558 591M559 666L557 665M557 665L556 590M606 595L598 596M605 597L612 595M599 673L607 671M613 672L605 673M598 596L599 673M605 597L598 596M599 673L605 673M605 673L605 597M612 595L613 672M606 595L612 595M613 672L607 671M607 671L606 595M659 601L654 602M656 602L662 601M655 679L660 678M662 678L657 679M654 602L655 679M656 602L654 602M655 679L657 679M657 679L656 602M662 601L662 678M659 601L662 601M662 678L660 678M660 678L659 601M712 604L704 606M711 606L719 605M706 685L714 682M719 683L712 686M704 606L706 685M711 606L704 606M706 685L712 686M712 686L711 606M719 605L719 683M712 604L719 605M719 683L714 682M714 682L712 604M770 610L764 611M767 612L772 610M765 692L770 689M772 690L767 692M764 611L765 692M767 612L764 611M765 692L767 692M767 692L767 612M772 610L772 690M770 610L772 610M772 690L770 689M770 689L770 610M826 615L819 617M826 618L833 616M819 699L827 696M834 696L827 699M819 617L819 699M826 618L819 617M819 699L827 699M827 699L826 618M833 616L834 696M826 615L833 616M834 696L827 696M827 696L826 615M888 620L882 623M885 623L890 622M882 704L888 703M890 703L885 706M882 623L882 704M885 623L882 623M882 704L885 706M885 706L885 623M890 622L890 703M888 620L890 622M890 703L888 703M888 703L888 620M948 626L941 629M949 629L955 626M941 713L947 709M955 710L948 714M941 629L941 713M949 629L941 629M941 713L948 714M948 714L949 629M955 626L955 710M948 626L955 626M955 710L947 709M947 709L948 626M1014 632L1009 634M1012 634L1017 633M1009 720L1012 717M1016 718L1011 720M1009 634L1009 720M1012 634L1009 634M1009 720L1011 720M1011 720L1012 634M1017 633L1016 718M1014 632L1017 633M1016 718L1012 717M1012 717L1014 632M1079 638L1073 640M1081 641L1087 639M1072 728L1078 724M1086 725L1080 729M1073 640L1072 728M1081 641L1073 640M1072 728L1080 729M1080 729L1081 641M1087 639L1086 725M1079 638L1087 639M1086 725L1078 724M1078 724L1079 638M1149 645L1145 646M1149 647L1152 645M1144 735L1148 734M1151 734L1148 736M1145 646L1144 735M1149 647L1145 646M1144 735L1148 736M1148 736L1149 647M1152 645L1151 734M1149 645L1152 645M1151 734L1148 734M1148 734L1149 645M1219 651L1214 653M1223 654L1228 652M1213 744L1217 741M1227 742L1221 745M1214 653L1213 744M1223 654L1214 653M1213 744L1221 745M1221 745L1223 654M1228 652L1227 742M1219 651L1228 652M1227 742L1217 741M1217 741L1219 651M696 547L569 573M575 574L702 548M570 643L698 611M703 611L576 644M569 573L570 643M575 574L569 573M570 643L576 644M576 644L575 574M702 548L703 611M696 547L702 548M703 611L698 611M698 611L696 547M522 582L499 587M505 588L528 583M501 661L524 655M529 655L506 661M499 587L501 661M505 588L499 587M501 661L506 661M506 661L505 588M528 583L529 655M522 582L528 583M529 655L524 655M524 655L522 582M1334 595L1257 632M1267 633L1341 596M1256 717L1332 671M1340 672L1264 718M1257 632L1256 717M1267 633L1257 632M1256 717L1264 718M1264 718L1267 633M1341 596L1340 672M1334 595L1341 596M1340 672L1332 671M1332 671L1334 595M1229 646L1215 653M1223 654L1237 647M1213 743L1228 735M1236 736L1222 744M1215 653L1213 743M1223 654L1215 653M1213 743L1222 744M1222 744L1223 654M1237 647L1236 736M1229 646L1237 647M1236 736L1228 735M1228 735L1229 646M699 591L695 592M1341 648L1342 647M695 611L699 610M1342 671L1340 672M695 592L695 611M1341 648L695 592M695 611L1340 672M1340 672L1341 648M1342 647L1342 671M699 591L1342 647M1342 671L699 610M699 610L699 591M699 547L695 547M1342 596L1345 595M695 557L699 556M1343 606L1341 608M695 547L695 557M1342 596L695 547M695 557L1341 608M1341 608L1342 596M1345 595L1343 606M699 547L1345 595M1343 606L699 556M699 556L699 547M699 547L695 547M701 548L706 547M695 611L700 610M706 611L702 612M695 547L695 611M701 548L695 547M695 611L702 612M702 612L701 548M706 547L706 611M699 547L706 547M706 611L700 610M700 610L699 547M767 552L764 553M770 553L773 553M764 618L767 617M774 617L771 618M764 553L764 618M770 553L764 553M764 618L771 618M771 618L770 553M773 553L774 617M767 552L773 553M774 617L767 617M767 617L767 552M838 557L835 557M842 559L845 557M835 625L838 624M845 624L842 625M835 557L835 625M842 559L835 557M835 625L842 625M842 625L842 559M845 557L845 624M838 557L845 557M845 624L838 624M838 624L838 557M912 562L908 563M916 564L920 563M908 631L912 631M919 631L915 632M908 563L908 631M916 564L908 563M908 631L915 632M915 632L916 564M920 563L919 631M912 562L920 563M919 631L912 631M912 631L912 562M990 568L986 569M993 570L996 569M986 639L988 638M996 638L993 639M986 569L986 639M993 570L986 569M986 639L993 639M993 639L993 570M996 569L996 638M990 568L996 569M996 638L988 638M988 638L990 568M1070 575L1066 575M1074 576L1078 575M1066 646L1070 645M1077 646L1074 647M1066 575L1066 646M1074 576L1066 575M1066 646L1074 647M1074 647L1074 576M1078 575L1077 646M1070 575L1078 575M1077 646L1070 645M1070 645L1070 575M1154 581L1151 582M1159 582L1162 581M1150 654L1153 653M1161 654L1158 655M1151 582L1150 654M1159 582L1151 582M1150 654L1158 655M1158 655L1159 582M1162 581L1161 654M1154 581L1162 581M1161 654L1153 653M1153 653L1154 581M1243 588L1239 589M1248 589L1251 588M1238 662L1240 661M1249 662L1247 664M1239 589L1238 662M1248 589L1239 589M1238 662L1247 664M1247 664L1248 589M1251 588L1249 662M1243 588L1251 588M1249 662L1240 661M1240 661L1243 588M1334 595L1332 595M1341 596L1343 595M1331 672L1333 669M1341 671L1340 672M1332 595L1331 672M1341 596L1332 595M1331 672L1340 672M1340 672L1341 596M1343 595L1341 671M1334 595L1343 595M1341 671L1333 669M1333 669L1334 595M939 566L883 581M993 589L1045 574M883 652L939 633M1043 644L993 664M883 581L883 652M993 589L883 581M883 652L993 664M993 664L993 589M1045 574L1043 644M939 566L1045 574M1043 644L939 633M939 633L939 566"/><path style="--n:2" pathLength="1" d="M699 539L495 578M1223 644L1345 585M495 588L699 547M1345 595L1223 654M495 578L495 588M1223 644L495 578M495 588L1223 654M1223 654L1223 644M1345 585L1345 595M699 539L1345 585M1345 595L699 547M699 547L699 539M502 580L462 587M672 606L710 598M462 595L502 588M710 606L672 616M462 587L462 595M672 606L462 587M462 595L672 616M672 616L672 606M710 598L710 606M502 580L710 598M710 606L502 588M502 588L502 580M710 598L685 604M925 626L946 619M685 612L710 606M946 629L925 636M685 604L685 612M925 626L685 604M685 612L925 636M925 636L925 626M946 619L946 629M710 598L946 619M946 629L710 606M710 606L710 598M946 619L915 630M1195 655L1220 644M915 639L946 629M1220 653L1195 666M915 630L915 639M1195 655L915 630M915 639L1195 666M1195 666L1195 655M1220 644L1220 653M946 619L1220 644M1220 653L946 629M946 629L946 619M504 503L496 504M502 504L510 503M497 578L505 577M512 577L503 578M496 504L497 578M502 504L496 504M497 578L503 578M503 578L502 504M510 503L512 577M504 503L510 503M512 577L505 577M505 577L504 503M554 506L549 507M551 507L557 506M550 583L556 582M558 582L552 583M549 507L550 583M551 507L549 507M550 583L552 583M552 583L551 507M557 506L558 582M554 506L557 506M558 582L556 582M556 582L554 506M605 510L597 511M603 511L611 510M598 588L606 585M612 587L604 588M597 511L598 588M603 511L597 511M598 588L604 588M604 588L603 511M611 510L612 587M605 510L611 510M612 587L606 585M606 585L605 510M657 513L653 514M655 514L661 513M654 592L659 591M661 591L656 592M653 514L654 592M655 514L653 514M654 592L656 592M656 592L655 514M661 513L661 591M657 513L661 513M661 591L659 591M659 591L657 513M711 517L704 518M711 518L718 517M704 597L712 595M719 596L711 597M704 518L704 597M711 518L704 518M704 597L711 597M711 597L711 518M718 517L719 596M711 517L718 517M719 596L712 595M712 595L711 517M769 520L764 521M766 521L772 520M764 602L770 601M772 601L767 602M764 521L764 602M766 521L764 521M764 602L767 602M767 602L766 521M772 520L772 601M769 520L772 520M772 601L770 601M770 601L769 520M826 524L819 525M826 526L833 525M819 608L826 605M833 606L826 608M819 525L819 608M826 526L819 525M819 608L826 608M826 608L826 526M833 525L833 606M826 524L833 525M833 606L826 605M826 605L826 524M888 528L882 529M885 529L890 528M882 612L888 611M890 611L885 612M882 529L882 612M885 529L882 529M882 612L885 612M885 612L885 529M890 528L890 611M888 528L890 528M890 611L888 611M888 611L888 528M948 532L941 533M949 534L955 532M941 618L948 616M955 617L949 619M941 533L941 618M949 534L941 533M941 618L949 619M949 619L949 534M955 532L955 617M948 532L955 532M955 617L948 616M948 616L948 532M1014 536L1010 538M1012 538L1017 536M1009 624L1014 623M1017 623L1012 624M1010 538L1009 624M1012 538L1010 538M1009 624L1012 624M1012 624L1012 538M1017 536L1017 623M1014 536L1017 536M1017 623L1014 623M1014 623L1014 536M1079 540L1073 542M1082 542L1088 541M1073 630L1079 627M1087 629L1081 631M1073 542L1073 630M1082 542L1073 542M1073 630L1081 631M1081 631L1082 542M1088 541L1087 629M1079 540L1088 541M1087 629L1079 627M1079 627L1079 540M1150 546L1146 547M1150 547L1153 546M1145 636L1149 634M1152 634L1149 637M1146 547L1145 636M1150 547L1146 547M1145 636L1149 637M1149 637L1150 547M1153 546L1152 634M1150 546L1153 546M1152 634L1149 634M1149 634L1150 546M1221 549L1215 552M1224 552L1229 550M1214 643L1219 640M1228 641L1223 644M1215 552L1214 643M1224 552L1215 552M1214 643L1223 644M1223 644L1224 552M1229 550L1228 641M1221 549L1229 550M1228 641L1219 640M1219 640L1221 549M696 476L568 493M574 495L702 476M569 564L696 540M702 540L575 564M568 493L569 564M574 495L568 493M569 564L575 564M575 564L574 495M702 476L702 540M696 476L702 476M702 540L696 540M696 540L696 476M520 500L497 504M504 504L526 500M499 578L521 574M527 574L505 578M497 504L499 578M504 504L497 504M499 578L505 578M505 578L504 504M526 500L527 574M520 500L526 500M527 574L521 574M521 574L520 500M1335 510L1260 536M1268 536L1343 510M1257 622L1334 585M1341 587L1267 623M1260 536L1257 622M1268 536L1260 536M1257 622L1267 623M1267 623L1268 536M1343 510L1341 587M1335 510L1343 510M1341 587L1334 585M1334 585L1335 510M1230 546L1216 550M1225 552L1239 547M1215 643L1229 636M1238 637L1224 643M1216 550L1215 643M1225 552L1216 550M1215 643L1224 643M1224 643L1225 552M1239 547L1238 637M1230 546L1239 547M1238 637L1229 636M1229 636L1230 546M699 520L694 520M1342 563L1345 562M695 540L699 539M1345 585L1342 587M694 520L695 540M1342 563L694 520M695 540L1342 587M1342 587L1342 563M1345 562L1345 585M699 520L1345 562M1345 585L699 539M699 539L699 520M698 475L694 476M1343 510L1346 510M694 485L698 485M1346 521L1343 521M694 476L694 485M1343 510L694 476M694 485L1343 521M1343 521L1343 510M1346 510L1346 521M698 475L1346 510M1346 521L698 485M698 485L698 475M699 475L694 476M701 476L704 476M695 540L699 539M706 540L701 540M694 476L695 540M701 476L694 476M695 540L701 540M701 540L701 476M704 476L706 540M699 475L704 476M706 540L699 539M699 539L699 475M766 478L763 479M770 479L773 479M763 545L767 545M773 545L770 546M763 479L763 545M770 479L763 479M763 545L770 546M770 546L770 479M773 479L773 545M766 478L773 479M773 545L767 545M767 545L766 478M838 483L834 483M841 483L845 483M835 550L838 549M845 549L842 550M834 483L835 550M841 483L834 483M835 550L842 550M842 550L841 483M845 483L845 549M838 483L845 483M845 549L838 549M838 549L838 483M912 486L908 488M916 488L920 486M908 555L912 555M920 555L916 556M908 488L908 555M916 488L908 488M908 555L916 556M916 556L916 488M920 486L920 555M912 486L920 486M920 555L912 555M912 555L912 486M990 491L986 491M994 491L998 491M986 561L990 560M996 561L993 562M986 491L986 561M994 491L986 491M986 561L993 562M993 562L994 491M998 491L996 561M990 491L998 491M996 561L990 560M990 560L990 491M1071 495L1067 496M1075 496L1079 496M1067 567L1070 566M1078 567L1074 568M1067 496L1067 567M1075 496L1067 496M1067 567L1074 568M1074 568L1075 496M1079 496L1078 567M1071 495L1079 496M1078 567L1070 566M1070 566L1071 495M1156 499L1152 500M1160 500L1164 500M1151 573L1154 573M1162 573L1159 574M1152 500L1151 573M1160 500L1152 500M1151 573L1159 574M1159 574L1160 500M1164 500L1162 573M1156 499L1164 500M1162 573L1154 573M1154 573L1156 499M1244 504L1241 505M1249 505L1252 505M1240 580L1243 578M1251 580L1248 580M1241 505L1240 580M1249 505L1241 505M1240 580L1248 580M1248 580L1249 505M1252 505L1251 580M1244 504L1252 505M1251 580L1243 578M1243 578L1244 504M1336 508L1334 510M1343 510L1346 510M1332 587L1334 585M1343 585L1341 587M1334 510L1332 587M1343 510L1334 510M1332 587L1341 587M1341 587L1343 510M1346 510L1343 585M1336 508L1346 510M1343 585L1334 585M1334 585L1336 508M939 489L883 499M993 505L1045 495M883 571L939 557M1045 564L993 581M883 499L883 571M993 505L883 499M883 571L993 581M993 581L993 505M1045 495L1045 564M939 489L1045 495M1045 564L939 557M939 557L939 489"/><path style="--n:3" pathLength="1" d="M698 468L494 496M1225 541L1346 500M494 504L698 475M1346 510L1224 553M494 496L494 504M1225 541L494 496M494 504L1224 553M1224 553L1225 541M1346 500L1346 510M698 468L1346 500M1346 510L698 475M698 475L698 468M501 496L453 503M665 517L709 508M454 511L501 504M709 518L665 526M453 503L454 511M665 517L453 503M454 511L665 526M665 526L665 517M709 508L709 518M501 496L709 508M709 518L501 504M501 504L501 496M709 508L685 513M925 528L947 524M685 522L709 518M947 533L925 539M685 513L685 522M925 528L685 513M685 522L925 539M925 539L925 528M947 524L947 533M709 508L947 524M947 533L709 518M709 518L709 508M947 524L909 533M1191 552L1221 541M909 542L947 533M1221 552L1191 562M909 533L909 542M1191 552L909 533M909 542L1191 562M1191 562L1191 552M1221 541L1221 552M947 524L1221 541M1221 552L947 533M947 533L947 524M503 420L495 420M501 420L509 420M496 496L504 495M510 495L502 496M495 420L496 496M501 420L495 420M496 496L502 496M502 496L501 420M509 420L510 495M503 420L509 420M510 495L504 495M504 495L503 420M553 421L548 422M550 422L556 421M549 498L554 497M557 498L551 498M548 422L549 498M550 422L548 422M549 498L551 498M551 498L550 422M556 421L557 498M553 421L556 421M557 498L554 497M554 497L553 421M604 423L596 425M601 425L609 423M597 502L605 500M611 500L603 502M596 425L597 502M601 425L596 425M597 502L603 502M603 502L601 425M609 423L611 500M604 423L609 423M611 500L605 500M605 500L604 423M657 426L652 426M654 426L660 426M653 505L657 504M661 504L655 505M652 426L653 505M654 426L652 426M653 505L655 505M655 505L654 426M660 426L661 504M657 426L660 426M661 504L657 504M657 504L657 426M711 427L703 428M710 428L717 428M704 508L711 507M718 507L710 508M703 428L704 508M710 428L703 428M704 508L710 508M710 508L710 428M717 428L718 507M711 427L717 428M718 507L711 507M711 507L711 427M769 430L763 430M766 430L771 430M764 512L769 511M772 511L766 512M763 430L764 512M766 430L763 430M764 512L766 512M766 512L766 430M771 430L772 511M769 430L771 430M772 511L769 511M769 511L769 430M826 432L819 433M826 433L833 433M819 515L826 514M833 514L826 515M819 433L819 515M826 433L819 433M819 515L826 515M826 515L826 433M833 433L833 514M826 432L833 433M833 514L826 514M826 514L826 432M888 434L882 435M885 435L890 435M882 519L888 518M890 519L885 519M882 435L882 519M885 435L882 435M882 519L885 519M885 519L885 435M890 435L890 519M888 434L890 435M890 519L888 518M888 518L888 434M948 436L941 437M949 437L956 437M941 524L948 521M956 522L949 524M941 437L941 524M949 437L941 437M941 524L949 524M949 524L949 437M956 437L956 522M948 436L956 437M956 522L948 521M948 521L948 436M1015 440L1010 440M1014 440L1018 440M1010 527L1014 526M1017 526L1012 527M1010 440L1010 527M1014 440L1010 440M1010 527L1012 527M1012 527L1014 440M1018 440L1017 526M1015 440L1018 440M1017 526L1014 526M1014 526L1015 440M1080 442L1074 443M1082 443L1088 442M1073 532L1080 529M1088 531L1082 532M1074 443L1073 532M1082 443L1074 443M1073 532L1082 532M1082 532L1082 443M1088 442L1088 531M1080 442L1088 442M1088 531L1080 529M1080 529L1080 442M1152 444L1148 446M1151 446L1156 444M1146 535L1151 535M1154 535L1150 536M1148 446L1146 535M1151 446L1148 446M1146 535L1150 536M1150 536L1151 446M1156 444L1154 535M1152 444L1156 444M1154 535L1151 535M1151 535L1152 444M1222 448L1217 448M1227 449L1231 448M1215 540L1221 539M1230 539L1224 541M1217 448L1215 540M1227 449L1217 448M1215 540L1224 541M1224 541L1227 449M1231 448L1230 539M1222 448L1231 448M1230 539L1221 539M1221 539L1222 448M695 402L567 414M573 414L701 404M568 485L696 468M701 468L574 485M567 414L568 485M573 414L567 414M568 485L574 485M574 485L573 414M701 404L701 468M695 402L701 404M701 468L696 468M696 468L695 402M519 418L496 420M502 420L525 419M497 495L520 492M526 492L503 496M496 420L497 495M502 420L496 420M497 495L503 496M503 496L502 420M525 419L526 492M519 418L525 419M526 492L520 492M520 492L519 418M1338 423L1261 440M1270 440L1346 423M1260 526L1335 500M1343 500L1268 526M1261 440L1260 526M1270 440L1261 440M1260 526L1268 526M1268 526L1270 440M1346 423L1343 500M1338 423L1346 423M1343 500L1335 500M1335 500L1338 423M1232 446L1219 448M1228 449L1241 446M1216 540L1231 535M1239 536L1225 541M1219 448L1216 540M1228 449L1219 448M1216 540L1225 541M1225 541L1228 449M1241 446L1239 536M1232 446L1241 446M1239 536L1231 535M1231 535L1232 446M698 448L694 448M1345 477L1347 477M694 468L698 468M1346 500L1345 502M694 448L694 468M1345 477L694 448M694 468L1345 502M1345 502L1345 477M1347 477L1346 500M698 448L1347 477M1346 500L698 468M698 468L698 448M698 402L693 402M1346 423L1348 423M693 413L698 413M1348 435L1346 435M693 402L693 413M1346 423L693 402M693 413L1346 435M1346 435L1346 423M1348 423L1348 435M698 402L1348 423M1348 435L698 413M698 413L698 402M698 402L694 404M700 404L704 402M694 468L699 468M704 468L701 468M694 404L694 468M700 404L694 404M694 468L701 468M701 468L700 404M704 402L704 468M698 402L704 402M704 468L699 468M699 468L698 402M766 405L763 405M769 406L773 405M763 471L766 471M773 471L770 471M763 405L763 471M769 406L763 405M763 471L770 471M770 471L769 406M773 405L773 471M766 405L773 405M773 471L766 471M766 471L766 405M837 407L834 407M841 408L844 407M834 475L838 475M844 475L841 476M834 407L834 475M841 408L834 407M834 475L841 476M841 476L841 408M844 407L844 475M837 407L844 407M844 475L838 475M838 475L837 407M912 409L908 409M916 411L920 409M908 479L912 478M920 478L916 479M908 409L908 479M916 411L908 409M908 479L916 479M916 479L916 411M920 409L920 478M912 409L920 409M920 478L912 478M912 478L912 409M990 412L987 413M994 413L998 412M986 483L990 482M998 483L994 483M987 413L986 483M994 413L987 413M986 483L994 483M994 483L994 413M998 412L998 483M990 412L998 412M998 483L990 482M990 482L990 412M1071 414L1069 415M1077 415L1079 415M1067 488L1071 486M1079 486L1075 488M1069 415L1067 488M1077 415L1069 415M1067 488L1075 488M1075 488L1077 415M1079 415L1079 486M1071 414L1079 415M1079 486L1071 486M1071 486L1071 414M1157 418L1153 418M1161 418L1165 418M1152 491L1156 491M1164 491L1160 492M1153 418L1152 491M1161 418L1153 418M1152 491L1160 492M1160 492L1161 418M1165 418L1164 491M1157 418L1165 418M1164 491L1156 491M1156 491L1157 418M1245 420L1243 421M1252 421L1254 420M1241 496L1244 496M1253 496L1249 497M1243 421L1241 496M1252 421L1243 421M1241 496L1249 497M1249 497L1252 421M1254 420L1253 496M1245 420L1254 420M1253 496L1244 496M1244 496L1245 420M1339 423L1336 423M1346 423L1348 423M1334 500L1336 500M1346 500L1343 502M1336 423L1334 500M1346 423L1336 423M1334 500L1343 502M1343 502L1346 423M1348 423L1346 500M1339 423L1348 423M1346 500L1336 500M1336 500L1339 423M939 411L883 418M994 421L1046 414M883 490L939 481M1045 485L993 497M883 418L883 490M994 421L883 418M883 490L993 497M993 497L994 421M1046 414L1045 485M939 411L1046 414M1045 485L939 481M939 481L939 411"/><path style="--n:4" pathLength="1" d="M696 395L491 412M1227 437L1348 414M491 420L698 402M1348 423L1227 449M491 412L491 420M1227 437L491 412M491 420L1227 449M1227 449L1227 437M1348 414L1348 423M696 395L1348 414M1348 423L698 402M698 402L696 395M498 412L458 415M671 423L708 420M458 423L499 420M708 428L671 432M458 415L458 423M671 423L458 415M458 423L671 432M671 432L671 423M708 420L708 428M498 412L708 420M708 428L499 420M499 420L498 412M708 420L684 422M925 432L947 428M684 430L708 428M947 437L925 441M684 422L684 430M925 432L684 422M684 430L925 441M925 441L925 432M947 428L947 437M708 420L947 428M947 437L708 428M708 428L708 420M947 428L915 433M1198 443L1223 439M915 442L947 437M1223 448L1198 454M915 433L915 442M1198 443L915 433M915 442L1198 454M1198 454L1198 443M1223 439L1223 448M947 428L1223 439M1223 448L947 437M947 437L947 428M501 335L493 335M498 336L506 335M494 411L503 411M509 411L499 412M493 335L494 411M498 336L493 335M494 411L499 412M499 412L498 336M506 335L509 411M501 335L506 335M509 411L503 411M503 411L501 335M551 336L545 336M548 336L553 336M546 413L552 413M556 413L550 413M545 336L546 413M548 336L545 336M546 413L550 413M550 413L548 336M553 336L556 413M551 336L553 336M556 413L552 413M552 413L551 336M603 336L594 337M600 337L608 336M596 415L604 414M609 414L601 415M594 337L596 415M600 337L594 337M596 415L601 415M601 415L600 337M608 336L609 414M603 336L608 336M609 414L604 414M604 414L603 336M656 337L651 337M653 337L659 337M652 416L656 416M660 416L654 416M651 337L652 416M653 337L651 337M652 416L654 416M654 416L653 337M659 337L660 416M656 337L659 337M660 416L656 416M656 416L656 337M710 337L702 338M709 338L717 338M703 419L710 418M717 419L710 419M702 338L703 419M709 338L702 338M703 419L710 419M710 419L709 338M717 338L717 419M710 337L717 338M717 419L710 418M710 418L710 337M767 338L763 338M765 338L771 338M763 421L769 420M771 420L766 421M763 338L763 421M765 338L763 338M763 421L766 421M766 421L765 338M771 338L771 420M767 338L771 338M771 420L769 420M769 420L767 338M826 339L818 339M826 339L833 339M819 423L826 422M833 422L826 423M818 339L819 423M826 339L818 339M819 423L826 423M826 423L826 339M833 339L833 422M826 339L833 339M833 422L826 422M826 422L826 339M888 339L882 339M885 341L890 339M882 425L888 425M890 425L885 425M882 339L882 425M885 341L882 339M882 425L885 425M885 425L885 341M890 339L890 425M888 339L890 339M890 425L888 425M888 425L888 339M948 341L943 341M949 341L956 341M941 427L948 427M956 427L949 428M943 341L941 427M949 341L943 341M941 427L949 428M949 428L949 341M956 341L956 427M948 341L956 341M956 427L948 427M948 427L948 341M1015 342L1011 342M1014 342L1018 342M1010 429L1015 429M1018 429L1014 429M1011 342L1010 429M1014 342L1011 342M1010 429L1014 429M1014 429L1014 342M1018 342L1018 429M1015 342L1018 342M1018 429L1015 429M1015 429L1015 342M1081 342L1075 343M1083 343L1089 342M1074 433L1080 432M1089 432L1082 433M1075 343L1074 433M1083 343L1075 343M1074 433L1082 433M1082 433L1083 343M1089 342L1089 432M1081 342L1089 342M1089 432L1080 432M1080 432L1081 342M1153 343L1149 343M1152 343L1157 343M1148 435L1152 434M1156 434L1151 435M1149 343L1148 435M1152 343L1149 343M1148 435L1151 435M1151 435L1152 343M1157 343L1156 434M1153 343L1157 343M1156 434L1152 434M1152 434L1153 343M1224 344L1219 344M1228 344L1233 344M1217 437L1222 436M1231 436L1227 437M1219 344L1217 437M1228 344L1219 344M1217 437L1227 437M1227 437L1228 344M1233 344L1231 436M1224 344L1233 344M1231 436L1222 436M1222 436L1224 344M695 330L566 334M572 334L700 330M567 406L695 395M701 395L573 406M566 334L567 406M572 334L566 334M567 406L573 406M573 406L572 334M700 330L701 395M695 330L700 330M701 395L695 395M695 395L695 330M517 335L494 335M501 335L524 335M496 411L519 409M525 409L502 412M494 335L496 411M501 335L494 335M496 411L502 412M502 412L501 335M524 335L525 409M517 335L524 335M525 409L519 409M519 409L517 335M1340 336L1263 342M1271 342L1347 336M1262 429L1338 414M1346 414L1270 429M1263 342L1262 429M1271 342L1263 342M1262 429L1270 429M1270 429L1271 342M1347 336L1346 414M1340 336L1347 336M1346 414L1338 414M1338 414L1340 336M1235 343L1220 344M1229 344L1243 343M1219 437L1232 434M1241 435L1228 437M1220 344L1219 437M1229 344L1220 344M1219 437L1228 437M1228 437L1229 344M1243 343L1241 435M1235 343L1243 343M1241 435L1232 434M1232 434L1235 343M696 376L693 376M1347 391L1349 391M693 395L696 395M1348 414L1346 414M693 376L693 395M1347 391L693 376M693 395L1346 414M1346 414L1347 391M1349 391L1348 414M696 376L1349 391M1348 414L696 395M696 395L696 376M696 330L693 330M1348 336L1350 336M693 339L696 339M1350 348L1348 349M693 330L693 339M1348 336L693 330M693 339L1348 349M1348 349L1348 336M1350 336L1350 348M696 330L1350 336M1350 348L696 339M696 339L696 330M696 330L693 330M700 330L703 330M694 395L698 395M703 395L700 395M693 330L694 395M700 330L693 330M694 395L700 395M700 395L700 330M703 330L703 395M696 330L703 330M703 395L698 395M698 395L696 330M766 330L762 330M769 331L772 330M763 398L766 397M773 398L769 398M762 330L763 398M769 331L762 330M763 398L769 398M769 398L769 331M772 330L773 398M766 330L772 330M773 398L766 397M766 397L766 330M837 331L834 331M841 331L844 331M834 399L837 399M844 399L841 400M834 331L834 399M841 331L834 331M834 399L841 400M841 400L841 331M844 331L844 399M837 331L844 331M844 399L837 399M837 399L837 331M913 332L909 332M916 332L920 332M908 401L913 401M920 401L916 402M909 332L908 401M916 332L909 332M908 401L916 402M916 402L916 332M920 332L920 401M913 332L920 332M920 401L913 401M913 401L913 332M991 332L987 332M994 332L998 332M987 404L990 404M998 404L994 405M987 332L987 404M994 332L987 332M987 404L994 405M994 405L994 332M998 332L998 404M991 332L998 332M998 404L990 404M990 404L991 332M1072 334L1069 334M1077 334L1080 334M1069 406L1071 406M1079 406L1077 407M1069 334L1069 406M1077 334L1069 334M1069 406L1077 407M1077 407L1077 334M1080 334L1079 406M1072 334L1080 334M1079 406L1071 406M1071 406L1072 334M1158 335L1154 335M1162 335L1166 335M1153 409L1157 408M1165 408L1161 409M1154 335L1153 409M1162 335L1154 335M1153 409L1161 409M1161 409L1162 335M1166 335L1165 408M1158 335L1166 335M1165 408L1157 408M1157 408L1158 335M1247 335L1244 336M1253 336L1255 336M1243 412L1245 411M1254 412L1252 412M1244 336L1243 412M1253 336L1244 336M1243 412L1252 412M1252 412L1253 336M1255 336L1254 412M1247 335L1255 336M1254 412L1245 411M1245 411L1247 335M1340 336L1338 336M1347 336L1349 336M1336 414L1339 414M1348 414L1346 414M1338 336L1336 414M1347 336L1338 336M1336 414L1346 414M1346 414L1347 336M1349 336L1348 414M1340 336L1349 336M1348 414L1339 414M1339 414L1340 336M939 332L883 335M994 336L1047 334M883 408L939 402M1046 406L994 412M883 335L883 408M994 336L883 335M883 408L994 412M994 412L994 336M1047 334L1046 406M939 332L1047 334M1046 406L939 402M939 402L939 332"/><path style="--n:5" pathLength="1" d="M696 322L490 327M1229 334L1350 327M490 335L696 330M1350 336L1229 344M490 327L490 335M1229 334L490 327M490 335L1229 344M1229 344L1229 334M1350 327L1350 336M696 322L1350 327M1350 336L696 330M696 330L696 322M497 327L449 328M663 330L707 329M449 337L497 335M707 338L663 339M449 328L449 337M663 330L449 328M449 337L663 339M663 339L663 330M707 329L707 338M497 327L707 329M707 338L497 335M497 335L497 327M707 329L683 330M927 332L947 331M683 338L707 338M947 341L925 342M683 330L683 338M927 332L683 330M683 338L925 342M925 342L927 332M947 331L947 341M707 329L947 331M947 341L707 338M707 338L707 329M947 331L909 332M1195 336L1224 334M909 343L947 341M1224 344L1195 346M909 332L909 343M1195 336L909 332M909 343L1195 346M1195 346L1195 336M1224 334L1224 344M947 331L1224 334M1224 344L947 341M947 341L947 331M499 250L491 250M497 250L505 250M493 327L501 327M506 327L498 327M491 250L493 327M497 250L491 250M493 327L498 327M498 327L497 250M505 250L506 327M499 250L505 250M506 327L501 327M501 327L499 250M550 250L544 250M546 250L552 250M545 327L551 327M553 327L548 327M544 250L545 327M546 250L544 250M545 327L548 327M548 327L546 250M552 250L553 327M550 250L552 250M553 327L551 327M551 327L550 250M600 248L592 248M599 248L607 248M594 328L601 327M608 327L600 328M592 248L594 328M599 248L592 248M594 328L600 328M600 328L599 248M607 248L608 327M600 248L607 248M608 327L601 327M601 327L600 248M655 247L649 247M652 247L657 247M651 328L656 328M659 328L653 328M649 247L651 328M652 247L649 247M651 328L653 328M653 328L652 247M657 247L659 328M655 247L657 247M659 328L656 328M656 328L655 247M709 247L701 246M708 246L716 247M702 328L710 328M717 328L709 328M701 246L702 328M708 246L701 246M702 328L709 328M709 328L708 246M716 247L717 328M709 247L716 247M717 328L710 328M710 328L709 247M767 246L762 246M765 246L770 246M763 329L767 329M771 329L765 329M762 246L763 329M765 246L762 246M763 329L765 329M765 329L765 246M770 246L771 329M767 246L770 246M771 329L767 329M767 329L767 246M825 245L818 245M825 245L833 245M818 329L825 329M833 329L826 329M818 245L818 329M825 245L818 245M818 329L826 329M826 329L825 245M833 245L833 329M825 245L833 245M833 329L825 329M825 329L825 245M888 244L882 244M885 244L890 244M882 330L888 330M890 330L885 330M882 244L882 330M885 244L882 244M882 330L885 330M885 330L885 244M890 244L890 330M888 244L890 244M890 330L888 330M888 330L888 244M949 244L943 243M951 243L956 244M943 330L948 330M956 330L949 330M943 243L943 330M951 243L943 243M943 330L949 330M949 330L951 243M956 244L956 330M949 244L956 244M956 330L948 330M948 330L949 244M1016 243L1011 243M1015 241L1019 243M1011 331L1016 331M1018 331L1015 331M1011 243L1011 331M1015 241L1011 243M1011 331L1015 331M1015 331L1015 241M1019 243L1018 331M1016 243L1019 243M1018 331L1016 331M1016 331L1016 243M1082 241L1077 241M1085 241L1090 241M1075 331L1081 331M1089 331L1083 331M1077 241L1075 331M1085 241L1077 241M1075 331L1083 331M1083 331L1085 241M1090 241L1089 331M1082 241L1090 241M1089 331L1081 331M1081 331L1082 241M1154 240L1151 240M1154 240L1158 240M1150 332L1153 332M1157 332L1153 332M1151 240L1150 332M1154 240L1151 240M1150 332L1153 332M1153 332L1154 240M1158 240L1157 332M1154 240L1158 240M1157 332L1153 332M1153 332L1154 240M1225 239L1221 239M1230 239L1235 239M1220 334L1224 332M1233 332L1228 334M1221 239L1220 334M1230 239L1221 239M1220 334L1228 334M1228 334L1230 239M1235 239L1233 332M1225 239L1235 239M1233 332L1224 332M1224 332L1225 239M694 257L564 252M569 252L700 257M565 324L695 322M700 322L570 324M564 252L565 324M569 252L564 252M565 324L570 324M570 324L569 252M700 257L700 322M694 257L700 257M700 322L695 322M695 322L694 257M515 251L493 250M498 250L521 251M494 327L517 325M522 325L499 327M493 250L494 327M498 250L493 250M494 327L499 327M499 327L498 250M521 251L522 325M515 251L521 251M522 325L517 325M517 325L515 251M1341 248L1265 243M1274 243L1349 248M1263 331L1340 327M1348 327L1272 331M1265 243L1263 331M1274 243L1265 243M1263 331L1272 331M1272 331L1274 243M1349 248L1348 327M1341 248L1349 248M1348 327L1340 327M1340 327L1341 248M1236 240L1222 239M1231 239L1245 240M1220 334L1235 332M1243 332L1229 334M1222 239L1220 334M1231 239L1222 239M1220 334L1229 334M1229 334L1231 239M1245 240L1243 332M1236 240L1245 240M1243 332L1235 332M1235 332L1236 240M696 302L692 302M1349 303L1350 303M693 322L696 322M1350 327L1348 327M692 302L693 322M1349 303L692 302M693 322L1348 327M1348 327L1349 303M1350 303L1350 327M696 302L1350 303M1350 327L696 322M696 322L696 302M695 257L692 257M1350 248L1353 248M692 266L695 266M1351 260L1349 260M692 257L692 266M1350 248L692 257M692 266L1349 260M1349 260L1350 248M1353 248L1351 260M695 257L1353 248M1351 260L695 266M695 266L695 257M696 257L692 257M699 257L702 257M693 322L696 322M703 322L699 322M692 257L693 322M699 257L692 257M693 322L699 322M699 322L699 257M702 257L703 322M696 257L702 257M703 322L696 322M696 322L696 257M765 255L762 255M769 255L772 255M762 323L766 323M772 323L769 323M762 255L762 323M769 255L762 255M762 323L769 323M769 323L769 255M772 255L772 323M765 255L772 255M772 323L766 323M766 323L765 255M837 254L834 254M841 254L844 254M834 323L837 323M844 323L841 323M834 254L834 323M841 254L834 254M834 323L841 323M841 323L841 254M844 254L844 323M837 254L844 254M844 323L837 323M837 323L837 254M913 254L909 254M916 253L920 254M909 324L913 324M920 324L916 324M909 254L909 324M916 253L909 254M909 324L916 324M916 324L916 253M920 254L920 324M913 254L920 254M920 324L913 324M913 324L913 254M991 253L987 253M995 253L999 253M987 324L991 324M998 324L994 324M987 253L987 324M995 253L987 253M987 324L994 324M994 324L995 253M999 253L998 324M991 253L999 253M998 324L991 324M991 324L991 253M1073 252L1070 252M1078 252L1081 252M1069 325L1072 325M1080 325L1077 325M1070 252L1069 325M1078 252L1070 252M1069 325L1077 325M1077 325L1078 252M1081 252L1080 325M1073 252L1081 252M1080 325L1072 325M1072 325L1073 252M1159 251L1156 251M1164 251L1167 251M1154 325L1158 325M1166 325L1162 325M1156 251L1154 325M1164 251L1156 251M1154 325L1162 325M1162 325L1164 251M1167 251L1166 325M1159 251L1167 251M1166 325L1158 325M1158 325L1159 251M1248 250L1246 250M1254 250L1257 250M1245 327L1247 327M1255 327L1253 327M1246 250L1245 327M1254 250L1246 250M1245 327L1253 327M1253 327L1254 250M1257 250L1255 327M1248 250L1257 250M1255 327L1247 327M1247 327L1248 250M1342 248L1340 248M1349 248L1351 248M1339 327L1341 327M1349 327L1348 327M1340 248L1339 327M1349 248L1340 248M1339 327L1348 327M1348 327L1349 248M1351 248L1349 327M1342 248L1351 248M1349 327L1341 327M1341 327L1342 248M939 253L883 251M995 250L1047 252M883 325L939 324M1047 324L994 327M883 251L883 325M995 250L883 251M883 325L994 327M994 327L995 250M1047 252L1047 324M939 253L1047 252M1047 324L939 324M939 324L939 253"/><path style="--n:6" pathLength="1" d="M695 248L488 240M1230 227L1353 239M488 250L695 257M1353 248L1230 239M488 240L488 250M1230 227L488 240M488 250L1230 239M1230 239L1230 227M1353 239L1353 248M695 248L1353 239M1353 248L695 257M695 257L695 248M593 240L526 237M1038 227L1087 231M526 246L593 248M1087 241L1038 238M526 237L526 246M1038 227L526 237M526 246L1038 238M1038 238L1038 227M1087 231L1087 241M593 240L1087 231M1087 241L593 248M593 248L593 240M787 170L783 169M1225 153L1228 154M785 247L788 247M1227 241L1224 240M783 169L785 247M1225 153L783 169M785 247L1224 240M1224 240L1225 153M1228 154L1227 241M787 170L1228 154M1227 241L788 247M788 247L787 170M599 149L594 148M597 148L601 149M596 239L600 239M603 239L598 239M594 148L596 239M597 148L594 148M596 239L598 239M598 239L597 148M601 149L603 239M599 149L601 149M603 239L600 239M600 239L599 149M653 147L648 146M651 146L655 146M648 238L654 238M656 238L652 238M648 146L648 238M651 146L648 146M648 238L652 238M652 238L651 146M655 146L656 238M653 147L655 146M656 238L654 238M654 238L653 147M708 143L703 143M706 143L710 143M704 237L709 237M711 237L707 237M703 143L704 237M706 143L703 143M704 237L707 237M707 237L706 143M710 143L711 237M708 143L710 143M711 237L709 237M709 237L708 143M765 141L761 141M764 141L769 141M762 236L766 236M769 236L764 236M761 141L762 236M764 141L761 141M762 236L764 236M764 236L764 141M769 141L769 236M765 141L769 141M769 236L766 236M766 236L765 141M825 139L820 138M824 138L827 139M820 234L825 236M828 236L824 234M820 138L820 234M824 138L820 138M820 234L824 234M824 234L824 138M827 139L828 236M825 139L827 139M828 236L825 236M825 236L825 139M886 135L882 135M885 135L889 135M882 233L886 234M889 234L885 233M882 135L882 233M885 135L882 135M882 233L885 233M885 233L885 135M889 135L889 234M886 135L889 135M889 234L886 234M886 234L886 135M949 133L946 132M948 132L953 133M946 232L949 233M953 233L948 232M946 132L946 232M948 132L946 132M946 232L948 232M948 232L948 132M953 133L953 233M949 133L953 133M953 233L949 233M949 233L949 133M1016 129L1012 129M1015 129L1019 129M1011 231L1015 232M1018 232L1015 231M1012 129L1011 231M1015 129L1012 129M1011 231L1015 231M1015 231L1015 129M1019 129L1018 232M1016 129L1019 129M1018 232L1015 232M1015 232L1016 129M1085 127L1081 126M1083 126L1088 127M1080 230L1083 231M1087 231L1083 230M1081 126L1080 230M1083 126L1081 126M1080 230L1083 230M1083 230L1083 126M1088 127L1087 231M1085 127L1088 127M1087 231L1083 231M1083 231L1085 127M940 164L883 156M995 152L1048 160M883 243L939 245M1047 244L995 240M883 156L883 243M995 152L883 156M883 243L995 240M995 240L995 152M1048 160L1047 244M940 164L1048 160M1047 244L939 245M939 245L940 164"/></svg>
   </figure>
-</div></header>
+  
+  <p class="hero-amorce" aria-hidden="true">Trouvez bien plus qu'une adresse.<small>RÉSIDENCE LUMEN · KIRCHBERG · ÉLÉVATION 1:200</small></p>
+  <button class="passer" type="button">Passer l'introduction</button>
+  <div class="hero-txt">
+    <div class="cadre">
+      <div>
+        <h1 class="mots" data-mots>Votre prochain chapitre <b>commence ici.</b></h1>
+        <p class="hero-sous" data-v style="--d:500ms">Une agence immobilière au Luxembourg qui vous fait entrer dans les biens avant la visite : façade, étage, appartement, pièce par pièce.</p>
+        <div class="hero-actions" data-v style="--d:700ms">
+          <a href="#immeuble" class="btn">Découvrir les biens <span class="fl" aria-hidden="true">↓</span></a>
+          <a href="#vendre" class="lien">Vendre mon bien <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <dl class="hero-cote" data-v style="--d:900ms">
+        <div><dt>Résidence</dt><dd>Lumen</dd></div>
+        <div><dt>Quartier</dt><dd>Kirchberg</dd></div>
+        <div><dt>Logements</dt><dd id="hc-lots">16</dd></div>
+        <div><dt>Disponibles</dt><dd id="hc-dispo">6</dd></div>
+        <div><dt>Statut</dt><dd>Programme fictif</dd></div>
+      </dl>
+    </div>
+  </div>
+  <span class="defiler" aria-hidden="true"></span>
+</section>
 
-<section id="biens"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow" data-reveal="blur">Nos biens</span><h2 data-split>Trouvez votre prochaine adresse</h2><p data-reveal="blur" data-delay="260">Affinez votre recherche : la sélection se met à jour à chaque critère.</p></div>
+<!-- ============ 02 · L'IMMEUBLE INTERACTIF ============ -->
+<div class="cadre">
+  <header class="tete">
+    <div>
+      <h2 class="mots" data-mots>Choisissez votre appartement <b>depuis la façade.</b></h2>
+    </div>
+    <p data-v>Survolez un étage, ouvrez-le, entrez dans un logement : la façade s'efface, le plan se dresse, les pièces apparaissent. Chaque fenêtre de la Résidence Lumen est un appartement réel du catalogue.</p>
+  </header>
+</div>
+<section class="imm" id="immeuble" aria-label="Résidence Lumen, exploration en trois dimensions" data-mode="facade" tabindex="-1">
+  <div class="imm-stage">
+    <canvas aria-label="Maquette 3D de la Résidence Lumen. Utilisez la liste des étages pour naviguer au clavier."></canvas>
+    <div class="imm-repli"><img src="photos/lumen-facade.webp" alt="" loading="lazy"></div>
+    <div class="imm-haut">
+      <nav class="imm-fil" aria-label="Où suis-je dans l'immeuble"></nav>
+      <div class="imm-vues" role="group" aria-label="Mode de vue">
+        <button type="button" data-vue="facade" aria-pressed="true">Façade</button>
+        <button type="button" data-vue="etage" aria-pressed="false">Étage</button>
+        <button type="button" data-vue="eclate" aria-pressed="false">Éclatée</button>
+        <button type="button" data-vue="interieur" aria-pressed="false">Intérieur</button>
+      </div>
+    </div>
+    <div class="imm-cote" aria-hidden="true"><h3>Résidence <b>Lumen</b></h3><p>KIRCHBERG · R+6 · 16 LOGEMENTS</p></div>
+    <div class="imm-info" hidden></div>
+    <div class="imm-pieces" aria-hidden="true"></div>
+    <p class="imm-aide" aria-live="polite"></p>
+  </div>
+  <ol class="imm-etages" aria-label="Étages de la résidence"></ol>
+  <aside class="imm-panneau" aria-label="Détail" aria-live="polite"></aside>
+</section>
 
-  <div class="tools" data-reveal>
-    <div class="tools-top">
-      <div class="seg" role="group" aria-label="Type de transaction">
-        <button type="button" data-t="vente" class="on" aria-pressed="true">Acheter</button>
+<!-- ============ 03 · MAISONS & PROPRIÉTÉS ============ -->
+<section id="maisons" aria-label="Maisons et propriétés">
+  <div class="cadre">
+    <header class="tete">
+      <div>
+        <h2 class="mots" data-mots>Faites le tour <b>avant la visite.</b></h2>
+      </div>
+      <p data-v>Tournez autour de la maison, approchez la façade, la terrasse, la piscine, le jardin. D'une propriété à l'autre, la précédente redevient dessin, la suivante se construit.</p>
+    </header>
+    <div class="mai-tetes"><div class="mai-onglets" role="tablist" aria-label="Choisir une propriété"></div></div>
+  </div>
+  <div class="mai">
+    <div class="mai-scene">
+      <canvas aria-label="Maquette 3D de la propriété sélectionnée : glissez pour tourner autour."></canvas>
+      <div class="imm-repli"><img src="photos/villa-aster.webp" alt="" loading="lazy"></div>
+      <div class="mai-points"></div>
+      <div class="mai-nav" role="group" aria-label="Navigation">
+        <button type="button" data-mai="prec" aria-label="Propriété précédente">←</button>
+        <button type="button" data-mai="suiv" aria-label="Propriété suivante">→</button>
+        <button type="button" data-mai="moins" aria-label="S'éloigner">−</button>
+        <button type="button" data-mai="plus" aria-label="S'approcher">+</button>
+      </div>
+      <div class="mai-barre">
+        <p class="mai-legende" aria-live="polite"></p>
+        <div class="mai-zones" role="group" aria-label="Points de vue">
+          <button type="button" data-zone="ensemble" aria-pressed="true">Vue d'ensemble</button>
+          <button type="button" data-zone="facade" aria-pressed="false">Façade</button>
+          <button type="button" data-zone="terrasse" aria-pressed="false">Terrasse</button>
+          <button type="button" data-zone="piscine" aria-pressed="false">Piscine</button>
+          <button type="button" data-zone="jardin" aria-pressed="false">Jardin</button>
+        </div>
+      </div>
+    </div>
+    <aside class="mai-fiche" aria-live="polite"></aside>
+  </div>
+</section>
+
+<!-- ============ 04 · LES PLANS D'ARCHITECTE ============ -->
+<section class="plans" id="plans" aria-label="Du plan au logement">
+  <div class="plans-scene">
+    <div class="plans-txt">
+      <h2>Du trait <b>à la lumière.</b></h2>
+      <ol class="etapes">
+        <li data-e="0"><span class="k">01</span><b>Le trait</b><p>L'architecte pose les murs, les cloisons, les portes, les cotes. Le plan type A, 118 m², trois chambres.</p></li>
+        <li data-e="1"><span class="k">02</span><b>Le volume</b><p>Le plan se couche, les murs montent. On lit enfin les distances, les passages, la lumière qui traverse.</p></li>
+        <li data-e="2"><span class="k">03</span><b>La matière</b><p>Les sols, les meubles, les usages : le même plan, habité.</p></li>
+        <li data-e="3"><span class="k">04</span><b>La vie</b><p>Et vous voilà dans le séjour, face au balcon.</p></li>
+      </ol>
+      <div class="plans-jauge"><i></i></div>
+    </div>
+    <div class="plans-vue">
+      <div class="plans-plateau" aria-hidden="true"></div>
+      <div class="plans-photo">
+        <img class="p-iso" src="photos/lumen-a-iso.webp" alt="Le plan type A meublé, vu en coupe isométrique" loading="lazy">
+        <img class="p-oeil" src="photos/lumen-a-sejour.webp" alt="Séjour d'un appartement type A de la Résidence Lumen, baies vitrées sur le balcon" loading="lazy">
+      </div>
+      <p class="plans-leg mono">PLAN TYPE A · 1:100</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · TROUVER SON BIEN ============ -->
+<section id="biens" aria-label="Nos biens">
+  <div class="cadre">
+    <header class="tete">
+      <div>
+        <h2 class="mots" data-mots>Trouvez <b>votre bien.</b></h2>
+      </div>
+      <p data-v>Acheter ou louer, un quartier, un budget, une référence : la sélection se recompose à chaque critère, et l'adresse de la page garde votre recherche pour la partager.</p>
+    </header>
+  </div>
+  <form class="filtres" role="search" aria-label="Filtrer les biens" onsubmit="return false">
+    <div class="cadre filtres-in">
+      <div class="bascule" role="group" aria-label="Type de transaction">
+        <button type="button" data-t="vente" aria-pressed="true">Acheter</button>
         <button type="button" data-t="location" aria-pressed="false">Louer</button>
       </div>
-      <div class="qbox">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.8" cy="6.8" r="5.1" stroke="#a4823a" stroke-width="1.5"/><path d="M10.6 10.6 15 15" stroke="#a4823a" stroke-width="1.5"/></svg>
-        <label class="sr" for="t-q">Rechercher un bien</label>
-        <input id="t-q" type="search" placeholder="Quartier, type de bien, mot-cl&eacute;, r&eacute;f&eacute;rence...">
+      <div class="f"><label for="f-loc">Localité</label><select id="f-loc"></select></div>
+      <div class="f"><label for="f-type">Type</label><select id="f-type"></select></div>
+      <div class="f"><label for="f-ch">Chambres</label><select id="f-ch"><option value="0">Indifférent</option><option value="1">1 et +</option><option value="2">2 et +</option><option value="3">3 et +</option><option value="4">4 et +</option><option value="5">5 et +</option></select></div>
+      <div class="f"><label for="f-m2">Surface</label><select id="f-m2"><option value="0">Indifférent</option><option value="50">50 m² et +</option><option value="80">80 m² et +</option><option value="100">100 m² et +</option><option value="150">150 m² et +</option><option value="200">200 m² et +</option></select></div>
+      <div class="f"><label for="f-budget">Budget max</label><select id="f-budget"></select></div>
+      <div class="f ref"><label for="f-q">Référence ou mot-clé</label><input id="f-q" type="search" placeholder="HZ-131, terrasse, Belair…" autocomplete="off"></div>
+    </div>
+  </form>
+  <div class="cadre">
+    <div class="res-tete">
+      <div class="compte" id="compte" aria-live="polite"></div>
+      <div class="puces" id="puces"></div>
+      <div class="tri"><label class="f-lab" for="f-tri">Trier</label><select id="f-tri"><option value="new">Nouveautés</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix décroissant</option><option value="surface">Surface</option></select></div>
+    </div>
+    <div class="edito" id="resultats"></div>
+  </div>
+</section>
+
+<!-- ============ 06 · VENDRE ============ -->
+<section class="sombre vendre" id="vendre" aria-label="Vendre son bien">
+  <div class="cadre">
+    <header class="tete">
+      <div>
+        <h2 class="mots" data-mots>Votre bien mérite <b>une autre perspective.</b></h2>
       </div>
+      <p data-v>Ce que vous venez de voir, nous le faisons pour votre bien : plans redessinés, photographies, présentation en volume, diffusion ciblée. Et un seul interlocuteur jusqu'à l'acte.</p>
+    </header>
+    <div class="vendre-grille">
+      <ol class="cotes">
+        <span class="jauge" aria-hidden="true"></span>
+        <li data-v><span class="k">01</span><b>Estimation</b><p>Une valeur argumentée, comparée aux ventes récentes du quartier, remise par écrit.</p></li>
+        <li data-v><span class="k">02</span><b>Accompagnement personnalisé</b><p>Un conseiller dédié, joignable, qui connaît votre dossier par cœur.</p></li>
+        <li data-v><span class="k">03</span><b>Mise en valeur</b><p>Petits travaux, mise en scène, plans redessinés au propre.</p></li>
+        <li data-v><span class="k">04</span><b>Photographie et présentation</b><p>Photos professionnelles, et votre bien présenté en volume comme sur cette page.</p></li>
+        <li data-v><span class="k">05</span><b>Diffusion des annonces</b><p>Portails, réseaux, fichier d'acquéreurs qualifiés : au bon public, pas partout.</p></li>
+        <li data-v><span class="k">06</span><b>Organisation des visites</b><p>Acquéreurs filtrés en amont, visites regroupées, compte rendu après chacune.</p></li>
+        <li data-v><span class="k">07</span><b>Jusqu'à la signature</b><p>Offre, compromis, notaire : nous suivons chaque étape avec vous.</p></li>
+      </ol>
+      <form class="estim" id="estimation" novalidate aria-label="Demande d'estimation">
+        <div class="estim-tete"><h3>Demander une estimation</h3><span class="estim-pas mono" aria-live="polite">Étape 1 / 3</span></div>
+        <div class="estim-barre" aria-hidden="true"><i class="fait"></i><i></i><i></i></div>
+        <fieldset class="actif" data-pas="1">
+          <legend>Quel bien souhaitez-vous faire estimer ?</legend>
+          <div class="choix">
+            <label><input type="radio" name="type" value="Appartement" required><span><svg viewBox="0 0 34 26" aria-hidden="true"><rect x="9" y="2" width="16" height="22"/><path d="M9 9h16M9 16h16M17 2v22"/></svg>Appartement</span></label>
+            <label><input type="radio" name="type" value="Maison"><span><svg viewBox="0 0 34 26" aria-hidden="true"><path d="M4 24V11L17 3l13 8v13z"/><path d="M14 24v-8h6v8"/></svg>Maison</span></label>
+            <label><input type="radio" name="type" value="Villa"><span><svg viewBox="0 0 34 26" aria-hidden="true"><path d="M2 24h30M4 24V13h16v11M12 13V6h20v11H20"/></svg>Villa</span></label>
+            <label><input type="radio" name="type" value="Terrain"><span><svg viewBox="0 0 34 26" aria-hidden="true"><path d="M2 20l8-6 8 4 14-8M2 24h30"/></svg>Terrain</span></label>
+          </div>
+          <p class="err" data-err="type" role="alert"></p>
+          <div class="rangee">
+            <div class="champ"><label for="e-loc">Localité</label><input id="e-loc" name="localite" required placeholder="Ex. Strassen" autocomplete="address-level2"><p class="err" role="alert"></p></div>
+            <div class="champ"><label for="e-m2">Surface habitable (m²)</label><input id="e-m2" name="surface" type="number" min="10" max="5000" inputmode="numeric" required placeholder="Ex. 120"><p class="err" role="alert"></p></div>
+          </div>
+        </fieldset>
+        <fieldset data-pas="2">
+          <legend>Quelques précisions</legend>
+          <div class="rangee">
+            <div class="champ"><label for="e-ch">Chambres</label><select id="e-ch" name="chambres"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5 et plus</option></select></div>
+            <div class="champ"><label for="e-etat">État général</label><select id="e-etat" name="etat"><option>À rafraîchir</option><option selected>Bon état</option><option>Rénové récemment</option><option>Neuf</option></select></div>
+          </div>
+          <div class="champ"><label for="e-atouts">Ses atouts (terrasse, vue, garage…)</label><input id="e-atouts" name="atouts" placeholder="Facultatif"></div>
+          <div class="champ"><label for="e-delai">Votre projet de vente</label><select id="e-delai" name="delai"><option>Dans les 3 mois</option><option selected>Dans l'année</option><option>Je me renseigne</option></select></div>
+        </fieldset>
+        <fieldset data-pas="3">
+          <legend>Où vous envoyer l'estimation ?</legend>
+          <div class="rangee">
+            <div class="champ"><label for="e-nom">Nom</label><input id="e-nom" name="nom" required autocomplete="name"><p class="err" role="alert"></p></div>
+            <div class="champ"><label for="e-tel">Téléphone</label><input id="e-tel" name="tel" type="tel" required autocomplete="tel" placeholder="+352 …"><p class="err" role="alert"></p></div>
+          </div>
+          <div class="champ"><label for="e-mail">E-mail</label><input id="e-mail" name="email" type="email" required autocomplete="email"><p class="err" role="alert"></p></div>
+          <label class="consent"><input type="checkbox" name="rgpd" required> J'accepte d'être recontacté au sujet de cette estimation.</label>
+          <p class="err" data-err="rgpd" role="alert"></p>
+        </fieldset>
+        <div class="merci" role="status" tabindex="-1">
+          <svg class="coche" viewBox="0 0 56 56" aria-hidden="true"><path d="M3 28a25 25 0 1 0 50 0a25 25 0 1 0-50 0M17 29l8 8 15-17"/></svg>
+          <h4>Demande bien reçue.</h4>
+          <p>Un conseiller vous rappelle sous 48 heures ouvrées pour fixer un rendez-vous sur place.</p>
+          <dl class="merci-recap"></dl>
+          <p class="demo-note">Démonstration : aucune donnée n'est envoyée ni conservée.</p>
+        </div>
+        <div class="estim-actions">
+          <button type="button" class="prec" hidden>← Précédent</button>
+          <button type="submit" class="btn clair suiv">Continuer <span class="fl" aria-hidden="true">→</span></button>
+        </div>
+      </form>
     </div>
-    <div class="tools-grid">
-      <div class="f"><label class="f-lab" for="t-loc">Localit&eacute;</label><select class="fld" id="t-loc"></select></div>
-      <div class="f"><label class="f-lab" for="t-type">Type de bien</label><select class="fld" id="t-type"></select></div>
-      <div class="f"><label class="f-lab" for="t-ch">Chambres</label><select class="fld" id="t-ch"><option value="0">Indiff&eacute;rent</option><option value="1">1 et plus</option><option value="2">2 et plus</option><option value="3">3 et plus</option><option value="4">4 et plus</option><option value="5">5 et plus</option></select></div>
-      <div class="f"><label class="f-lab" for="t-m2">Surface minimum</label><select class="fld" id="t-m2"><option value="0">Indiff&eacute;rent</option><option value="50">50 m&sup2;</option><option value="80">80 m&sup2;</option><option value="100">100 m&sup2;</option><option value="150">150 m&sup2;</option><option value="200">200 m&sup2;</option></select></div>
-      <div class="f"><label class="f-lab" for="t-budget">Budget max</label><select class="fld" id="t-budget"></select></div>
+  </div>
+</section>
+
+<!-- ============ 07 · ACCOMPAGNEMENT ============ -->
+<section id="accompagnement" aria-label="Notre accompagnement">
+  <div class="cadre">
+    <header class="tete">
+      <div>
+        <h2 class="mots" data-mots>Un interlocuteur, <b>cinq métiers.</b></h2>
+      </div>
+      <p data-v>Achat, vente, location, estimation : la même exigence, du premier appel à la remise des clés.</p>
+    </header>
+    <ul class="services">
+      <li data-v><details><summary><span class="k">01</span><h3>Achat</h3><span class="plus" aria-hidden="true"></span></summary><div class="corps"><p>Vous nous dites comment vous vivez, nous cherchons où. Une sélection courte, des visites préparées, une négociation menée pour vous.</p><ul><li>Recherche sur mesure</li><li>Biens hors marché</li><li>Négociation</li></ul></div></details></li>
+      <li data-v><details><summary><span class="k">02</span><h3>Vente</h3><span class="plus" aria-hidden="true"></span></summary><div class="corps"><p>Le bon prix, la bonne présentation, les bons acquéreurs. Nous tenons le calendrier, vous gardez la décision.</p><ul><li>Plans et visuels</li><li>Diffusion ciblée</li><li>Suivi jusqu'à l'acte</li></ul></div></details></li>
+      <li data-v><details><summary><span class="k">03</span><h3>Location</h3><span class="plus" aria-hidden="true"></span></summary><div class="corps"><p>Mise en location, sélection des locataires, état des lieux, gestion courante : votre bien loué sereinement.</p><ul><li>Dossiers vérifiés</li><li>États des lieux</li><li>Gestion locative</li></ul></div></details></li>
+      <li data-v><details><summary><span class="k">04</span><h3>Estimation</h3><span class="plus" aria-hidden="true"></span></summary><div class="corps"><p>Une valeur argumentée, sur place, à partir des ventes réelles du quartier. Gratuite et sans engagement.</p><ul><li>Visite sur place</li><li>Rapport écrit</li><li>Sans engagement</li></ul></div></details></li>
+      <li data-v><details><summary><span class="k">05</span><h3>Accompagnement</h3><span class="plus" aria-hidden="true"></span></summary><div class="corps"><p>Financement, notaire, travaux, déménagement : nous vous mettons en relation avec les bons partenaires.</p><ul><li>Courtage</li><li>Notaires</li><li>Artisans</li></ul></div></details></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 08 · CONTACT ============ -->
+<section class="contact sombre" id="contact" aria-label="Contact">
+  <div class="contact-fond"><img src="photos/lumen-soir.webp" srcset="photos/lumen-soir-m.webp 1200w, photos/lumen-soir.webp 2400w" sizes="100vw" alt="" loading="lazy"></div>
+  <div class="cadre">
+    <div>
+      <h2 class="mots" data-mots>Parlons de votre <b>prochaine adresse.</b></h2>
+      <dl class="coord">
+        <div><dt>Téléphone</dt><dd><a href="tel:+35200000000">+352 00 00 00</a></dd></div>
+        <div><dt>E-mail</dt><dd><a href="mailto:contact@horizon-immo.example">contact@horizon-immo.example</a></dd></div>
+        <div><dt>Agence</dt><dd>Avenue de la Liberté, Luxembourg</dd></div>
+        <div><dt>Horaires</dt><dd>Lun – ven, 9 h – 19 h · sam. sur rendez-vous</dd></div>
+      </dl>
+    </div>
+    <form class="form-contact" id="form-contact" novalidate aria-label="Nous écrire">
+      <h3>Nous écrire</h3>
+      <div class="champ"><label for="c-sujet">Objet</label><select id="c-sujet" name="sujet"><option>Une question sur un bien</option><option>Organiser une visite</option><option>Vendre mon bien</option><option>Mettre en location</option><option>Autre demande</option></select></div>
+      <div class="rangee">
+        <div class="champ"><label for="c-nom">Nom</label><input id="c-nom" name="nom" required autocomplete="name"><p class="err" role="alert"></p></div>
+        <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" autocomplete="tel" placeholder="Facultatif"></div>
+      </div>
+      <div class="champ"><label for="c-mail">E-mail</label><input id="c-mail" name="email" type="email" required autocomplete="email"><p class="err" role="alert"></p></div>
+      <div class="champ"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required></textarea><p class="err" role="alert"></p></div>
+      <label class="consent"><input type="checkbox" name="rgpd" required> J'accepte que mes informations servent uniquement à me répondre.</label>
+      <p class="err" data-err="rgpd" role="alert"></p>
+      <button type="submit" class="btn clair">Envoyer <span class="fl" aria-hidden="true">→</span></button>
+      <div class="merci" role="status" tabindex="-1">
+        <svg class="coche" viewBox="0 0 56 56" aria-hidden="true"><path d="M3 28a25 25 0 1 0 50 0a25 25 0 1 0-50 0M17 29l8 8 15-17"/></svg>
+        <h4>Message reçu.</h4>
+        <p>Nous vous répondons dans la journée ouvrée.</p>
+        <p class="demo-note">Démonstration : aucune donnée n'est envoyée ni conservée.</p>
+      </div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer class="pied">
+  <div class="cadre">
+    <div class="pied-in">
+      <div>
+        <a href="#haut" class="logo"><svg viewBox="0 0 30 18" aria-hidden="true"><rect x="10.5" y="1" width="9" height="14" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 5.7h9M10.5 10.3h9" stroke="currentColor" stroke-width="1.1"/><path d="M0 16.6h30" stroke="#c4ab7c" stroke-width="1.8"/></svg>HORIZON</a>
+        <p style="margin-top:14px;max-width:26em">Agence immobilière au Luxembourg. Achat, vente, location, estimation.</p>
+      </div>
+      <div><h4>Explorer</h4><ul><li><a href="#immeuble">Résidence Lumen</a></li><li><a href="#maisons">Maisons</a></li><li><a href="#biens">Tous les biens</a></li></ul></div>
+      <div><h4>Propriétaires</h4><ul><li><a href="#estimation">Estimation</a></li><li><a href="#vendre">Vendre</a></li><li><a href="#accompagnement">Location</a></li></ul></div>
+      <div><h4>Agence</h4><ul><li><a href="tel:+35200000000">+352 00 00 00</a></li><li><a href="mailto:contact@horizon-immo.example">E-mail</a></li><li>Avenue de la Liberté</li></ul></div>
+    </div>
+    <div class="pied-bas">
+      <span>Maquette de démonstration : agence, programme, biens et prix sont fictifs.</span>
+      <span>Réalisé par <b>NS Development</b> — création de sites web au Luxembourg</span>
     </div>
   </div>
+</footer>
 
-  <div class="res">
-    <div class="res-l">
-      <div class="count" id="compte"></div>
-      <div class="chips" id="puces"></div>
-    </div>
-    <div class="sort"><label class="f-lab" for="t-sort">Trier par</label><select class="fld" id="t-sort"><option value="new">Nouveaut&eacute;s</option><option value="prix-asc">Prix croissant</option><option value="prix-desc">Prix d&eacute;croissant</option><option value="surface">Surface</option></select></div>
-  </div>
-
-  <div class="props" id="resultats"></div>
-
-  <div style="text-align:center;margin-top:52px" data-reveal="blur"><a href="#estimation" class="btn line">Un bien pr&eacute;cis en t&ecirc;te ? Parlons-en</a></div>
-</div></section>
-
-<section id="services" class="services"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow" data-reveal="blur">Nos services</span><h2 data-split>Un accompagnement complet</h2><p data-reveal="blur" data-delay="260">De la première visite à la signature, un interlocuteur unique.</p></div>
-  <div class="sv-grid" data-stagger="120">
-    <div class="sv"><div class="no">I</div><h3>Vente</h3><p>Estimation juste, mise en valeur soignée et diffusion ciblée de votre bien.</p></div>
-    <div class="sv"><div class="no">II</div><h3>Achat</h3><p>Une sélection sur-mesure selon vos critères, vos visites organisées de A à Z.</p></div>
-    <div class="sv"><div class="no">III</div><h3>Location</h3><p>Gestion locative sereine, sélection des locataires et suivi complet.</p></div>
-    <div class="sv"><div class="no">IV</div><h3>Estimation</h3><p>La valeur réelle de votre bien, gratuitement et sans engagement.</p></div>
-  </div>
-</div></section>
-
-<section id="estimation" class="est"><div class="wrap">
-  <span class="eyebrow" data-reveal="blur">Estimation gratuite</span>
-  <h2 data-reveal="blur" data-delay="140">Quelle est la <em>vraie valeur</em> de votre bien ?</h2>
-  <p data-reveal="blur" data-delay="300">Recevez une estimation précise et confidentielle, réalisée par un conseiller de l'agence.</p>
-  <div data-reveal data-delay="440"><a href="tel:+352000000" class="btn fill ns-shine" data-magnetic data-strength="0.3">Demander mon estimation</a></div>
-</div></section>
-
-<footer><div class="wrap">
-  <div class="foot-in">
-    <div><a href="#" class="logo">Horizon</a><div style="font-family:var(--serif);font-style:italic;color:var(--gold-l);font-size:18px;margin-top:8px">Immobilier · Luxembourg</div></div>
-    <div class="foot-c">+352 00 00 00<br>contact@horizon-immo.example<br>Avenue de la Liberté, Luxembourg</div>
-  </div>
-  <div class="made">Maquette de démonstration réalisée par <b>NS Development</b> — création de sites web au Luxembourg</div>
-</div></footer>
-
-<script>
-  /* Animations : NS Motion Kit (ns-motion.css + ns-motion.js) */
-  document.querySelector('.hamb').addEventListener('click',()=>{const l=document.querySelector('.nav-links');const open=l.style.display==='flex';l.style.cssText=open?'':'display:flex;position:fixed;top:88px;left:0;right:0;background:var(--paper);flex-direction:column;padding:24px 30px;border-bottom:1px solid var(--line);gap:20px'});
-</script>
+<script src="data/biens.js"></script>
+<script src="js/plan-geo.js"></script>
+<script src="js/site.js" defer></script>
 
 <!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
 <script src="nsd-chat.js" defer
         data-site="immobilier"
         data-nom="HORIZON Immobilier"
-        data-accent="#a4823a"
-        data-encre="#101014"
+        data-accent="#7a6644"
+        data-encre="#121315"
         data-fiche="fiche-chat.json"
-        data-bienvenue="Bonjour ! Une question sur une estimation, une vente ou une location ?"></script>
+        data-bienvenue="Bonjour ! Une question sur un bien, une visite ou une estimation ?"></script>
 <!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
 <script src="../../../suivi.js" defer></script>
 <!-- Pop-up réseaux NS Development (demos/nsd-reseaux.js) -->
 <script src="../../nsd-reseaux.js" defer></script>
+<script src="../../../mesure.js" data-cle="ee061dbeff20414096" data-domaine="nsdevelopment.lu" data-api="https://atgykykesntvporvbvuf.supabase.co/functions/v1/collecte" defer></script>
 </body>
 </html>

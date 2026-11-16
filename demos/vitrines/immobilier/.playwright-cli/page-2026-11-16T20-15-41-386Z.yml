@@ -1,0 +1,55 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - link "HORIZON, accueil" [ref=f2e4] [cursor=pointer]:
+        - /url: index.html
+        - text: HORIZON
+      - list [ref=f2e8]:
+        - listitem [ref=f2e9]:
+          - link "Explorer" [ref=f2e10] [cursor=pointer]:
+            - /url: index.html#immeuble
+        - listitem [ref=f2e11]:
+          - link "Maisons" [ref=f2e12] [cursor=pointer]:
+            - /url: index.html#maisons
+        - listitem [ref=f2e13]:
+          - link "Nos biens" [ref=f2e14] [cursor=pointer]:
+            - /url: index.html#biens
+        - listitem [ref=f2e15]:
+          - link "Vendre" [ref=f2e16] [cursor=pointer]:
+            - /url: index.html#vendre
+        - listitem [ref=f2e17]:
+          - link "Visite" [ref=f2e18] [cursor=pointer]:
+            - /url: "#visite"
+      - link "Demander une visite" [ref=f2e19] [cursor=pointer]:
+        - /url: "#visite"
+        - text: Demander une visite
+        - generic [aria-hidden] [ref=f2e20]: →
+  - main [ref=f2e21]:
+    - generic [ref=f2e22]:
+      - heading "Ce bien n'est plus en ligne." [level=1] [ref=f2e23]
+      - paragraph [ref=f2e24]: Il a peut-être été vendu, ou la référence est incomplète.
+      - link "Voir tous les biens" [ref=f2e25] [cursor=pointer]:
+        - /url: index.html#biens
+        - text: Voir tous les biens
+        - generic [aria-hidden] [ref=f2e26]: →
+  - contentinfo [ref=f2e27]:
+    - generic [ref=f2e29]:
+      - generic [ref=f2e30]: "Maquette de démonstration : agence, programme, biens et prix sont fictifs."
+      - generic [ref=f2e31]: Réalisé par NS Development — création de sites web au Luxembourg
+  - generic:
+    - button "Ouvrir la discussion"
+    - dialog "Discussion avec HORIZON Immobilier":
+      - generic:
+        - generic: H
+        - generic:
+          - generic: HORIZON Immobilier
+          - generic: Réponse immédiate
+      - log
+      - generic:
+        - textbox "Votre message":
+          - /placeholder: Écrivez votre question…
+        - button "Envoyer"
+      - generic:
+        - text: Assistant propulsé par
+        - link "NS Development":
+          - /url: https://nsdevelopment.lu
