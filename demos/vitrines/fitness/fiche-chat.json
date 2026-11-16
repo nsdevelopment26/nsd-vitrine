@@ -2,15 +2,15 @@
   "nom": "PULSE",
   "activite": "studio de fitness",
   "commune": "Luxembourg",
-  "telephone": "+352 00 00 00",
-  "services_texte": "Cours collectifs, coaching sur-mesure et une communauté qui pousse : force, cardio, HIIT et cross-training.",
-  "coaching_texte": "Le coaching, c'est un coach rien que pour vous, un plan sur-mesure et un suivi de vos résultats semaine après semaine.",
-  "essai_texte": "Le premier cours est gratuit, sans engagement, juste pour voir ce que ça donne. Venez tester.",
-  "contact_texte": "Appelez-nous au +352 00 00 00 ou passez par le formulaire de cette page pour réserver votre cours d'essai.",
+  "telephone": "+352 27 00 00 00",
+  "services_texte": "Quatre familles de cours sur trois salles : force, cardio (HIIT, boxe, cross-training), cycling et mobilité (yoga, gainage). Toute la semaine est visible en relief en haut de la page.",
+  "coaching_texte": "Le coaching privé, c'est un coach, un programme écrit pour vous et un point tous les mois, cours collectifs inclus. Lena, Marco, Yanis et Sofia se partagent les cours.",
+  "essai_texte": "La première séance est offerte, sans engagement. Choisissez le cours dans le formulaire « La première est offerte » et on vous garde la place.",
+  "contact_texte": "Appelez le +352 27 00 00 00, ou réservez directement un cours en cliquant sur un bloc de la semaine. Les tarifs de la page sont des exemples de la maquette.",
   "suggestions": [
-    "Le premier cours est gratuit ?",
-    "Vous faites du coaching seul ?",
-    "C'est quoi le HIIT ?"
+    "La première séance est offerte ?",
+    "Comment je réserve un cours ?",
+    "Vous faites du coaching privé ?"
   ],
   "demo_regles": [
     {
@@ -56,7 +56,10 @@
         "ouvert",
         "contact",
         "appeler",
-        "inscri"
+        "inscri",
+        "reserv",
+        "réserv",
+        "planning"
       ],
       "cle": "contact_texte"
     }
