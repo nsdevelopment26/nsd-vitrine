@@ -121,13 +121,14 @@ function start() {
   if (document.fonts) document.fonts.ready.then(() => { measure(); onScroll(); });
 
   // mouvement réduit (ou ?sans3d pour tester le secours) : téléphone en image, sans rotation
-  if (reduced || /[?&]sans3d/.test(location.search)) return;
+  if (reduced || innerWidth <= 820 || /[?&]sans3d/.test(location.search)) return;
   const probe = document.createElement('canvas');
   const gl = probe.getContext('webgl2') || probe.getContext('webgl');
   if (!gl) return;
-  import('./gimbal3d.js?v=5')
+  const plusTard = window.requestIdleCallback || (f => setTimeout(f, 600));
+  plusTard(() => import('./gimbal3d.js?v=5')
     .then(m => m.init(document.getElementById('gl'), state, stage))
     .then(() => { html.classList.add('x3d'); html.classList.remove('x2d'); })
-    .catch(err => { console.warn('NSD 360 : 3D indisponible, image utilisée à la place.', err); });
+    .catch(err => { console.warn('NSD 360 : 3D indisponible, image utilisée à la place.', err); }));
 }
 start();
