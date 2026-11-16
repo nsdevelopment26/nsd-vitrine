@@ -571,4 +571,59 @@
         .catch(() => { ok.textContent = T('Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu'); ok.classList.add('on'); });
     });
   })();
+  /* ---------- 14. Réalisations : le chemin (17/11) ----------
+     Le tracé relie les étapes ; la partie parcourue se dessine au défilement et le point
+     « Vous » avance dessus. Une étape « atteinte » s'allume, le plan du haut suit. */
+  (function chemin(){
+    const voie = $('#voie'); if (!voie) return;
+    const svg = $('.trace', voie), fond = $('.trace-fond', voie), fait = $('.trace-fait', voie), vous = $('.vous', voie);
+    const etapes = $$('.etape', voie), noeuds = etapes.map(e => $('.noeud', e));
+    const depart = $('.depart', voie), arrivee = $('.arrivee .noeud', voie);
+    const pts = $$('.pl-pt'), chs = $$('.pl-ch'), ou = $('#plOu');
+    const chDe = pts.map(p => chs.indexOf(p.closest('.pl-ch')));
+    let L = 0, table = [], ys = [], H = 0, attente = false, dernier = -2;
+
+    function construire(){
+      const r = voie.getBoundingClientRect(); H = r.height;
+      const c = el => { const b = el.getBoundingClientRect(); return [b.left - r.left + b.width / 2, b.top - r.top + b.height / 2]; };
+      const n = noeuds.map(c), d = depart.getBoundingClientRect(), large = innerWidth > 900;
+      const P = [large ? [r.width / 2, d.bottom - r.top + 18] : [n[0][0], d.top - r.top + 4], ...n, c(arrivee)];
+      let trace = 'M' + P[0][0].toFixed(1) + ' ' + P[0][1].toFixed(1);
+      for (let i = 1; i < P.length; i++) {
+        const [x0, y0] = P[i - 1], [x1, y1] = P[i], k = (y1 - y0) * .55;
+        trace += ' C' + x0.toFixed(1) + ' ' + (y0 + k).toFixed(1) + ' ' + x1.toFixed(1) + ' ' + (y1 - k).toFixed(1) + ' ' + x1.toFixed(1) + ' ' + y1.toFixed(1);
+      }
+      svg.setAttribute('viewBox', '0 0 ' + r.width.toFixed(0) + ' ' + H.toFixed(0));
+      fond.setAttribute('d', trace); fait.setAttribute('d', trace);
+      L = fait.getTotalLength(); fait.style.strokeDasharray = L + ' ' + L;
+      table = []; const N = Math.max(200, Math.round(L / 12));
+      for (let i = 0; i <= N; i++) { const l = L * i / N, q = fait.getPointAtLength(l); table.push([l, q.x, q.y]); }
+      ys = n.map(p => p[1]); dernier = -2; maj();
+    }
+
+    function maj(){
+      attente = false; if (!table.length) return;
+      const r = voie.getBoundingClientRect(), cible = innerHeight * .56 - r.top;
+      let i = 0; while (i < table.length - 1 && table[i + 1][2] < cible) i++;
+      const a = table[i], b = table[Math.min(i + 1, table.length - 1)];
+      const t = b[2] > a[2] ? Math.min(1, Math.max(0, (cible - a[2]) / (b[2] - a[2]))) : 0;
+      const l = a[0] + (b[0] - a[0]) * t, x = a[1] + (b[1] - a[1]) * t, y = a[2] + (b[2] - a[2]) * t;
+      fait.style.strokeDashoffset = (L - l).toFixed(1);
+      vous.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      vous.classList.toggle('on', cible > table[0][2] && cible < H);
+      let ici = -1;
+      etapes.forEach((e, k) => { const ok = ys[k] <= cible + 4; e.classList.toggle('atteinte', ok); if (ok) ici = k; });
+      if (ici === dernier) return; dernier = ici;
+      const cur = Math.max(0, ici);
+      pts.forEach((p, k) => { p.classList.toggle('fait', k < ici); p.classList.toggle('ici', k === ici); if (k === cur) p.setAttribute('aria-current', 'step'); else p.removeAttribute('aria-current'); });
+      chs.forEach((c, k) => c.classList.toggle('ici', k === chDe[cur]));
+      if (ou) ou.textContent = String(cur + 1).padStart(2, '0');
+    }
+
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    if ('ResizeObserver' in window) { let t; new ResizeObserver(() => { clearTimeout(t); t = setTimeout(construire, 80); }).observe(voie); }
+    else addEventListener('resize', construire);
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(construire);
+    construire();
+  })();
 })();
