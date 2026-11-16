@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="MOTORLINE">
-  <rect width="140" height="140" rx="24" fill="#07080b"/>
-  <g fill="none" stroke="#d7a557" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M34 44 L70 70 L34 96"/>
-    <path d="M74 44 L110 70 L74 96"/>
+  <rect width="140" height="140" rx="26" fill="#0b0c0e"/>
+  <g fill="#8e949c">
+    <rect x="30" y="34" width="80" height="12" rx="3"/>
+    <rect x="30" y="54" width="80" height="12" rx="3"/>
+    <rect x="30" y="74" width="80" height="12" rx="3"/>
   </g>
+  <rect x="22" y="98" width="96" height="9" rx="4.5" fill="#d9e8ff"/>
 </svg>

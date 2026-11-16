@@ -188,6 +188,8 @@
   var REEL = false;
   var DOCS_REELS = [];    // PDF du bucket « documents » : { titre, meta, type, chemin }
   var DEVIS_REELS = [];
+  /* Vue de contrôle de Pilotage (?controle=1) : voir plus bas, lancerControle. */
+  var CONTROLE = null;
   var CONTACT_MAIL = "info@nsdevelopment.lu";
 
   /* Bloc « rien encore » des vues sans données réelles. */
@@ -701,6 +703,7 @@
   /* Ouvre un PDF du bucket par lien signé (5 minutes). L'onglet est ouvert tout de
      suite, au clic : ouvert après l'attente réseau, Safari iPhone le bloquerait. */
   async function ouvrirDocument(chemin) {
+    if (CONTROLE) { documentParPilotage(chemin); return; }
     var sb = window.nsSupabase;
     var onglet = window.open("", "_blank");
     var res = sb ? await sb.storage.from("documents").createSignedUrl(chemin, 300) : null;
@@ -711,6 +714,19 @@
       return;
     }
     if (onglet) onglet.location = url; else window.location.href = url;
+  }
+
+  /* Vue de contrôle : le PDF est demandé à Pilotage (lien signé de 5 min, ouverture
+     journalisée). L'onglet s'ouvre au clic, comme pour le client. */
+  function documentParPilotage(chemin) {
+    var onglet = window.open("", "_blank");
+    var id = ++CONTROLE.n;
+    CONTROLE.attente[id] = function (m) {
+      if (m.url) { if (onglet) onglet.location = m.url; else window.open(m.url, "_blank"); return; }
+      if (onglet) onglet.close();
+      alert("Vue de contrôle : ce document ne s'ouvre pas (" + (m.erreur || "raison inconnue") + ").");
+    };
+    window.parent.postMessage({ type: "nsd-controle", quoi: "document", id: id, chemin: chemin }, location.origin);
   }
 
   function vueDocuments() {
@@ -863,6 +879,7 @@
       var objet = modaleCorps.querySelector("#ecObjet").value.trim();
       var detail = modaleCorps.querySelector("#ecDetail").value.trim();
       if (objet.length < 3 || detail.length < 5) return;
+      if (CONTROLE) { alert("Vue de contrôle, lecture seule : rien n'est envoyé."); return; }
       if (REEL) {
         location.href = "mailto:" + CONTACT_MAIL +
           "?subject=" + encodeURIComponent("Demande de modification · " + CLIENT.etablissement + " · " + type + " · " + objet) +
@@ -924,9 +941,34 @@
     var boiteErr = document.getElementById("ecErr");
     function erreurCo(msg) { if (boiteErr) { boiteErr.textContent = msg || ""; boiteErr.style.display = msg ? "block" : "none"; } }
 
+    /* Session expirée (13/11/2026) : supabase-client.js n'essaie qu'une fois de
+       renouveler la session ; si c'est refusé, il efface la session et appelle
+       ceci. On revient à l'écran de connexion, sans rien réessayer. */
+    var sessionFinie = false;
+    var MSG_EXPIREE = "Votre session a expiré. Reconnectez-vous.";
+    function retourConnexion() {
+      sessionFinie = true;
+      try { sessionStorage.removeItem("ns-session-expiree"); } catch (e) {}
+      if (modale && modale.classList.contains("ouverte")) fermerModale();
+      appli.hidden = true;
+      document.body.classList.remove("en-app");
+      ecran.hidden = false;
+      ecran.classList.remove("parti");
+      erreurCo(MSG_EXPIREE);
+    }
+    /* En vue de contrôle, aucune session client n'est utilisée : une session
+       étrangère qui expirerait dans ce navigateur ne doit pas faire sortir la page. */
+    if (estControle()) window.nsSessionPerdue = function () {};
+    else if (!estDemo()) window.nsSessionPerdue = retourConnexion;
+    try {
+      if (sessionStorage.getItem("ns-session-expiree")) { sessionStorage.removeItem("ns-session-expiree"); erreurCo(MSG_EXPIREE); }
+    } catch (e) {}
+
     function ouvrirEspaceClient() {
+      if (sessionFinie) return;
       ecran.classList.add("parti");
       setTimeout(function () {
+        if (sessionFinie) { ecran.classList.remove("parti"); return; }
         ecran.hidden = true;
         appli.hidden = false;
         document.body.classList.add("en-app");
@@ -942,64 +984,75 @@
       if (!sb) return;
       try {
         var rc = await sb.from("clients").select("*").limit(1).maybeSingle();
-        var c = rc && rc.data;
-        if (c) {
-          if (c.nom_etablissement) CLIENT.etablissement = c.nom_etablissement;
-          if (c.metier) CLIENT.metier = c.metier;
-          if (c.ville) CLIENT.ville = c.ville;
-          if (c.site_domaine) CLIENT.site = c.site_domaine;
-          if (c.formule) CLIENT.formule = c.formule;
-          if (c.abonnement_mensuel) CLIENT.formulePrix = Number(c.abonnement_mensuel); // forfait trimestriel
-          /* Colonnes ajoutées par migrations/2026-07-30-abonnement-periodicite.sql.
-             Si la migration n'a pas encore été passée, elles sont absentes et on
-             garde le comportement mensuel : l'espace client reste fonctionnel. */
-          if (c.abonnement_periodicite) CLIENT.periodicite = c.abonnement_periodicite;
-          CLIENT.montantRemise = c.abonnement_montant_remise != null ? Number(c.abonnement_montant_remise) : null;
-          if (c.abonnement_echeance) CLIENT.echeance = c.abonnement_echeance;
-          if (c.abonnement_moyen) CLIENT.moyen = c.abonnement_moyen;
-          if (c.contact_prenom) CLIENT.prenom = c.contact_prenom;
-          if (c.contact_nom) CLIENT.nom = c.contact_nom;
-
-          /* À partir d'ici, plus aucune valeur de démo ne doit survivre. */
-          REEL = true;
-          CLIENT.id = c.id;
-          CLIENT.site = c.site_domaine || "";
-          CLIENT.metier = c.metier || "";
-          CLIENT.ville = c.ville || "";
-          CLIENT.echeance = c.abonnement_echeance || "";
-          CLIENT.depuis = "";
-          if (c.abonnement_montant_standard) CLIENT.formulePrixAn = Number(c.abonnement_montant_standard);
-          /* Fiche sans prénom séparé (« Bruno Alexandre Da Silva Moutinho ») : le premier mot sert de prénom. */
-          if (!c.contact_prenom) {
-            var mots = String(c.contact_nom || c.nom_etablissement || "").trim().split(/\s+/);
-            CLIENT.prenom = mots[0] || "";
-            CLIENT.nom = mots.slice(1).join(" ") || CLIENT.prenom;
-          }
-          FACTURES = [];
-        }
+        appliquerFiche(rc && rc.data);
         var rf = await sb.from("factures")
           .select("id, numero, date_emission, total_ttc, montant_paye, statut, factures_lignes(designation, ordre)")
           .order("date_emission", { ascending: false });
-        if (rf && rf.data) {
-          FACTURES = rf.data.filter(function (f) { return f.statut !== "brouillon"; }).map(function (f) {
-            var ls = (f.factures_lignes || []).slice().sort(function (a, b) { return (a.ordre || 0) - (b.ordre || 0); });
-            var libelle = ls.length ? (ls[0].designation + (ls.length > 1 ? " + " + (ls.length - 1) + " ligne" + (ls.length > 2 ? "s" : "") : "")) : ("Facture " + (f.numero || ""));
-            var paye = (f.statut === "payée" || f.statut === "payee");
-            return {
-              id: f.id, numero: f.numero || "brouillon", libelle: libelle,
-              montant: Number(f.total_ttc) || 0, regle: Number(f.montant_paye) || 0,
-              date: frDateLong(f.date_emission), statut: f.statut || "envoyée", paye: paye
-            };
-          });
-        }
+        if (rf && rf.data) appliquerFactures(rf.data);
         if (REEL) {
           var rd = await sb.from("devis").select("id, numero, statut, date_emission").not("numero", "is", null).order("date_emission");
           DEVIS_REELS = (rd && rd.data) || [];
-          var premiere = FACTURES.length ? rf.data[rf.data.length - 1].date_emission : null;
-          if (premiere) CLIENT.depuis = "client depuis " + frDateLong(premiere).replace(/^\d+ /, "");
+          appliquerDepuis(rf && rf.data);
           await chargerDocuments(sb);
         }
       } catch (e) { /* échec réseau : on garde l'affichage par défaut */ }
+    }
+
+    /* Mise en forme des données réelles : la même pour le client connecté et
+       pour la vue de contrôle de Pilotage (mêmes champs, mêmes règles). */
+    function appliquerFiche(c) {
+      if (c) {
+        if (c.nom_etablissement) CLIENT.etablissement = c.nom_etablissement;
+        if (c.metier) CLIENT.metier = c.metier;
+        if (c.ville) CLIENT.ville = c.ville;
+        if (c.site_domaine) CLIENT.site = c.site_domaine;
+        if (c.formule) CLIENT.formule = c.formule;
+        if (c.abonnement_mensuel) CLIENT.formulePrix = Number(c.abonnement_mensuel); // forfait trimestriel
+        /* Colonnes ajoutées par migrations/2026-07-30-abonnement-periodicite.sql.
+           Si la migration n'a pas encore été passée, elles sont absentes et on
+           garde le comportement mensuel : l'espace client reste fonctionnel. */
+        if (c.abonnement_periodicite) CLIENT.periodicite = c.abonnement_periodicite;
+        CLIENT.montantRemise = c.abonnement_montant_remise != null ? Number(c.abonnement_montant_remise) : null;
+        if (c.abonnement_echeance) CLIENT.echeance = c.abonnement_echeance;
+        if (c.abonnement_moyen) CLIENT.moyen = c.abonnement_moyen;
+        if (c.contact_prenom) CLIENT.prenom = c.contact_prenom;
+        if (c.contact_nom) CLIENT.nom = c.contact_nom;
+
+        /* À partir d'ici, plus aucune valeur de démo ne doit survivre. */
+        REEL = true;
+        CLIENT.id = c.id;
+        CLIENT.site = c.site_domaine || "";
+        CLIENT.metier = c.metier || "";
+        CLIENT.ville = c.ville || "";
+        CLIENT.echeance = c.abonnement_echeance || "";
+        CLIENT.depuis = "";
+        if (c.abonnement_montant_standard) CLIENT.formulePrixAn = Number(c.abonnement_montant_standard);
+        /* Fiche sans prénom séparé (« Bruno Alexandre Da Silva Moutinho ») : le premier mot sert de prénom. */
+        if (!c.contact_prenom) {
+          var mots = String(c.contact_nom || c.nom_etablissement || "").trim().split(/\s+/);
+          CLIENT.prenom = mots[0] || "";
+          CLIENT.nom = mots.slice(1).join(" ") || CLIENT.prenom;
+        }
+        FACTURES = [];
+      }
+    }
+
+    function appliquerFactures(liste) {
+      FACTURES = liste.filter(function (f) { return f.statut !== "brouillon"; }).map(function (f) {
+        var ls = (f.factures_lignes || []).slice().sort(function (a, b) { return (a.ordre || 0) - (b.ordre || 0); });
+        var libelle = ls.length ? (ls[0].designation + (ls.length > 1 ? " + " + (ls.length - 1) + " ligne" + (ls.length > 2 ? "s" : "") : "")) : ("Facture " + (f.numero || ""));
+        var paye = (f.statut === "payée" || f.statut === "payee");
+        return {
+          id: f.id, numero: f.numero || "brouillon", libelle: libelle,
+          montant: Number(f.total_ttc) || 0, regle: Number(f.montant_paye) || 0,
+          date: frDateLong(f.date_emission), statut: f.statut || "envoyée", paye: paye
+        };
+      });
+    }
+
+    function appliquerDepuis(liste) {
+      var premiere = FACTURES.length && liste && liste.length ? liste[liste.length - 1].date_emission : null;
+      if (premiere) CLIENT.depuis = "client depuis " + frDateLong(premiere).replace(/^\d+ /, "");
     }
 
     /* PDF rangés par la synchro des dossiers (<client_id>/devis|factures|contrat/…pdf).
@@ -1009,26 +1062,30 @@
       DOCS_REELS = [];
       for (var dossier in types) {
         var r = await sb.storage.from("documents").list(CLIENT.id + "/" + dossier, { sortBy: { column: "name", order: "desc" } });
-        ((r && r.data) || []).forEach(function (o) {
-          if (!/\.pdf$/i.test(o.name)) return;
-          var numero = o.name.replace(/\.pdf$/i, "");
-          var type = types[dossier], meta = "PDF";
-          if (type === "contrat") {
-            var dv = DEVIS_REELS.filter(function (d) { return d.numero === numero.replace(/^CTR/, "DEV"); })[0];
-            meta = "PDF · contrat de prestation" + (dv ? " · devis " + dv.numero : "");
-          } else if (type === "devis") {
-            var d = DEVIS_REELS.filter(function (x) { return x.numero === numero; })[0];
-            if (d) meta = "PDF · " + d.statut + " · " + frDateLong(d.date_emission);
-          } else {
-            var f = FACTURES.filter(function (x) { return x.numero === numero; })[0];
-            if (f) meta = "PDF · " + (estPayee(f) ? "réglée" : "à régler") + " · " + f.date;
-          }
-          DOCS_REELS.push({
-            type: type, numero: numero, chemin: CLIENT.id + "/" + dossier + "/" + o.name, meta: meta,
-            titre: (type === "contrat" ? "Contrat " : type === "devis" ? "Devis " : "Facture ") + numero
-          });
-        });
+        ((r && r.data) || []).forEach(function (o) { ajouterDocument(dossier, o.name); });
       }
+    }
+
+    var TYPES_DOCS = { devis: "devis", factures: "facture", contrat: "contrat" };
+    function ajouterDocument(dossier, nom) {
+      var o = { name: nom };
+      if (!TYPES_DOCS[dossier] || !/\.pdf$/i.test(o.name)) return;
+      var numero = o.name.replace(/\.pdf$/i, "");
+      var type = TYPES_DOCS[dossier], meta = "PDF";
+      if (type === "contrat") {
+        var dv = DEVIS_REELS.filter(function (d) { return d.numero === numero.replace(/^CTR/, "DEV"); })[0];
+        meta = "PDF · contrat de prestation" + (dv ? " · devis " + dv.numero : "");
+      } else if (type === "devis") {
+        var d = DEVIS_REELS.filter(function (x) { return x.numero === numero; })[0];
+        if (d) meta = "PDF · " + d.statut + " · " + frDateLong(d.date_emission);
+      } else {
+        var f = FACTURES.filter(function (x) { return x.numero === numero; })[0];
+        if (f) meta = "PDF · " + (estPayee(f) ? "réglée" : "à régler") + " · " + f.date;
+      }
+      DOCS_REELS.push({
+        type: type, numero: numero, chemin: CLIENT.id + "/" + dossier + "/" + o.name, meta: meta,
+        titre: (type === "contrat" ? "Contrat " : type === "devis" ? "Devis " : "Facture ") + numero
+      });
     }
 
     /* ------------------------------------------------------------------
@@ -1064,6 +1121,76 @@
       }
 
       ouvrirEspaceClient();
+    }
+
+    /* ------------------------------------------------------------------
+       VUE DE CONTRÔLE : espace-client.html?controle=1, ouverte DANS Pilotage
+       (nsdevelopment.lu/pilotage/, même origine), rubrique « Espaces clients ».
+       Nelson voit l'espace d'un client tel que le client le voit, en lecture
+       seule :
+       • aucun appel à la base depuis cette page : les données arrivent de
+         Pilotage (fonction pil_ec_vue, réservée au propriétaire, chaque
+         ouverture écrite au journal), et passent par les MÊMES fonctions de
+         mise en forme que pour le client connecté ;
+       • aucune session client, aucun mot de passe, aucun compte admin ;
+       • les PDF passent par Pilotage (lien signé de 5 min, journalisé) ;
+       • rien ne peut être envoyé (demande de modification bloquée).
+       Hors d'une fenêtre Pilotage (page ouverte seule), le mode ne s'active pas.
+       ------------------------------------------------------------------ */
+    function estControle() {
+      try { return new URLSearchParams(location.search).get("controle") === "1" && window.parent !== window; }
+      catch (e) { return false; }
+    }
+
+    function lancerControle() {
+      CONTROLE = { attente: {}, n: 0 };
+      ecran.hidden = true;
+      var bandeau = document.createElement("div");
+      bandeau.className = "bandeau-demo bandeau-controle";
+      bandeau.setAttribute("role", "status");
+      bandeau.textContent = "Vue de contrôle, lecture seule · chargement des données…";
+      document.body.appendChild(bandeau);
+      document.body.classList.add("avec-bandeau");
+
+      var sortir = document.getElementById("ecSortir");
+      if (sortir) {
+        var fermer = sortir.cloneNode(true);
+        fermer.id = "ecFermerControle";
+        fermer.innerHTML = sortir.innerHTML.replace("Se déconnecter", "Fermer la vue de contrôle");
+        fermer.addEventListener("click", function () {
+          window.parent.postMessage({ type: "nsd-controle", quoi: "fermer" }, location.origin);
+        });
+        sortir.replaceWith(fermer);
+      }
+
+      window.addEventListener("message", function (e) {
+        if (e.origin !== location.origin || e.source !== window.parent) return;
+        var m = e.data;
+        if (!m || m.type !== "nsd-controle") return;
+        if (m.quoi === "donnees") afficherControle(m.donnees || {}, bandeau);
+        else if (m.quoi === "document") {
+          var suite = CONTROLE.attente[m.id];
+          if (suite) { delete CONTROLE.attente[m.id]; suite(m); }
+        }
+      });
+      window.parent.postMessage({ type: "nsd-controle", quoi: "pret" }, location.origin);
+    }
+
+    function afficherControle(d, bandeau) {
+      appliquerFiche(d.client);
+      if (!REEL) { bandeau.textContent = "Vue de contrôle : fiche client introuvable."; return; }
+      appliquerFactures(d.factures || []);
+      DEVIS_REELS = d.devis || [];
+      appliquerDepuis(d.factures);
+      /* Même ordre que la lecture du bucket : devis, factures, contrat ; noms décroissants. */
+      DOCS_REELS = [];
+      ["devis", "factures", "contrat"].forEach(function (dossier) {
+        (d.documents || []).filter(function (x) { return x.dossier === dossier; })
+          .map(function (x) { return x.name; }).sort().reverse()
+          .forEach(function (nom) { ajouterDocument(dossier, nom); });
+      });
+      bandeau.textContent = "Vue de contrôle, lecture seule · " + CLIENT.etablissement + " · ce que le client voit";
+      if (appli.hidden) ouvrirEspaceClient(); else afficher(vueActive);
     }
 
     /* Sam (admin) -> système de facturation ; client -> son espace */
@@ -1109,6 +1236,7 @@
       var res = await sb.auth.signInWithPassword({ email: email, password: mdp });
       b.classList.remove("charge");
       if (res.error) { erreurCo("Email ou mot de passe incorrect."); return; }
+      sessionFinie = false;
       aiguiller(res.data.session);
     });
 
@@ -1200,7 +1328,7 @@
        On attend que le client Supabase (module, chargé à part) soit prêt.
        En mode démo on saute complètement cette étape : aucune session, aucun
        appel réseau. */
-    if (!estDemo() && !modeRecuperation) {
+    if (!estDemo() && !estControle() && !modeRecuperation) {
       (function attendreSb(essais) {
         essais = essais || 0;
         var sb = getSb();
@@ -1254,6 +1382,7 @@
     /* Démo : lancée EN DERNIER, une fois tous les écouteurs posés. Plus haut,
        les modales et les liens internes ne seraient pas encore actifs. */
     if (estDemo()) lancerDemo();
+    else if (estControle()) lancerControle();
   }
 
   if (document.readyState === "loading") {

@@ -1,6 +1,0 @@
-[     193ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8764/demos/vitrines/immobilier/photos/villa-aster.jpg:0
-[     195ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8764/demos/vitrines/immobilier/photos/villa-aster-int.jpg:0
-[    8318ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8764/demos/vitrines/immobilier/photos/maison-halde.jpg:0
-[    8319ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8764/demos/vitrines/immobilier/photos/maison-halde-int.jpg:0
-[   14443ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8764/demos/vitrines/immobilier/photos/villa-bel-oree-int.jpg:0
-[   14443ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8764/demos/vitrines/immobilier/photos/villa-bel-oree.jpg:0
