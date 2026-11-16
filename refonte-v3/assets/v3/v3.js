@@ -372,6 +372,37 @@
     });
   })();
 
+  /* ---------- 11 ter. Réalisations : inclinaison 3D au survol, image qui glisse au défilement ---------- */
+  (function vivant(){
+    if (reduit) return;
+    const cartes = $$('.mosaique .pj, .cas-visuel');
+    if (!cartes.length) return;
+    if (fin) cartes.forEach(c => {
+      const cadre = $('.cadre, .grand', c); if (!cadre) return;
+      c.addEventListener('pointermove', e => {
+        const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        cadre.style.transform = 'rotateY(' + (x * 7).toFixed(2) + 'deg) rotateX(' + (-y * 6).toFixed(2) + 'deg) translateZ(0)';
+      });
+      c.addEventListener('pointerleave', () => { cadre.style.transform = ''; });
+    });
+    const imgs = cartes.map(c => $('.cadre img, .grand img', c)).filter(Boolean);
+    let attente = false;
+    const maj = () => {
+      attente = false; const h = innerHeight;
+      imgs.forEach(im => { const r = im.parentNode.getBoundingClientRect(); if (r.bottom < 0 || r.top > h) return;
+        const k = ((r.top + r.height / 2) - h / 2) / h; im.style.transform = 'scale(1.08) translate3d(0,' + (k * -28).toFixed(1) + 'px,0)'; });
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true }); maj();
+  })();
+
+  /* ---------- 11 quater. Vidéo de fond de l'accueil : jamais en économie de données, en pause hors écran ---------- */
+  (function videoFond(){
+    const v = $('.hb-video'); if (!v) return;
+    const eco = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+    if (reduit || eco) { v.removeAttribute('autoplay'); v.preload = 'none'; v.pause(); return; }
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); })).observe(v);
+  })();
+
   /* ---------- 12. Avant / après ---------- */
   (function avantApres(){
     const frame = $('#baFrame'), range = $('#baRange'); if (!frame || !range) return;
