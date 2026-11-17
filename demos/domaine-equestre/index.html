@@ -1,62 +1,344 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#11110F" />
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Domaine de Valombre — Centre équestre · Luxembourg</title>
+<meta name="description" content="Domaine de Valombre, centre équestre au Luxembourg : cours du poney au Galop 7, balades en forêt et sur les crêtes, pensions au pré ou au box. Réservation en ligne. Maquette concept NS Development.">
+<meta name="theme-color" content="#2b1d15">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="canonical" href="https://nsdevelopment26.github.io/nsd-vitrine/demos/domaine-equestre/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_LU">
+<meta property="og:site_name" content="Domaine de Valombre">
+<meta property="og:title" content="Domaine de Valombre — Centre équestre · Luxembourg">
+<meta property="og:description" content="Le domaine en relief : choisissez un lieu, une heure, une balade. Cours, balades et pensions, réservation en ligne.">
+<meta property="og:image" content="https://nsdevelopment26.github.io/nsd-vitrine/demos/domaine-equestre/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Domaine de Valombre — Centre équestre · Luxembourg">
+<meta name="twitter:image" content="https://nsdevelopment26.github.io/nsd-vitrine/demos/domaine-equestre/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="valombre.css">
+<link rel="modulepreload" href="vendor/three.module.min.js">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SportsActivityLocation","name":"Domaine de Valombre","description":"Centre équestre : cours, balades, pensions (maquette concept NS Development).","telephone":"+352 27 00 00 00","email":"bonjour@valombre.example","address":{"@type":"PostalAddress","streetAddress":"Adresse à compléter","addressRegion":"Gutland","addressCountry":"LU"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday","Sunday"],"opens":"08:00","closes":"18:00"}]}
+</script>
+<script>
+  /* Avant tout affichage : l'ouverture se joue-t-elle ? (une fois par session,
+     jamais avec « réduire les animations », ni si l'URL vise une section ou porte ?vu) */
+  (function () {
+    var d = document.documentElement, vue = false;
+    try { vue = sessionStorage.getItem('valombre-intro') === '1'; } catch (e) {}
+    var calme = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var gl = (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
+    d.classList.add('js');
+    if (!gl) d.classList.add('sans-3d');
+    if (gl && !calme && !vue && !location.hash && !/[?&]vu\b/.test(location.search)) d.classList.add('en-intro');
+  })();
+</script>
+</head>
+<body>
 
-    <title>Domaine de Valombre — Centre équestre haut de gamme · Luxembourg</title>
-    <meta
-      name="description"
-      content="Domaine équestre privé dédié au cheval, à la performance et à l'art de l'équitation. Écuries contemporaines, manège couvert, carrières et accompagnement sur mesure."
-    />
-    <link rel="canonical" href="https://domaine-valombre.example/" />
+<a class="evite" href="#contenu">Aller au contenu</a>
 
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="fr_FR" />
-    <meta property="og:site_name" content="Domaine de Valombre" />
-    <meta property="og:title" content="Domaine de Valombre — L'excellence équestre, autrement." />
-    <meta
-      property="og:description"
-      content="Un domaine dédié aux chevaux, à la performance et à l'art de l'équitation."
-    />
-    <meta property="og:image" content="./og.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Domaine de Valombre — L'excellence équestre, autrement." />
-    <meta
-      name="twitter:description"
-      content="Un domaine dédié aux chevaux, à la performance et à l'art de l'équitation."
-    />
-    <meta name="twitter:image" content="./og.png" />
+<!-- Ouverture : à l'aube, la brume couvre le relief ; elle se lève, le domaine apparaît. -->
+<div class="intro" id="intro" aria-hidden="true">
+  <p class="intro-heure">6 h 40</p>
+  <p class="intro-nom">Valombre</p>
+  <p class="intro-sous">Domaine équestre · Gutland</p>
+  <button type="button" class="intro-passer" id="intro-passer">Passer l'intro</button>
+</div>
 
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<header class="barre" id="barre">
+  <a href="#domaine" class="logo" aria-label="Domaine de Valombre, retour en haut">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 27c6-6 10-9 16-9s10 3 16 9"/><path d="M11 33h18"/><circle cx="20" cy="10" r="3.2"/></svg>
+    <span>Valombre</span>
+  </a>
+  <span class="concept" title="Maquette de démonstration NS Development">Concept</span>
+  <nav class="barre-liens" aria-label="Rubriques">
+    <a href="#cours">Cours</a>
+    <a href="#balades">Balades</a>
+    <a href="#pensions">Pensions</a>
+    <a href="#chevaux">Chevaux</a>
+    <a href="#infos">Infos</a>
+  </nav>
+  <a href="#reserver" class="selle selle-petit barre-cta">Réserver</a>
+  <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><i></i><i></i></button>
+</header>
 
-    <link rel="stylesheet" href="../../assets/fonts/polices-36bd596604.css">
+<div class="menu" id="menu" hidden>
+  <nav aria-label="Menu">
+    <a href="#domaine">Le domaine</a>
+    <a href="#cours">Cours</a>
+    <a href="#balades">Balades</a>
+    <a href="#pensions">Pensions</a>
+    <a href="#chevaux">Chevaux et poneys</a>
+    <a href="#reserver">Réserver</a>
+    <a href="#infos">Horaires et accès</a>
+  </nav>
+  <p class="menu-tel">Accueil, du mardi au dimanche<br><a href="tel:+35227000000">+352 27 00 00 00</a></p>
+</div>
 
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SportsActivityLocation",
-        "name": "Domaine de Valombre",
-        "description": "Centre équestre haut de gamme : écuries, manège couvert, carrières, paddocks privés et accompagnement personnalisé.",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "1, route du Domaine",
-          "addressLocality": "Luxembourg",
-          "postalCode": "L-0000",
-          "addressCountry": "LU"
-        },
-        "telephone": "+352 00 00 00 00",
-        "email": "contact@domaine-valombre.example",
-        "foundingDate": "1998"
-      }
-    </script>
-    <script type="module" crossorigin src="./assets/index-D1HaSark.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-kJXXn8xE.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  <!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
+<main id="contenu">
+
+<!-- 1. Le domaine en relief -->
+<section class="scene" id="domaine" aria-labelledby="titre">
+  <div class="scene-colle" id="scene-colle">
+    <div class="vue" id="vue">
+      <canvas id="scene3d" tabindex="0" aria-label="Maquette 3D du domaine : glisser pour tourner, flèches gauche et droite au clavier ; choisir un lieu avec les repères numérotés"></canvas>
+      <img class="scene-repli" src="photos/domaine.webp" srcset="photos/domaine-m.webp 900w, photos/domaine.webp 1600w" sizes="100vw" alt="Le domaine au petit matin : écuries en pierre, manège, carrière et prés dans la brume" width="1600" height="905">
+      <div class="pins" id="pins"></div>
+      <div class="heure" id="heure-bloc">
+        <label for="heure">Heure au domaine <output id="heure-val">9 h</output></label>
+        <input type="range" id="heure" min="7" max="19" step="0.25" value="9">
+      </div>
+    </div>
+
+    <div class="volet" id="volet">
+      <div class="volet-accueil" id="volet-accueil">
+        <h1 id="titre">Respirer, <em>au pas</em> du cheval.</h1>
+        <p class="chapeau">Un domaine équestre dans les collines du Gutland : des cours du premier poney au Galop 7, des balades dans la hêtraie, des pensions au pré ou au box. Choisissez un lieu sur la maquette.</p>
+        <ol class="index-lieux" id="index-lieux"></ol>
+        <a href="#reserver" class="selle">Réserver une sortie</a>
+        <p class="volet-tel">ou appelez le <a href="tel:+35227000000">27 00 00 00</a></p>
+      </div>
+
+      <div class="fiche" id="fiche" hidden tabindex="-1" aria-live="polite">
+        <button type="button" class="fiche-retour" id="fiche-retour">Vue d'ensemble</button>
+        <p class="fiche-offre" id="f-offre"></p>
+        <h2 class="fiche-titre" id="f-titre"></h2>
+        <p class="fiche-texte" id="f-texte"></p>
+        <ul class="fiche-faits" id="f-faits"></ul>
+        <div class="fiche-balades" id="f-balades" hidden role="group" aria-label="Boucles de balade"></div>
+        <a href="#" class="selle" id="f-action"></a>
+      </div>
+    </div>
+
+    <div class="journee-texte" id="journee-texte" aria-hidden="true">
+      <p class="j-heure" id="j-heure"></p>
+      <p class="j-titre" id="j-titre"></p>
+      <p class="j-texte" id="j-texte"></p>
+      <div class="j-points" id="j-points"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Une journée au domaine (téléphone et sans 3D : en cartes) -->
+<section class="journee" id="journee" aria-labelledby="journee-titre">
+  <h2 id="journee-titre" class="journee-h">Une journée à Valombre</h2>
+  <ol class="journee-cartes" id="journee-cartes"></ol>
+</section>
+
+<!-- 2. Bandeau -->
+<section class="bandeau" aria-label="En bref">
+  <p><b>Du mardi au dimanche</b><span>Le lundi, les chevaux se reposent</span></p>
+  <p><b>Cours en quatre langues</b><span>Français, luxembourgeois, allemand, anglais</span></p>
+  <p><b>Un cheval choisi pour vous</b><span>Selon votre niveau et votre gabarit</span></p>
+  <p><b>Dès six ans</b><span>Sur les poneys de l'école</span></p>
+</section>
+
+<!-- 3. Cours -->
+<section class="cours" id="cours" aria-labelledby="cours-titre">
+  <div class="cours-tete">
+    <div>
+      <h2 id="cours-titre">La semaine en selle</h2>
+      <p class="intro-section">Toutes les reprises de la semaine. Filtrez par niveau, choisissez un créneau : la réservation se remplit toute seule.</p>
+    </div>
+    <figure class="cours-photo"><img src="photos/carriere-m.webp" srcset="photos/carriere-m.webp 900w, photos/carriere.webp 1600w" sizes="(min-width: 980px) 40vw, 100vw" alt="Une cavalière au trot sur le cheval gris pommelé, dans la carrière au petit matin" loading="lazy" width="1600" height="905"></figure>
+  </div>
+  <div class="filtres" role="group" aria-label="Filtrer par niveau" id="filtres-niveau"></div>
+  <div class="filtres filtres-type" role="group" aria-label="Filtrer par formule" id="filtres-type"></div>
+  <div class="planning" id="planning"></div>
+  <p class="vide" id="planning-vide" hidden>Aucune reprise ne correspond. <button type="button" class="lien" id="planning-tout">Tout afficher</button></p>
+  <p class="aide">Tarifs et places de démonstration&nbsp;: collectif 38&nbsp;€, particulier 65&nbsp;€, poneys 28&nbsp;€, cours d'essai 30&nbsp;€.</p>
+</section>
+
+<!-- 4. Balades -->
+<section class="balades" id="balades" aria-labelledby="balades-titre">
+  <figure class="balades-photo"><img src="photos/balade-m.webp" srcset="photos/balade-m.webp 900w, photos/balade.webp 1600w" sizes="100vw" alt="Deux cavaliers de dos au pas dans la hêtraie, un cheval bai et un cheval gris, brume entre les troncs" loading="lazy" width="1600" height="905"></figure>
+  <div class="balades-corps">
+    <h2 id="balades-titre">Loin des écrans, trois boucles</h2>
+    <p class="intro-section">Départs le mercredi, le samedi et le dimanche, toujours accompagnés. On vous attribue un cheval qui connaît le chemin.</p>
+    <ul class="boucles" id="boucles"></ul>
+  </div>
+</section>
+
+<!-- 5. Pensions -->
+<section class="pensions" id="pensions" aria-labelledby="pensions-titre">
+  <div class="pensions-tete">
+    <h2 id="pensions-titre">Votre cheval chez nous</h2>
+    <p class="intro-section">Trois formules, des options au mois. Le calcul se fait en direct&nbsp;; la visite de l'écurie est sans engagement.</p>
+  </div>
+  <div class="pensions-grille">
+    <div class="formules" role="radiogroup" aria-label="Formule de pension" id="formules"></div>
+    <form class="pension-form" id="pension-form" novalidate>
+      <fieldset class="options">
+        <legend>Options au mois</legend>
+        <div id="options"></div>
+      </fieldset>
+      <p class="estimation">Estimation mensuelle <output id="estim">690&nbsp;€</output></p>
+      <div class="champs">
+        <div class="champ"><label for="p-cheval">Nom du cheval</label><input id="p-cheval" name="cheval" required></div>
+        <div class="champ"><label for="p-discipline">Discipline</label>
+          <select id="p-discipline" name="discipline"><option>Loisir et balade</option><option>Dressage</option><option>Obstacle</option><option>Complet</option><option>Retraite</option></select></div>
+        <div class="champ"><label for="p-arrivee">Arrivée souhaitée</label><input id="p-arrivee" name="arrivee" type="month" required></div>
+        <div class="champ"><label for="p-nom">Votre nom</label><input id="p-nom" name="nom" autocomplete="name" required></div>
+        <div class="champ"><label for="p-tel">Téléphone</label><input id="p-tel" name="tel" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+352 621 00 00 00"></div>
+        <div class="champ"><label for="p-mail">Courriel</label><input id="p-mail" name="mail" type="email" autocomplete="email" required></div>
+      </div>
+      <p class="erreur" id="p-erreur" role="alert"></p>
+      <button type="submit" class="selle">Demander une place et une visite</button>
+      <p class="aide">Démonstration&nbsp;: tarifs indicatifs, la demande reste sur cet appareil.</p>
+      <p class="succes" id="p-succes" role="status" hidden></p>
+    </form>
+  </div>
+  <div class="pensions-photos">
+    <figure><img src="photos/ecuries-m.webp" srcset="photos/ecuries-m.webp 900w, photos/ecuries.webp 1600w" sizes="(min-width: 980px) 50vw, 100vw" alt="L'allée de l'écurie en pierre, un cheval bai à la porte de son box" loading="lazy" width="1600" height="1063"><figcaption>Les boxes, côté allée</figcaption></figure>
+    <figure><img src="photos/pres-m.webp" srcset="photos/pres-m.webp 900w, photos/pres.webp 1600w" sizes="(min-width: 980px) 50vw, 100vw" alt="Trois chevaux broutent au pré dans la brume, l'abri en bois à droite" loading="lazy" width="1600" height="1063"><figcaption>Les prés et leur abri</figcaption></figure>
+  </div>
+</section>
+
+<!-- 6. Chevaux -->
+<section class="chevaux" id="chevaux" aria-labelledby="chevaux-titre">
+  <div class="chevaux-tete">
+    <h2 id="chevaux-titre">Ceux qui vous porteront</h2>
+    <div class="filtres" role="group" aria-label="Filtrer les chevaux" id="filtres-chevaux"></div>
+  </div>
+  <ul class="ecurie" id="ecurie"></ul>
+  <p class="vide" id="ecurie-vide" hidden>Aucun cheval pour ce niveau.</p>
+</section>
+
+<!-- 7. Le lieu -->
+<section class="lieu" id="lieu" aria-labelledby="lieu-titre">
+  <figure class="lieu-grand"><img src="photos/manege-m.webp" srcset="photos/manege-m.webp 900w, photos/manege.webp 1600w" sizes="100vw" alt="Le manège couvert, charpente en chêne, sable ratissé, ouvert sur les prés" loading="lazy" width="1600" height="905"></figure>
+  <div class="lieu-corps">
+    <h2 id="lieu-titre">Pierre, chêne et sable ratissé</h2>
+    <p>Une écurie en pierre calcaire, un manège sous charpente de chêne ouvert sur les prés, une sellerie où chaque selle a sa place. Rien de superflu, tout entretenu.</p>
+    <figure class="lieu-petit"><img src="photos/sellerie-m.webp" alt="La sellerie : selles en cuir sur leurs supports en chêne, filets aux crochets, tapis vert mousse plié" loading="lazy" width="900" height="598"></figure>
+  </div>
+</section>
+
+<!-- 8. Réserver -->
+<section class="reserver" id="reserver" aria-labelledby="reserver-titre">
+  <div class="reserver-tete">
+    <h2 id="reserver-titre">Réserver une sortie</h2>
+    <p class="intro-section">Un cours d'essai, une balade, une visite pour une pension. Quatre étapes, une confirmation tout de suite.</p>
+    <figure><img src="photos/poney-m.webp" alt="Une enseignante mène un poney bai brun monté par une enfant, sur l'allée de l'écurie" loading="lazy" width="900" height="598"></figure>
+  </div>
+
+  <form class="resa" id="resa" novalidate>
+    <ol class="etapes" id="etapes" aria-label="Étapes">
+      <li class="on">Activité</li><li>Date</li><li>Cavaliers</li><li>Relecture</li>
+    </ol>
+
+    <fieldset class="pas" data-pas="1">
+      <legend>Que voulez-vous faire&nbsp;?</legend>
+      <div class="choix-act" role="radiogroup" aria-label="Activité">
+        <label><input type="radio" name="act" value="cours" checked><span><b>Cours d'essai</b><small>1 h, cheval ou poney attribué</small></span></label>
+        <label><input type="radio" name="act" value="balade"><span><b>Balade</b><small>La Hêtraie, les Crêtes ou la Vallée</small></span></label>
+        <label><input type="radio" name="act" value="visite"><span><b>Visite pension</b><small>45 min avec la responsable d'écurie</small></span></label>
+      </div>
+      <div class="champ" id="r-boucle-bloc" hidden><label for="r-boucle">Boucle</label><select id="r-boucle" name="boucle"></select></div>
+      <div class="champ" id="r-cours-bloc"><label for="r-cours">Reprise</label><select id="r-cours" name="cours"></select></div>
+    </fieldset>
+
+    <fieldset class="pas" data-pas="2" hidden>
+      <legend>Quel jour, à quelle heure&nbsp;?</legend>
+      <div class="jours" id="r-jours" role="group" aria-label="Jour"></div>
+      <div class="creneaux" id="r-creneaux" role="group" aria-label="Heure"></div>
+      <p class="aide" id="r-aide-jour"></p>
+    </fieldset>
+
+    <fieldset class="pas" data-pas="3" hidden>
+      <legend>Qui vient&nbsp;?</legend>
+      <div class="champs">
+        <div class="champ" id="r-nb-bloc"><label for="r-nb">Nombre de cavaliers</label><select id="r-nb" name="nb"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+        <div class="champ" id="r-niveau-bloc"><label for="r-niveau">Niveau</label><select id="r-niveau" name="niveau"></select></div>
+        <div class="champ"><label for="r-nom">Nom</label><input id="r-nom" name="nom" autocomplete="name" required></div>
+        <div class="champ"><label for="r-tel">Téléphone</label><input id="r-tel" name="tel" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+352 621 00 00 00"></div>
+        <div class="champ"><label for="r-mail">Courriel</label><input id="r-mail" name="mail" type="email" autocomplete="email" required></div>
+        <div class="champ champ-large"><label for="r-note">Un mot pour l'enseignant <span>(facultatif)</span></label><textarea id="r-note" name="note" rows="2" placeholder="Âge des enfants, appréhension, dernière fois à cheval…"></textarea></div>
+      </div>
+      <p class="alerte" id="r-alerte" hidden></p>
+    </fieldset>
+
+    <fieldset class="pas" data-pas="4" hidden>
+      <legend>Relisez avant d'envoyer</legend>
+      <dl class="recap" id="r-recap"></dl>
+      <label class="accord"><input type="checkbox" id="r-accord" required><span>J'accepte d'être recontacté au sujet de cette réservation.</span></label>
+    </fieldset>
+
+    <p class="erreur" id="r-erreur" role="alert"></p>
+    <div class="resa-pied">
+      <button type="button" class="lien" id="r-prec" hidden>Retour</button>
+      <button type="button" class="selle" id="r-suiv">Continuer</button>
+      <button type="submit" class="selle" id="r-envoyer" hidden>Confirmer la réservation</button>
+    </div>
+    <p class="aide">Démonstration&nbsp;: la réservation est gardée sur cet appareil, rien n'est envoyé.</p>
+  </form>
+
+  <div class="confirme" id="confirme" hidden tabindex="-1">
+    <svg class="fer" viewBox="0 0 80 80" aria-hidden="true"><path d="M22 66 C10 52 12 22 40 14 C68 22 70 52 58 66"/><g><circle cx="17" cy="48" r="1.6"/><circle cx="16" cy="36" r="1.6"/><circle cx="21" cy="25" r="1.6"/><circle cx="63" cy="48" r="1.6"/><circle cx="64" cy="36" r="1.6"/><circle cx="59" cy="25" r="1.6"/></g></svg>
+    <p class="confirme-titre">C'est noté, à bientôt au domaine.</p>
+    <p id="c-detail"></p>
+    <p class="confirme-ref">Référence <b id="c-ref"></b></p>
+    <div class="confirme-actions">
+      <a href="#" class="selle" id="c-ics" download="valombre.ics">Ajouter à mon agenda</a>
+      <button type="button" class="lien" id="c-nouveau">Faire une autre réservation</button>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Infos -->
+<section class="infos" id="infos" aria-labelledby="infos-titre">
+  <h2 id="infos-titre">Horaires et accès</h2>
+  <div class="infos-grille">
+    <div>
+      <h3>Accueil</h3>
+      <table class="horaires" id="horaires"><caption class="sr">Horaires d'ouverture au public</caption></table>
+      <p class="aide">Horaires de démonstration.</p>
+    </div>
+    <div>
+      <h3>Venir</h3>
+      <p>Adresse à compléter, dans le Gutland.<br>Parking devant l'écurie, place pour les vans.</p>
+      <p><a href="tel:+35227000000">+352 27 00 00 00</a><br><a href="mailto:bonjour@valombre.example">bonjour@valombre.example</a></p>
+    </div>
+    <div class="faq">
+      <h3>Avant de venir</h3>
+      <details><summary>Faut-il savoir monter&nbsp;?</summary><p>Non. Le cours d'essai et la Hêtraie sont faits pour une première fois. On vous attribue un cheval calme et on reste à côté de vous.</p></details>
+      <details><summary>Que faut-il porter&nbsp;?</summary><p>Un pantalon souple, des chaussures fermées à petit talon. Les bombes sont prêtées, toutes les tailles sont à la sellerie.</p></details>
+      <details><summary>Et s'il pleut&nbsp;?</summary><p>Les cours passent au manège couvert. Une balade peut être reportée sans frais jusqu'à la veille au soir.</p></details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="pied-haut">
+    <p class="pied-nom">Domaine de Valombre</p>
+    <nav aria-label="Pied de page"><a href="#cours">Cours</a><a href="#balades">Balades</a><a href="#pensions">Pensions</a><a href="#chevaux">Chevaux</a><a href="#reserver">Réserver</a></nav>
+  </div>
+  <p><span class="concept">Concept</span> Maquette de démonstration réalisée par NS Development. Le domaine, les chevaux, le planning, les tarifs, les coordonnées et les horaires sont fictifs. Adresse, mentions légales et politique de confidentialité&nbsp;: à compléter.</p>
+  <p>Visuels générés pour la maquette (Higgsfield). Relief en Three.js (licence MIT). Réalisé par <a href="https://nsdevelopment26.github.io/nsd-vitrine/">NS Development</a>.</p>
+</footer>
+
+<p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+<script src="data.js"></script>
+<script src="site.js"></script>
+<script type="module">if (!document.documentElement.classList.contains("sans-3d")) import("./domaine3d.js").catch(function (e) { console.warn(e); document.documentElement.classList.add("sans-3d"); document.dispatchEvent(new CustomEvent("valombre:intro-fin")); });</script>
+
+<!-- Assistant de site — démonstration, mode démo (répond depuis fiche-chat.json, sans IA). -->
+<script src="nsd-chat.js" defer
+        data-site="domaine-valombre"
+        data-nom="Domaine de Valombre"
+        data-accent="#2b1d15"
+        data-encre="#f2f5f6"
+        data-fiche="fiche-chat.json"
+        data-bienvenue="Bonjour. Une question sur les cours, les balades ou les pensions ?"></script>
+<!-- Ouverture d'une démo envoyée par le CRM (rien sans ?p= dans le lien) -->
 <script src="../../suivi.js" defer></script>
 <!-- Pop-up réseaux NS Development (demos/nsd-reseaux.js) -->
 <script src="../nsd-reseaux.js" defer></script>

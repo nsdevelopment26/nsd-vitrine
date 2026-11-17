@@ -1,0 +1,97 @@
+{
+  "nom": "Domaine de Valombre",
+  "activite": "centre équestre (cours, balades, pensions)",
+  "commune": "Gutland, Luxembourg (adresse à compléter)",
+  "telephone": "+352 27 00 00 00 (numéro de démonstration)",
+  "horaires_texte": "L'accueil est ouvert du mardi au vendredi de 8 h à 20 h, le samedi et le dimanche de 8 h à 18 h. Le lundi, le domaine est fermé au public : les chevaux se reposent (horaires de démonstration).",
+  "services_texte": "Des cours du premier poney (dès 6 ans) au Galop 7, en collectif ou en particulier ; trois balades accompagnées (la Hêtraie, les Crêtes, la Vallée) ; des pensions au pré, au box ou avec travail. En haut de la page, choisissez un lieu sur la maquette du domaine.",
+  "prix_texte": "Tarifs de démonstration : cours collectif 38 €, particulier 65 €, poneys 28 €, cours d'essai 30 €. Balades de 45 à 160 € par cavalier. Pensions de 420 à 1 090 € par mois, le calcul se fait en direct dans la rubrique Pensions.",
+  "urgence_texte": "Pour un cheval en pension, la responsable d'écurie répond au +352 621 00 00 00 (numéro de démonstration).",
+  "zone_texte": "Le domaine est dans le Gutland, au Luxembourg. Parking devant l'écurie, place pour les vans. Adresse à compléter.",
+  "contact_texte": "Réservez un cours d'essai, une balade ou une visite pour une pension dans la rubrique « Réserver une sortie » : quatre étapes, une confirmation tout de suite.",
+  "suggestions": [
+    "Je n'ai jamais monté à cheval",
+    "Combien coûte une pension ?",
+    "Les balades partent quand ?",
+    "Dès quel âge pour les enfants ?"
+  ],
+  "demo_regles": [
+    {
+      "mots": [
+        "blesse",
+        "blessé",
+        "malade",
+        "colique",
+        "urgence",
+        "urgent",
+        "vétérinaire",
+        "veterinaire"
+      ],
+      "cle": "urgence_texte"
+    },
+    {
+      "mots": [
+        "horaire",
+        "ouvert",
+        "heure",
+        "lundi",
+        "samedi",
+        "dimanche",
+        "soir"
+      ],
+      "cle": "horaires_texte"
+    },
+    {
+      "mots": [
+        "prix",
+        "tarif",
+        "cout",
+        "coût",
+        "combien",
+        "pension",
+        "euro"
+      ],
+      "cle": "prix_texte"
+    },
+    {
+      "mots": [
+        "adresse",
+        "ou etes",
+        "où êtes",
+        "venir",
+        "parking",
+        "van",
+        "acces",
+        "accès"
+      ],
+      "cle": "zone_texte"
+    },
+    {
+      "mots": [
+        "cours",
+        "balade",
+        "jamais",
+        "enfant",
+        "âge",
+        "age",
+        "poney",
+        "galop",
+        "debutant",
+        "débutant"
+      ],
+      "cle": "services_texte"
+    },
+    {
+      "mots": [
+        "reserver",
+        "réserver",
+        "rendez",
+        "rdv",
+        "essai",
+        "visite",
+        "contact"
+      ],
+      "cle": "contact_texte"
+    }
+  ]
+}

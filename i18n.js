@@ -136,14 +136,13 @@ const NS_I18N = {
      pt:"Cada setor tem o seu ambiente. Aqui estão exemplos de sites que criamos, totalmente personalizáveis à sua imagem. Clique para explorar."},
   "Restaurant": {lb:"Restaurant", de:"Restaurant", en:"Restaurant", pt:"Restaurante"},
   "Centre équestre": {lb:"Reitzenter", de:"Reitanlage", en:"Equestrian centre", pt:"Centro equestre"},
-  "Sombre et cinématique : grandes photographies, défilement fluide et mise en page de magazine.":
-    {lb:"Däischter a kinematesch: grouss Fotoen, flëssegt Scrollen an e Magazinn-Layout.",
-     de:"Dunkel und filmisch: großformatige Fotografien, flüssiges Scrollen und Magazin-Layout.",
-     en:"Dark and cinematic: full-bleed photography, fluid scrolling and a magazine layout.",
-     pt:"Escuro e cinematográfico: fotografia em grande formato, deslocamento fluido e layout de revista."},
-  "Photo plein cadre": {lb:"Foto iwwer de ganze Kader", de:"Vollformat-Foto", en:"Full-bleed photography", pt:"Fotografia em grande formato"},
+  "Le domaine en relief, en 3D : on choisit un lieu, l'heure du jour, une balade tracée sur la maquette. Planning des cours filtrable, simulateur de pension et réservation en ligne.":
+    {lb:"D'Domän am Relief, an 3D: Dir wielt eng Plaz, d'Zäit vum Dag, e Ausrëtt, deen op der Maquette gezeechent gëtt. Coursplang mat Filter, Pensiounsrechner an Online-Reservatioun.",
+     de:"Das Gut im Relief, in 3D: Man wählt einen Ort, die Tageszeit, einen Ausritt, der auf dem Modell eingezeichnet wird. Filterbarer Kursplan, Pensionsrechner und Online-Buchung.",
+     en:"The estate in relief, in 3D: pick a place, the time of day, a ride traced on the model. Filterable lesson schedule, livery calculator and online booking.",
+     pt:"O domínio em relevo, em 3D: escolhe-se um lugar, a hora do dia, um passeio traçado na maqueta. Horário das aulas com filtros, simulador de pensão e reserva online."},
+  "Domaine en 3D": {lb:"Domän an 3D", de:"Gut in 3D", en:"3D estate", pt:"Domínio em 3D"},
   "Rendez-vous en ligne": {lb:"Rendez-vous online", de:"Online-Terminbuchung", en:"Online booking", pt:"Marcações online"},
-  "Galerie de chevaux": {lb:"Päerdsgalerie", de:"Pferdegalerie", en:"Horse gallery", pt:"Galeria de cavalos"},
   "École de danse": {lb:"Danzschoul", de:"Tanzschule", en:"Dance school", pt:"Escola de dança"},
   "Clair et éditorial : photographies monochromes, planning de la semaine et réservation en un clic.":
     {lb:"Hell a redaktionell: monochrom Fotoen, Wochenplang a Reservatioun mat engem Klick.",
