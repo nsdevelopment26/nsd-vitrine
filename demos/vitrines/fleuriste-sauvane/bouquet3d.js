@@ -75,30 +75,35 @@ function peindre(g, bas, haut, ombre = 0.35, axe = 1) {
   return g;
 }
 
+const fines = estMobile();
 /* Un pétale : longueur selon +Y, face intérieure vers -Z.
-   creux = les bords remontent vers le cœur ; courbe = la pointe se replie (− vers le cœur, + vers l'extérieur) */
-function petale({ l = 0.3, w = 0.2, creux = 0.5, courbe = 0, pointe = 0.15, bas = '#fff', haut = '#fff', ombre = 0.45, segU = 6, segV = 7, alea = null }) {
-  const g = new THREE.PlaneGeometry(1, 1, segU, segV);
+   Contour : onglet étroit à la base, le plus large aux deux tiers, bout arrondi (le centre du bord dépasse).
+   creux = le pétale se creuse en cuillère ; courbe = la pointe se replie (− vers le cœur, + vers l'extérieur) ;
+   frise = le bord ondule près du bout. Grille fine et normales lissées : aucune facette. */
+function petale({ l = 0.3, w = 0.2, creux = 0.8, courbe = 0, pointe = 0, frise = 0, bas = '#fff', haut = '#fff', ombre = 0.4, seg = 14, phase = 0 }) {
+  const n = fines ? Math.max(7, Math.round(seg * 0.65)) : seg;
+  const g = new THREE.PlaneGeometry(1, 1, n, n);
   const p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
-    const u = p.getX(i) * 2;           // -1 → 1
-    const v = p.getY(i) + 0.5;          // 0 → 1
-    /* contour : onglet étroit à la base, bout arrondi (ellipse), un peu pointu si « pointe » */
-    const e = Math.sqrt(Math.max(0, 1 - Math.pow((v - 0.42) / 0.58, 2)));
-    const pointu = Math.max(0, 1 - Math.pow(v, 1.4));
-    let larg = lerp(e, pointu, pointe * v);
-    larg *= 0.3 + 0.7 * Math.min(1, v / 0.3);
-    const ondule = alea ? Math.sin(u * 7 + alea * 9) * 0.012 * v : 0;
-    const x = u * w * 0.5 * larg;
-    const y = v * l;
-    const z = -creux * w * 0.5 * u * u * larg - courbe * l * v * v + ondule;
+    const u = p.getX(i) * 2;            // -1 → 1
+    const v = p.getY(i) + 0.5;           // 0 → 1
+    const monte = Math.sin(Math.PI / 2 * Math.min(v / 0.66, 1));
+    let forme = 0.16 + 0.84 * monte;
+    if (v > 0.66) forme *= Math.sqrt(1 - Math.pow((v - 0.66) / 0.34, 2) * 0.86);
+    forme *= 1 - pointe * Math.pow(v, 3);
+    const demi = w * 0.5 * forme;
+    const x = u * demi;
+    const bout = Math.max(0, (v - 0.72) / 0.28);
+    const y = l * v + l * (0.12 - pointe * 0.08) * (1 - u * u) * bout * bout;
+    let z = -creux * (x * x) / (w * 0.5) - courbe * l * v * v;
+    z += frise * w * 0.07 * Math.sin(u * Math.PI * 2.5 + phase) * v * v;
     p.setXYZ(i, x, y, z);
   }
   g.computeVertexNormals();
   return peindre(g, bas, haut, ombre);
 }
-const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), V = new THREE.Vector3(), U = new THREE.Vector3(1, 1, 1);
-/* place un pétale : inclinaison depuis l'axe, puis rotation autour de l'axe */
+const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), V = new THREE.Vector3();
+/* place un pétale : inclinaison depuis l'axe, recul depuis le cœur, hauteur, puis rotation autour de l'axe */
 function placer(g, incl, azi, haut = 0, rayon = 0) {
   g = g.clone();
   g.applyMatrix4(new THREE.Matrix4().makeRotationX(incl));
@@ -108,99 +113,123 @@ function placer(g, incl, azi, haut = 0, rayon = 0) {
 }
 const OR = Math.PI * (3 - Math.sqrt(5));
 
-/* ------------------------------------------------------------ les six fleurs */
-const fines = estMobile();
-function tetePivoine() {
-  const r = graine('pivoine'), morceaux = [];
-  const N = fines ? 40 : 60;
-  for (let i = 0; i < N; i++) {
-    const t = i / (N - 1);                      // 0 = cœur, 1 = extérieur
-    const g = petale({ l: lerp(0.11, 0.26, t), w: lerp(0.13, 0.3, t), creux: lerp(1.0, 0.55, t), courbe: lerp(0.35, -0.08, t), pointe: 0.05,
-      bas: '#d4555c', haut: t < 0.4 ? '#f39a84' : '#f8ae98', ombre: lerp(0.5, 0.22, t), segU: 8, segV: 8, alea: r() });
-    morceaux.push(placer(g, lerp(0.15, 1.38, Math.pow(t, 0.75)) + (r() - 0.5) * 0.12, i * OR + r() * 0.3, lerp(0.07, -0.02, t), 0));
+/* Une coupe de pétales d'un seul tenant : une calotte de sphère posée sur son fond, festonnée en « lobes »
+   (un lobe = un pétale, l'encoche les sépare). Au-delà de 90°, la calotte se referme vers le cœur.
+   Plusieurs coupes emboîtées, de plus en plus petites et fermées, font une pivoine ou une renoncule :
+   comme elles partagent le même fond, la plus petite reste toujours dedans, rien ne se traverse. */
+function coupe({ R, phi, lobes, encoche = 0.28, frise = 0.03, decal = 0, etire = 1, bas: cb, haut: ch, ombre = 0.3, segT = 14 }) {
+  const segA = (fines ? 9 : 14) * lobes, nT = fines ? Math.max(8, segT - 4) : segT;
+  const pos = [], col = [], idx = [];
+  BAS.set(cb); HAUT.set(ch);
+  for (let j = 0; j <= nT; j++) {
+    const sv = j / nT;
+    for (let i = 0; i <= segA; i++) {
+      const a = (i / segA) * Math.PI * 2;
+      const lb = Math.pow(Math.abs(Math.cos(lobes * a / 2)), 0.75);
+      const st = sv * (1 - encoche * (1 - lb));
+      const f = st * phi;
+      const rho = R * Math.sin(f) * (0.9 + 0.1 * lb);
+      const y = (R * (1 - Math.cos(f)) + frise * R * Math.sin(a * lobes * 2 + decal * 3) * st * st * st) * etire;
+      pos.push(Math.cos(a + decal) * rho, y, Math.sin(a + decal) * rho);
+      C.copy(BAS).lerp(HAUT, Math.pow(st, 0.7)).multiplyScalar(lerp(1 - ombre, 1, Math.pow(st, 0.6)) * (0.94 + 0.06 * lb));
+      col.push(C.r, C.g, C.b);
+    }
   }
-  return fusion(morceaux);
+  for (let j = 0; j < nT; j++) for (let i = 0; i < segA; i++) {
+    const a = j * (segA + 1) + i, b = a + 1, c = a + segA + 1, d = c + 1;
+    idx.push(a, c, b, b, c, d);
+  }
+  let g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g.toNonIndexed();
 }
+
+
+/* ------------------------------------------------------------ les six fleurs */
+/* Pivoine : sept coupes emboîtées, les grandes ouvertes, les petites refermées en boule au cœur */
+function tetePivoine() {
+  const r = graine('pivoine'), m = [];
+  const couches = [
+    [0.23, 108, 5, '#c24b55', '#f5a28f'], [0.205, 116, 6, '#c94f59', '#f39a88'], [0.18, 124, 7, '#cc535e', '#f39886'],
+    [0.155, 134, 7, '#cf5862', '#f49b89'], [0.13, 146, 8, '#d25c66', '#f6a291'], [0.1, 158, 7, '#d4606a', '#f7ab9a'], [0.07, 168, 6, '#d6646e', '#f8b4a4'],
+  ];
+  couches.forEach(([R, deg, lobes, cb, ch], k) => m.push(coupe({ R, phi: deg * Math.PI / 180, lobes, encoche: 0.3 - k * 0.015, frise: 0.05, decal: k * 0.9 + r(), bas: cb, haut: ch, ombre: 0.35 })));
+  return fusion(m);
+}
+/* Renoncule : une douzaine de coupes fines et serrées, la rosette qu'on voit de dessus */
 function teteRenoncule() {
-  const r = graine('renoncule'), morceaux = [];
-  const N = fines ? 44 : 70;
-  for (let i = 0; i < N; i++) {
-    const t = i / (N - 1);
-    const g = petale({ l: lerp(0.05, 0.17, t), w: lerp(0.07, 0.17, t), creux: 1.2, courbe: lerp(0.5, 0.05, t), pointe: 0,
-      bas: '#d8b97e', haut: t < 0.3 ? '#efdcae' : '#fdf5e4', ombre: 0.35, segU: 6, segV: 6 });
-    morceaux.push(placer(g, lerp(0.05, 1.45, Math.pow(t, 0.9)), i * OR, lerp(0.05, -0.01, t), lerp(0, 0.01, t)));
+  const r = graine('renoncule'), m = [];
+  const N = fines ? 8 : 12;
+  for (let k = 0; k < N; k++) {
+    const t = k / (N - 1);
+    m.push(coupe({ R: lerp(0.15, 0.035, t), phi: lerp(98, 172, t) * Math.PI / 180, lobes: k % 2 ? 6 : 5, encoche: 0.18, frise: 0.02, decal: k * 1.3 + r(),
+      bas: '#d3b071', haut: t > 0.7 ? '#ecd8a2' : '#fdf6e6', ombre: 0.32, segT: 10 }));
   }
-  /* un petit cœur vert, visible dans les plus ouvertes */
-  morceaux.push(peindre(new THREE.SphereGeometry(0.035, 8, 6).translate(0, 0.06, 0), '#5f7a3c', '#9fb06a', 0.2));
-  return fusion(morceaux);
+  m.push(peindre(new THREE.SphereGeometry(0.022, 10, 8).translate(0, 0.055, 0), '#6c8340', '#a6b56e', 0.2));
+  return fusion(m);
 }
 function teteAnemone() {
-  const r = graine('anemone'), morceaux = [];
+  const r = graine('anemone'), m = [];
   for (let i = 0; i < 6; i++) {
-    const g = petale({ l: 0.22, w: 0.2, creux: 0.45, courbe: 0.08 * (i % 2 ? 1 : -0.4), pointe: 0.05,
-      bas: '#ddd5e2', haut: '#ffffff', ombre: 0.15, segU: 10, segV: 10, alea: r() });
-    morceaux.push(placer(g, 1.12 + (i % 2) * 0.12, (i / 6) * Math.PI * 2 + r() * 0.2, 0, 0.02));
+    const pe = petale({ l: 0.22, w: 0.21, creux: 0.38, courbe: 0.05, frise: 0.35, bas: '#ddd5e2', haut: '#ffffff', ombre: 0.14, phase: r() * 6 });
+    m.push(placer(pe, 1.16 + (i % 2) * 0.1, (i / 6) * Math.PI * 2 + r() * 0.15, (i % 2) * 0.006, 0.02));
   }
-  /* cœur noir velouté et couronne d'étamines */
-  const coeur = new THREE.SphereGeometry(0.055, 14, 10); coeur.scale(1, 0.7, 1); coeur.translate(0, 0.02, 0);
-  morceaux.push(peindre(coeur, '#0d0a10', '#2a2036', 0.2));
+  const coeur = new THREE.SphereGeometry(0.055, 16, 12); coeur.scale(1, 0.7, 1); coeur.translate(0, 0.02, 0);
+  m.push(peindre(coeur, '#0d0a10', '#2a2036', 0.2));
   const N = fines ? 18 : 30;
   for (let i = 0; i < N; i++) {
     const a = i * OR, d = 0.065 + r() * 0.025;
-    const e = new THREE.SphereGeometry(0.009, 5, 4).translate(Math.cos(a) * d, 0.035, Math.sin(a) * d);
-    morceaux.push(peindre(e, '#1a1320', '#3a2c4a', 0));
+    m.push(peindre(new THREE.SphereGeometry(0.009, 6, 5).translate(Math.cos(a) * d, 0.035, Math.sin(a) * d), '#1a1320', '#3a2c4a', 0));
   }
-  return fusion(morceaux);
+  return fusion(m);
 }
+/* Tulipe : deux coupes allongées de trois pétales chacune, la seconde tournée d'un sixième de tour */
 function teteTulipe() {
-  const r = graine('tulipe'), morceaux = [];
-  for (let i = 0; i < 6; i++) {
-    const ext = i % 2 === 0;
-    const g = petale({ l: ext ? 0.32 : 0.3, w: 0.22, creux: 0.6, courbe: -0.05, pointe: 0.04,
-      bas: '#d99a1a', haut: '#fbdb6a', ombre: 0.3, segU: 9, segV: 10, alea: r() });
-    morceaux.push(placer(g, ext ? 0.32 : 0.2, (i / 6) * Math.PI * 2 + (ext ? 0 : 0.5), -0.02, ext ? 0.03 : 0.012));
-  }
-  return fusion(morceaux);
+  return fusion([
+    coupe({ R: 0.115, phi: 1.32, lobes: 3, encoche: 0.36, frise: 0, etire: 2.25, bas: '#cf8c17', haut: '#fbdc6c', ombre: 0.3, segT: 16 }),
+    coupe({ R: 0.102, phi: 1.26, lobes: 3, encoche: 0.34, frise: 0, decal: Math.PI / 3, etire: 2.3, bas: '#c9850f', haut: '#f8d35a', ombre: 0.35, segT: 16 }),
+  ]);
 }
 function teteChardon() {
-  const morceaux = [];
-  const boule = new THREE.IcosahedronGeometry(0.075, 1);
-  morceaux.push(peindre(boule, '#2c3a66', '#56699f', 0.3));
+  const m = [];
+  m.push(peindre(new THREE.IcosahedronGeometry(0.075, 2), '#2c3a66', '#56699f', 0.3));
   const p = new THREE.IcosahedronGeometry(0.075, fines ? 1 : 2).attributes.position;
   const vus = new Set();
   for (let i = 0; i < p.count; i++) {
     V.fromBufferAttribute(p, i); const cle = V.toArray().map((x) => x.toFixed(3)).join();
     if (vus.has(cle)) continue; vus.add(cle);
-    const n = V.clone().normalize();
-    const pic = new THREE.ConeGeometry(0.011, 0.05, 4, 1);
+    const nrm = V.clone().normalize();
+    const pic = new THREE.ConeGeometry(0.011, 0.05, 5, 1);
     pic.translate(0, 0.025, 0);
-    pic.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), n));
-    pic.translate(n.x * 0.07, n.y * 0.07, n.z * 0.07);
-    morceaux.push(peindre(pic, '#3e528c', '#a8b8e6', 0.2, 1));
+    pic.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), nrm));
+    pic.translate(nrm.x * 0.07, nrm.y * 0.07, nrm.z * 0.07);
+    m.push(peindre(pic, '#3e528c', '#a8b8e6', 0.2, 1));
   }
-  const g = fusion(morceaux); g.translate(0, 0.07, 0);
+  const g = fusion(m); g.translate(0, 0.07, 0);
   return g;
 }
 function teteEucalyptus() {
-  /* un rameau : sa propre tige et des feuilles rondes alternées */
-  const r = graine('eucalyptus'), morceaux = [];
-  const tige = new THREE.CylinderGeometry(0.008, 0.011, 0.62, 5, 1); tige.translate(0, 0.31, 0);
-  morceaux.push(peindre(tige, '#6f6457', '#8a8070', 0.2));
+  /* un rameau : sa propre tige et des feuilles rondes alternées, qui partent de la tige vers l'extérieur */
+  const r = graine('eucalyptus'), m = [];
+  const tige = new THREE.CylinderGeometry(0.008, 0.011, 0.62, 6, 1); tige.translate(0, 0.31, 0);
+  m.push(peindre(tige, '#6f6457', '#8a8070', 0.2));
   const N = 16;
   for (let i = 0; i < N; i++) {
     const t = i / (N - 1);
     const rl = lerp(0.05, 0.028, t);
-    const f = new THREE.CircleGeometry(rl, 14);
-    const pos = f.attributes.position;  // légèrement bombée, la feuille part de la tige vers l'extérieur
+    const f = new THREE.CircleGeometry(rl, 16);
+    const pos = f.attributes.position;
     for (let k = 0; k < pos.count; k++) { const x = pos.getX(k), y = pos.getY(k); pos.setXYZ(k, x + rl * 1.05, y * 0.92, -(x * x + y * y) * 2.2); }
     f.computeVertexNormals();
     f.rotateX(Math.PI / 2 - 0.25);
     f.rotateZ(0.5 + r() * 0.25);
     f.rotateY((i % 2 ? Math.PI : 0) + i * 0.55 + (r() - 0.5) * 0.4);
     f.translate(0, 0.05 + t * 0.56, 0);
-    morceaux.push(peindre(f, '#557670', '#a3bcb5', 0.25, 0));
+    m.push(peindre(f, '#557670', '#a3bcb5', 0.25, 0));
   }
-  return fusion(morceaux);
+  return fusion(m);
 }
 
 const fabriques = { pivoine: tetePivoine, renoncule: teteRenoncule, anemone: teteAnemone, tulipe: teteTulipe, chardon: teteChardon, eucalyptus: teteEucalyptus };
@@ -226,13 +255,13 @@ for (const t of S.tiges) {
   bouquet.add(m); tetes[t.id] = m;
 }
 const geoTige = new THREE.CylinderGeometry(0.011, 0.014, 1, 6, 1); geoTige.translate(0, 0.5, 0);
-const tiges3d = new THREE.InstancedMesh(geoTige, matTige, S.MAX_TIGES + 4);
+const tiges3d = new THREE.InstancedMesh(geoTige, matTige, S.MAX_TIGES * 2 + 8);
 tiges3d.count = 0; tiges3d.frustumCulled = false; bouquet.add(tiges3d);
 
 /* ------------------------------------------------------------ papier de soie et lien */
 function feuillePapier(debut, fin, r0, r1, h0, h1, plis, decal, seed) {
   const r = graine(seed);
-  const SU = 40, SV = 10, pos = [], idx = [];
+  const SU = 48, SV = 14, pos = [], uv = [], idx = [];
   for (let j = 0; j <= SV; j++) {
     const t = j / SV;
     for (let i = 0; i <= SU; i++) {
@@ -241,6 +270,7 @@ function feuillePapier(debut, fin, r0, r1, h0, h1, plis, decal, seed) {
       const rr = lerp(r0, r1, Math.pow(t, 0.85)) * (1 + 0.07 * Math.sin(a * plis + decal) * t);
       const y = lerp(h0, h1 + bord, t);
       pos.push(Math.cos(a) * rr, y, Math.sin(a) * rr);
+      uv.push(i / SU * 2, t * 0.9);
     }
   }
   for (let j = 0; j < SV; j++) for (let i = 0; i < SU; i++) {
@@ -249,10 +279,36 @@ function feuillePapier(debut, fin, r0, r1, h0, h1, plis, decal, seed) {
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
   g.setIndex(idx); g.computeVertexNormals();
   return g;
 }
-const matPapier = new THREE.MeshStandardMaterial({ color: '#b9b5be', roughness: 0.92, side: THREE.DoubleSide, transparent: true, opacity: 0.96 });
+/* papier de soie opaque, froissé : une carte de relief dessinée en code (plis au hasard, puis normales) */
+function froisse(taille = 256) {
+  const r = graine('froisse'), c = document.createElement('canvas'); c.width = c.height = taille;
+  const x = c.getContext('2d');
+  x.fillStyle = '#808080'; x.fillRect(0, 0, taille, taille);
+  for (let i = 0; i < 34; i++) {
+    const a = r() * Math.PI, cx = r() * taille, cy = r() * taille, L = taille * (0.25 + r() * 0.5);
+    const dx = Math.cos(a) * L, dy = Math.sin(a) * L, clair = r() < 0.5;
+    for (const [ox, oy] of [[0, 0], [taille, 0], [-taille, 0], [0, taille], [0, -taille]]) {
+      const gr = x.createLinearGradient(cx + ox - dy * 0.06, cy + oy + dx * 0.06, cx + ox + dy * 0.06, cy + oy - dx * 0.06);
+      gr.addColorStop(0, 'rgba(128,128,128,0)'); gr.addColorStop(0.5, clair ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.18)'); gr.addColorStop(1, 'rgba(128,128,128,0)');
+      x.strokeStyle = gr; x.lineWidth = taille * 0.12; x.beginPath(); x.moveTo(cx + ox - dx / 2, cy + oy - dy / 2); x.lineTo(cx + ox + dx / 2, cy + oy + dy / 2); x.stroke();
+    }
+  }
+  const h = x.getImageData(0, 0, taille, taille).data, out = x.createImageData(taille, taille);
+  const H = (i, j) => h[(((j + taille) % taille) * taille + ((i + taille) % taille)) * 4] / 255;
+  for (let j = 0; j < taille; j++) for (let i = 0; i < taille; i++) {
+    const nx = (H(i - 1, j) - H(i + 1, j)) * 3, ny = (H(i, j - 1) - H(i, j + 1)) * 3;
+    const l = Math.hypot(nx, ny, 1), k = (j * taille + i) * 4;
+    out.data[k] = (nx / l * 0.5 + 0.5) * 255; out.data[k + 1] = (ny / l * 0.5 + 0.5) * 255; out.data[k + 2] = (1 / l * 0.5 + 0.5) * 255; out.data[k + 3] = 255;
+  }
+  x.putImageData(out, 0, 0);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+const matPapier = new THREE.MeshStandardMaterial({ color: '#b9b5be', roughness: 0.88, side: THREE.DoubleSide, normalMap: froisse(), normalScale: new THREE.Vector2(0.55, 0.55) });
 const papier = new THREE.Group();
 papier.add(new THREE.Mesh(feuillePapier(Math.PI * 0.62, Math.PI * 2.32, 0.1, 0.62, -0.6, 0.2, 9, 0, 'p1'), matPapier));
 papier.add(new THREE.Mesh(feuillePapier(Math.PI * 1.05, Math.PI * 2.85, 0.12, 0.68, -0.58, 0.06, 7, 1.7, 'p2'), matPapier));
@@ -278,13 +334,15 @@ function recomposer(etat, premiere) {
   const R = 0.22 + 0.095 * Math.sqrt(Math.max(N, 1));
   let retard = 0;
   const suivants = liste.map((s, i) => {
-    const rr = R * Math.sqrt((i + 0.6) / Math.max(N, 1)) * (s.type === 'eucalyptus' ? 1.12 : 1);
+    const rr = R * Math.sqrt((i + 0.6) / Math.max(N, 1)) * (s.type === 'eucalyptus' ? 1.0 : 1);
     const th = i * OR * 1.0 + 0.4;
-    const H = 0.8 + (s.type === 'tulipe' ? 0.06 : 0) + (s.type === 'eucalyptus' ? -0.3 : 0) + (s.r() - 0.5) * 0.08;
+    const H = 0.8 + (s.type === 'tulipe' ? 0.06 : 0) + (s.type === 'eucalyptus' ? -0.1 : 0) + (s.r() - 0.5) * 0.08;
     const tete = new THREE.Vector3(Math.cos(th) * rr, H - 0.95 * rr * rr, Math.sin(th) * rr);
     /* la fleur regarde un peu plus vers l'extérieur que sa tige */
     const dir = tete.clone().normalize();
     const vise = new THREE.Vector3(tete.x * 1.9, tete.y, tete.z * 1.9).normalize();
+    /* l'eucalyptus monte : jamais à l'horizontale, il ne traverse pas le papier */
+    if (s.type === 'eucalyptus') { vise.y = Math.max(vise.y, 0.65); vise.normalize(); }
     let ancien = memo.get(s.id);
     const o = ancien || { id: s.id, type: s.type, p: tete.clone(), d: dir.clone(), v: vise.clone(), pousse: 0, attente: 0, tour: s.r() * Math.PI * 2, phase: s.r() * 6 };
     o.cp = tete; o.cd = dir; o.cv = vise;
@@ -358,7 +416,7 @@ toile.addEventListener('keydown', (e) => {
 let enCours = false, visible = true, avant = 0, temps = 0, demarre = !html.classList.contains('en-intro');
 function demande() { if (!enCours && visible && !document.hidden) { enCours = true; avant = performance.now(); requestAnimationFrame(image); } }
 
-const dir = new THREE.Vector3(), haut = new THREE.Vector3(0, 1, 0), q2 = new THREE.Quaternion(), sca = new THREE.Vector3();
+const dir = new THREE.Vector3(), hz = new THREE.Vector3(), haut = new THREE.Vector3(0, 1, 0), q2 = new THREE.Quaternion(), sca = new THREE.Vector3();
 function image(maintenant) {
   const dt = Math.min(0.05, (maintenant - avant) / 1000);
   avant = maintenant; temps += dt;
@@ -403,15 +461,21 @@ function image(maintenant) {
 
     /* un souffle léger, différent pour chaque tige */
     const souffle = calme ? 0 : Math.sin(temps * 1.3 + o.phase) * 0.018;
-    /* tige : du pied (sous le lien, de l'autre côté) jusqu'à la fleur */
-    const pied = o.d.clone().multiplyScalar(-0.62 * g);
+    /* tige en deux traits, comme un bouquet noué en spirale : du pied coupé (sous le papier, côté opposé,
+       resserré) jusqu'au lien, puis du lien jusqu'à la fleur */
     const tete = o.p.clone().multiplyScalar(g);
     tete.x += souffle; tete.z += souffle * 0.6;
-    dir.subVectors(tete, pied); const L = dir.length(); dir.normalize();
-    q2.setFromUnitVectors(haut, dir);
-    sca.set(1, L - (o.type === 'eucalyptus' ? 0.05 : 0.04 * TAILLE[o.type]) * g, 1);
-    M.compose(pied, q2, sca);
-    tiges3d.setMatrixAt(nTige++, M);
+    hz.set(o.d.x, 0, o.d.z); if (hz.lengthSq() > 1e-6) hz.normalize();
+    const lienP = hz.clone().multiplyScalar(0.03);
+    const pied = new THREE.Vector3(-hz.x * 0.065, lerp(-0.1, -0.74, g), -hz.z * 0.065);
+    for (const [a, b] of [[pied, lienP], [lienP, tete]]) {
+      dir.subVectors(b, a); let L = dir.length(); dir.normalize();
+      if (b === tete) L -= (o.type === 'eucalyptus' ? 0.05 : 0.04 * TAILLE[o.type]) * g;
+      q2.setFromUnitVectors(haut, dir);
+      sca.set(1, Math.max(L, 0.001), 1);
+      M.compose(a, q2, sca);
+      tiges3d.setMatrixAt(nTige++, M);
+    }
 
     /* fleur : orientée vers l'extérieur, tournée sur elle-même */
     const v = o.v.clone(); v.x += souffle * 1.2;
@@ -448,3 +512,12 @@ cadrer();
 if (html.classList.contains('en-intro') && !S.introFinie) document.addEventListener('sauvane:intro-fin', premierBouquet, { once: true });
 else premierBouquet();
 html.classList.add('a-3d');
+/* vignette du panier : une vue du bouquet, réduite en 160 × 200 */
+S.capture = () => {
+  rendu.render(scene, camera);
+  const c = document.createElement('canvas'); c.width = 160; c.height = 200;
+  const x = c.getContext('2d'); x.fillStyle = '#1a0f17'; x.fillRect(0, 0, 160, 200);
+  const w = toile.width, h = toile.height, sh = h * 0.94, sw = Math.min(w, sh * 0.8);
+  x.drawImage(toile, (w - sw) / 2, (h - sh) / 2, sw, sh, 0, 0, 160, 200);
+  return c.toDataURL('image/jpeg', 0.82);
+};

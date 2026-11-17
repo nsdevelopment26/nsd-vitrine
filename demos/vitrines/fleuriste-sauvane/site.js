@@ -25,6 +25,8 @@
   }
   if (html.classList.contains("en-intro")) {
     minuteurs.push(setTimeout(function () { finIntro(false); }, 3000));
+    /* un seul toucher suffit : on réagit dès le contact, sans attendre le clic */
+    $("#intro-passer").addEventListener("pointerdown", function () { finIntro(true); });
     $("#intro-passer").addEventListener("click", function () { finIntro(true); });
     addEventListener("wheel", function () { finIntro(true); }, { once: true, passive: true });
     addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") finIntro(true); });
@@ -84,6 +86,7 @@
   /* ------------------------------------------------------------ toast */
   var toast = $("#toast"), toastT;
   function dire(t) {
+    if (!$("#panier").hidden) return;
     toast.textContent = t; toast.classList.add("on");
     clearTimeout(toastT); toastT = setTimeout(function () { toast.classList.remove("on"); }, 2600);
   }
@@ -125,8 +128,8 @@
       $("[data-plus]", li).disabled = v >= t.max || n >= S.MAX_TIGES;
       li.classList.toggle("choisie", v > 0);
     });
-    $("#c-n").textContent = n + (n > 1 ? " tiges" : " tige");
-    $("#c-prix").textContent = euro(prixCompo(etat.tiges, etat.papier));
+    $("#c-n").textContent = n ? n + (n > 1 ? " tiges" : " tige") : "Aucune tige";
+    $("#c-prix").textContent = n ? euro(prixCompo(etat.tiges, etat.papier)) : "—";
     $("#c-ajouter").disabled = n < S.MIN_TIGES;
     aide.textContent = n < S.MIN_TIGES ? "Encore " + (S.MIN_TIGES - n) + " tige" + (S.MIN_TIGES - n > 1 ? "s" : "") + " pour un bouquet qui tient debout."
       : n >= S.MAX_TIGES ? "C'est une belle brassée : " + S.MAX_TIGES + " tiges au maximum en ligne, au-delà on en parle au téléphone." : "";
@@ -165,10 +168,15 @@
   $("#c-ajouter").addEventListener("click", function () {
     if (nTiges() < S.MIN_TIGES) return;
     var t = {}; for (var k in etat.tiges) if (etat.tiges[k]) t[k] = etat.tiges[k];
-    ajouter({ type: "compo", tiges: t, papier: etat.papier, prix: prixCompo(t, etat.papier) });
+    /* la vignette du panier est une vue du bouquet tel qu'il est à l'écran */
+    var vignette = null; try { vignette = S.capture ? S.capture() : null; } catch (e) {}
+    ajouter({ type: "compo", tiges: t, papier: etat.papier, prix: prixCompo(t, etat.papier), vignette: vignette });
     dire("Votre bouquet est dans le panier.");
   });
   /* l'indice disparaît au premier geste sur le bouquet */
+  /* ruban des compositions sur téléphone : le fondu de bord s'efface une fois au bout */
+  var ruban = $("#compos");
+  ruban.addEventListener("scroll", function () { ruban.classList.toggle("au-bout", ruban.scrollLeft + ruban.clientWidth >= ruban.scrollWidth - 4); }, { passive: true });
   $("#atelier").addEventListener("sauvane:tourne", function () { $("#indice").classList.add("fini"); }, { once: true });
   majCompo();
 
@@ -311,7 +319,7 @@
   }
   function libelle(l) {
     if (l.type === "produit") { var p = S.produit(l.id); return { nom: p.nom, det: p.tailles.length > 1 ? p.tailles[l.taille].n : p.cat, img: p.img }; }
-    var parts = []; for (var k in l.tiges) var nm = S.tige(k).nom.toLowerCase(); parts.push(l.tiges[k] + " " + nm + (l.tiges[k] > 1 && !/s$/.test(nm) ? "s" : ""));
+    var parts = []; for (var k in l.tiges) { var nm = S.tige(k).nom.toLowerCase(); parts.push(l.tiges[k] + " " + nm + (l.tiges[k] > 1 && !/s$/.test(nm) ? "s" : "")); }
     return { nom: "Votre composition", det: parts.join(", ") + " · " + S.papier(l.papier).nom.toLowerCase(), img: null, tiges: l.tiges };
   }
   function sousTotal() { return panier.reduce(function (s, l) { return s + l.prix * l.qte; }, 0); }
@@ -326,6 +334,7 @@
       ul.innerHTML = panier.map(function (l, i) {
         var b = libelle(l), vis;
         if (b.img) vis = '<img src="photos/' + b.img + '-560.webp" alt="" width="64" height="80">';
+        else if (l.vignette) vis = '<img class="ligne-vignette" src="' + l.vignette + '" alt="" width="64" height="80">';
         else {
           vis = '<span class="ligne-compo" aria-hidden="true">';
           for (var k in b.tiges) vis += '<i style="--c:' + S.tige(k).teinte + ";flex:" + b.tiges[k] + '"></i>';
@@ -428,6 +437,7 @@
   function ouvrir() {
     retour = document.activeElement;
     $("#panier-contenu").hidden = false; $("#merci").hidden = true;
+    toast.classList.remove("on");
     majJours(); majPanier();
     tiroir.hidden = false; voile.hidden = false;
     document.body.style.overflow = "hidden"; document.body.classList.add("panneau-ouvert");
