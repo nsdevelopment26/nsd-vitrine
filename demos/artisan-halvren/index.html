@@ -45,8 +45,10 @@
 
 <!-- Ouverture : la lampe s'allume dans le noir et trouve ce qui passe dans le mur -->
 <div class="intro" id="intro">
-  <p class="intro-nom" aria-hidden="true">Halvren</p>
-  <p class="intro-sous" aria-hidden="true">Ce qui lâche derrière vos murs, on le trouve.</p>
+  <div class="intro-carte" aria-hidden="true">
+    <p class="intro-nom">Halvren</p>
+    <p class="intro-sous">Ce qui lâche derrière vos murs, on le trouve.</p>
+  </div>
   <button type="button" class="intro-passer" id="intro-passer">Passer l'intro</button>
 </div>
 
@@ -259,6 +261,7 @@
     <div class="etape" data-e="5" aria-live="polite">
       <p class="legende-fin">Demande enregistrée</p>
       <p class="merci" id="merci"></p>
+      <button class="plaque" type="button" id="nouvelle"><span>Nouvelle demande</span></button>
     </div>
     <div class="btns">
       <button class="retour" type="button" id="prec" hidden>Retour</button>

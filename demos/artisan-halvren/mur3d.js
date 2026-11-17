@@ -23,6 +23,8 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, tactile ? 1.6 : 1.8));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 const NUIT = new THREE.Color("#0e1626");
@@ -51,42 +53,96 @@ const lune = new THREE.DirectionalLight("#8fb0f0", 0.42);
 lune.position.set(-6, 4, 5);
 scene.add(lune);
 const lampe = new THREE.SpotLight("#ffe0b5", 0, 0, 0.2, 0.9, 0);
+lampe.castShadow = true;                                      // le bord du plâtre et les tuyaux portent leur ombre dans le creux
+lampe.shadow.mapSize.set(tactile ? 768 : 1536, tactile ? 768 : 1536);
+lampe.shadow.bias = -0.0003; lampe.shadow.normalBias = 0.006;
+lampe.shadow.camera.near = 0.5; lampe.shadow.camera.far = 30;
 scene.add(lampe, lampe.target);
-const creux = new THREE.PointLight("#ffcf95", 0, 2.2, 1.6);     // éclaire l'intérieur du mur
+const creux = new THREE.PointLight("#ffcf95", 0, 1.6, 1.8);     // un reste de lumière diffuse dans le creux
 scene.add(creux);
 
 /* ------------------------------------------------------------------ le plâtre qui s'ouvre */
+const L_MUR = 9.6, H_MUR = 4.2;
 const U = {
   uT: { value: new THREE.Vector2(-9, -9) },   // centre de la lampe sur le mur
   uR: { value: 0 },                           // rayon d'ouverture
   uTache: { value: new THREE.Vector3(-3.0, 1.62, 0.55) },
 };
 const PORTE = { x0: 2.45, x1: 3.55, y1: 2.12 };
+const EP = 0.013;                                             // épaisseur de la plaque de plâtre (BA13)
+/* Le contour cassé : même formule en JavaScript (la lèvre) et en GLSL (la découpe) */
+const rayonA = (a, R) => R * (1 + 0.07 * Math.sin(a * 7 + 1.3) + 0.04 * Math.sin(a * 17 + 0.4) + 0.025 * Math.sin(a * 31));
+const ecaille = (a) => 0.01 + 0.024 * (0.5 + 0.5 * Math.sin(a * 23 + 2.1)) * (0.5 + 0.5 * Math.sin(a * 5 + 0.3));
+const GLSL_CONTOUR = `
+  float rayonA(float a, float R) { return R * (1.0 + 0.07 * sin(a * 7.0 + 1.3) + 0.04 * sin(a * 17.0 + 0.4) + 0.025 * sin(a * 31.0)); }
+  float ecaille(float a) { return 0.01 + 0.024 * (0.5 + 0.5 * sin(a * 23.0 + 2.1)) * (0.5 + 0.5 * sin(a * 5.0 + 0.3)); }`;
+const DANS_PORTE = `(vW.x > ${PORTE.x0.toFixed(2)} && vW.x < ${PORTE.x1.toFixed(2)} && vW.y < ${PORTE.y1.toFixed(2)})`;
 
+const chargeur = new THREE.TextureLoader();
+const texPlatre = (nom, rep) => { const t = chargeur.load("textures/" + nom); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); t.anisotropy = 4; return t; };
+const NORMALE = texPlatre("platre-normale.jpg", [L_MUR / 1.3, H_MUR / 1.3]);
+const RUGOSITE = texPlatre("platre-rugosite.jpg", [L_MUR / 1.3, H_MUR / 1.3]);
+
+function injecter(s, corps) {
+  Object.assign(s.uniforms, U);
+  s.vertexShader = s.vertexShader
+    .replace("#include <common>", "#include <common>\nvarying vec3 vW;")
+    .replace("#include <project_vertex>", "#include <project_vertex>\nvW = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+  s.fragmentShader = s.fragmentShader
+    .replace("#include <common>", "#include <common>\nvarying vec3 vW;\nuniform vec2 uT;\nuniform float uR;\nuniform vec3 uTache;" + GLSL_CONTOUR)
+    .replace("void main() {", "void main() {\n" + corps);
+}
+const DECOUPE = `
+  vec2 dv = vW.xy - uT;
+  float an = atan(dv.y, dv.x);
+  float d = length(dv);
+  float rr = rayonA(an, uR);
+  float rc = rr + ecaille(an);                       // le bord cassé du parement
+  bool ouvert = uR > 0.001;`;
+
+/* Le parement : texture de plâtre (Poly Haven, CC0), troué sous la lampe.
+   opts.porte : on ne peint pas dans l'ouverture de la porte. opts.xray : la porte, vue en transparence. */
 function platre(couleur, opts = {}) {
-  const m = new THREE.MeshStandardMaterial({ color: couleur, roughness: 0.92, metalness: 0 });
+  const m = new THREE.MeshStandardMaterial({ color: couleur, roughness: 0.95, metalness: 0 });
+  if (!opts.xray) { m.normalMap = NORMALE; m.normalScale.set(0.7, 0.7); m.roughnessMap = RUGOSITE; }
+  else { m.transparent = true; m.depthWrite = false; }
   m.onBeforeCompile = (s) => {
-    Object.assign(s.uniforms, U);
-    s.vertexShader = s.vertexShader
-      .replace("#include <common>", "#include <common>\nvarying vec3 vW;")
-      .replace("#include <project_vertex>", "#include <project_vertex>\nvW = (modelMatrix * vec4(transformed, 1.0)).xyz;");
-    s.fragmentShader = s.fragmentShader
-      .replace("#include <common>", "#include <common>\nvarying vec3 vW;\nuniform vec2 uT;\nuniform float uR;\nuniform vec3 uTache;")
-      .replace("void main() {", `void main() {
-        ${opts.porte ? `if (vW.x > ${PORTE.x0.toFixed(2)} && vW.x < ${PORTE.x1.toFixed(2)} && vW.y < ${PORTE.y1.toFixed(2)}) discard;` : ""}
-        vec2 dv = vW.xy - uT;
-        float an = atan(dv.y, dv.x);
-        float d = length(dv);
-        float rr = uR * (1.0 + 0.07 * sin(an * 7.0 + 1.3) + 0.04 * sin(an * 17.0 + 0.4) + 0.025 * sin(an * 31.0));
-        if (uR > 0.001 && d < rr) discard;
-        float bord = uR > 0.001 ? 1.0 - smoothstep(rr, rr + 0.014, d) : 0.0;
-        float ombre = uR > 0.001 ? 1.0 - smoothstep(rr, rr + 0.09, d) : 0.0;`)
-      .replace("#include <color_fragment>", `#include <color_fragment>
-        ${opts.tache ? "float tc = 1.0 - smoothstep(0.0, uTache.z, length((vW.xy - uTache.xy) * vec2(1.0, 0.8))); diffuseColor.rgb *= 1.0 - 0.32 * tc;" : ""}
-        diffuseColor.rgb *= 1.0 - 0.35 * ombre;
-        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.94, 0.94, 0.92), bord * 0.85);`);
+    injecter(s, DECOUPE + (opts.porte ? `if (${DANS_PORTE}) discard;` : "") + (opts.xray ? "" : "if (ouvert && d < rc) discard;"));
+    s.fragmentShader = s.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
+      ${opts.tache ? "float tc = 1.0 - smoothstep(0.0, uTache.z, length((vW.xy - uTache.xy) * vec2(1.0, 0.8))); diffuseColor.rgb *= 1.0 - 0.32 * tc;" : ""}
+      if (ouvert) {
+        ${opts.xray
+          ? `float rx = uR * 1.02;                                                                  // les rayons X : un cercle net, pas de plâtre cassé
+             float dedans = 1.0 - smoothstep(rx - 0.05, rx, d);
+             diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.42, 0.33, 0.25), dedans * 0.6);       // le bois apparaît
+             diffuseColor.a *= mix(1.0, 0.16, dedans);                                           // et devient transparent
+             float trait = 1.0 - smoothstep(0.0, 0.005, abs(d - rx));
+             diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.9, 0.96), trait * 0.55);`
+          : `float papier = 1.0 - smoothstep(rc, rc + 0.005, d);                                   // papier déchiré, plus clair
+             float occl = 1.0 - smoothstep(rc, rc + 0.05, d);
+             diffuseColor.rgb = mix(diffuseColor.rgb * (1.0 - 0.18 * occl), vec3(0.9, 0.89, 0.86), papier * 0.7);`}
+      }`);
   };
-  m.customProgramCacheKey = () => "platre-" + JSON.stringify(opts);   // le mur et la porte n'ont pas le même shader
+  m.customProgramCacheKey = () => "platre-" + JSON.stringify(opts);   // chaque variante a son propre shader
+  return m;
+}
+/* L'ombre portée du parement suit le trou */
+function profondeurTrouee(opts = {}) {
+  const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  m.onBeforeCompile = (s) => injecter(s, DECOUPE + (opts.porte ? `if (${DANS_PORTE}) discard;` : "") + "if (ouvert && d < rc) discard;");
+  m.customProgramCacheKey = () => "profondeur-" + JSON.stringify(opts);
+  return m;
+}
+/* Le fond du creux : dos de la plaque d'en face, plus sombre près du bord (occlusion) */
+function fondCreux() {
+  const m = new THREE.MeshStandardMaterial({ color: "#4d535f", roughness: 1, normalMap: texPlatre("platre-normale.jpg", [L_MUR / 2.2, H_MUR / 2.2]) });
+  m.normalScale.set(0.5, 0.5);
+  m.onBeforeCompile = (s) => {
+    injecter(s, DECOUPE);
+    s.fragmentShader = s.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
+      if (ouvert) diffuseColor.rgb *= mix(0.45, 1.0, 1.0 - smoothstep(rr * 0.3, rr * 0.98, d));`);
+  };
+  m.customProgramCacheKey = () => "fond-creux";
   return m;
 }
 
@@ -140,17 +196,50 @@ function tube(points, r, mat, coude = 0.09, parent = monde) {
 const collier = (x, y, z, vertical) => boite(vertical ? 0.07 : 0.025, vertical ? 0.025 : 0.07, 0.05, M.rail, x, y, z);
 
 /* ------------------------------------------------------------------ le mur */
-const L = 9.6, HT = 4.2;
+const L = L_MUR, HT = H_MUR;
 const mur = new THREE.Mesh(new THREE.PlaneGeometry(L, HT), platre("#a2aebf", { porte: true, tache: true }));
 mur.position.set(0, HT / 2, 0);
+mur.customDepthMaterial = profondeurTrouee({ porte: true });
 monde.add(mur);
+
+/* La lèvre : l'épaisseur cassée du plâtre, recalculée quand la lampe bouge */
+const NL = 180;
+const levreGeo = new THREE.BufferGeometry();
+const levrePos = new Float32Array((NL + 1) * 2 * 3);
+levreGeo.setAttribute("position", new THREE.BufferAttribute(levrePos, 3));
+const idx = [];
+for (let i = 0; i < NL; i++) { const a = i * 2, b = a + 1, c = a + 2, d = a + 3; idx.push(a, c, b, b, c, d); }
+levreGeo.setIndex(idx);
+const levre = new THREE.Mesh(levreGeo, new THREE.MeshStandardMaterial({ color: "#e2ddd2", roughness: 1, flatShading: true, side: THREE.DoubleSide }));
+levre.frustumCulled = false;
+monde.add(levre);
+const PX0 = PORTE.x0 - 0.08, PX1 = PORTE.x1 + 0.08, PY1 = PORTE.y1 + 0.08;
+let levreCle = "";
+function majLevre(cx, cy, R) {
+  const cle = cx.toFixed(4) + cy.toFixed(4) + R.toFixed(4);
+  if (cle === levreCle) return;
+  levreCle = cle;
+  levre.visible = R > 0.01;
+  for (let i = 0; i <= NL; i++) {
+    const a = -Math.PI + (i / NL) * Math.PI * 2;
+    const r1 = rayonA(a, R), r0 = r1 + ecaille(a);
+    const c = Math.cos(a), sn = Math.sin(a);
+    let x0 = cx + c * r0, y0 = cy + sn * r0, x1 = cx + c * r1, y1 = cy + sn * r1;
+    // pas de plâtre dans l'ouverture de la porte : la lèvre s'y referme sur elle-même
+    let z0 = 0.0005;
+    if ((x0 > PX0 && x0 < PX1 && y0 < PY1) || (x1 > PX0 && x1 < PX1 && y1 < PY1)) { x0 = x1; y0 = y1; z0 = -EP; }
+    levrePos.set([x0, y0, z0, x1, y1, -EP], i * 6);
+  }
+  levreGeo.attributes.position.needsUpdate = true;
+  levreGeo.computeVertexNormals();
+}
 boite(L, 0.09, 0.018, M.blancMat, 0, 0.045, 0.01);                  // plinthe
 const sol = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), M.sol);
 sol.rotation.x = -Math.PI / 2; sol.position.set(0, 0, 15);
 monde.add(sol);
 
 /* L'intérieur : fond, rails métalliques, laine par endroits */
-const fond = new THREE.Mesh(new THREE.PlaneGeometry(L, HT), M.fond);
+const fond = new THREE.Mesh(new THREE.PlaneGeometry(L, HT), fondCreux());
 fond.position.set(0, HT / 2, -0.32);
 monde.add(fond);
 for (let x = -4.5; x <= 4.6; x += 0.6) {
@@ -183,17 +272,39 @@ monde.add(flaque);
 
 /* ------------------------------------------------------------------ CHAUFFAGE : radiateur et purgeur */
 const rad = new THREE.Group(); rad.position.set(-1.7, 0.2, 0.05); monde.add(rad);
-boite(1.0, 0.62, 0.05, M.blanc, 0, 0.31, 0, rad);
-for (let i = 0; i < 16; i++) boite(0.035, 0.6, 0.02, M.blancMat, -0.465 + i * 0.062, 0.31, 0.035, rad);
-boite(1.0, 0.03, 0.08, M.blanc, 0, 0.635, 0.005, rad);
-cyl(0.03, 0.11, M.blanc, -0.56, 0.1, 0.02, [0, 0, 0], rad);               // tête thermostatique
-const purgeur = cyl(0.014, 0.05, M.laiton, 0.52, 0.58, 0.02, [0, 0, Math.PI / 2], rad);
-// départ et retour : sous le radiateur, dans le mur, jusqu'à la chaufferie
-tube([[-1.58, 0.21, 0.05], [-1.58, 0.12, 0.05], [-1.58, 0.12, -0.08], [-0.6, 0.12, -0.08], [-0.6, 0.12, -0.08], [1.2, 0.12, -0.08]], 0.018, M.cuivre);
-tube([[-1.82, 0.21, 0.05], [-1.82, 0.2, 0.05], [-1.82, 0.2, -0.16], [1.2, 0.2, -0.16]], 0.018, M.cuivre);
-cyl(0.023, 0.03, M.rouge, -0.9, 0.12, -0.08, [0, 0, Math.PI / 2]);
-cyl(0.023, 0.03, M.bleu, -0.9, 0.2, -0.16, [0, 0, Math.PI / 2]);
-tube([[1.2, 0.12, -0.08], [1.5, 0.12, -0.08]], 0.018, M.cuivre);
+// radiateur à panneaux type 21 : panneau arrière, ailettes, panneau avant profilé, grille et joues
+boite(1.0, 0.6, 0.012, M.blanc, 0, 0.31, -0.03, rad);
+const ailettes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.004, 0.5, 0.034), M.blancMat, 60);
+const tmp = new THREE.Object3D();
+for (let i = 0; i < 60; i++) { tmp.position.set(-0.485 + i * 0.0164, 0.33, -0.004); tmp.updateMatrix(); ailettes.setMatrixAt(i, tmp.matrix); }
+rad.add(ailettes);
+boite(1.0, 0.6, 0.012, M.blanc, 0, 0.31, 0.022, rad);
+const profils = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.012, 0.012, 0.58, 10, 1, false, 0, Math.PI), M.blanc, 20);
+for (let i = 0; i < 20; i++) { tmp.position.set(-0.475 + i * 0.05, 0.31, 0.028); tmp.rotation.set(0, -Math.PI / 2, 0); tmp.updateMatrix(); profils.setMatrixAt(i, tmp.matrix); }
+rad.add(profils);
+boite(1.0, 0.008, 0.07, M.blanc, 0, 0.615, -0.004, rad);                       // grille du dessus
+const fentes = new THREE.InstancedMesh(new THREE.BoxGeometry(0.003, 0.003, 0.05), M.sombre, 48);
+for (let i = 0; i < 48; i++) { tmp.position.set(-0.47 + i * 0.02, 0.62, -0.004); tmp.rotation.set(0, 0, 0); tmp.updateMatrix(); fentes.setMatrixAt(i, tmp.matrix); }
+rad.add(fentes);
+[-0.503, 0.503].forEach((x) => boite(0.006, 0.6, 0.07, M.blanc, x, 0.31, -0.004, rad));   // joues
+[-0.35, 0.35].forEach((x) => boite(0.05, 0.05, 0.05, M.sombre, x, 0.5, -0.06, rad));      // consoles au mur
+// vanne thermostatique sur le piquage d'entrée (en bas à gauche), tête vissée dessus
+cyl(0.012, 0.09, M.acier, -0.545, 0.05, -0.004, [0, 0, Math.PI / 2], rad);            // corps de vanne
+cyl(0.016, 0.03, M.acier, -0.59, 0.05, -0.004, null, rad);                              // raccord vers le tuyau
+const tete = new THREE.Mesh(new THREE.CylinderGeometry(0.027, 0.03, 0.1, 20), M.blanc);
+tete.position.set(-0.545, 0.115, -0.004); rad.add(tete);                                // tête thermostatique, posée sur la vanne
+for (let k = 0; k < 4; k++) cyl(0.0305, 0.004, M.blancMat, -0.545, 0.09 + k * 0.016, -0.004, null, rad);
+// coude de réglage sur le piquage de retour (en bas à droite)
+cyl(0.012, 0.07, M.acier, 0.535, 0.05, -0.004, [0, 0, Math.PI / 2], rad);
+cyl(0.016, 0.03, M.acier, 0.575, 0.05, -0.004, null, rad);
+const purgeur = cyl(0.009, 0.035, M.laiton, 0.515, 0.575, -0.004, [0, 0, Math.PI / 2], rad);
+// départ et retour : ils descendent des vannes, entrent dans le mur et filent vers la chaufferie
+const xA = -1.7 - 0.59, xR = -1.7 + 0.575, zR = 0.046;
+tube([[xA, 0.235, zR], [xA, 0.13, zR], [xA, 0.13, -0.08], [1.5, 0.13, -0.08]], 0.016, M.cuivre, 0.05);
+tube([[xR, 0.235, zR], [xR, 0.075, zR], [xR, 0.075, -0.16], [1.5, 0.075, -0.16]], 0.016, M.cuivre, 0.05);
+[[xA, 0.13], [xR, 0.075]].forEach(([x, y]) => cyl(0.028, 0.004, M.blanc, x, y, 0.002, [Math.PI / 2, 0, 0]));   // rosaces au mur
+cyl(0.021, 0.03, M.rouge, -0.9, 0.13, -0.08, [0, 0, Math.PI / 2]);
+cyl(0.021, 0.03, M.bleu, -0.9, 0.075, -0.16, [0, 0, Math.PI / 2]);
 
 /* ------------------------------------------------------------------ ÉLECTRICITÉ : tableau, gaines, interrupteur, prise */
 const tab = new THREE.Group(); tab.position.set(1.55, 1.62, 0.04); monde.add(tab);
@@ -232,24 +343,33 @@ const cadre = new THREE.Group(); monde.add(cadre);
 boite(0.06, PORTE.y1 + 0.03, 0.12, M.blanc, PORTE.x0 - 0.03, (PORTE.y1 + 0.03) / 2, 0, cadre);
 boite(0.06, PORTE.y1 + 0.03, 0.12, M.blanc, PORTE.x1 + 0.03, (PORTE.y1 + 0.03) / 2, 0, cadre);
 boite(PORTE.x1 - PORTE.x0 + 0.12, 0.06, 0.12, M.blanc, (PORTE.x0 + PORTE.x1) / 2, PORTE.y1 + 0.03, 0, cadre);
-const vantail = new THREE.Mesh(new THREE.PlaneGeometry(PORTE.x1 - PORTE.x0, PORTE.y1), platre("#4a5260"));
+const vantail = new THREE.Mesh(new THREE.PlaneGeometry(PORTE.x1 - PORTE.x0, PORTE.y1), platre("#4a5260", { xray: true }));
+vantail.renderOrder = 2;
 vantail.position.set((PORTE.x0 + PORTE.x1) / 2, PORTE.y1 / 2, 0.02);
 monde.add(vantail);
 boite(PORTE.x1 - PORTE.x0 - 0.02, PORTE.y1 - 0.02, 0.01, new THREE.MeshStandardMaterial({ color: "#5a4c40", roughness: 0.95 }), (PORTE.x0 + PORTE.x1) / 2, PORTE.y1 / 2, -0.05);  // âme de la porte (bois)
 const xs = PORTE.x0 + 0.13;                                                  // côté serrure
-boite(0.03, 0.2, 0.22, M.acier, xs - 0.05, 1.02, 0.07);                       // béquille (rosace)
-boite(0.16, 0.025, 0.03, M.acier, xs + 0.03, 1.1, 0.09);                      // poignée
-boite(0.09, 0.3, 0.03, M.rail, xs, 1.0, -0.03);                              // boîtier
+boite(0.045, 0.21, 0.012, M.acier, xs, 1.03, 0.032);                          // plaque de béquille
+cyl(0.012, 0.05, M.acier, xs, 1.1, 0.05, [Math.PI / 2, 0, 0]);
+boite(0.16, 0.024, 0.026, M.acier, xs + 0.07, 1.1, 0.074);                    // poignée
+boite(0.12, 0.34, 0.03, M.rail, xs + 0.005, 1.0, -0.028);                    // boîtier de la serrure
+boite(0.012, 1.9, 0.026, M.laiton, PORTE.x0 + 0.012, 1.06, -0.02);           // têtière sur la tranche
 const cylindre = cyl(0.032, 0.11, M.laiton, xs, 0.94, -0.005, [Math.PI / 2, 0, 0]);
 for (let i = 0; i < 5; i++) cyl(0.006, 0.05, M.laiton, xs - 0.02 + i * 0.01, 0.985, -0.012, null);   // goupilles
-cyl(0.004, 1.85, M.acier, xs + 0.012, 1.08, -0.025);                           // tringle multipoint
+cyl(0.007, 1.85, M.acier, xs + 0.02, 1.08, -0.03);                             // tringle multipoint
 [0.3, 1.85].forEach((y) => boite(0.11, 0.035, 0.025, M.laiton, xs - 0.08, y, -0.02));   // pênes hauts et bas
 const pene = boite(0.08, 0.025, 0.022, M.laiton, xs - 0.06, 0.97, -0.02);
+
+/* Ombres : tout porte et reçoit, sauf la porte transparente et la lèvre (qui reçoit seulement) */
+monde.traverse((o) => { if (o.isMesh) { o.castShadow = o !== vantail && o !== sol; o.receiveShadow = true; } });
+porteTab.traverse((o) => { o.castShadow = false; });
+levre.castShadow = false;
+const LAMPE_YMAX = 2.55;                                         // la lampe reste sous la barre de navigation
 
 /* ------------------------------------------------------------------ les quatre pannes */
 const POINTS = {
   fuite: { p: new THREE.Vector3(-3.0, 1.62, 0), cible: raccord },
-  chauffage: { p: new THREE.Vector3(-1.18, 0.78, 0), cible: purgeur },
+  chauffage: { p: new THREE.Vector3(-1.185, 0.775, 0), cible: purgeur },
   courant: { p: new THREE.Vector3(1.55, 1.62, 0), cible: manette },
   porte: { p: new THREE.Vector3(xs, 0.96, 0), cible: cylindre },
 };
@@ -331,7 +451,7 @@ canvas.addEventListener("pointermove", (e) => {
   if (e.pointerType === "mouse" && performance.now() < etat.verrou) return;
   const p = versMur(e.clientX, e.clientY);
   if (!p) return;
-  etat.cible.set(THREE.MathUtils.clamp(p.x, -4.6, 4.6), THREE.MathUtils.clamp(p.y, 0.15, HT - 0.2));
+  etat.cible.set(THREE.MathUtils.clamp(p.x, -4.6, 4.6), THREE.MathUtils.clamp(p.y, 0.15, LAMPE_YMAX));
   etat.dernier = performance.now();
   if (e.pointerType !== "mouse") etat.verrou = 0;
 });
@@ -351,7 +471,7 @@ canvas.addEventListener("keydown", (e) => {
   if (!/^Arrow/.test(k)) return;
   e.preventDefault();
   etat.cible.x = THREE.MathUtils.clamp(etat.cible.x + (k === "ArrowRight" ? pas : k === "ArrowLeft" ? -pas : 0), -4.6, 4.6);
-  etat.cible.y = THREE.MathUtils.clamp(etat.cible.y + (k === "ArrowUp" ? pas : k === "ArrowDown" ? -pas : 0), 0.15, HT - 0.2);
+  etat.cible.y = THREE.MathUtils.clamp(etat.cible.y + (k === "ArrowUp" ? pas : k === "ArrowDown" ? -pas : 0), 0.15, LAMPE_YMAX);
   etat.dernier = performance.now();
   etat.verrou = 0;
 });
@@ -408,6 +528,7 @@ function frame(now) {
   // le plâtre s'ouvre là où la lampe éclaire
   U.uT.value.copy(etat.lampe);
   U.uR.value = etat.rayon;
+  majLevre(etat.lampe.x, etat.lampe.y, etat.rayon);
 
   // caméra : léger parallaxe au bureau, suit la lampe sur téléphone
   const d = camera.userData.d;
@@ -423,12 +544,12 @@ function frame(now) {
   if (Math.abs(decal) > 0.5) camera.setViewOffset(W, Hh, decal, 0, W, Hh); else camera.clearViewOffset();
 
   // la lampe : un faisceau chaud qui vient de la main, un peu de lumière dans le creux
-  lampe.position.set(etat.camX + 0.6, 1.5, d * 0.7);
+  lampe.position.set(etat.camX + 1.5, 0.9, d * 0.55);        // tenue à la main, en bas à droite : les ombres tombent en haut à gauche
   lampe.target.position.set(etat.lampe.x, etat.lampe.y, 0);
   lampe.angle = Math.atan((etat.rayon * 2.4 + 0.2) / lampe.position.distanceTo(lampe.target.position));
   lampe.intensity = 2.9 * etat.force;
   creux.position.set(etat.lampe.x, etat.lampe.y, 0.25);
-  creux.intensity = 1.6 * etat.force * (etat.rayon / 0.6);
+  creux.intensity = 0.45 * etat.force * (etat.rayon / 0.6);
 
   // les gouttes tombent du raccord, la manette tombée et le purgeur respirent
   gouttes.forEach((g) => {

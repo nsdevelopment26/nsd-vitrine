@@ -33,6 +33,7 @@
     document.addEventListener("halvren:pret", function () { pret = true; });
     minuteurs.push(setTimeout(function () { if (!pret) finIntro(); }, 2600));
     $("#intro-passer").addEventListener("click", finIntro);
+    $("#intro-passer").addEventListener("pointerdown", finIntro);        // un simple toucher suffit
     addEventListener("keydown", function (e) { if (e.key === "Escape") finIntro(); });
     addEventListener("wheel", finIntro, { passive: true, once: true });
     addEventListener("touchmove", finIntro, { passive: true, once: true });
@@ -250,6 +251,12 @@
       if (e < 5) { e++; maj(); var f = $(".etape.on input, .etape.on textarea", form); if (f && e < 4) f.focus({ preventScroll: true }); form.scrollIntoView({ behavior: calme ? "auto" : "smooth", block: "nearest" }); }
     });
     prec.addEventListener("click", function () { if (e > 1) { e--; maj(); } });
+    $("#nouvelle").addEventListener("click", function () {
+      form.reset(); apercu.innerHTML = ""; $("#photos-txt").textContent = "Ajouter une ou plusieurs photos";
+      $$(".champ.err", form).forEach(function (c) { c.classList.remove("err"); });
+      $$(".msg", form).forEach(function (m) { m.textContent = ""; });
+      e = 1; maj(); var r = $("input[name=type]", form); if (r) r.focus({ preventScroll: true });
+    });
     maj();
   }
 

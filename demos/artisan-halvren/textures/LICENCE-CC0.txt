@@ -1,0 +1,2 @@
+clay_plaster, Poly Haven (polyhaven.com/a/clay_plaster), licence CC0.
+Réduit à 512 px (normale OpenGL, rugosité).
