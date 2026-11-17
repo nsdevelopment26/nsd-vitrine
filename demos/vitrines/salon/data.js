@@ -19,8 +19,8 @@
   p("racines",   "Coiffure", "Couleur", "Coloration racines", "Sans ammoniaque", 75, "62 €", 62);
   p("ton",       "Coiffure", "Couleur", "Coloration ton sur ton", "Reflets et brillance, 6 à 8 semaines", 90, "dès 68 €", 68);
   p("gloss",     "Coiffure", "Couleur", "Gloss et patine", "Neutralise, ravive, fait briller", 45, "42 €", 42);
-  p("balayage",  "Coiffure", "Couleur", "Balayage à main levée", "Éclaircissement progressif, patine incluse", 150, "dès 120 €", 120);
-  p("polaire",   "Coiffure", "Couleur", "Balayage polaire", "Blond froid, en une ou deux séances", 180, "dès 145 €", 145);
+  p("balayage",  "Coiffure", "Couleur", "Balayage à main levée", "Mèches éclaircies à la main, patine incluse", 150, "dès 120 €", 120);
+  p("polaire",   "Coiffure", "Couleur", "Balayage polaire", "Mèches blond froid, en une ou deux séances", 180, "dès 145 €", 145);
   p("cuivre",    "Coiffure", "Couleur", "Coloration cuivrée et gloss", "Couleur pleine, reflet vénitien", 120, "dès 85 €", 85);
   p("soin",      "Coiffure", "Soin", "Soin profond", "Cheveux colorés ou sensibilisés", 30, "36 €", 36);
   p("lissage",   "Coiffure", "Soin", "Lissage", "Tenue de trois à cinq mois", 150, "dès 160 €", 160);
@@ -44,7 +44,7 @@
      r = racine, t = pointes, b = où commence l'éclaircissement (0 = racine, 1 = pointe),
      e = éclat du reflet. Les couleurs sont en linéaire « à l'œil » (hex sRGB). */
   var NUANCES = [
-    { id: "naturel",  nom: "Votre couleur",   tech: "Soin profond",          presta: "soin",     r: "#2c1d16", t: "#4a3326", b: 1.0,  e: 0.55, mot: "On la sublime, sans la changer." },
+    { id: "naturel",  nom: "Votre couleur",   tech: "Soin profond",          presta: "soin",     r: "#4a3324", t: "#7d5a40", b: 1.0,  e: 0.95, mot: "On la sublime, sans la changer." },
     { id: "polaire",  nom: "Blond polaire",   tech: "Balayage polaire",      presta: "polaire",  r: "#5a4535", t: "#efe6d8", b: 0.28, e: 0.9,  mot: "Un blond froid, lumineux, sans reflet jaune." },
     { id: "miel",     nom: "Miel doré",       tech: "Balayage à main levée", presta: "balayage", r: "#3e2a1c", t: "#c99a5e", b: 0.38, e: 0.8,  mot: "Le soleil posé à la main, mèche par mèche." },
     { id: "cuivre",   nom: "Cuivré vénitien", tech: "Coloration cuivrée",    presta: "cuivre",   r: "#5a2615", t: "#a35a2c", b: 0.0,  e: 0.85, mot: "Une couleur pleine, qui accroche la lumière." },

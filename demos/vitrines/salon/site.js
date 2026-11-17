@@ -20,6 +20,7 @@
     if (!html.classList.contains("en-intro") || intro.classList.contains("ouvre")) return;
     minuteurs.forEach(clearTimeout);
     intro.classList.add("coupe");
+    $("#intro-passer").classList.add("parti");
     setTimeout(function () {
       intro.classList.add("ouvre");
       L.introFinie = true;
@@ -30,7 +31,10 @@
   }
   if (html.classList.contains("en-intro")) {
     minuteurs.push(setTimeout(function () { finIntro(false); }, 2700));
+    /* un seul toucher suffit : sur le bouton, ou n'importe où sur l'ouverture */
+    $("#intro-passer").addEventListener("pointerdown", function (e) { e.preventDefault(); finIntro(true); });
     $("#intro-passer").addEventListener("click", function () { finIntro(true); });
+    intro.addEventListener("pointerdown", function () { finIntro(true); });
     addEventListener("wheel", function () { finIntro(true); }, { once: true, passive: true });
     addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === " " || e.key === "Enter") finIntro(true); });
     addEventListener("touchmove", function () { finIntro(true); }, { once: true, passive: true });
