@@ -45,8 +45,8 @@
         ville: 'Luxembourg',
         concept: 'Table gastronomique',
         metier: 'restaurant',
-        adresse: '00, rue des Capucins — L-0000 Luxembourg',
-        telephone: '+352 00 00 00 00',
+        adresse: '18, rue des Cuisiniers, L-1110 Luxembourg',
+        telephone: '+352 27 00 00 00',
         // La maison rappelle pour confirmer : une table se prépare.
         modeValidation: 'manuel',
         placesParCreneau: 5,
@@ -63,14 +63,13 @@
         { code: 'quatre', nom: 'Table de trois à quatre', duree: 120, couverts: 4, description: 'Jusqu’à quatre couverts, en salle.' },
         { code: 'six', nom: 'Table de cinq à six', duree: 150, couverts: 6, description: 'Jusqu’à six couverts. Menu unique pour la table le soir.' },
         { code: 'chef', nom: 'La table du chef', duree: 180, couverts: 6, description: 'Six places au comptoir, face au passe. Une seule par service.' },
-        { code: 'privatisation', nom: 'Privatisation de la salle', duree: 240, couverts: 24, description: 'À partir de 24 couverts. La maison vous rappelle pour le menu.' },
       ],
       // 0 = dimanche … 6 = samedi. Bornes d'occupation de la table.
       ouvertures: {
         0: [], 1: [],
-        2: [['12:00', '15:00'], ['19:00', '23:00']],
-        3: [['12:00', '15:00'], ['19:00', '23:00']],
-        4: [['12:00', '15:00'], ['19:00', '23:00']],
+        2: [['12:00', '15:00'], ['19:00', '23:15']],
+        3: [['12:00', '15:00'], ['19:00', '23:15']],
+        4: [['12:00', '15:00'], ['19:00', '23:15']],
         5: [['12:00', '15:00'], ['19:00', '23:15']],
         6: [['19:00', '23:15']],
       },
@@ -87,23 +86,23 @@
          refuser, pas un formulaire qui accepte tout. */
       demo: true,
       demoRendezVous: [
-        { dans: 0, debut: '19:30', prestation: 'quatre', nom: 'M. Lentz', telephone: '+352 621 48 12 07', note: 'Anniversaire de mariage.' },
-        { dans: 0, debut: '20:00', prestation: 'duo', nom: 'Mme Pereira', telephone: '+352 691 20 44 18' },
-        { dans: 0, debut: '20:15', prestation: 'six', nom: 'Famille Hansen', telephone: '+352 661 73 05 92', note: 'Une chaise haute.' },
-        { dans: 1, debut: '12:15', prestation: 'quatre', nom: 'M. Weber', telephone: '+352 621 30 58 41' },
-        { dans: 1, debut: '19:30', prestation: 'duo', nom: 'Mme Schmit', telephone: '+352 691 87 12 30' },
-        { dans: 1, debut: '19:30', prestation: 'six', nom: 'Famille Reuter', telephone: '+352 621 55 90 16' },
-        { dans: 1, debut: '20:00', prestation: 'chef', nom: 'M. Origer', telephone: '+352 661 02 47 83', statut: 'en_attente' },
-        { dans: 2, debut: '12:30', prestation: 'duo', nom: 'Mme Hoffmann', telephone: '+352 621 64 21 09' },
-        { dans: 2, debut: '19:30', prestation: 'quatre', nom: 'M. Kremer', telephone: '+352 691 33 76 50' },
-        { dans: 2, debut: '19:45', prestation: 'duo', nom: 'Mme Braun', telephone: '+352 621 19 84 62' },
-        { dans: 2, debut: '20:00', prestation: 'six', nom: 'Famille Wagner', telephone: '+352 661 58 30 27' },
-        { dans: 2, debut: '20:00', prestation: 'quatre', nom: 'M. Schroeder', telephone: '+352 621 72 06 14' },
-        { dans: 2, debut: '20:15', prestation: 'duo', nom: 'Mme Klein', telephone: '+352 691 40 93 85', note: 'Sans gluten.' },
-        { dans: 3, debut: '19:45', prestation: 'duo', nom: 'M. Thill', telephone: '+352 621 86 51 73' },
-        { dans: 3, debut: '20:15', prestation: 'six', nom: 'Mme Feyder', telephone: '+352 661 27 64 08' },
-        { dans: 4, debut: '19:00', prestation: 'privatisation', nom: 'Étude Muller', telephone: '+352 27 00 00 00' },
-        { dans: 5, debut: '20:00', prestation: 'quatre', nom: 'M. Lemaire', telephone: '+352 691 54 18 36' },
+        { dans: 0, debut: '19:30', prestation: 'quatre', nom: 'M. Lentz', telephone: '+352 621 00 00 01', note: 'Anniversaire de mariage.' },
+        { dans: 0, debut: '20:00', prestation: 'duo', nom: 'Mme Pereira', telephone: '+352 621 00 00 02' },
+        { dans: 0, debut: '20:15', prestation: 'six', nom: 'Famille Hansen', telephone: '+352 621 00 00 03', note: 'Une chaise haute.' },
+        { dans: 1, debut: '12:15', prestation: 'quatre', nom: 'M. Weber', telephone: '+352 621 00 00 04' },
+        { dans: 1, debut: '19:30', prestation: 'duo', nom: 'Mme Schmit', telephone: '+352 621 00 00 05' },
+        { dans: 1, debut: '19:30', prestation: 'six', nom: 'Famille Reuter', telephone: '+352 621 00 00 06' },
+        { dans: 1, debut: '20:00', prestation: 'chef', nom: 'M. Origer', telephone: '+352 621 00 00 07', statut: 'en_attente' },
+        { dans: 2, debut: '12:30', prestation: 'duo', nom: 'Mme Hoffmann', telephone: '+352 621 00 00 08' },
+        { dans: 2, debut: '19:30', prestation: 'quatre', nom: 'M. Kremer', telephone: '+352 621 00 00 09' },
+        { dans: 2, debut: '19:45', prestation: 'duo', nom: 'Mme Braun', telephone: '+352 621 00 00 10' },
+        { dans: 2, debut: '20:00', prestation: 'six', nom: 'Famille Wagner', telephone: '+352 621 00 00 11' },
+        { dans: 2, debut: '20:00', prestation: 'quatre', nom: 'M. Schroeder', telephone: '+352 621 00 00 12' },
+        { dans: 2, debut: '20:15', prestation: 'duo', nom: 'Mme Klein', telephone: '+352 621 00 00 13', note: 'Sans gluten.' },
+        { dans: 3, debut: '19:45', prestation: 'duo', nom: 'M. Thill', telephone: '+352 621 00 00 14' },
+        { dans: 3, debut: '20:15', prestation: 'six', nom: 'Mme Feyder', telephone: '+352 621 00 00 15' },
+        { dans: 4, debut: '19:00', prestation: 'six', nom: 'Étude Muller', telephone: '+352 621 00 00 16' },
+        { dans: 5, debut: '20:00', prestation: 'quatre', nom: 'M. Lemaire', telephone: '+352 621 00 00 17' },
       ],
     },
 
@@ -116,8 +115,8 @@
         ville: 'Esch-sur-Alzette',
         concept: 'Bistrot, cuisine du marché',
         metier: 'restaurant',
-        adresse: '00, rue de l’Alzette — L-0000 Esch-sur-Alzette',
-        telephone: '+352 00 00 00 01',
+        adresse: '5, rue des Fourneaux, L-4010 Esch-sur-Alzette',
+        telephone: '+352 27 00 00 10',
         // Au bistrot, la table se confirme toute seule.
         modeValidation: 'auto',
         placesParCreneau: 8,
@@ -151,16 +150,16 @@
       }),
       demo: true,
       demoRendezVous: [
-        { dans: 0, debut: '12:15', prestation: 'quatre', nom: 'M. Da Costa', telephone: '+352 621 90 13 57' },
-        { dans: 0, debut: '12:30', prestation: 'deux', nom: 'Mme Ries', telephone: '+352 691 08 62 34' },
-        { dans: 0, debut: '19:00', prestation: 'six', nom: 'M. Goncalves', telephone: '+352 661 45 27 81', note: 'Deux enfants.' },
-        { dans: 0, debut: '19:30', prestation: 'deux', nom: 'Mme Kieffer', telephone: '+352 621 37 50 96' },
-        { dans: 0, debut: '20:00', prestation: 'terrasse', nom: 'M. Nilles', telephone: '+352 691 72 18 43' },
-        { dans: 1, debut: '12:00', prestation: 'quatre', nom: 'Bureau Clees', telephone: '+352 27 00 00 02' },
-        { dans: 1, debut: '19:45', prestation: 'deux', nom: 'Mme Marques', telephone: '+352 621 26 94 70' },
-        { dans: 2, debut: '12:30', prestation: 'six', nom: 'M. Schaack', telephone: '+352 661 83 40 15' },
-        { dans: 2, debut: '20:00', prestation: 'quatre', nom: 'Mme Ferreira', telephone: '+352 691 51 76 29', note: 'Végétarien pour deux.' },
-        { dans: 3, debut: '19:30', prestation: 'deux', nom: 'M. Bettendorf', telephone: '+352 621 04 38 62' },
+        { dans: 0, debut: '12:15', prestation: 'quatre', nom: 'M. Da Costa', telephone: '+352 621 00 00 18' },
+        { dans: 0, debut: '12:30', prestation: 'deux', nom: 'Mme Ries', telephone: '+352 621 00 00 19' },
+        { dans: 0, debut: '19:00', prestation: 'six', nom: 'M. Goncalves', telephone: '+352 621 00 00 20', note: 'Deux enfants.' },
+        { dans: 0, debut: '19:30', prestation: 'deux', nom: 'Mme Kieffer', telephone: '+352 621 00 00 21' },
+        { dans: 0, debut: '20:00', prestation: 'terrasse', nom: 'M. Nilles', telephone: '+352 621 00 00 22' },
+        { dans: 1, debut: '12:00', prestation: 'quatre', nom: 'Bureau Clees', telephone: '+352 621 00 00 23' },
+        { dans: 1, debut: '19:45', prestation: 'deux', nom: 'Mme Marques', telephone: '+352 621 00 00 24' },
+        { dans: 2, debut: '12:30', prestation: 'six', nom: 'M. Schaack', telephone: '+352 621 00 00 25' },
+        { dans: 2, debut: '20:00', prestation: 'quatre', nom: 'Mme Ferreira', telephone: '+352 621 00 00 26', note: 'Végétarien pour deux.' },
+        { dans: 3, debut: '19:30', prestation: 'deux', nom: 'M. Bettendorf', telephone: '+352 621 00 00 27' },
       ],
     },
   ];
@@ -168,7 +167,7 @@
      plutôt que de mélanger d'anciennes réservations avec les nouvelles. Ce
      fichier est lu des deux côtés, donc le ménage se fait quel que soit
      l'écran ouvert en premier. */
-  var GENERATION = '3';
+  var GENERATION = '4';
   try {
     // « ?reinitialiser » dans l'adresse : Sam repart d'une démo propre, datée
     // du jour, juste avant son rendez-vous.

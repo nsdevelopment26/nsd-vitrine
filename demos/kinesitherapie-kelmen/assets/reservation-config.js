@@ -139,7 +139,7 @@ window.NSR_CONFIG = {
   // Agenda préchargé pour la démonstration : une grille vide ne montre rien.
   demo: true,
   demoRendezVous: [
-    { dans: 1, debut: '09:00', prestation: 'seance',   nom: 'M. Kelmen' },
+    { dans: 1, debut: '09:00', prestation: 'seance',   nom: 'M. Weber' },
     { dans: 1, debut: '10:30', prestation: 'bilan',    nom: 'Mme Klein' },
     { dans: 1, debut: '14:00', prestation: 'sport',    nom: 'M. Reuter' },
     { dans: 2, debut: '08:30', prestation: 'seance',   nom: 'Mme Hoffmann' },

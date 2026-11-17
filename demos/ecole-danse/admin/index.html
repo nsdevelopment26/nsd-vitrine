@@ -400,7 +400,7 @@ svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-widt
     <div class="logo">Maison Volte <small>Gestion</small></div>
     <h1>Bonsoir.</h1>
     <p class="sub">Connectez-vous pour retrouver les inscriptions du trimestre et suivre vos paiements.</p>
-    <div class="champ"><label for="l-mail">Adresse mail</label><input id="l-mail" type="email" value="direction@maisonvolte.lu" autocomplete="off"></div>
+    <div class="champ"><label for="l-mail">Adresse mail</label><input id="l-mail" type="email" value="direction@maisonvolte.example" autocomplete="off"></div>
     <div class="champ"><label for="l-mdp">Mot de passe</label><input id="l-mdp" type="password" value="demonstration" autocomplete="off"></div>
     <button class="btn-entrer" type="submit">Entrer dans l'espace <span class="rond"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
     <p class="login-note">Démonstration : les identifiants sont déjà remplis.</p>
@@ -413,7 +413,7 @@ svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-widt
     <nav class="nav" id="nav"></nav>
     <div class="side-bas">
       <a class="voir-site" href="../" target="_blank" rel="noopener">Voir le site public <svg class="i" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
-      <div class="moi"><span class="av">MV</span><span>Direction<br><span style="opacity:.7">direction@maisonvolte.lu</span></span></div>
+      <div class="moi"><span class="av">MV</span><span>Direction<br><span style="opacity:.7">direction@maisonvolte.example</span></span></div>
       <p class="signe">Réalisé par NS Development</p>
     </div>
   </aside>
@@ -480,7 +480,7 @@ function seed(){
   const profs = [
     {id:'lea', nom:'Léa Vandermeulen', spec:'Contemporain & création', bio:"Elle enseigne le poids, le souffle et l'écoute avant la figure.", photo:'../photos/prof-contemporain.webp', visible:true},
     {id:'yanis', nom:'Yanis Berrada', spec:'Hip-Hop & Street Dance', bio:'Il transmet le groove, le freestyle et la culture qui va avec.', photo:'../photos/prof-hip-hop.webp', visible:true},
-    {id:'camille', nom:'Camille Roth', spec:'Classique & éveil', bio:'Vingt ans de barre, et une patience rare avec les plus jeunes.', photo:'../photos/prof-classique.webp', visible:true},
+    {id:'camille', nom:'Camille Delorme', spec:'Classique & éveil', bio:'Vingt ans de barre, et une patience rare avec les plus jeunes.', photo:'../photos/prof-classique.webp', visible:true},
     {id:'nour', nom:'Nour Haddad', spec:'Jazz, Modern Jazz & Dancehall', bio:'Ses cours sont exigeants et joyeux, dans cet ordre.', photo:'../photos/prof-jazz.webp', visible:true}
   ];
   const C = (id,jour,h,f,nom,niv,age,prof,cap=12) => ({id,jour,h,f,nom,niv,age,prof,cap});
@@ -786,7 +786,7 @@ function voirFacture(num){
       <span style="margin-left:auto;display:flex;gap:8px">${f.statut!=='payee'?`<button type="button" class="btn btn-trait btn-sm" data-relance="${esc(e.email)}">${ic('mail')}Relancer</button>`:''}<button type="button" class="btn btn-noir btn-sm" id="imprimer">${ic('print')}PDF</button>
       <button type="button" class="fermer" data-ferme aria-label="Fermer">${ic('x')}</button></span></div>
     <div class="modale-c" id="facture-zone"><div class="facture">
-      <div class="fac-t"><div><div class="logo">Maison Volte</div><p style="font-size:13px;color:var(--gris);margin-top:6px">12, rue des Ateliers · L-1112 Luxembourg<br>bonjour@maisonvolte.lu · +352 26 00 00 00</p></div>
+      <div class="fac-t"><div><div class="logo">Maison Volte</div><p style="font-size:13px;color:var(--gris);margin-top:6px">12, rue des Ateliers · L-1112 Luxembourg<br>bonjour@maisonvolte.example · +352 26 00 00 00</p></div>
         <div class="droite"><b>Facture</b>${num}<br>Émise le ${dateFr(f.date)}</div></div>
       <div class="fac-p"><div><span>Facturé à</span><b style="font-weight:500">${esc(e.enfant?e.parent:nomEl(e))}</b><br>${esc(e.adresse)}<br>${esc(e.email)}</div>
         <div><span>Élève</span>${esc(nomEl(e))}<br><span style="margin-top:10px">Période</span>${PERIODES[f.per].nom}, ${PERIODES[f.per].dates}</div></div>
@@ -988,7 +988,7 @@ function confirmation(e,c,pv,f){
           <div class="co"><div class="marque">Maison Volte</div><p>Bonjour ${esc(e.enfant && e.parent!=='à compléter' ? e.parent.split(' ')[0] : e.prenom)},</p><p>${e.enfant?'L’inscription de '+esc(e.prenom)+' est confirmée':'Votre inscription est confirmée'}. À très vite au studio.</p>
             <div class="recap"><b>${esc(c.nom)}</b> · ${esc(c.niv)}<br>${c.jour} de ${c.h} à ${c.f}<br>Avec ${esc(p?.nom||'votre professeur')}<br>${P.nom}, ${P.dates}</div>
             <p>Votre facture ${f.num} (${euro(f.montant)}) est jointe à ce mail.</p></div></div>
-        <div class="mail"><div class="en"><span class="qui-l">Reçu par l'école</span><b>De :</b> Espace de gestion<br><b>À :</b> direction@maisonvolte.lu<br><b>Objet :</b> Nouvelle inscription · ${esc(c.nom)}</div>
+        <div class="mail"><div class="en"><span class="qui-l">Reçu par l'école</span><b>De :</b> Espace de gestion<br><b>À :</b> direction@maisonvolte.example<br><b>Objet :</b> Nouvelle inscription · ${esc(c.nom)}</div>
           <div class="co"><div class="marque">Nouvelle inscription</div>
             <div class="recap"><b>${esc(e.prenom+' '+e.nom)}</b>${e.enfant?' (enfant)':''}<br>${esc(e.email)} · ${esc(e.tel)}<br>${esc(c.nom)}, ${c.jour} ${c.h} · ${P.type}<br>Places restantes : ${Math.max(0,c.cap-remplis(c))} sur ${c.cap}</div>
             <p>Facture ${f.num} émise, en attente de paiement.</p></div></div>

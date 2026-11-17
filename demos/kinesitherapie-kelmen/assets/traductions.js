@@ -83,7 +83,7 @@ window.NS_TRADUCTIONS = {
       'acc.alt.seance': "Rehabilitatiounsséance op der Tabelle an engem hellen Cabinet",
       'acc.alt.facade': "Steefassad vum Cabinet fir Kinesitherapie Kelmen zu Junglinster",
 
-      'acc.bande1': "Méi–Fre 8–18.30 Auer · Sa 9–12 Auer",
+      'acc.bande1': "Méi–Fre vun 8 Auer un · Sa 9–12 Auer",
       'acc.bande2': "Parking virum Cabinet, ebenerdegen Zougang",
       'acc.bande3t': "CNS-konventionéiert",
       'acc.bande3': "Op medezinesch Verschreiwung, normale Remboursement",
@@ -255,6 +255,8 @@ window.NS_TRADUCTIONS = {
       'cab.map.oeil': "Higoen",
       'cab.map.titre': "Zu Junglinster, zwanzeg Minutten vun der Haaptstad",
       'cab.map.texte': "Junglinster ass den Haaptuert vu senger Gemeng, am Kanton Gréivemaacher. Vu Lëtzebuerg-Stad aus sinn et ongeféier zwanzeg Minutten iwwer d'N11.",
+      'cab.map.bouton': "Kaart uweisen",
+      'cab.map.consent': "D'Kaart gëtt vun OpenStreetMap geliwwert, déi Är IP-Adress kritt.",
       'cab.map.iframe': "Kaart: 21 rue de la Gare, L-6117 Junglinster",
       'cab.map.note': "De Marker steet am Zentrum vu Junglinster. " +
         "<a href='https://www.google.com/maps/search/?api=1&query=21+rue+de+la+Gare+6117+Junglinster+Luxembourg' target='_blank' rel='noopener' style='color:var(--taupe-deep)'>A Google Maps opmaachen</a>",

@@ -1,0 +1,363 @@
+- generic [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Fiduciaire Orvane, retour en haut" [ref=e4] [cursor=pointer]:
+        - /url: "#hero"
+        - generic [ref=e6]:
+          - generic [ref=e7]: Fiduciaire Orvane
+          - generic [ref=e8]: Treuhand · Düdelingen
+      - generic [ref=e9]:
+        - list [ref=e10]:
+          - listitem [ref=e11]:
+            - link "Leistungen" [ref=e375] [cursor=pointer]:
+              - /url: "#services"
+          - listitem [ref=e13]:
+            - link "Ablauf" [ref=e376] [cursor=pointer]:
+              - /url: "#methode"
+          - listitem [ref=e15]:
+            - link "Die Kanzlei" [ref=e377] [cursor=pointer]:
+              - /url: "#cabinet"
+          - listitem [ref=e17]:
+            - link "Kontakt" [ref=e378] [cursor=pointer]:
+              - /url: "#contact"
+        - generic [ref=e19]:
+          - button "Choisir la langue" [expanded] [active] [ref=e20] [cursor=pointer]:
+            - generic [ref=e24]: DE
+          - list [ref=e369]:
+            - listitem [ref=e370] [cursor=pointer]: Français
+            - listitem [ref=e371] [cursor=pointer]: Deutsch
+            - listitem [ref=e372] [cursor=pointer]: English
+            - listitem [ref=e373] [cursor=pointer]: Português
+        - link "(+352) 27 00 00 00" [ref=e25] [cursor=pointer]:
+          - /url: tel:+35227000000
+  - banner [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: Unabhängige Treuhandgesellschaft · Düdelingen, Luxemburg
+          - heading "Ihre Buchhaltung geführt, Ihre Fristen nie verpasst ." [level=1] [ref=e379]: Ihre Buchhaltung geführt,Ihre Fristennie verpasst .
+        - generic [ref=e32]:
+          - paragraph [ref=e33]: Buchhaltung, Löhne, Firmengründung und luxemburgisches Steuerrecht. Eine überschaubare Kanzlei, in der Sie immer mit derselben Person sprechen.
+          - generic [ref=e34]:
+            - generic [ref=e380]:
+              - text: "26"
+              - generic [ref=e381]: Tage
+            - generic [ref=e382]: Nächste Frist · 15. November
+            - generic [ref=e383]: Monatliche MwSt. · Zeitraum Oktober
+            - generic [ref=e384]: "Danach : Monatliche MwSt., 15. Dezember · Erklärung IRC / ICC, 31. Dezember"
+          - paragraph [ref=e40]:
+            - link "Erstgespräch kostenlos und unverbindlich →" [ref=e385] [cursor=pointer]:
+              - /url: "#contact"
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: 2026 · das Steuerjahr aus Sicht der Kanzlei
+          - generic [ref=e45]: Übliche luxemburgische Fristen
+        - img "Frise des échéances fiscales de l'année" [ref=e47]:
+          - generic [ref=e387]:
+            - generic [ref=e388]: Jan
+            - generic [ref=e389]: Feb
+            - generic [ref=e390]: Mär
+            - generic [ref=e391]: Apr
+            - generic [ref=e392]: Mai
+            - generic [ref=e393]: Jun
+            - generic [ref=e394]: Jul
+            - generic [ref=e395]: Aug
+            - generic [ref=e396]: Sep
+            - generic [ref=e397]: Okt
+            - generic [ref=e398]: Nov
+            - generic [ref=e399]: Dez
+          - generic "Monatliche MwSt." [ref=e400]
+          - generic "Monatliche MwSt." [ref=e401]
+          - generic "Monatliche MwSt." [ref=e402]
+          - generic "Monatliche MwSt." [ref=e403]
+          - generic "Monatliche MwSt." [ref=e404]
+          - generic "Monatliche MwSt." [ref=e405]
+          - generic "Monatliche MwSt." [ref=e406]
+          - generic "Monatliche MwSt." [ref=e407]
+          - generic "Monatliche MwSt." [ref=e408]
+          - generic "Monatliche MwSt." [ref=e409]
+          - generic "Monatliche MwSt." [ref=e410]
+          - generic "Monatliche MwSt." [ref=e411]
+          - generic [ref=e413]:
+            - text: Quartals-MwSt.
+            - emphasis [ref=e414]: 15. Januar · 4. Quartal Vorjahr
+          - generic [ref=e416]:
+            - text: Jährliche MwSt.
+            - emphasis [ref=e417]: 1. März · Vorjahr
+          - generic [ref=e419]:
+            - text: Quartals-MwSt.
+            - emphasis [ref=e420]: 15. April · 1. Quartal
+          - generic [ref=e422]:
+            - text: Quartals-MwSt.
+            - emphasis [ref=e423]: 15. Juli · 2. Quartal
+          - generic [ref=e425]:
+            - text: Jahresabschluss · RCS
+            - emphasis [ref=e426]: 31. Juli · Hinterlegung Vorjahr
+          - generic [ref=e428]:
+            - text: Quartals-MwSt.
+            - emphasis [ref=e429]: 15. Oktober · 3. Quartal
+          - generic [ref=e431]:
+            - text: Erklärung IRC / ICC
+            - emphasis [ref=e432]: 31. Dezember · Vorjahr
+          - generic [ref=e433]: Heute
+        - paragraph [ref=e98]: Richtwerte für eine Gesellschaft, deren Geschäftsjahr dem Kalenderjahr entspricht. Ihr eigener Kalender entsteht im Erstgespräch.
+  - generic [ref=e101]:
+    - generic [ref=e102]:
+      - generic [ref=e103]: "2007"
+      - generic [ref=e104]: Gründungsjahr
+      - generic [ref=e105]: Unabhängige Kanzlei, nie übernommen
+    - generic [ref=e106]:
+      - generic [ref=e107]: "04"
+      - generic [ref=e108]: Fachbereiche
+      - generic [ref=e109]: Buchhaltung · Gesellschaften · Löhne · Steuern
+    - generic [ref=e110]:
+      - generic [ref=e111]: "04"
+      - generic [ref=e112]: Arbeitssprachen
+      - generic [ref=e113]: Français · Deutsch · English · Português
+    - generic [ref=e114]:
+      - generic [ref=e115]: 24 h
+      - generic [ref=e116]: Antwortzeit
+      - generic [ref=e117]: Auf jede schriftliche Anfrage, Werktage
+  - generic [ref=e119]:
+    - generic [ref=e120]:
+      - paragraph [ref=e121]: Leistungen
+      - heading "Was wir für Sie übernehmen" [level=2] [ref=e436]
+      - paragraph [ref=e123]: "Vier Bereiche, Zeile für Zeile aufgeschlüsselt. Öffnen Sie den, der Sie betrifft: Sie wissen genau, was enthalten ist, bevor Sie überhaupt anrufen."
+    - generic [ref=e124]:
+      - generic [ref=e125]:
+        - button "01 Buchhaltung" [expanded] [ref=e437] [cursor=pointer]:
+          - generic [ref=e127]: "01"
+          - generic [ref=e128]: Buchhaltung
+        - generic [ref=e132]:
+          - paragraph [ref=e134]: Vollständige Führung Ihrer Finanz- und Betriebsbuchhaltung. Bilanzen, Jahresabschlüsse und Erklärungen fristgerecht.
+          - list [ref=e135]:
+            - listitem [ref=e136]: Laufende Buchhaltung
+            - listitem [ref=e137]: Erstellung von Bilanzen und Jahresabschlüssen
+            - listitem [ref=e138]: Steuererklärungen MwSt. und Einkommen
+            - listitem [ref=e139]: Managementberichte und Dashboards
+            - listitem [ref=e140]: Kosten- und Projektbuchhaltung
+            - listitem [ref=e141]: Abschluss der Geschäftsjahre
+      - generic [ref=e142]:
+        - button "02 Firmengründung" [ref=e438] [cursor=pointer]:
+          - generic [ref=e144]: "02"
+          - generic [ref=e145]: Firmengründung
+        - generic [ref=e147]:
+          - paragraph [ref=e149]: Umfassende Begleitung bei der Gründung und rechtlichen Strukturierung Ihres Unternehmens im Großherzogtum Luxemburg.
+          - list [ref=e150]:
+            - listitem [ref=e151]: Wahl der Rechtsform (SARL, SA, SCS…)
+            - listitem [ref=e152]: Erstellung von Satzung und Gründungsurkunden
+            - listitem [ref=e153]: Formalitäten beim Handelsregister (RCS)
+            - listitem [ref=e154]: Eröffnung eines Geschäftskontos
+            - listitem [ref=e155]: MwSt.-Registrierung und Steuerverwaltung
+            - listitem [ref=e156]: Beratung zur Gesellschafterstruktur
+      - generic [ref=e157]:
+        - button "03 Lohnbuchhaltung" [ref=e439] [cursor=pointer]:
+          - generic [ref=e159]: "03"
+          - generic [ref=e160]: Lohnbuchhaltung
+        - generic [ref=e162]:
+          - paragraph [ref=e164]: Vollständige Abwicklung Ihrer luxemburgischen Lohnabrechnung gemäß der Sozialgesetzgebung des Großherzogtums.
+          - list [ref=e165]:
+            - listitem [ref=e166]: Erstellung der monatlichen Lohnabrechnungen
+            - listitem [ref=e167]: Berechnung der Sozialbeiträge (CCSS, CNS)
+            - listitem [ref=e168]: SEQRES-Erklärungen und Beitragsnachweise
+            - listitem [ref=e169]: Verwaltung von Urlaub, Abwesenheiten und Krankmeldungen
+            - listitem [ref=e170]: Ein- und Austritt von Mitarbeitern
+            - listitem [ref=e171]: Arbeitgeberbescheinigungen und Zertifikate
+      - generic [ref=e172]:
+        - button "04 Steuerberatung" [ref=e440] [cursor=pointer]:
+          - generic [ref=e174]: "04"
+          - generic [ref=e175]: Steuerberatung
+        - generic [ref=e177]:
+          - paragraph [ref=e179]: Legale Steueroptimierung und Vermögensplanung, angepasst an das luxemburgische Steuerrecht.
+          - list [ref=e180]:
+            - listitem [ref=e181]: Optimierung der Steuerlast des Unternehmens
+            - listitem [ref=e182]: Körperschaftsteuererklärungen (IRC)
+            - listitem [ref=e183]: Gewerbesteuer (ICC) und Vermögensteuer
+            - listitem [ref=e184]: Beratung bei Umstrukturierung und Übertragung
+            - listitem [ref=e185]: Vertretung gegenüber der Steuerverwaltung
+            - listitem [ref=e186]: Überwachung internationaler Steuerabkommen
+  - generic [ref=e188]:
+    - generic [ref=e189]:
+      - paragraph [ref=e190]: Ablauf
+      - heading "Drei Schritte, nicht mehr" [level=2] [ref=e441]
+      - paragraph [ref=e192]: Ein Wechsel der Treuhandgesellschaft schreckt ab, weil man monatelanges Chaos befürchtet. So läuft es bei uns genau ab.
+    - generic [ref=e193]:
+      - generic [ref=e194]:
+        - generic [ref=e195]: "01"
+        - heading "Erstgespräch" [level=3] [ref=e442]
+        - paragraph [ref=e197]: Fünfundvierzig Minuten, kostenlos. Sie zeigen Ihre aktuelle Lage und Ihre Unterlagen. Wir sagen, was passt, was fehlt und was es kostet. Kein endloses Angebot.
+      - generic [ref=e198]:
+        - generic [ref=e199]: "02"
+        - heading "Übernahme der Akte" [level=3] [ref=e443]
+        - paragraph [ref=e201]: Wir holen Ihre Unterlagen bei Ihrem bisherigen Dienstleister ab, bringen die Buchhaltung auf Stand und legen den Fristenkalender für das Jahr fest.
+      - generic [ref=e202]:
+        - generic [ref=e203]: "03"
+        - heading "Monatliche Betreuung" [level=3] [ref=e444]
+        - paragraph [ref=e205]: Sie reichen Ihre Belege ein, wir buchen. Jeden Monat ein klarer Überblick und ein Ansprechpartner, der am selben Tag antwortet.
+  - generic [ref=e208]:
+    - generic [ref=e210]:
+      - generic [ref=e211]:
+        - generic [ref=e212]: CR
+        - generic [ref=e213]: Illustrationsfoto, durch ein Bild der Kanzlei zu ersetzen.
+      - generic [ref=e214]:
+        - generic [ref=e215]: Camille Roth
+        - generic [ref=e216]: Gründer, Wirtschaftsprüfer
+        - paragraph [ref=e217]: Camille Roth gründete Orvane 2007 nach mehreren Jahren in einer internationalen Kanzlei. Die Doppelkompetenz in luxemburgischer Buchhaltung und Steuer deckt fast alle Fälle ab, von der ersten Bilanz eines Selbstständigen bis zur Umstrukturierung eines KMU.
+        - generic [ref=e218]:
+          - generic [ref=e219]: Buchhaltung
+          - generic [ref=e220]: Steuern LU
+          - generic [ref=e221]: Gesellschaftsrecht
+          - generic [ref=e222]: Lohn LU
+          - generic [ref=e223]: Vermögensberatung
+    - generic [ref=e224]:
+      - paragraph [ref=e225]: Die Kanzlei
+      - heading "Unabhängig seit 2007" [level=2] [ref=e445]
+      - paragraph [ref=e228]: "Fiduciaire Orvane ist eine unabhängige Kanzlei in Düdelingen. Kein Netzwerk, kein mehrstufiger Kundendienst: Das Unternehmen gehört demjenigen, der Ihre Bücher führt."
+      - paragraph [ref=e229]: Wir arbeiten mit Handwerkern, Händlern, Selbstständigen und KMU aus dem Süden des Landes. Klein genug, um Sie zu kennen, gut genug ausgestattet, um die luxemburgischen Fristen einzuhalten.
+      - generic [ref=e230]:
+        - generic [ref=e231]: "19"
+        - generic [ref=e232]: Jahre Tätigkeit in Luxemburg
+      - list [ref=e233]:
+        - listitem [ref=e234]:
+          - generic [ref=e235]: I
+          - generic [ref=e236]:
+            - generic [ref=e237]: Zuverlässigkeit und Vertraulichkeit
+            - generic [ref=e238]: Ihre Finanzdaten werden diskret und in voller Übereinstimmung mit der DSGVO behandelt.
+        - listitem [ref=e239]:
+          - generic [ref=e240]: II
+          - generic [ref=e241]:
+            - generic [ref=e242]: Reaktionsfähigkeit
+            - generic [ref=e243]: Ein erreichbarer Ansprechpartner, schnelle Antworten. Ihre Zeit ist wertvoll, wir respektieren sie.
+        - listitem [ref=e244]:
+          - generic [ref=e245]: III
+          - generic [ref=e246]:
+            - generic [ref=e247]: Maßgeschneiderte Betreuung
+            - generic [ref=e248]: Jedes Unternehmen ist anders. Unsere Lösungen passen sich Ihrer Branche, Größe und Ihren Zielen an.
+  - generic [ref=e251]:
+    - paragraph [ref=e252]: Nächster Schritt
+    - heading "Sprechen wir über Ihre Akte." [level=2] [ref=e446]
+    - paragraph [ref=e254]: Ein Anruf von fünfzehn Minuten genügt, um zu wissen, ob wir die richtige Kanzlei für Sie sind. Und wenn nicht, sagen wir es Ihnen.
+    - generic [ref=e255]:
+      - link "Kanzlei anrufen" [ref=e447] [cursor=pointer]:
+        - /url: tel:+35227000000
+      - link "Nachricht schreiben" [ref=e448] [cursor=pointer]:
+        - /url: "#contact"
+  - generic [ref=e263]:
+    - generic [ref=e264]:
+      - paragraph [ref=e265]: So finden Sie uns
+      - heading "Kontakt und Anfahrt" [level=2] [ref=e449]
+      - paragraph [ref=e267]: Die Kanzlei ist von Montag bis Freitag geöffnet. Termine außerhalb dieser Zeiten sind auf Anfrage möglich.
+      - generic [ref=e268]:
+        - generic [ref=e269]:
+          - generic [ref=e270]: Telefon
+          - link "(+352) 27 00 00 00" [ref=e272] [cursor=pointer]:
+            - /url: tel:+35227000000
+        - generic [ref=e273]:
+          - generic [ref=e274]: E-Mail
+          - link "contact@fiduciaire-orvane.example" [ref=e276] [cursor=pointer]:
+            - /url: mailto:contact@fiduciaire-orvane.example
+        - generic [ref=e277]:
+          - generic [ref=e278]: Adresse
+          - generic [ref=e279]: 9, rue des MinièresL-3453 Dudelange, Luxembourg
+        - generic [ref=e280]:
+          - generic [ref=e281]: Öffnungszeiten
+          - generic [ref=e282]:
+            - generic [ref=e283]:
+              - generic [ref=e284]: Montag — Freitag
+              - generic [ref=e285]: 08:30 — 17:30
+            - generic [ref=e286]:
+              - generic [ref=e287]: Samstag
+              - generic [ref=e288]: Nach Vereinbarung
+            - generic [ref=e289]:
+              - generic [ref=e290]: Sonntag
+              - generic [ref=e291]: Geschlossen
+    - generic [ref=e292]:
+      - generic [ref=e293]:
+        - heading "An die Kanzlei schreiben" [level=3] [ref=e450]
+        - paragraph [ref=e295]: Antwort innerhalb von 24 Werkstunden. Erstgespräch kostenlos und unverbindlich.
+        - generic [ref=e296]:
+          - generic [ref=e297]:
+            - generic [ref=e298]: Name und Vorname
+            - textbox "Name und Vorname" [ref=e451]
+          - generic [ref=e300]:
+            - generic [ref=e301]: E-Mail
+            - textbox "E-Mail" [ref=e452]
+        - generic [ref=e303]:
+          - generic [ref=e304]:
+            - generic [ref=e305]: Telefon
+            - textbox "Telefon" [ref=e453]
+          - generic [ref=e307]:
+            - generic [ref=e308]: Art der Anfrage
+            - combobox "Art der Anfrage" [ref=e454] [cursor=pointer]:
+              - option "Auswählen…" [selected]
+              - option "Buchhaltung"
+              - option "Firmengründung"
+              - option "Lohnbuchhaltung"
+              - option "Steuerberatung"
+              - option "Sonstige Anfrage"
+        - generic [ref=e311]:
+          - generic [ref=e312]: Ihre Nachricht
+          - textbox "Ihre Nachricht" [ref=e455]
+        - button "Anfrage senden" [ref=e456]
+      - generic [ref=e318]:
+        - iframe [ref=e319]
+        - button "Afficher la carte La carte est fournie par Google, qui recevra votre adresse IP." [ref=e320] [cursor=pointer]:
+          - strong [ref=e321]: Afficher la carte
+          - generic [ref=e322]: La carte est fournie par Google, qui recevra votre adresse IP.
+  - contentinfo [ref=e323]:
+    - generic [ref=e324]:
+      - generic [ref=e325]:
+        - generic [ref=e326]:
+          - link "Fiduciaire Orvane Treuhand · Düdelingen" [ref=e457] [cursor=pointer]:
+            - /url: "#hero"
+            - generic [ref=e329]:
+              - generic [ref=e330]: Fiduciaire Orvane
+              - generic [ref=e331]: Treuhand · Düdelingen
+          - paragraph [ref=e332]: Unabhängige Treuhandkanzlei in Düdelingen seit 2007. Buchhaltung, Lohnabrechnung, Steuerberatung und Firmengründung im Großherzogtum Luxemburg.
+        - generic [ref=e333]:
+          - generic [ref=e334]: Leistungen
+          - list [ref=e335]:
+            - listitem [ref=e336]:
+              - link "Buchhaltung" [ref=e458] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=e338]:
+              - link "Firmengründung" [ref=e459] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=e340]:
+              - link "Lohnbuchhaltung" [ref=e460] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=e342]:
+              - link "Steuerberatung" [ref=e461] [cursor=pointer]:
+                - /url: "#services"
+        - generic [ref=e344]:
+          - generic [ref=e345]: Kanzlei
+          - list [ref=e346]:
+            - listitem [ref=e347]:
+              - link "Die Kanzlei" [ref=e462] [cursor=pointer]:
+                - /url: "#cabinet"
+            - listitem [ref=e349]:
+              - link "Ablauf" [ref=e463] [cursor=pointer]:
+                - /url: "#methode"
+            - listitem [ref=e351]:
+              - link "Kontakt" [ref=e464] [cursor=pointer]:
+                - /url: "#contact"
+        - generic [ref=e353]:
+          - generic [ref=e354]: Kontakt
+          - list [ref=e355]:
+            - listitem [ref=e356]:
+              - link "(+352) 27 00 00 00" [ref=e357] [cursor=pointer]:
+                - /url: tel:+35227000000
+            - listitem [ref=e358]:
+              - link "contact@fiduciaire-orvane.example" [ref=e359] [cursor=pointer]:
+                - /url: mailto:contact@fiduciaire-orvane.example
+            - listitem [ref=e360]: 9, rue des Minières
+            - listitem [ref=e361]: L-3453 Dudelange
+      - generic [ref=e362]:
+        - generic [ref=e363]: © 2026 Fiduciaire Orvane. Alle Rechte vorbehalten.
+        - generic [ref=e364]:
+          - link "Impressum" [ref=e465] [cursor=pointer]:
+            - /url: mentions-legales.html
+          - link "Datenschutz" [ref=e466] [cursor=pointer]:
+            - /url: confidentialite.html
+          - generic [ref=e367]: Demo-Modell erstellt von NS Development — Webseitengestaltung in Luxemburg
+      - paragraph [ref=e368]: "Demo: Name, Kontaktdaten, Fotos und Zahlen dieser Website sind frei erfunden."

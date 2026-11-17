@@ -57,7 +57,7 @@
     var ouvert = (h[n.getDay()] || []).some(function (p) { return m >= p[0] && m < p[1]; });
     var mots = ETATS[langue()];
     badge.textContent = ouvert ? mots.ouvert : mots.ferme;
-    badge.style.color = ouvert ? '#6E8F73' : '#948A81';
+    badge.style.color = ouvert ? '#4F6E54' : '#6B615A';
   }
   etatOuverture();
 
