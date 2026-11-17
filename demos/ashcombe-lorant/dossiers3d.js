@@ -104,17 +104,17 @@ rendu.outputColorSpace = THREE.SRGBColorSpace;
 rendu.toneMapping = THREE.ACESFilmicToneMapping;
 rendu.toneMappingExposure = 1.05;
 rendu.shadowMap.enabled = true;
-rendu.shadowMap.type = THREE.PCFSoftShadowMap;
+rendu.shadowMap.type = THREE.PCFShadowMap;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 40);
 
 /* éclairage : un plafonnier froid au-dessus du tiroir, une lampe de bureau chaude, un liseré violet très bas */
-const ambiance = new THREE.HemisphereLight(0xdfe3ec, 0x0b0c10, 0.5); scene.add(ambiance);
+const ambiance = new THREE.HemisphereLight(0xdfe3ec, 0x1a1c22, 0.75); scene.add(ambiance);
 const cle = new THREE.DirectionalLight(0xf1f2f6, 2.6);
 cle.position.set(-1.6, 3.2, 2.2); cle.castShadow = true;
 cle.shadow.mapSize.set(estMobile() ? 1024 : 2048, estMobile() ? 1024 : 2048);
 Object.assign(cle.shadow.camera, { left: -1.6, right: 1.6, top: 1.6, bottom: -1.2, near: 0.5, far: 8 });
-cle.shadow.bias = -0.0004; cle.shadow.normalBias = 0.02;
+cle.shadow.bias = -0.0004; cle.shadow.normalBias = 0.02; cle.shadow.radius = 7; cle.shadow.blurSamples = 16;
 scene.add(cle); scene.add(cle.target); cle.target.position.set(0, 0.3, -0.2);
 const lampe = new THREE.PointLight(0xffd9b0, 1.6, 6, 1.6); lampe.position.set(1.4, 1.5, 0.8); scene.add(lampe);
 const lisere = new THREE.DirectionalLight(0xb9a6f0, 0.55); lisere.position.set(2, 0.6, -2.5); scene.add(lisere);
@@ -153,8 +153,65 @@ const TEINTES = [
   { carton: '#868b97', texte: '#10121a' }
 ];
 
+/* grain du carton : marbrure douce et fibres, partagé par toutes les chemises (multiplie la teinte) */
+const grainCarton = (() => {
+  const c = toileCanvas(512, 512), x = c.getContext('2d');
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, 512, 512);
+  const r = graine(19);
+  for (let i = 0; i < 90; i++) { // marbrure
+    const g = x.createRadialGradient(r() * 512, r() * 512, 0, 0, 0, 0);
+    x.fillStyle = `rgba(${r() < 0.5 ? '150,150,160' : '255,255,255'},${0.01 + r() * 0.014})`;
+    x.beginPath(); x.ellipse(r() * 512, r() * 512, 20 + r() * 70, 10 + r() * 40, r() * 3, 0, 6.283); x.fill(); void g;
+  }
+  for (let i = 0; i < 9000; i++) { // fibres
+    x.strokeStyle = `rgba(${r() < 0.55 ? '90,92,104' : '255,255,255'},${0.05 + r() * 0.1})`;
+    x.lineWidth = 0.6 + r() * 0.7;
+    const px = r() * 512, py = r() * 512, a = r() * 6.283, l = 2 + r() * 7;
+    x.beginPath(); x.moveTo(px, py); x.lineTo(px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke();
+  }
+  const t = texture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2.2, 1.6);
+  return t;
+})();
+/* noyer : veines horizontales ondulées */
+const veinesNoyer = (() => {
+  const c = toileCanvas(1024, 256), x = c.getContext('2d');
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, 1024, 256);
+  const r = graine(23);
+  for (let i = 0; i < 140; i++) {
+    const y0 = r() * 256, amp = 2 + r() * 8, f = 0.004 + r() * 0.01, ph = r() * 6;
+    x.strokeStyle = `rgba(${r() < 0.6 ? '70,50,40' : '255,235,215'},${0.06 + r() * 0.14})`;
+    x.lineWidth = 0.6 + r() * 2.2;
+    x.beginPath();
+    for (let xx = 0; xx <= 1024; xx += 8) { const yy = y0 + Math.sin(xx * f + ph) * amp + Math.sin(xx * f * 3.1) * amp * 0.3; xx ? x.lineTo(xx, yy) : x.moveTo(xx, yy); }
+    x.stroke();
+  }
+  const t = texture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+})();
+
 /* gaufrage partagé des couvertures : le monogramme, petit, en bas à droite */
 const normCouv = gaufrage(512, 360, (x, w, h) => { dessinerMonogramme(x, w * 0.84, h * 0.72, 70); }, { flou: 3, fibre: 0.003, force: 1.1 });
+
+noyer.map = veinesNoyer; noyer.color.set(0x34241b); noyer.needsUpdate = true;
+const veinesFine = veinesNoyer.clone(); veinesFine.repeat.set(1, 0.35); veinesFine.needsUpdate = true;
+noyerFin.map = veinesFine; noyerFin.color.set(0x46301f); noyerFin.needsUpdate = true;
+/* façade : porte-étiquette et poignée en laiton patiné */
+const laiton = new THREE.MeshStandardMaterial({ color: 0xb8925a, roughness: 0.32, metalness: 0.85, emissive: 0x2a1c0c, emissiveIntensity: 0.35 });
+poignee.visible = false;
+const barre = new THREE.Mesh(new THREE.CylinderGeometry(0.0085, 0.0085, 0.2, 20), laiton);
+barre.rotation.z = Math.PI / 2; barre.position.set(0, LH * 0.24, 0.165); barre.castShadow = true; tiroir.add(barre);
+[-0.085, 0.085].forEach((x) => { const pied = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.008, 0.04, 14), laiton); pied.rotation.x = Math.PI / 2; pied.position.set(x, LH * 0.24, 0.146); tiroir.add(pied); });
+const cadre = new THREE.Group(); cadre.position.set(0, LH * 0.47, 0.129); tiroir.add(cadre);
+const cadreForme = new THREE.Shape(); cadreForme.moveTo(-0.085, -0.032); cadreForme.lineTo(0.085, -0.032); cadreForme.lineTo(0.085, 0.032); cadreForme.lineTo(-0.085, 0.032); cadreForme.lineTo(-0.085, -0.032);
+const trou = new THREE.Path(); trou.moveTo(-0.074, -0.022); trou.lineTo(-0.074, 0.024); trou.lineTo(0.074, 0.024); trou.lineTo(0.074, -0.022); trou.lineTo(-0.074, -0.022); cadreForme.holes.push(trou);
+const cadreM = new THREE.Mesh(new THREE.ExtrudeGeometry(cadreForme, { depth: 0.004, bevelEnabled: true, bevelThickness: 0.0015, bevelSize: 0.0015, bevelSegments: 2 }), laiton);
+cadreM.castShadow = true; cadre.add(cadreM);
+const carteCanvas = toileCanvas(512, 160), cx2 = carteCanvas.getContext('2d');
+papier(carteCanvas, cx2, '#eef0f2'); cx2.fillStyle = ENCRE; cx2.textAlign = 'center'; cx2.textBaseline = 'middle';
+cx2.font = `400 96px ${F_TITRE}`; cx2.fillText('01 – 06', 256, 88);
+const carte = new THREE.Mesh(new THREE.PlaneGeometry(0.148, 0.046), new THREE.MeshStandardMaterial({ map: texture(carteCanvas), roughness: 0.9 }));
+carte.position.set(0, 0.001, 0.001); cadre.add(carte);
+[-0.079, 0.079].forEach((x) => { const v = new THREE.Mesh(new THREE.SphereGeometry(0.0035, 10, 8), laiton); v.position.set(x, 0, 0.005); cadre.add(v); });
 
 function formeDos(tabX) {
   const s = new THREE.Shape();
@@ -233,8 +290,8 @@ const dossiers = A.domaines.map((d, i) => {
   const racine = new THREE.Group();           // position dans le tiroir / présentation
   const pivot = new THREE.Group();            // inclinaison (charnière au pied)
   racine.add(pivot); scene.add(racine);
-  const carton = new THREE.MeshStandardMaterial({ color: teinte.carton, roughness: 0.82, metalness: 0, normalMap: normCouv, normalScale: new THREE.Vector2(0.7, 0.7) });
-  const cartonDos = new THREE.MeshStandardMaterial({ color: teinte.carton, roughness: 0.85 });
+  const carton = new THREE.MeshStandardMaterial({ color: teinte.carton, map: grainCarton, bumpMap: grainCarton, bumpScale: 0.35, roughness: 0.82, metalness: 0, normalMap: normCouv, normalScale: new THREE.Vector2(0.7, 0.7) });
+  const cartonDos = new THREE.MeshStandardMaterial({ color: teinte.carton, map: grainCarton, bumpMap: grainCarton, bumpScale: 0.35, roughness: 0.85 });
   const tabX = -FW / 2 + 0.035 + i * ((FW - 0.07 - TW) / (A.domaines.length - 1));
   const dos = new THREE.Mesh(formeDos(tabX), cartonDos);
   dos.castShadow = dos.receiveShadow = true; pivot.add(dos);
@@ -264,12 +321,14 @@ const dossiers = A.domaines.map((d, i) => {
 const touchables = dossiers.flatMap((f) => f.objets);
 
 /* ------------------------------------------------------------ la feuille de l'ouverture */
-const normLettre = gaufrage(720, 1000, (x, w, h) => {
-  dessinerMonogramme(x, w / 2, h * 0.22, 230);
-  x.textAlign = 'center'; x.font = `600 40px ${F_TEXTE}`;
+/* haute définition : c'est la première image que voit le prospect (1728 × 2400 sur ordinateur) */
+const ECH = estMobile() ? 1.6 : 2.4;
+const normLettre = gaufrage(Math.round(720 * ECH), Math.round(1000 * ECH), (x, w, h) => {
+  dessinerMonogramme(x, w / 2, h * 0.22, 230 * ECH);
+  x.textAlign = 'center'; x.font = `600 ${Math.round(40 * ECH)}px ${F_TEXTE}`;
   const txt = 'ASHCOMBE  LORANT'; x.save(); x.translate(w / 2, h * 0.39); x.fillText(txt, 0, 0); x.restore();
-  x.font = `400 26px ${F_TEXTE}`; x.fillText('AVOCATS  D\'AFFAIRES  ·  LUXEMBOURG', w / 2, h * 0.43);
-}, { flou: 6, fibre: 0.002, force: 0.9 });
+  x.font = `400 ${Math.round(26 * ECH)}px ${F_TEXTE}`; x.fillText('AVOCATS  D\'AFFAIRES  ·  LUXEMBOURG', w / 2, h * 0.43);
+}, { flou: Math.round(1.4 * ECH), fibre: 0.0015, force: 0.42 });
 const lettre = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.86, 0.003),
   [null, null, null, null, null, null].map((_, k) => new THREE.MeshStandardMaterial({ color: 0xe9eaee, roughness: 0.95, normalMap: k === 4 ? normLettre : null, normalScale: new THREE.Vector2(0.85, 0.85) })));
 lettre.castShadow = true; scene.add(lettre);
@@ -294,7 +353,7 @@ function dimensionner() {
   if (estMobile()) offset = 0;
   // distance qui fait tenir le tiroir dans la largeur utile
   const aspectUtile = estMobile() ? camera.aspect : camera.aspect * 0.62;
-  const d = Math.max(2.25, (estMobile() && camera.aspect < 1 ? 1.42 : 1.85) / (2 * Math.tan(THREE.MathUtils.degToRad(15)) * aspectUtile));
+  const d = Math.max(2.25, (estMobile() && camera.aspect < 1 ? 1.62 : 1.85) / (2 * Math.tan(THREE.MathUtils.degToRad(15)) * aspectUtile));
   restePos.set(0, 0.42, -0.32).add(new THREE.Vector3(0, 0.72, 0.86).normalize().multiplyScalar(d));
   camera.updateProjectionMatrix();
 }
@@ -386,7 +445,7 @@ function boucle(t) {
   rasante.position.set(lerp(-1.5, 1.7, balai), 1.0, 1.25);
   rasante.target.position.set(lerp(-0.2, 0.25, balai), 0.62, 0.62);
   const jour = ioc((iT - 3.2) / 1.6);
-  cle.intensity = 2.6 * jour; lampe.intensity = 1.6 * jour; ambiance.intensity = lerp(0.04, 0.5, jour); lisere.intensity = 0.55 * jour;
+  cle.intensity = 2.6 * jour; lampe.intensity = 1.6 * jour; ambiance.intensity = lerp(0.04, 0.75, jour); lisere.intensity = 0.55 * jour;
 
   /* souris adoucie */
   smx = amortir(smx, mx, 3, dt); smy = amortir(smy, my, 3, dt);
@@ -416,7 +475,7 @@ function boucle(t) {
     f.racine.position.copy(tmpV);
     f.pivot.rotation.x = lerp(rinc, -0.42, s);
     f.racine.rotation.y = lerp(0, smx * 0.08, s);
-    f.charniere.rotation.x = ioc(f.ouvre) * 1.95;
+    f.charniere.rotation.x = ioc(f.ouvre) * 1.72;
     // le tampon tombe quand la chemise est ouverte
     const tp = clamp((f.ouvre - 0.75) / 0.2, 0, 1);
     f.tamp.material.opacity = tp * 0.9;
@@ -425,8 +484,8 @@ function boucle(t) {
 
   /* caméra : au repos elle suit doucement la souris ; dossier ouvert, elle se rapproche */
   const k = ioc(dossiers.reduce((m, f) => Math.max(m, f.sortie), 0));
-  const ouvertePos = tmpV.set(0, 1.38, 3.2);
-  if (estMobile()) ouvertePos.set(0, 1.25, 2.95);
+  const ouvertePos = tmpV.set(0, 1.52, 3.8);
+  if (estMobile()) ouvertePos.set(0, 1.3, 3.2);
   camPos.copy(restePos).lerp(ouvertePos, k);
   camPos.x += smx * 0.22 * (1 - k); camPos.y += -smy * 0.1 * (1 - k);
   camVise.copy(resteVise).lerp(tmpV.set(0, 0.7, 0.36), k);

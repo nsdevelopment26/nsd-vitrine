@@ -96,9 +96,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .intro-sous { margin-top: 14px; color: var(--clair-2); font-size: 15px; letter-spacing: .04em; opacity: 0; transition: opacity 1s ease .3s; }
 .intro.nom .intro-nom { opacity: 1; transform: none; }
 .intro.nom .intro-sous { opacity: 1; }
-.intro-passer { pointer-events: auto; position: absolute; right: var(--marge); bottom: max(24px, env(safe-area-inset-bottom)); background: none; border: 1px solid var(--trait-e); color: var(--clair-2); padding: 10px 18px; font-size: 14px; cursor: pointer; transition: color .2s, border-color .2s; }
+.intro-passer { display: none; }
+.en-intro .intro-passer { display: block; z-index: 61; position: fixed; right: var(--marge); bottom: max(24px, env(safe-area-inset-bottom)); background: none; border: 1px solid var(--trait-e); color: var(--clair-2); padding: 10px 18px; font-size: 14px; cursor: pointer; transition: color .2s, border-color .2s; }
 .intro-passer:hover { color: var(--clair); border-color: var(--clair-2); }
-.intro.sort { opacity: 0; transition: opacity .6s ease; }
+.intro.sort, .intro.sort + .intro-passer { opacity: 0; transition: opacity .6s ease; }
 .en-intro .barre, .en-intro .volet, .en-intro .accueil > *, .en-intro .bandeau { opacity: 0; }
 .en-intro .scene { position: fixed; inset: 0; z-index: 50; height: auto; }
 .barre, .volet { transition: opacity .8s ease; }
@@ -124,9 +125,9 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .chapeau { margin-top: 26px; max-width: 44ch; color: var(--clair-2); font-size: 18px; }
 
 .index { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; margin-top: 34px; border-top: 1px solid var(--trait-e); }
-.index button { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--trait-e); background: none; cursor: pointer; text-align: left; font-size: 16px; font-weight: 500; color: var(--clair); transition: color .2s, padding .3s var(--sortie); }
+.index button { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--trait-e); background: none; cursor: pointer; text-align: left; font-size: 16px; font-weight: 500; color: var(--clair); transition: color .2s, transform .3s var(--sortie); }
 .index button span { font-size: 13px; color: var(--clair-2); font-variant-numeric: tabular-nums; }
-.index button:hover, .index button.vise { color: var(--violet-c); padding-left: 6px; }
+.index button:hover, .index button.vise { color: var(--violet-c); transform: translateX(6px); }
 .index button[aria-pressed="true"] { color: var(--violet-c); }
 
 .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 24px; margin-top: 34px; }
@@ -191,7 +192,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .etape:nth-child(2) .tampon { transform: rotate(4deg) scale(1.7); }
 .etape:nth-child(3) .tampon { transform: rotate(-3deg) scale(1.7); }
 .etape:nth-child(4) .tampon { transform: rotate(6deg) scale(1.7); }
-.etape.tamponne .tampon { animation: tamponner .5s cubic-bezier(.3, 1.4, .5, 1) both; }
+.etape.tamponne .tampon { animation: tamponner .5s cubic-bezier(.2, .7, .1, 1) both; }
 .etape.tamponne:nth-child(1) .tampon { --r: -7deg; } .etape.tamponne:nth-child(2) .tampon { --r: 4deg; }
 .etape.tamponne:nth-child(3) .tampon { --r: -3deg; } .etape.tamponne:nth-child(4) .tampon { --r: 6deg; }
 @keyframes tamponner {
@@ -361,7 +362,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   :root { --barre: 60px; }
   body { font-size: 16px; }
   .logo span { font-size: 21px; }
-  .barre .concept { display: none; }
+  .barre .concept { padding: 2px 6px; font-size: 11px; letter-spacing: .06em; }
+  .barre { gap: 12px; }
   .logo span { white-space: nowrap; }
   .hero { min-height: 0; display: grid; padding-top: calc(var(--barre) + 26px); }
   .volet, .accueil { display: contents; }

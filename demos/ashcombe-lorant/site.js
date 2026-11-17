@@ -27,7 +27,7 @@
     setTimeout(function () {
       html.classList.remove("en-intro");
       $("#scene").classList.add("apparait");
-      intro.remove();
+      intro.remove(); var pb = $("#intro-passer"); if (pb) pb.remove();
       dispatchEvent(new Event("resize"));
     }, 620);
   }
@@ -39,11 +39,12 @@
       minuteurs.push(setTimeout(finIntro, 5600));
     });
     minuteurs.push(setTimeout(function () { if (!pret) finIntro(); }, 3200)); // la 3D ne répond pas : on n'attend pas
+    $("#intro-passer").addEventListener("pointerdown", finIntro);
     $("#intro-passer").addEventListener("click", finIntro);
     addEventListener("keydown", function (e) { if (e.key === "Escape") finIntro(); });
     addEventListener("wheel", finIntro, { passive: true, once: true });
     addEventListener("touchmove", finIntro, { passive: true, once: true });
-  } else intro.remove();
+  } else { intro.remove(); $("#intro-passer").remove(); }
 
   /* ------------------------------------------------------------ barre, menu */
   var barre = $("#barre");
