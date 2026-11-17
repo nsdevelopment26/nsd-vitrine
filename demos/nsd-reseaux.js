@@ -165,7 +165,7 @@
   addEventListener("keydown", function (e) { if (e.key === "Escape") fermer(); });
 
   function demarrer() {
-    document.body.appendChild(hote);
+    document.documentElement.appendChild(hote);       // hors du <body> : une démo qui transforme le body casserait le position:fixed
     if (dejaVu()) return;                               // déjà proposé pendant cette visite
     minuteur = setTimeout(ouvrir, 30000);
     addEventListener("scroll", auScroll, { passive: true });
