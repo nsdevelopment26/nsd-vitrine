@@ -92,7 +92,8 @@ section{padding:clamp(80px,11vw,160px) var(--marge)}
 .s3d-etiquettes{position:absolute;inset:0;pointer-events:none;z-index:1}
 .s3d-bloc{position:absolute;left:0;top:0;opacity:0;font-size:12px;font-weight:600;color:var(--craie2);text-align:center;line-height:1.25;max-width:84px;pointer-events:none;transition:opacity .3s}
 .s3d-bloc b{display:block;font-family:var(--titre);font-size:20px;font-weight:700;color:var(--craie);font-variant-numeric:tabular-nums}
-.s3d-etiquettes:not(.mob-jour) .s3d-bloc{opacity:0!important}
+.s3d-etiquettes:not(.mob-jour) .s3d-bloc{font-size:0;max-width:none}
+.s3d-etiquettes:not(.mob-jour) .s3d-bloc b{font-family:var(--texte);font-size:11px;font-weight:700;color:var(--craie2);letter-spacing:.02em}
 .s3d-etiquettes.mob-jour .s3d-jour,.s3d-etiquettes.mob-jour .s3d-heure{opacity:0!important}
 .s3d-jour,.s3d-heure{position:absolute;left:0;top:0;font-weight:700;font-size:13px;color:var(--craie2);white-space:nowrap;transition:opacity .3s}
 .s3d-jour.auj{color:var(--verm)}
@@ -377,7 +378,7 @@ section{padding:clamp(80px,11vw,160px) var(--marge)}
   .semaine-texte .btn{order:6;width:auto!important}
   .semaine h1{font-size:clamp(58px,17vw,92px)}
   .chapo{font-size:16px}
-  .s3d-cadre{position:relative;inset:auto;height:52vh;min-height:340px;max-height:520px;margin-top:4px}
+  .s3d-cadre{position:relative;inset:auto;height:42vh;min-height:300px;max-height:440px;margin-top:4px}
   .commandes{padding:6px var(--marge) 26px;gap:10px}
   .jours{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--marge));padding:0 var(--marge)}
   .jours::-webkit-scrollbar{display:none}

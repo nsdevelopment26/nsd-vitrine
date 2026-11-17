@@ -46,11 +46,16 @@ const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 80);
 /* ------------------------------------------------------------ géométrie de la semaine */
 const COL = 1.82;            // écart entre deux jours
 const LARGE = 1.36;          // largeur d'un bloc
-const PAR_H = 0.62;          // profondeur d'une heure
-const H0 = 6.5 * 60, H1 = 21.5 * 60;
-const zDe = (m) => (m - (H0 + H1) / 2) / 60 * PAR_H;   // matin au fond (z négatif), soir devant
+/* Chaque cours d'une journée a sa rangée (le 1er cours du jour au fond, le
+   dernier devant). Une rangée est plus longue que le plus long bloc plus
+   l'ombre qu'un bloc haut projette à l'écran : aucun cours n'en masque un autre,
+   même quand deux cours se suivent à 15 minutes ou se chevauchent. */
+const RANG = 2.2;             // pas entre deux rangées
+const NRANG = Math.max(...[0, 1, 2, 3, 4, 5, 6].map((j) => P.COURS.filter((c) => c.j === j).length));
+const zRang = (i) => (i - (NRANG - 1) / 2) * RANG;
+const profDe = (min) => 0.62 + (min / 60) * 0.5;      // 30 min = 0,87 ; 60 min = 1,12
 const xDe = (j) => (j - 3) * COL;
-const hDe = (int) => 0.12 + int * 0.21;
+const hDe = (int) => 0.1 + int * 0.15;
 
 /* éclairage : un ciel chaud qui débouche les flancs (sinon l'ambre vire au brun),
    une clé de face à gauche, un contre-jour vermillon */
@@ -78,13 +83,13 @@ sol.receiveShadow = true;
 scene.add(sol);
 
 const traits = [];
-const zMin = zDe(H0), zMax = zDe(H1);
+const zMin = zRang(0) - RANG / 2, zMax = zRang(NRANG - 1) + RANG / 2;
 for (let j = 0; j <= 7; j++) {
   const x = (j - 3.5) * COL;
   traits.push(x, 0.002, zMin, x, 0.002, zMax);
 }
-for (let h = 7; h <= 21; h++) {
-  const z = zDe(h * 60);
+for (let i = 0; i <= NRANG; i++) {
+  const z = zMin + i * RANG;
   traits.push(-3.5 * COL, 0.002, z, 3.5 * COL, 0.002, z);
 }
 const grille = new THREE.LineSegments(
@@ -105,7 +110,7 @@ scene.add(bande);
 /* les blocs */
 const geo = new RoundedBoxGeometry(1, 1, 1, 4, 0.07);
 geo.translate(0, 0.5, 0);          // pivot au sol : on règle la hauteur par scale.y
-const gris = new THREE.Color(0x8c8480);   // un cours complet passe au gris chaud
+const gris = new THREE.Color(0xb3a9a3);   // un cours complet passe au gris chaud
 
 /* ombre de contact : une tache douce sous chaque bloc */
 const tacheTex = (() => {
@@ -118,39 +123,25 @@ const tacheTex = (() => {
 })();
 const tacheGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
 
-/* deux cours qui se chevauchent le même jour se rangent côte à côte */
-const couloirs = {};
+const rang = {};
 for (let j = 0; j < 7; j++) {
-  const jour = P.COURS.filter((c) => c.j === j).sort((a, b) => P.minutes(a.h) - P.minutes(b.h));
-  const fins = [];
-  jour.forEach((c) => {
-    const d = P.minutes(c.h);
-    let k = fins.findIndex((f) => f <= d);
-    if (k < 0) { k = fins.length; fins.push(0); }
-    fins[k] = d + c.min;
-    couloirs[c.id] = { k };
-  });
-  jour.forEach((c) => {
-    const d = P.minutes(c.h), f = d + c.min;
-    const n = 1 + jour.filter((o) => o !== c && P.minutes(o.h) < f && P.minutes(o.h) + o.min > d).length;
-    couloirs[c.id].n = Math.min(n, fins.length);
-  });
+  P.COURS.filter((c) => c.j === j).sort((a, b) => P.minutes(a.h) - P.minutes(b.h))
+    .forEach((c, i) => { rang[c.id] = i; });
 }
 const blocs = [];
 const groupe = new THREE.Group();
 scene.add(groupe);
 
 P.COURS.forEach((c) => {
-  const debut = P.minutes(c.h);
-  const prof = (c.min / 60) * PAR_H * 0.88;
+  const i = rang[c.id];
+  const prof = profDe(c.min);
   const base = new THREE.Color(P.FAMILLES[c.fam].couleur);
   const mat = new THREE.MeshStandardMaterial({ color: base.clone(), roughness: 0.46, metalness: 0.02, emissive: base.clone(), emissiveIntensity: 0.1, transparent: true });
   const m = new THREE.Mesh(geo, mat);
   m.castShadow = true; m.receiveShadow = true;
-  const { k, n } = couloirs[c.id];
-  const large = (LARGE - (n - 1) * 0.08) / n;
-  const x = xDe(c.j) - LARGE / 2 + large / 2 + k * (large + 0.08);
-  const z = zDe(debut) + prof / 2;
+  const large = LARGE;
+  const x = xDe(c.j);
+  const z = zRang(i);
   m.scale.set(large, 0.001, prof);
   m.position.set(x, 0, z);
   const tache = new THREE.Mesh(tacheGeo, new THREE.MeshBasicMaterial({ map: tacheTex, transparent: true, depthWrite: false, opacity: 0 }));
@@ -160,7 +151,7 @@ P.COURS.forEach((c) => {
   m.userData = {
     cours: c, base, haut: hDe(c.int), cible: hDe(c.int), h: 0, tache,
     semaine: { x, z, sx: large, sz: prof }, ici: { x, z, sx: large, sz: prof },
-    visible: 1, lev: 0, levCible: 0, retard: (c.j * 0.09 + (debut - H0) / 900 * 0.35)
+    visible: 1, lev: 0, levCible: 0, retard: (c.j * 0.09 + i * 0.12)
   };
   groupe.add(m);
   blocs.push(m);
@@ -184,7 +175,7 @@ function teinte(m) {
   const mat = m.material;
   mat.color.copy(m.userData.base);
   const plein = reste === 0 && !P.reserve(c.id);
-  if (plein) mat.color.lerp(gris, 0.88);
+  if (plein) mat.color.lerp(gris, 0.92);
   m.userData.plein = plein;
   mat.emissive.copy(mat.color);
   mat.emissiveIntensity = P.reserve(c.id) ? 0.32 : (plein ? 0.04 : 0.1);
@@ -256,13 +247,6 @@ P.COURTS.forEach((nom, j) => {
   calques.appendChild(e);
   etiquettes.push({ e, v: new THREE.Vector3(xDe(j), 0, zMax + 0.55) });
 });
-[7, 12, 18, 21].forEach((h) => {
-  const e = document.createElement('span');
-  e.className = 's3d-heure';
-  e.textContent = String(h).padStart(2, '0') + ' h';
-  calques.appendChild(e);
-  etiquettes.push({ e, v: new THREE.Vector3(3.5 * COL + 0.6, 0, zDe(h * 60)) });
-});
 blocs.forEach((b) => {
   const e = document.createElement('span');
   e.className = 's3d-bloc';
@@ -278,17 +262,17 @@ function projeter(v) {
 function placerEtiquettes() {
   const mobJour = estMobile() && jourVise >= 0;
   calques.classList.toggle('mob-jour', mobJour);
-  if (mobJour) {
-    blocs.forEach((b) => {
-      const e = b.userData.etiq;
-      if (b.userData.horsJour) { e.style.opacity = '0'; return; }
-      tmp.set(b.position.x, 0, b.position.z + b.scale.z / 2 + 0.25);
-      const p = projeter(tmp);
-      e.style.opacity = '1';
-      e.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) translate(-50%,0)`;
-    });
-    return;
-  }
+  /* l'heure de chaque cours, posée au sol juste devant son bloc */
+  blocs.forEach((b) => {
+    const e = b.userData.etiq;
+    const o = b.userData.horsJour || !b.userData.visible ? 0 : b.material.opacity * Math.min(1, b.scale.y * 4);
+    if (o < 0.05) { e.style.opacity = '0'; return; }
+    tmp.set(b.position.x, 0, b.position.z + b.scale.z / 2 + (mobJour ? 0.25 : 0.12));
+    const p = projeter(tmp);
+    e.style.opacity = (b.userData.plein && (jourVise < 0 || b.userData.cours.j === jourVise) ? Math.max(o, 0.8) : o).toFixed(2);
+    e.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) translate(-50%,0)`;
+  });
+  if (mobJour) return;
   etiquettes.forEach(({ e, v }) => {
     const p = projeter(v);
     e.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) translate(-50%,-50%)`;
@@ -382,7 +366,7 @@ function image(maintenant) {
   blocs.forEach((m) => {
     const u = m.userData;
     const m0 = clamp((montee * 1.6 - u.retard), 0, 1);
-    const cible = (u.horsJour ? 0.001 : u.visible ? u.cible : 0.05) * ioc(m0);
+    const cible = (u.horsJour ? 0.001 : u.visible ? u.cible * (estMobile() && jourVise >= 0 ? 1.8 : 1) : 0.05) * ioc(m0);
     const avX = m.position.x;
     m.position.x = amortir(m.position.x, u.ici.x, 7, dt);
     m.position.z = amortir(m.position.z, u.ici.z, 7, dt);
@@ -399,7 +383,7 @@ function image(maintenant) {
     }
     m.scale.y = Math.max(0.001, u.h + coup);
     m.position.y = u.lev * 0.14;
-    const opa = (u.horsJour ? 0 : !u.visible ? 0.35 : (jourVise < 0 || u.cours.j === jourVise ? 1 : 0.12)) * (u.plein ? 0.6 : 1);
+    const opa = (u.horsJour ? 0 : !u.visible ? 0.35 : (jourVise < 0 || u.cours.j === jourVise ? 1 : 0.12)) * (u.plein ? 0.42 : 1);
     const t = u.tache;
     t.position.x = m.position.x; t.position.z = m.position.z;
     t.scale.set(m.scale.x + 0.55, 1, m.scale.z + 0.55);
