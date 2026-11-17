@@ -55,7 +55,7 @@ h1,h2,h3{font-weight:300;line-height:1;letter-spacing:-.03em;font-stretch:118%}
   transform:translateY(-21vh);opacity:0;transition:opacity 1s .6s}
 .intro.marque .intro-sous{opacity:1}
 .intro.sort .intro-marque,.intro.sort .intro-sous{opacity:0;transition:opacity .6s}
-.intro-passer{position:absolute;right:var(--marge);bottom:calc(28px + env(safe-area-inset-bottom));pointer-events:auto;
+.intro-passer{position:absolute;left:var(--marge);bottom:calc(28px + env(safe-area-inset-bottom));pointer-events:auto;
   font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--texte2);
   padding:12px 2px;border-bottom:1px solid var(--ligne2);transition:color .3s,border-color .3s}
 .intro-passer:hover{color:var(--blanc);border-color:var(--xenon)}
@@ -318,10 +318,12 @@ h1,h2,h3{font-weight:300;line-height:1;letter-spacing:-.03em;font-stretch:118%}
 .g-num small{font-size:.16em;font-weight:400;letter-spacing:0;font-family:var(--mono);color:var(--argent);margin-left:.3em}
 .g-txt h3{font-size:clamp(22px,2vw,30px);font-weight:400;letter-spacing:-.015em;line-height:1.15}
 .g-txt p{color:var(--texte2);margin-top:12px;max-width:44ch}
-.g-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:clamp(40px,7vh,80px)}
-.g-mini div{display:flex;flex-direction:column-reverse;gap:6px}
-.g-mini dd{font-family:var(--mono);font-size:clamp(34px,3.6vw,56px);letter-spacing:-.04em;line-height:1;color:var(--blanc)}
-.g-mini dt{font-size:14px;color:var(--texte2)}
+.g-mini{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:clamp(40px,7vh,80px)}
+.g-mini li{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--texte2)}
+.g-mini b{font-size:clamp(24px,2.4vw,36px);font-weight:300;letter-spacing:-.02em;line-height:1.05;color:var(--blanc)}
+.avis-note{font-family:var(--mono);font-stretch:82%;font-size:12px;color:var(--texte2);margin-top:14px}
+.concept{font-family:var(--mono);font-stretch:82%;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--xenon);
+  border:1px solid rgba(217,232,255,.4);border-radius:999px;padding:5px 10px;line-height:1}
 
 /* ----------------------------------------------------------------- avis */
 .avis{padding:clamp(80px,12vh,140px) var(--marge)}

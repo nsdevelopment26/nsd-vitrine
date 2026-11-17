@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="motorline.css">
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js" crossorigin>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"AutoDealer","name":"MOTORLINE","description":"Automobiles premium et atelier toutes marques (démonstration NS Development).","telephone":"+352 00 00 00","email":"contact@motorline.example","address":{"@type":"PostalAddress","streetAddress":"Rue à compléter","postalCode":"L-0000","addressLocality":"Luxembourg","addressCountry":"LU"},"openingHours":["Mo-Fr 08:00-18:00","Sa 09:00-13:00"]}
+{"@context":"https://schema.org","@type":"AutoDealer","name":"MOTORLINE","description":"Automobiles premium et atelier toutes marques (démonstration NS Development).","telephone":"+352 00 00 00 00","email":"contact@motorline.example","address":{"@type":"PostalAddress","streetAddress":"Rue à compléter","postalCode":"L-0000","addressLocality":"Luxembourg","addressCountry":"LU"},"openingHours":["Mo-Fr 08:00-18:00","Sa 09:00-13:00"]}
 </script>
 <script>
   /* Avant tout affichage : on décide si l'intro se joue, pour qu'aucune image
@@ -44,9 +44,9 @@
 <canvas id="scene" aria-hidden="true"></canvas>
 <div class="scene-repli" aria-hidden="true"></div>
 
-<div class="intro" id="intro" aria-hidden="true">
-  <p class="intro-marque"><span>M</span><span>O</span><span>T</span><span>O</span><span>R</span><span>L</span><span>I</span><span>N</span><span>E</span></p>
-  <p class="intro-sous">Luxembourg · depuis 2006</p>
+<div class="intro" id="intro">
+  <p class="intro-marque" aria-hidden="true"><span>M</span><span>O</span><span>T</span><span>O</span><span>R</span><span>L</span><span>I</span><span>N</span><span>E</span></p>
+  <p class="intro-sous" aria-hidden="true">Luxembourg · showroom &amp; atelier</p>
   <button type="button" class="intro-passer" id="intro-passer">Passer l'intro</button>
 </div>
 
@@ -62,6 +62,7 @@
     <a href="#garage">Le garage</a>
   </nav>
   <div class="nav-fin">
+    <span class="concept" title="Maquette de démonstration NS Development : nom, véhicules et tarifs fictifs">Concept</span>
     <a href="#collection" class="nav-stock"><span class="pt" aria-hidden="true"></span>Stock <b>15</b></a>
     <a href="#contact" class="nav-contact">Contact</a>
     <button type="button" class="hamb" id="hamb" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
@@ -78,7 +79,7 @@
     <a href="#garage"><small>04</small>Le garage</a>
     <a href="#contact"><small>05</small>Contact</a>
     <div class="menu-pied">
-      <a href="tel:+35200000000">+352 00 00 00</a>
+      <a href="tel:+35200000000">+352 00 00 00 00</a>
       <span>Lun – ven 8 h – 18 h · sam 9 h – 13 h</span>
     </div>
   </nav>
@@ -152,8 +153,8 @@
 <!-- CATALOGUE:DEBUT -->
     <article class="auto" id="v1" data-seg="coupe" data-carb="essence"
       data-boite="Automatique" data-prix="46900" data-km="68000" data-an="2020" data-ch="435"
-      data-fiche='{"titre": "Coupé grand tourisme V8", "photo": "photos/hero-coupe.jpg", "alt": "Coupé grand tourisme noir, trois quarts arrière, de nuit", "an": 2020, "km": 68000, "prix": 46900, "ch": 435, "carb": "Essence", "boite": "Automatique", "coul": "Noir obsidienne", "portes": 2, "places": 4, "conso": "11,2 L/100 km", "co2": "262 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Rentrée en reprise chez un client de l&#39;atelier. Suspension pneumatique refaite, freins neufs, carnet complet tamponné chez la marque depuis le premier jour.", "equip": "Sièges ventilés · Toit ouvrant · Système audio haut de gamme · Affichage tête haute · Jantes 20\" · Caméra 360°", "mens": 710}'>
-      <figure class="auto-ph"><img src="photos/hero-coupe.jpg" alt="Coupé grand tourisme noir, trois quarts arrière, de nuit" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Coupé grand tourisme V8", "photo": "photos/ml-v1.jpg", "alt": "Coupé grand tourisme noir vu de trois quarts arrière dans un showroom sombre", "an": 2020, "km": 68000, "prix": 46900, "ch": 435, "carb": "Essence", "boite": "Automatique", "coul": "Noir obsidienne", "portes": 2, "places": 4, "conso": "11,2 L/100 km", "co2": "262 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Rentrée en reprise chez un client de l&#39;atelier. Suspension pneumatique refaite, freins neufs, carnet complet tamponné chez la marque depuis le premier jour.", "equip": "Sièges ventilés · Toit ouvrant · Système audio haut de gamme · Affichage tête haute · Jantes 20\" · Caméra 360°", "mens": 710}'>
+      <figure class="auto-ph"><img src="photos/ml-v1.jpg" alt="Coupé grand tourisme noir vu de trois quarts arrière dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">01</span><span class="auto-badge">Coup de cœur</span></p>
         <h3>Coupé grand tourisme V8</h3>
@@ -164,8 +165,8 @@
     </article>
     <article class="auto" id="v2" data-seg="suv" data-carb="essence"
       data-boite="Automatique" data-prix="98500" data-km="39500" data-an="2022" data-ch="612"
-      data-fiche='{"titre": "SUV coupé V8 biturbo", "photo": "photos/suv-coupe.jpg", "alt": "SUV coupé noir vu de l&#39;arrière dans un showroom", "an": 2022, "km": 39500, "prix": 98500, "ch": 612, "carb": "Essence", "boite": "Automatique", "coul": "Noir magnétite", "portes": 5, "places": 5, "conso": "12,8 L/100 km", "co2": "291 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Configuration rare : pack nuit complet, freinage haute performance et différentiel arrière piloté. Quatre pneus neufs posés avant la mise en vente.", "equip": "Pack nuit · Échappement sport · Sièges baquets · Toit panoramique · Attelage électrique · Jantes 22\"", "mens": 1480}'>
-      <figure class="auto-ph"><img src="photos/suv-coupe.jpg" alt="SUV coupé noir vu de l'arrière dans un showroom" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "SUV coupé V8 biturbo", "photo": "photos/ml-v2.jpg", "alt": "SUV coupé noir de trois quarts avant, phares allumés, de nuit devant un bâtiment de béton", "an": 2022, "km": 39500, "prix": 98500, "ch": 612, "carb": "Essence", "boite": "Automatique", "coul": "Noir magnétite", "portes": 5, "places": 5, "conso": "12,8 L/100 km", "co2": "291 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Configuration rare : pack nuit complet, freinage haute performance et différentiel arrière piloté. Quatre pneus neufs posés avant la mise en vente.", "equip": "Pack nuit · Échappement sport · Sièges baquets · Toit panoramique · Attelage électrique · Jantes 22\"", "mens": 1480}'>
+      <figure class="auto-ph"><img src="photos/ml-v2.jpg" alt="SUV coupé noir de trois quarts avant, phares allumés, de nuit devant un bâtiment de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">02</span><span class="auto-badge">Arrivage</span></p>
         <h3>SUV coupé V8 biturbo</h3>
@@ -176,8 +177,8 @@
     </article>
     <article class="auto" id="v3" data-seg="berline" data-carb="hybride"
       data-boite="Automatique" data-prix="89900" data-km="28400" data-an="2023" data-ch="381"
-      data-fiche='{"titre": "Berline de direction hybride", "photo": "photos/berline-direction.jpg", "alt": "Berline de direction noire sur un chemin couvert de feuilles", "an": 2023, "km": 28400, "prix": 89900, "ch": 381, "carb": "Hybride rechargeable", "boite": "Automatique", "coul": "Noir minuit", "portes": 4, "places": 5, "conso": "2,1 L/100 km", "co2": "48 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Hybride rechargeable : environ 90 km en tout électrique au quotidien, le thermique pour les longs trajets. Idéale en voiture de société au Luxembourg.", "equip": "Sièges massants · Suspension pilotée · Conduite semi-autonome · Câble de recharge mode 3 · Éclairage d&#39;ambiance · Vitres feuilletées", "mens": 1350}'>
-      <figure class="auto-ph"><img src="photos/berline-direction.jpg" alt="Berline de direction noire sur un chemin couvert de feuilles" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Berline de direction hybride", "photo": "photos/ml-v3.jpg", "alt": "Berline de direction noire de profil dans un showroom sombre", "an": 2023, "km": 28400, "prix": 89900, "ch": 381, "carb": "Hybride rechargeable", "boite": "Automatique", "coul": "Noir minuit", "portes": 4, "places": 5, "conso": "2,1 L/100 km", "co2": "48 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Hybride rechargeable : environ 90 km en tout électrique au quotidien, le thermique pour les longs trajets. Idéale en voiture de société au Luxembourg.", "equip": "Sièges massants · Suspension pilotée · Conduite semi-autonome · Câble de recharge mode 3 · Éclairage d&#39;ambiance · Vitres feuilletées", "mens": 1350}'>
+      <figure class="auto-ph"><img src="photos/ml-v3.jpg" alt="Berline de direction noire de profil dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">03</span><span class="auto-badge">Première main</span></p>
         <h3>Berline de direction hybride</h3>
@@ -188,8 +189,8 @@
     </article>
     <article class="auto" id="v4" data-seg="suv" data-carb="essence"
       data-boite="Automatique" data-prix="79500" data-km="44800" data-an="2022" data-ch="426"
-      data-fiche='{"titre": "Grand SUV 7 places", "photo": "photos/suv-7places.jpg", "alt": "Grand SUV bleu vu de profil en ville", "an": 2022, "km": 44800, "prix": 79500, "ch": 426, "carb": "Essence", "boite": "Automatique", "coul": "Bleu nuit métallisé", "portes": 5, "places": 7, "conso": "13,4 L/100 km", "co2": "304 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Le vrai sept places : la troisième rangée accueille des adultes, et le coffre reste utilisable derrière. Sièges chauffants sur les deux premières rangées.", "equip": "7 vraies places · Hayon mains libres · Sièges chauffants · Écrans arrière · Suspension pneumatique · Caméra de recul", "mens": 1200}'>
-      <figure class="auto-ph"><img src="photos/suv-7places.jpg" alt="Grand SUV bleu vu de profil en ville" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Grand SUV 7 places", "photo": "photos/ml-v4.jpg", "alt": "Grand SUV sept places bleu nuit de trois quarts avant, de nuit devant un bâtiment de béton", "an": 2022, "km": 44800, "prix": 79500, "ch": 426, "carb": "Essence", "boite": "Automatique", "coul": "Bleu nuit métallisé", "portes": 5, "places": 7, "conso": "13,4 L/100 km", "co2": "304 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Le vrai sept places : la troisième rangée accueille des adultes, et le coffre reste utilisable derrière. Sièges chauffants sur les deux premières rangées.", "equip": "7 vraies places · Hayon mains libres · Sièges chauffants · Écrans arrière · Suspension pneumatique · Caméra de recul", "mens": 1200}'>
+      <figure class="auto-ph"><img src="photos/ml-v4.jpg" alt="Grand SUV sept places bleu nuit de trois quarts avant, de nuit devant un bâtiment de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">04</span></p>
         <h3>Grand SUV 7 places</h3>
@@ -200,8 +201,8 @@
     </article>
     <article class="auto" id="v5" data-seg="4x4" data-carb="essence"
       data-boite="Automatique" data-prix="124900" data-km="52000" data-an="2021" data-ch="585"
-      data-fiche='{"titre": "4×4 statutaire V8", "photo": "photos/tout-terrain-blanc.jpg", "alt": "Tout-terrain blanc vu de l&#39;arrière sur une route de montagne", "an": 2021, "km": 52000, "prix": 124900, "ch": 585, "carb": "Essence", "boite": "Automatique", "coul": "Blanc nacré", "portes": 5, "places": 5, "conso": "14,1 L/100 km", "co2": "322 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Préparation complète d&#39;origine atelier spécialisé : échappement, jantes et intérieur cuir sur mesure. Trois blocages de différentiel toujours fonctionnels.", "equip": "3 blocages de différentiel · Cuir sur mesure · Échappement sport · Jantes 23\" · Sièges chauffants et ventilés · Caméra 360°", "mens": 1880}'>
-      <figure class="auto-ph"><img src="photos/tout-terrain-blanc.jpg" alt="Tout-terrain blanc vu de l'arrière sur une route de montagne" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "4×4 statutaire V8", "photo": "photos/ml-v5.jpg", "alt": "Tout-terrain blanc nacré vu de trois quarts arrière dans un showroom sombre", "an": 2021, "km": 52000, "prix": 124900, "ch": 585, "carb": "Essence", "boite": "Automatique", "coul": "Blanc nacré", "portes": 5, "places": 5, "conso": "14,1 L/100 km", "co2": "322 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Préparation complète d&#39;origine atelier spécialisé : échappement, jantes et intérieur cuir sur mesure. Trois blocages de différentiel toujours fonctionnels.", "equip": "3 blocages de différentiel · Cuir sur mesure · Échappement sport · Jantes 23\" · Sièges chauffants et ventilés · Caméra 360°", "mens": 1880}'>
+      <figure class="auto-ph"><img src="photos/ml-v5.jpg" alt="Tout-terrain blanc nacré vu de trois quarts arrière dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">05</span><span class="auto-badge">Rare</span></p>
         <h3>4×4 statutaire V8</h3>
@@ -212,8 +213,8 @@
     </article>
     <article class="auto" id="v6" data-seg="4x4" data-carb="diesel"
       data-boite="Manuelle" data-prix="68000" data-km="96000" data-an="2016" data-ch="200"
-      data-fiche='{"titre": "4×4 tout-terrain préparé", "photo": "photos/tout-terrain-noir.jpg", "alt": "Tout-terrain noir surélevé devant un hangar", "an": 2016, "km": 96000, "prix": 68000, "ch": 200, "carb": "Diesel", "boite": "Manuelle", "coul": "Gris basalte", "portes": 3, "places": 4, "conso": "10,8 L/100 km", "co2": "285 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Châssis sain, contrôlé point par point et traité anticorrosion chez nous. Le genre de voiture qui prend de la valeur si on l&#39;entretient, pas l&#39;inverse.", "equip": "Suspension rehaussée · Treuil · Pneus tout-terrain neufs · Snorkel · Sièges chauffants · Traitement anticorrosion", "mens": 1020}'>
-      <figure class="auto-ph"><img src="photos/tout-terrain-noir.jpg" alt="Tout-terrain noir surélevé devant un hangar" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "4×4 tout-terrain préparé", "photo": "photos/ml-v6.jpg", "alt": "4×4 trois portes gris préparé pour le tout-terrain, de nuit devant un mur de béton", "an": 2016, "km": 96000, "prix": 68000, "ch": 200, "carb": "Diesel", "boite": "Manuelle", "coul": "Gris basalte", "portes": 3, "places": 4, "conso": "10,8 L/100 km", "co2": "285 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Châssis sain, contrôlé point par point et traité anticorrosion chez nous. Le genre de voiture qui prend de la valeur si on l&#39;entretient, pas l&#39;inverse.", "equip": "Suspension rehaussée · Treuil · Pneus tout-terrain neufs · Snorkel · Sièges chauffants · Traitement anticorrosion", "mens": 1020}'>
+      <figure class="auto-ph"><img src="photos/ml-v6.jpg" alt="4×4 trois portes gris préparé pour le tout-terrain, de nuit devant un mur de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">06</span></p>
         <h3>4×4 tout-terrain préparé</h3>
@@ -224,8 +225,8 @@
     </article>
     <article class="auto" id="v7" data-seg="4x4" data-carb="essence"
       data-boite="Automatique" data-prix="52900" data-km="61300" data-an="2021" data-ch="272"
-      data-fiche='{"titre": "4×4 baroudeur 4 portes", "photo": "photos/baroudeur.jpg", "alt": "4×4 baroudeur couvert de boue au bord d&#39;une flaque", "an": 2021, "km": 61300, "prix": 52900, "ch": 272, "carb": "Essence", "boite": "Automatique", "coul": "Gris granit", "portes": 5, "places": 5, "conso": "11,4 L/100 km", "co2": "259 g/km", "mains": "1re main", "ct": "Vierge, valable 1 an", "note": "Toit et portes démontables, comme il se doit. Révision complète faite, boîte de transfert vérifiée, et un jeu de pneus route fourni avec.", "equip": "Toit démontable · Portes démontables · 4 roues motrices enclenchables · Pneus tout-terrain · Arceau · Pneus route fournis", "mens": 800}'>
-      <figure class="auto-ph"><img src="photos/baroudeur.jpg" alt="4×4 baroudeur couvert de boue au bord d'une flaque" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "4×4 baroudeur 4 portes", "photo": "photos/ml-v7.jpg", "alt": "4×4 quatre portes gris granit de profil, de nuit devant un mur de béton", "an": 2021, "km": 61300, "prix": 52900, "ch": 272, "carb": "Essence", "boite": "Automatique", "coul": "Gris granit", "portes": 5, "places": 5, "conso": "11,4 L/100 km", "co2": "259 g/km", "mains": "1re main", "ct": "Vierge, valable 1 an", "note": "Toit et portes démontables, comme il se doit. Révision complète faite, boîte de transfert vérifiée, et un jeu de pneus route fourni avec.", "equip": "Toit démontable · Portes démontables · 4 roues motrices enclenchables · Pneus tout-terrain · Arceau · Pneus route fournis", "mens": 800}'>
+      <figure class="auto-ph"><img src="photos/ml-v7.jpg" alt="4×4 quatre portes gris granit de profil, de nuit devant un mur de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">07</span></p>
         <h3>4×4 baroudeur 4 portes</h3>
@@ -236,8 +237,8 @@
     </article>
     <article class="auto" id="v8" data-seg="coupe" data-carb="essence"
       data-boite="Automatique" data-prix="54900" data-km="47200" data-an="2019" data-ch="300"
-      data-fiche='{"titre": "Coupé sportif 4 cylindres", "photo": "photos/coupe-sport.jpg", "alt": "Coupé sportif gris photographié au coucher du soleil", "an": 2019, "km": 47200, "prix": 54900, "ch": 300, "carb": "Essence", "boite": "Automatique", "coul": "Gris agate", "portes": 2, "places": 2, "conso": "8,9 L/100 km", "co2": "203 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Moteur central, châssis sain, jamais sortie sur circuit. Le coupé à conduire tous les jours sans le budget d&#39;une voiture de collection.", "equip": "Pack châssis sport · Sièges sport · Échappement sport · Jantes 20\" · Régulateur adaptatif · Apple CarPlay", "mens": 830}'>
-      <figure class="auto-ph"><img src="photos/coupe-sport.jpg" alt="Coupé sportif gris photographié au coucher du soleil" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Coupé sportif 4 cylindres", "photo": "photos/ml-v8.jpg", "alt": "Coupé sportif gris de trois quarts avant, phares allumés, dans un showroom sombre", "an": 2019, "km": 47200, "prix": 54900, "ch": 300, "carb": "Essence", "boite": "Automatique", "coul": "Gris agate", "portes": 2, "places": 2, "conso": "8,9 L/100 km", "co2": "203 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Moteur central, châssis sain, jamais sortie sur circuit. Le coupé à conduire tous les jours sans le budget d&#39;une voiture de collection.", "equip": "Pack châssis sport · Sièges sport · Échappement sport · Jantes 20\" · Régulateur adaptatif · Apple CarPlay", "mens": 830}'>
+      <figure class="auto-ph"><img src="photos/ml-v8.jpg" alt="Coupé sportif gris de trois quarts avant, phares allumés, dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">08</span></p>
         <h3>Coupé sportif 4 cylindres</h3>
@@ -260,8 +261,8 @@
     </article>
     <article class="auto" id="v10" data-seg="break" data-carb="essence"
       data-boite="Automatique" data-prix="69900" data-km="78500" data-an="2019" data-ch="560"
-      data-fiche='{"titre": "Break sportif V8", "photo": "photos/break-premium.jpg", "alt": "Break sportif argent garé le long d&#39;un bâtiment", "an": 2019, "km": 78500, "prix": 69900, "ch": 560, "carb": "Essence", "boite": "Automatique", "coul": "Argent nardo", "portes": 5, "places": 5, "conso": "11,6 L/100 km", "co2": "263 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "La voiture qui fait tout : 560 chevaux devant, 550 litres de coffre derrière. Chaîne de distribution et embrayage vérifiés, suspension pneumatique refaite.", "equip": "Suspension pneumatique · Quatre roues directrices · Coffre 550 L · Attelage · Sièges sport chauffants · Jantes 21\"", "mens": 1050}'>
-      <figure class="auto-ph"><img src="photos/break-premium.jpg" alt="Break sportif argent garé le long d'un bâtiment" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Break sportif V8", "photo": "photos/ml-v10.jpg", "alt": "Break sportif gris argent de profil, de nuit devant un bâtiment de béton", "an": 2019, "km": 78500, "prix": 69900, "ch": 560, "carb": "Essence", "boite": "Automatique", "coul": "Argent nardo", "portes": 5, "places": 5, "conso": "11,6 L/100 km", "co2": "263 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "La voiture qui fait tout : 560 chevaux devant, 550 litres de coffre derrière. Chaîne de distribution et embrayage vérifiés, suspension pneumatique refaite.", "equip": "Suspension pneumatique · Quatre roues directrices · Coffre 550 L · Attelage · Sièges sport chauffants · Jantes 21\"", "mens": 1050}'>
+      <figure class="auto-ph"><img src="photos/ml-v10.jpg" alt="Break sportif gris argent de profil, de nuit devant un bâtiment de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">10</span></p>
         <h3>Break sportif V8</h3>
@@ -272,8 +273,8 @@
     </article>
     <article class="auto" id="v11" data-seg="suv" data-carb="essence"
       data-boite="Automatique" data-prix="189000" data-km="31600" data-an="2022" data-ch="650"
-      data-fiche='{"titre": "SUV grand format V8", "photo": "photos/suv-grand.jpg", "alt": "SUV grand format gris garé face à un port", "an": 2022, "km": 31600, "prix": 189000, "ch": 650, "carb": "Essence", "boite": "Automatique", "coul": "Gris titane mat", "portes": 5, "places": 5, "conso": "12,7 L/100 km", "co2": "325 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Le SUV le plus rapide du stock, et le plus confortable. Carnet complet, quatre pneus neufs, freins carbone-céramique contrôlés à 80 % restants.", "equip": "Freins carbone-céramique · Peinture mate · Cuir bicolore · Toit carbone · Échappement sport · Jantes 23\"", "mens": 2850}'>
-      <figure class="auto-ph"><img src="photos/suv-grand.jpg" alt="SUV grand format gris garé face à un port" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "SUV grand format V8", "photo": "photos/ml-v11.jpg", "alt": "Grand SUV gris titane mat de face, bandeau lumineux allumé, dans un showroom sombre", "an": 2022, "km": 31600, "prix": 189000, "ch": 650, "carb": "Essence", "boite": "Automatique", "coul": "Gris titane mat", "portes": 5, "places": 5, "conso": "12,7 L/100 km", "co2": "325 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Le SUV le plus rapide du stock, et le plus confortable. Carnet complet, quatre pneus neufs, freins carbone-céramique contrôlés à 80 % restants.", "equip": "Freins carbone-céramique · Peinture mate · Cuir bicolore · Toit carbone · Échappement sport · Jantes 23\"", "mens": 2850}'>
+      <figure class="auto-ph"><img src="photos/ml-v11.jpg" alt="Grand SUV gris titane mat de face, bandeau lumineux allumé, dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">11</span><span class="auto-badge">Pièce d'exception</span></p>
         <h3>SUV grand format V8</h3>
@@ -284,8 +285,8 @@
     </article>
     <article class="auto" id="v12" data-seg="berline" data-carb="diesel"
       data-boite="Automatique" data-prix="34900" data-km="84000" data-an="2021" data-ch="190"
-      data-fiche='{"titre": "Berline coupé 4 portes", "photo": "photos/berline-noire.jpg", "alt": "Berline noire de face, portes ouvertes, dans un garage", "an": 2021, "km": 84000, "prix": 34900, "ch": 190, "carb": "Diesel", "boite": "Automatique", "coul": "Noir saphir", "portes": 4, "places": 5, "conso": "5,4 L/100 km", "co2": "142 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "L&#39;entrée dans le premium sans se tromper : diesel moderne, boîte automatique, consommation réelle autour de 6 litres. Filtre à particules contrôlé, pas de colmatage.", "equip": "Pack intérieur cuir · Régulateur adaptatif · Caméra de recul · Sièges chauffants · Jantes 19\" · Apple CarPlay", "mens": 530}'>
-      <figure class="auto-ph"><img src="photos/berline-noire.jpg" alt="Berline noire de face, portes ouvertes, dans un garage" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Berline coupé 4 portes", "photo": "photos/ml-v12.jpg", "alt": "Berline coupé quatre portes noire vue de trois quarts arrière, de nuit devant un bâtiment de béton", "an": 2021, "km": 84000, "prix": 34900, "ch": 190, "carb": "Diesel", "boite": "Automatique", "coul": "Noir saphir", "portes": 4, "places": 5, "conso": "5,4 L/100 km", "co2": "142 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "L&#39;entrée dans le premium sans se tromper : diesel moderne, boîte automatique, consommation réelle autour de 6 litres. Filtre à particules contrôlé, pas de colmatage.", "equip": "Pack intérieur cuir · Régulateur adaptatif · Caméra de recul · Sièges chauffants · Jantes 19\" · Apple CarPlay", "mens": 530}'>
+      <figure class="auto-ph"><img src="photos/ml-v12.jpg" alt="Berline coupé quatre portes noire vue de trois quarts arrière, de nuit devant un bâtiment de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">12</span></p>
         <h3>Berline coupé 4 portes</h3>
@@ -296,8 +297,8 @@
     </article>
     <article class="auto" id="v13" data-seg="cabriolet" data-carb="essence"
       data-boite="Automatique" data-prix="94500" data-km="58700" data-an="2014" data-ch="573"
-      data-fiche='{"titre": "Cabriolet V12", "photo": "photos/cabriolet.jpg", "alt": "Cabriolet blanc capote ouverte, garé sous les arbres", "an": 2014, "km": 58700, "prix": 94500, "ch": 573, "carb": "Essence", "boite": "Automatique", "coul": "Blanc perle", "portes": 2, "places": 4, "conso": "14,7 L/100 km", "co2": "343 g/km", "mains": "3 mains", "ct": "Vierge, valable 2 ans", "note": "Capote électrique révisée et regarnie cette année. Un V12 atmosphérique bien entretenu ne se déprécie plus vraiment : celui-ci a son historique complet.", "equip": "Capote électrique refaite · Cuir semi-aniline · Échappement sport · Jantes forgées · Historique complet · Housse fournie", "mens": 1420}'>
-      <figure class="auto-ph"><img src="photos/cabriolet.jpg" alt="Cabriolet blanc capote ouverte, garé sous les arbres" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Cabriolet V12", "photo": "photos/ml-v13.jpg", "alt": "Cabriolet blanc perle capote baissée, de nuit devant un bâtiment de béton", "an": 2014, "km": 58700, "prix": 94500, "ch": 573, "carb": "Essence", "boite": "Automatique", "coul": "Blanc perle", "portes": 2, "places": 4, "conso": "14,7 L/100 km", "co2": "343 g/km", "mains": "3 mains", "ct": "Vierge, valable 2 ans", "note": "Capote électrique révisée et regarnie cette année. Un V12 atmosphérique bien entretenu ne se déprécie plus vraiment : celui-ci a son historique complet.", "equip": "Capote électrique refaite · Cuir semi-aniline · Échappement sport · Jantes forgées · Historique complet · Housse fournie", "mens": 1420}'>
+      <figure class="auto-ph"><img src="photos/ml-v13.jpg" alt="Cabriolet blanc perle capote baissée, de nuit devant un bâtiment de béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">13</span><span class="auto-badge">Collection</span></p>
         <h3>Cabriolet V12</h3>
@@ -308,8 +309,8 @@
     </article>
     <article class="auto" id="v14" data-seg="coupe" data-carb="essence"
       data-boite="Manuelle" data-prix="39900" data-km="42000" data-an="2019" data-ch="344"
-      data-fiche='{"titre": "Coupé sportif 6 cylindres", "photo": "photos/sportive.jpg", "alt": "Coupé sportif blanc garé dans un parking en béton", "an": 2019, "km": 42000, "prix": 39900, "ch": 344, "carb": "Essence", "boite": "Manuelle", "coul": "Blanc glacier", "portes": 2, "places": 2, "conso": "10,4 L/100 km", "co2": "238 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Six cylindres atmosphérique et boîte manuelle : ça ne se fabrique plus. Embrayage et volant moteur remplacés à 39 000 km, facture à l&#39;appui.", "equip": "Boîte manuelle 6 rapports · Différentiel autobloquant · Freins surdimensionnés · Sièges sport · Jantes forgées · Embrayage neuf", "mens": 600}'>
-      <figure class="auto-ph"><img src="photos/sportive.jpg" alt="Coupé sportif blanc garé dans un parking en béton" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Coupé sportif 6 cylindres", "photo": "photos/ml-v14.jpg", "alt": "Coupé sportif blanc de profil dans un showroom sombre", "an": 2019, "km": 42000, "prix": 39900, "ch": 344, "carb": "Essence", "boite": "Manuelle", "coul": "Blanc glacier", "portes": 2, "places": 2, "conso": "10,4 L/100 km", "co2": "238 g/km", "mains": "2 mains", "ct": "Vierge, valable 2 ans", "note": "Six cylindres atmosphérique et boîte manuelle : ça ne se fabrique plus. Embrayage et volant moteur remplacés à 39 000 km, facture à l&#39;appui.", "equip": "Boîte manuelle 6 rapports · Différentiel autobloquant · Freins surdimensionnés · Sièges sport · Jantes forgées · Embrayage neuf", "mens": 600}'>
+      <figure class="auto-ph"><img src="photos/ml-v14.jpg" alt="Coupé sportif blanc de profil dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">14</span><span class="auto-badge">Boîte manuelle</span></p>
         <h3>Coupé sportif 6 cylindres</h3>
@@ -320,8 +321,8 @@
     </article>
     <article class="auto" id="v15" data-seg="berline" data-carb="electrique"
       data-boite="Automatique" data-prix="42900" data-km="56200" data-an="2021" data-ch="408"
-      data-fiche='{"titre": "Berline électrique grande autonomie", "photo": "photos/electrique.jpg", "alt": "Berline électrique noire sur un parking humide", "an": 2021, "km": 56200, "prix": 42900, "ch": 408, "carb": "Électrique", "boite": "Automatique", "coul": "Noir uni", "portes": 5, "places": 5, "conso": "18,9 kWh/100 km", "co2": "0 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Santé de batterie mesurée à 94 % et rapport remis avec la voiture : c&#39;est le seul chiffre qui compte sur une électrique d&#39;occasion. Recharge rapide jusqu&#39;à 150 kW.", "equip": "Batterie contrôlée 94 % · Recharge rapide 150 kW · Conduite assistée · Pompe à chaleur · Câble mode 3 fourni · Jantes 19\"", "mens": 650}'>
-      <figure class="auto-ph"><img src="photos/electrique.jpg" alt="Berline électrique noire sur un parking humide" loading="lazy" decoding="async" width="1200" height="800"></figure>
+      data-fiche='{"titre": "Berline électrique grande autonomie", "photo": "photos/ml-v15.jpg", "alt": "Berline électrique noire de trois quarts avant, bandeau lumineux allumé, dans un showroom sombre", "an": 2021, "km": 56200, "prix": 42900, "ch": 408, "carb": "Électrique", "boite": "Automatique", "coul": "Noir uni", "portes": 5, "places": 5, "conso": "18,9 kWh/100 km", "co2": "0 g/km", "mains": "1re main", "ct": "Vierge, valable 2 ans", "note": "Santé de batterie mesurée à 94 % et rapport remis avec la voiture : c&#39;est le seul chiffre qui compte sur une électrique d&#39;occasion. Recharge rapide jusqu&#39;à 150 kW.", "equip": "Batterie contrôlée 94 % · Recharge rapide 150 kW · Conduite assistée · Pompe à chaleur · Câble mode 3 fourni · Jantes 19\"", "mens": 650}'>
+      <figure class="auto-ph"><img src="photos/ml-v15.jpg" alt="Berline électrique noire de trois quarts avant, bandeau lumineux allumé, dans un showroom sombre" loading="lazy" decoding="async" width="1200" height="800"></figure>
       <div class="auto-txt">
         <p class="auto-haut"><span class="auto-n">15</span></p>
         <h3>Berline électrique grande autonomie</h3>
@@ -520,16 +521,17 @@
       <div class="g-txt"><h3>pour chiffrer votre reprise</h3><p>Trois photos et le kilométrage, un prix ferme le lendemain. Si vous achetez chez nous, il vient en déduction.</p></div>
     </div>
   </div>
-  <dl class="g-mini">
-    <div><dt>ans d'atelier</dt><dd data-compte="20">20</dd></div>
-    <div><dt>véhicules livrés</dt><dd><span data-compte="1800">1800</span>+</dd></div>
-    <div><dt>de clients qui reviennent</dt><dd><span data-compte="97">97</span> %</dd></div>
-  </dl>
+  <ul class="g-mini">
+    <li><b>Rapport signé</b>remis avec la voiture</li>
+    <li><b>Prix affiché</b>garantie comprise, sans option cachée</li>
+    <li><b>Reprise déduite</b>du prix d'achat, au centime</li>
+  </ul>
 </section>
 
 <!-- =============================================================== AVIS -->
 <section class="avis" id="avis" aria-labelledby="avis-titre">
   <h2 id="avis-titre" class="titre-m">Ils en parlent mieux que nous</h2>
+  <p class="avis-note">Avis d'exemple : cette maquette montre l'emplacement des avis Google du garage.</p>
   <div class="avis-liste">
     <figure class="av">
       <blockquote>« J'ai acheté un 4×4 de sept ans, ce qui est censé être une mauvaise idée. Ils m'ont montré la facture des travaux faits avant la vente, distribution comprise. Deux ans après, rien à signaler. »</blockquote>
@@ -551,7 +553,7 @@
   <figure class="garage-ph" data-ouvre>
     <img src="photos/ml-showroom.jpg" alt="Coupé gris graphite phares allumés dans le hall vitré du garage, sol en béton ciré" width="2200" height="1244" loading="lazy" decoding="async">
     <figcaption class="garage-leg">
-      <p class="sur">Le garage · depuis 2006</p>
+      <p class="sur">Le garage</p>
       <h2 id="garage-titre" class="titre-l">On vend des voitures qu'on accepterait de reprendre.</h2>
     </figcaption>
   </figure>
@@ -571,7 +573,7 @@
   <div class="contact-in">
     <h2 id="contact-titre" class="titre-xl contact-titre" data-mots>Venez la voir de près.</h2>
     <p class="contact-p">Un essai, une reprise à chiffrer, un bruit qui vous inquiète : le plus simple reste de décrocher.</p>
-    <a href="tel:+35200000000" class="btn">Appeler le +352 00 00 00<span class="btn-fl" aria-hidden="true"></span></a>
+    <a href="tel:+35200000000" class="btn">Appeler le +352 00 00 00 00<span class="btn-fl" aria-hidden="true"></span></a>
     <dl class="infos">
       <div><dt>Adresse</dt><dd>Rue à compléter<br>L-0000 Luxembourg</dd></div>
       <div><dt>E-mail</dt><dd><a href="mailto:contact@motorline.example">contact@motorline.example</a></dd></div>
@@ -614,7 +616,7 @@
       <div class="fiche-equip" id="fiche-equip"></div>
       <div class="fiche-fin">
         <a href="#contact" class="btn" data-fermer>Réserver un essai<span class="btn-fl" aria-hidden="true"></span></a>
-        <a href="tel:+35200000000" class="lien">ou appelez le +352 00 00 00</a>
+        <a href="tel:+35200000000" class="lien">ou appelez le +352 00 00 00 00</a>
       </div>
     </div>
   </div>

@@ -12,6 +12,7 @@
    Seule dépendance : Three.js (r170). Tout le reste est écrit ici. */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 const html = document.documentElement;
 document.dispatchEvent(new CustomEvent('ml:scene-ok'));
@@ -53,20 +54,23 @@ camRoute.lookAt(0, 0, 0);
 camRoute.updateMatrixWorld(true);
 
 /* ----------------------------------------------- environnement studio
-   Les reflets d'une carrosserie, c'est ce qu'elle reflète. On construit un
-   studio noir avec de longues bandes lumineuses, comme sur un tournage
-   automobile, et on s'en sert comme carte d'environnement. */
-function studio() {
+   Les reflets d'une carrosserie, c'est ce qu'elle reflète. Base : un vrai
+   studio photo (HDRI « Studio Small 09 », Poly Haven, CC0), auquel on ajoute
+   de longues bandes lumineuses comme sur un tournage automobile. En attendant
+   le fichier HDRI, le studio de bandes seul sert de carte d'environnement. */
+function studio(hdr) {
   const s = new THREE.Scene();
-  s.background = new THREE.Color(0x030304);
+  s.background = hdr || new THREE.Color(0x030304);
+  if (hdr) s.backgroundIntensity = 0.22;
   const bande = (l, h, x, y, z, rx, ry, force, teinte = 0xffffff) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(l, h),
       new THREE.MeshBasicMaterial({ color: new THREE.Color(teinte).multiplyScalar(force), side: THREE.DoubleSide }));
     m.position.set(x, y, z); m.rotation.set(rx, ry, 0); s.add(m);
   };
-  bande(16, 0.55, 0, 7, -1.8, Math.PI / 2, 0, 7);
-  bande(16, 0.55, 0, 7, 1.8, Math.PI / 2, 0, 7);
-  bande(16, 0.3, 0, 7, 0, Math.PI / 2, 0, 3);
+  const k = hdr ? 0.6 : 1;
+  bande(16, 0.55, 0, 7, -1.8, Math.PI / 2, 0, 7 * k);
+  bande(16, 0.55, 0, 7, 1.8, Math.PI / 2, 0, 7 * k);
+  bande(16, 0.3, 0, 7, 0, Math.PI / 2, 0, 3 * k);
   bande(12, 2.4, 0, 2.2, -13, 0, 0, 1.6, 0xdfe9ff);
   bande(12, 1.4, 0, 1.6, 13, 0, Math.PI, 1.1);
   bande(0.5, 7, -14, 3, 0, 0, Math.PI / 2, 3.2, 0xdfe9ff);
@@ -79,6 +83,13 @@ function studio() {
 }
 scene.environment = studio();
 scene.environmentIntensity = 1;
+new RGBELoader().load('env/studio-small-09-1k.hdr', (hdr) => {
+  hdr.mapping = THREE.EquirectangularReflectionMapping;
+  const ancien = scene.environment;
+  scene.environment = studio(hdr);
+  ancien.dispose(); hdr.dispose();
+  aRendre = true;
+});
 
 /* --------------------------------------------------- textures peintes */
 function texture(l, h, dessin) {
@@ -128,7 +139,7 @@ texSol.repeat.set(6, 6);
 
 /* ------------------------------------------------------------ matières */
 const XENON = new THREE.Color(0xd9e8ff);
-const peinture = new THREE.MeshPhysicalMaterial({ color: 0x23272c, metalness: 0.86, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 1.9 });
+const peinture = new THREE.MeshPhysicalMaterial({ color: 0x4a5058, metalness: 0.7, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1.25 });
 const verre = new THREE.MeshPhysicalMaterial({ color: 0x050607, metalness: 0.2, roughness: 0.04, transmission: 0, envMapIntensity: 1.6, clearcoat: 1 });
 const caoutchouc = new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 0.82, metalness: 0 });
 const alu = new THREE.MeshStandardMaterial({ color: 0x9aa1aa, roughness: 0.22, metalness: 1, envMapIntensity: 1.4 });
@@ -189,7 +200,7 @@ function installer(objet) {
   caisse.add(modele);
   roues = [];
   modele.traverse((o) => { if (o.userData.roue) roues.push(o); });
-  miroirMaj();
+  cuireOmbre();
   aRendre = true;
 }
 /* Le vrai modèle : « CarConcept » (Eric Chadwick / Darmstadt Graphics Group,
@@ -230,6 +241,27 @@ new GLTFLoader().load('voiture.glb', (gltf) => {
   });
   const g = new THREE.Group(); g.add(r);
   installer(g);
+  /* le modèle d'origine a les roues avant braquées : on les remet droites,
+     dans l'orientation des roues arrière du même côté */
+  const parNom = {}; o.traverse((w) => { if (w.name) parNom[w.name] = w; });
+  ['L', 'R'].forEach((c) => {
+    const av = parNom['WheelFront' + c], ar = parNom['WheelRear' + c];
+    if (av && ar && av.parent === ar.parent) av.quaternion.copy(ar.quaternion);
+  });
+  /* on pose la voiture sur ses pneus, pas sur son point le plus bas : le
+     dessous de caisse du modèle descend plus bas que les pneus, et la voiture
+     paraissait flotter d'une quinzaine de centimètres */
+  caisse.updateMatrixWorld(true);
+  const invC = new THREE.Matrix4().copy(caisse.matrixWorld).invert(), mm = new THREE.Matrix4(), vv = new THREE.Vector3();
+  let basPneu = Infinity;
+  o.traverse((p) => {
+    if (!p.isMesh || !/^Tire/.test((p.material && p.material.name) || '')) return;
+    mm.multiplyMatrices(invC, p.matrixWorld);
+    const pos = p.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i++) basPneu = Math.min(basPneu, vv.fromBufferAttribute(pos, i).applyMatrix4(mm).y);
+  });
+  if (isFinite(basPneu)) { r.position.y -= basPneu; g.updateMatrixWorld(true); }
+  cuireOmbre();
   /* roues : on retrouve l'axe de chaque roue dans le repère de son parent */
   g.updateMatrixWorld(true);
   const inv = new THREE.Quaternion();
@@ -246,7 +278,8 @@ new GLTFLoader().load('voiture.glb', (gltf) => {
 }, undefined, () => { document.dispatchEvent(new CustomEvent('ml:glb')); /* pas de .glb : la voiture provisoire reste */ });
 
 /* ombre de contact + faisceaux des phares (posés au sol, additifs) */
-const ombre = new THREE.Mesh(new THREE.PlaneGeometry(LONG * 1.25, 2.6), new THREE.MeshBasicMaterial({ map: texOmbre, transparent: true, depthWrite: false, opacity: 0.9 }));
+const ombre = new THREE.Mesh(new THREE.PlaneGeometry(LONG * 1.25, 2.6), new THREE.MeshBasicMaterial({ map: texOmbre, transparent: true, depthWrite: false, opacity: 0.55 }));
+ombre.scale.set(1.25, 1.35, 1);
 ombre.rotation.x = -Math.PI / 2; ombre.position.y = 0.012; ombre.renderOrder = 1;
 monture.add(ombre);
 const faisceaux = new THREE.Group();
@@ -271,9 +304,9 @@ const PORTE_Z = 5.6, PORTE_L = 8.2, PORTE_H = 3.6, RAYON = 0.55, N_PAN = 8, PAN_
 const matsGarage = [];
 const mg = (m) => { m.transparent = true; matsGarage.push(m); return m; };
 
-const sol = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), mg(new THREE.MeshStandardMaterial({ map: texSol, color: 0x3e4247, roughness: 0.2, metalness: 0.45, opacity: 0.78, envMapIntensity: 0.7 })));
+const sol = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), mg(new THREE.MeshStandardMaterial({ map: texSol, color: 0x1c1e21, roughness: 0.38, metalness: 0.2, opacity: 1, envMapIntensity: 0.12 })));
 sol.rotation.x = -Math.PI / 2; garage.add(sol);
-const mur = mg(new THREE.MeshStandardMaterial({ map: texLames, roughness: 0.42, metalness: 0.65, envMapIntensity: 0.8 }));
+const mur = mg(new THREE.MeshStandardMaterial({ map: texLames, roughness: 0.48, metalness: 0.4, envMapIntensity: 0.3 }));
 texLames.repeat.set(1, 6);
 const murG = new THREE.Mesh(new THREE.PlaneGeometry(13, 4.6), mur); murG.position.set(-6.2, 2.3, -0.8); murG.rotation.y = Math.PI / 2; garage.add(murG);
 const murD = new THREE.Mesh(new THREE.PlaneGeometry(13, 4.6), mur); murD.position.set(6.2, 2.3, -0.8); murD.rotation.y = -Math.PI / 2; garage.add(murD);
@@ -296,7 +329,6 @@ const matTube = () => mg(new THREE.MeshBasicMaterial({ color: 0xffffff }));
   const t = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.04, 11), matTube()); t.position.set(x, 4.5, -1.2); garage.add(t); tubes.push({ m: t, i });
 });
 const tubeFond = new THREE.Mesh(new THREE.BoxGeometry(10, 0.05, 0.07), matTube()); tubeFond.position.set(0, 3.9, -7.2); garage.add(tubeFond); tubes.push({ m: tubeFond, i: 3 });
-[-1, 1].forEach((s, k) => { const t = new THREE.Mesh(new THREE.BoxGeometry(0.06, 3.4, 0.06), matTube()); t.position.set(s * 6.05, 2.2, -6.8); garage.add(t); tubes.push({ m: t, i: 4 + k }); });
 
 const lumHaut = new THREE.SpotLight(0xe8efff, 0, 18, 0.75, 0.6, 1.2); lumHaut.position.set(0, 4.4, 0.6); lumHaut.target.position.set(0, 0, 0);
 garage.add(lumHaut, lumHaut.target);
@@ -329,16 +361,50 @@ fente.position.set(0, 0.025, PORTE_Z + 0.04); garage.add(fente);
 const flaque = new THREE.Mesh(new THREE.PlaneGeometry(PORTE_L * 1.6, 9), mg(new THREE.MeshBasicMaterial({ map: texFaisceau, color: XENON, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })));
 flaque.rotation.x = -Math.PI / 2; flaque.rotation.z = Math.PI; flaque.position.set(0, 0.015, PORTE_Z + 4.4); garage.add(flaque);
 
-/* reflet de la voiture dans le sol ciré : un double inversé sous le sol */
-let miroir = null;
-function miroirMaj() {
-  if (miroir) garage.remove(miroir);
-  miroir = new THREE.Group();
-  const c = caisse.clone(true);
-  c.traverse((o) => { if (o.isLight) o.visible = false; });
-  miroir.add(c);
-  miroir.scale.y = -1;
-  garage.add(miroir);
+/* ombre de contact : on projette au sol les sommets bas de la voiture dans
+   une image, plus sombre là où la carrosserie frôle le sol, puis on la floute.
+   Calculée une fois par modèle, attachée à la voiture (elle la suit). */
+const OMB_L = LONG * 1.4, OMB_P = 3.0, OMB_RES = 512;
+const toileOmbre = document.createElement('canvas'); toileOmbre.width = OMB_RES; toileOmbre.height = Math.round(OMB_RES * OMB_P / OMB_L);
+const texOmbreContact = new THREE.CanvasTexture(toileOmbre);
+const ombreContact = new THREE.Mesh(new THREE.PlaneGeometry(OMB_L, OMB_P),
+  new THREE.MeshBasicMaterial({ map: texOmbreContact, transparent: true, depthWrite: false, opacity: 0 }));
+ombreContact.rotation.x = -Math.PI / 2; ombreContact.position.y = 0.006; ombreContact.renderOrder = 2;
+monture.add(ombreContact);
+function cuireOmbre() {
+  if (!modele) return;
+  const W = toileOmbre.width, Hh = toileOmbre.height;
+  /* deux couches : une ombre large et douce (toute la caisse), et un contact
+     serré sous les pneus et le bas de caisse, là où la voiture touche le sol */
+  const large = document.createElement('canvas'), serre = document.createElement('canvas');
+  large.width = serre.width = W; large.height = serre.height = Hh;
+  const gL = large.getContext('2d'), gS = serre.getContext('2d');
+  caisse.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(caisse.matrixWorld).invert(), m = new THREE.Matrix4(), v = new THREE.Vector3();
+  const HAUT = 0.8, CONTACT = 0.09;
+  modele.traverse((o) => {
+    if (!o.isMesh || !o.visible) return;
+    const pos = o.geometry.attributes.position; if (!pos) return;
+    m.multiplyMatrices(inv, o.matrixWorld);
+    const pas = Math.max(1, Math.floor(pos.count / 8000));
+    for (let i = 0; i < pos.count; i += pas) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(m);
+      if (v.y > HAUT) continue;
+      const x = (v.x / OMB_L + 0.5) * W, y = (v.z / OMB_P + 0.5) * Hh;
+      gL.fillStyle = 'rgba(0,0,0,' + (Math.pow(1 - v.y / HAUT, 2) * 0.16).toFixed(3) + ')';
+      gL.fillRect(x - 2, y - 2, 4, 4);
+      if (v.y < CONTACT) { gS.fillStyle = 'rgba(0,0,0,' + (0.5 * (1 - v.y / CONTACT)).toFixed(3) + ')'; gS.fillRect(x - 1.5, y - 1.5, 3, 3); }
+    }
+  });
+  const c = toileOmbre.getContext('2d');
+  c.clearRect(0, 0, W, Hh);
+  c.filter = 'blur(16px)'; c.drawImage(large, 0, 0);
+  c.filter = 'blur(6px)'; c.globalAlpha = 0.7; c.drawImage(large, 0, 0);
+  c.filter = 'blur(2.5px)'; c.globalAlpha = 1; c.drawImage(serre, 0, 0); c.drawImage(serre, 0, 0);
+  c.filter = 'none';
+  texOmbreContact.needsUpdate = true;
+  ombreContact.material.opacity = 1;
+  aRendre = true;
 }
 
 installer(voitureProvisoire());
@@ -476,19 +542,19 @@ else {
 
 function majIntro(dt) {
   tIntro += dt;
-  charge = Math.min(1, charge + dt * (glbFini ? 1.6 : 0.45));
-  if (!etapes.marque && tIntro > 0.9) { etapes.marque = true; intro && intro.classList.add('marque'); }
-  if (debutOuverture === null && tIntro > 2.1 && (charge >= 1 || tIntro > 4.2)) debutOuverture = tIntro;
+  charge = Math.min(1, charge + dt * (glbFini ? 2 : 0.4));
+  if (!etapes.marque && tIntro > 0.5) { etapes.marque = true; intro && intro.classList.add('marque'); }
+  if (debutOuverture === null && tIntro > 1.3 && (charge >= 1 || tIntro > 3)) debutOuverture = tIntro;
   if (debutOuverture === null) { ouverture = 0; camTransition = 1; return; }
   const t = tIntro - debutOuverture;
   /* moteur : léger à-coup au démarrage, puis montée régulière, ralenti en fin de course */
-  const k = clamp(t / 3.4, 0, 1);
+  const k = clamp(t / 2.6, 0, 1);
   ouverture = ioc(k) + (k > 0 && k < 1 ? Math.sin(t * 46) * 0.0016 * (1 - k) : 0);
-  lumieres = clamp((t - 0.35) / 1.3, 0, 1);
-  phares = clamp((t - 1.9) / 0.7, 0, 1);
-  camTransition = 1 - ioc(clamp((t - 1.5) / 3.1, 0, 1));
-  if (!etapes.sort && t > 1.1) { etapes.sort = true; intro && intro.classList.add('sort'); }
-  if (t > 4.6) finirIntro(false);
+  lumieres = clamp((t - 0.25) / 1, 0, 1);
+  phares = clamp((t - 1.3) / 0.6, 0, 1);
+  camTransition = 1 - ioc(clamp((t - 0.9) / 2.3, 0, 1));
+  if (!etapes.sort && t > 0.8) { etapes.sort = true; intro && intro.classList.add('sort'); }
+  if (t > 3.3) finirIntro(false);
 }
 
 /* --------------------------------------------------------- la boucle */
@@ -559,14 +625,14 @@ function image(now) {
   phare.emissiveIntensity = phares * 3.2;
   feu.emissiveIntensity = phares * 2.4;
   faisceaux.children.forEach((f) => (f.material.opacity = phares * lerp(0.16, 0.42, h)));
-  spotsPhares.forEach((s) => (s.intensity = phares * 16 * (1 - h)));
+  spotsPhares.forEach((s) => (s.intensity = phares * 7 * (1 - h)));
   porte(ouverture);
   const fadeG = 1 - h;
   garage.visible = fadeG > 0.002;
   matsGarage.forEach((m) => (m.opacity = (m.userData.base ?? (m.userData.base = m.opacity)) * fadeG));
   fente.material.opacity = (enIntro && !introFinie ? clamp(tIntro / 0.8, 0, 1) * (0.25 + 0.75 * charge) : 0) * (1 - ouverture * 1.4);
   flaque.material.opacity = clamp(ouverture * 1.6, 0, 1) * 0.5 * lumieres * fadeG;
-  lumHaut.intensity = lumieres * 22 * fadeG;
+  lumHaut.intensity = lumieres * 9 * fadeG;
   lumMurs.forEach((l) => (l.intensity = lumieres * 18 * fadeG));
   lumFace.intensity = (enIntro && !introFinie ? clamp((tIntro - 0.6) / 1.4, 0, 1) * 90 : 30 * (1 - ouverture * 0.6)) * fadeG;
   tubes.forEach((t, i) => {
@@ -578,12 +644,6 @@ function image(now) {
   });
   scene.environmentIntensity = lerp(0.35 + 0.85 * lumieres, 1.15, h);
   scene.environmentRotation.y = calme ? 0 : Math.sin(tPhase * 0.12) * 0.5;
-  if (miroir) {
-    miroir.visible = garage.visible && monture.visible;
-    miroir.position.set(monture.position.x, 0, monture.position.z);
-    miroir.rotation.y = monture.rotation.y;
-    miroir.scale.set(monture.scale.x, -monture.scale.y, monture.scale.z);
-  }
 
   /* caméra : plan d'intro → showroom → vue haute de la route */
   majCamHero(smx, smy);
@@ -608,6 +668,6 @@ function image(now) {
 }
 
 dimensionner();
-if (/[?&]voies/.test(location.search)) window.__ml = { monture, poseRoute, voies, camera, garage };
+if (/[?&]voies/.test(location.search)) window.__ml = { monture, poseRoute, voies, camera, garage, THREE, caisse, ombreContact };
 choisirTraces();
 requestAnimationFrame((t) => { derniere = t; image(t); });
