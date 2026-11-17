@@ -92,7 +92,7 @@
     ".ouvert .av{animation:pop .7s cubic-bezier(.16,1,.3,1) both;animation-delay:inherit}",
     "@keyframes monte{from{opacity:0;transform:translateY(14px)}}",
     "@keyframes pop{from{transform:scale(.4)}}",
-    "@media(max-width:600px){.carte{left:16px;right:16px;width:auto;bottom:92px;padding:18px;border-radius:20px}p.txt{display:none}h2{margin-bottom:14px}}",
+    "@media(max-width:600px){.carte{left:16px;right:88px;width:auto;bottom:16px;padding:18px;border-radius:20px}p.txt{display:none}h2{margin-bottom:14px}.carte.mini{padding:0;cursor:pointer}.carte.mini>*:not(.tag):not(.fermer){display:none}.carte.mini .tag{display:flex;margin:0;padding:18px 44px 18px 16px;min-height:56px;align-items:center}.carte.mini .fermer{top:10px;right:8px}}",
     "@media(prefers-reduced-motion:reduce){.carte,.carte.ouvert,.carte.sort{transition:opacity .2s}.carte{transform:none}",
     "  .carte::before,.ouvert .an,.ouvert .av,.av::before,.tag i{animation:none}}"
   ].join("\n");
@@ -121,9 +121,27 @@
   var carte = racine.querySelector(".carte");
   var ouvert = false, fait = false, minuteur;
 
+  // Une intro plein écran est-elle encore visible ? (MOTORLINE, PULSE, Lonvière, HORIZON…)
+  function introVisible() {
+    var el = document.querySelector('.intro, #intro, [data-intro], .porte-intro');
+    if (!el) return false;
+    var r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    return r.width > 0 && r.height > innerHeight * 0.5 && cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0.05;
+  }
+  var DEJA = 'nsd-reseaux-vu';
+  function dejaVu() { try { return sessionStorage.getItem(DEJA) === '1'; } catch (e) { return false; } }
   function ouvrir() {
     if (fait) return;
+    if (introVisible()) { clearTimeout(minuteur); minuteur = setTimeout(ouvrir, 2000); return; }
     fait = true;
+    try { sessionStorage.setItem(DEJA, '1'); } catch (e) {}
+    if (matchMedia('(max-width:600px)').matches) {
+      carte.classList.add('mini');
+      carte.addEventListener('click', function deplier(ev) {
+        if (ev.target.closest && ev.target.closest('.fermer')) return;
+        carte.classList.remove('mini'); carte.removeEventListener('click', deplier);
+      });
+    }
     clearTimeout(minuteur);
     removeEventListener("scroll", auScroll);
     carte.classList.add("ouvert");
@@ -148,7 +166,8 @@
 
   function demarrer() {
     document.body.appendChild(hote);
-    minuteur = setTimeout(ouvrir, reduit ? 6000 : 9000);
+    if (dejaVu()) return;                               // déjà proposé pendant cette visite
+    minuteur = setTimeout(ouvrir, 30000);
     addEventListener("scroll", auScroll, { passive: true });
     auScroll();                                         // page rechargée déjà descendue
   }
