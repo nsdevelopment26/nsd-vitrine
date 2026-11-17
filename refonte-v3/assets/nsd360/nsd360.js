@@ -45,11 +45,14 @@ export const state = {
 };
 
 let top0 = 0, vh = innerHeight, lastY = scrollY;
+/* rythme v3 (17/11) */
+const pas = () => (innerWidth <= 820 ? 1 : 1.9);   // hauteurs d'écran par étape
 function measure() {
   const r = xp.getBoundingClientRect();
   top0 = r.top + scrollY;
   vh = Math.max(200, stage.clientHeight || innerHeight || 0);
   state.w = innerWidth; state.h = innerHeight; state.mobile = innerWidth <= 820;
+  xp.style.setProperty('--beats', (N * pas()).toFixed(2));
 }
 
 function setActive(k) {
@@ -85,7 +88,7 @@ function onScroll() {
   const y = scrollY;
   if (y !== lastY) state.dir = y > lastY ? 1 : -1;
   lastY = y;
-  const p = (y - top0) / vh;
+  const p = (y - top0) / (vh * pas());
   state.P = Number.isFinite(p) ? Math.min(N - 1, Math.max(0, p)) : 0;
   // pendant le déplacement du téléphone (milieu d'une transition), aucun texte n'est affiché : il ne croise jamais le téléphone
   const f = state.P - Math.floor(state.P);
@@ -96,7 +99,7 @@ function onScroll() {
 
 /* Liens internes vers un temps de l'expérience */
 function scrollToBeat(k) {
-  window.scrollTo({ top: top0 + k * vh + 2, behavior: reduced ? 'auto' : 'smooth' });
+  window.scrollTo({ top: top0 + k * vh * pas() + 2, behavior: reduced ? 'auto' : 'smooth' });
 }
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]');
@@ -114,7 +117,6 @@ if (contact) new IntersectionObserver(es => es.forEach(e => e.isIntersecting && 
 /* ---------- Démarrage ---------- */
 function start() {
   html.classList.add('js-xp', 'x2d');
-  xp.style.setProperty('--beats', N);
   measure(); onScroll();
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', () => { measure(); onScroll(); });

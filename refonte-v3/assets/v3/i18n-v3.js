@@ -782,7 +782,12 @@
   "La frise des échéances de l'année, avec le compte à rebours de la prochaine": ["D'Zäitlinn vun de Fristen am Joer, mam Countdown bis bei déi nächst", "Die Zeitleiste der Fristen des Jahres, mit Countdown bis zur nächsten", "A timeline of the year's deadlines, with a countdown to the next one", "A cronologia dos prazos do ano, com contagem decrescente até ao próximo"],
   "Services": ["Servicer", "Leistungen", "Services", "Serviços"],
   "Rendez-vous": ["Rendez-vous", "Termine", "Appointments", "Marcações"],
-  "Quatre langues": ["Véier Sproochen", "Vier Sprachen", "Four languages", "Quatro línguas"]
+  "Quatre langues": ["Véier Sproochen", "Vier Sprachen", "Four languages", "Quatro línguas"],
+
+  /* Barre « page suivante » sur mobile (17/11) */
+  "Page suivante": ["Nächst Säit", "Nächste Seite", "Next page", "Página seguinte"],
+  "Dernière étape": ["Leschte Schrëtt", "Letzter Schritt", "Last step", "Último passo"],
+  "Retour au site": ["Zréck op de Site", "Zurück zur Website", "Back to the site", "Voltar ao site"]
   };
 
   /* Titres à balisage mixte : traduits en bloc (data-tr) */

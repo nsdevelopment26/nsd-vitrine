@@ -155,3 +155,25 @@ html.x2d .p360 .phone2d{top:calc(var(--nav) + 8px);left:50%;transform:translateX
 .p360 .t-xl,.p360 h1,.p360 h2,.p360 h3{letter-spacing:-.03em}
 .p360 h1 em,.p360 h2 em,.p360 .t-xl em{font-style:italic;font-weight:330;color:var(--or-fonce,#86683a)}
 .p360 .nsd-kick,.p360 .kick,.p360 .eyebrow{color:var(--or-fonce,#86683a)}
+/* iPhone moderne (17/11) */
+/* Proportions d'un iPhone 15/16 Pro : bord noir fin, grands coins arrondis, tranche titane, boutons. */
+/* bord en px : un % se calculerait sur la largeur de la page, pas du téléphone */
+.p360 .phone2d{padding:7px;background:#050506;border-radius:15.5% / 7.2%;
+  box-shadow:0 0 0 1.5px #232326,0 0 0 3px #8f8b85,0 0 0 4px #57544f,0 34px 70px -28px rgba(0,0,0,.45),0 12px 24px -12px rgba(0,0,0,.22)}
+html:not(.x2d) .p360 .phone2d,html.x3d .p360 .phone2d{position:relative}
+.p360 .phone2d img{display:block;border-radius:13.4% / 6.2%;background:#fff}
+.p360 .phone2d::before,.p360 .phone2d::after{content:"";position:absolute;width:3px;border-radius:1.5px}
+/* gauche : bouton Action, volume +, volume - (un seul élément, trois segments) */
+.p360 .phone2d::before{left:-6px;top:17.5%;height:27%;
+  background:linear-gradient(180deg,#9a968f 0 15.6%,transparent 15.6% 29.6%,#9a968f 29.6% 59.3%,transparent 59.3% 64.8%,#9a968f 64.8% 100%)}
+/* droite : bouton latéral */
+.p360 .phone2d::after{right:-6px;top:25%;height:10.5%;background:#9a968f}
+@media (max-width:820px){
+  .p360 .phone2d{padding:5px}
+  .p360 .phone2d::before{left:-5px}.p360 .phone2d::after{right:-5px}
+  /* téléphone un peu plus court, panneaux remontés au-dessus de la barre « page suivante » (60 px + 16 px) et de la bulle */
+  html.x2d .p360 .phone2d{height:31svh}
+  html.x2d .p360 .pan,html.x3d .p360 .pan,html.x2d .p360 .pan.wide,html.x3d .p360 .pan.wide{
+    bottom:calc(16px + 60px + 12px + env(safe-area-inset-bottom));
+    max-height:calc(100svh - var(--nav) - 31svh - 16px - 100px - env(safe-area-inset-bottom));padding:18px 16px}
+}

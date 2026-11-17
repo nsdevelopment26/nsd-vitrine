@@ -641,4 +641,21 @@
     if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(construire);
     construire();
   })();
+
+  /* ---------- Barre « page suivante » sur mobile (17/11) : arrivée, puis fil doré de lecture ---------- */
+  (function(){
+    const barre = $('.suivante');
+    if (!barre) return;
+    const prog = $('.sv-prog', barre);
+    let attente = false;
+    const maj = () => {
+      attente = false;
+      const max = doc.documentElement.scrollHeight - innerHeight;
+      prog.style.setProperty('--lu', max > 0 ? Math.min(1, Math.max(0, scrollY / max)).toFixed(3) : 1);
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    addEventListener('resize', maj);
+    maj();
+    introPrete.then(() => setTimeout(() => barre.classList.add('on'), reduit ? 0 : 500));
+  })();
 })();
