@@ -14,6 +14,15 @@
   const retraduire = () => { if (window.nsRetranslate) window.nsRetranslate(); };
   const FL = '<svg class="fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
   const ICI_JS = document.currentScript && document.currentScript.src;
+
+  /* Anciennes ancres de l'accueil (site d'avant la refonte, liens déjà partagés, QR) :
+     elles mènent maintenant à la bonne page. Un serveur ne peut pas rediriger une ancre. */
+  const ANCIENNES_ANCRES = { '#pricing': 'tarifs.html#pricing', '#tarifs': 'tarifs.html', '#faq': 'tarifs.html#faq', '#domaine': 'tarifs.html#domaine',
+    '#demos': 'realisations.html', '#projets': 'realisations.html', '#services': 'services.html', '#espace': 'services.html#espace',
+    '#refonte': 'services.html#refonte', '#reseaux': 'marketing.html#reseaux', '#marketing': 'marketing.html' };
+  if (doc.body && doc.body.dataset.page === 'accueil' && ANCIENNES_ANCRES[location.hash] && !doc.getElementById(location.hash.slice(1))) {
+    location.replace(ANCIENNES_ANCRES[location.hash]);
+  }
   const FLX = '<svg class="fl ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
 
   /* ---------- 1. Écran d'ouverture : l'animation du logo, une fois par visite ---------- */
@@ -124,9 +133,10 @@
     const basculer = v => {
       html.classList.toggle('menu-ouvert', v);
       b.setAttribute('aria-expanded', v ? 'true' : 'false');
-      b.setAttribute('aria-label', v ? 'Fermer le menu' : 'Ouvrir le menu');
+      b.dataset.nsFrAria = v ? 'Fermer le menu' : 'Ouvrir le menu'; b.setAttribute('aria-label', T(b.dataset.nsFrAria));
       r.setAttribute('aria-hidden', v ? 'false' : 'true');
       r.inert = !v;
+      ['#contenu', 'footer'].forEach(sel => { const el = $(sel); if (el) el.inert = v; });
       html.style.overflow = v ? 'hidden' : '';
       if (v) { $('#tete').classList.remove('cache'); setTimeout(() => { const a = $('nav a', r); a && a.focus({ preventScroll: true }); }, 300); }
     };
@@ -186,10 +196,12 @@
 
   /* ---------- 8. Services : lignes qui s'ouvrent ---------- */
   $$('.svc-btn').forEach(b => {
+    const pan0 = doc.getElementById(b.getAttribute('aria-controls')); if (pan0 && b.getAttribute('aria-expanded') !== 'true') pan0.inert = true;
     b.addEventListener('click', () => {
       const l = b.closest('.svc-l'), ouvert = !l.classList.contains('ouvert');
       l.classList.toggle('ouvert', ouvert);
       b.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+      const pan = doc.getElementById(b.getAttribute('aria-controls')); if (pan) pan.inert = !ouvert;
     });
   });
 
@@ -249,37 +261,37 @@
     },
     'vaurenne': {
       titre: 'Maison Vaurenne', secteur: 'Restaurant gastronomique', type: 'Site vitrine avec réservation', img: 'vaurenne',
-      lien: '../demos/maison-vaurenne/index.html', prix: '7 270 €',
+      lien: '../demos/maison-vaurenne/index.html',
       da: "Noir profond et grandes photographies de plats : l'ambiance d'une salle le soir, avant même d'avoir réservé.",
       fonctions: ['Menus et carte photographiée', 'Cave', 'Réservation en ligne qui bloque vraiment un service complet']
     },
     'volte': {
       titre: 'Maison Volte', secteur: 'École de danse', type: 'Site vitrine avec planning', img: 'volte',
-      lien: '../demos/ecole-danse/index.html', prix: '3 130 €',
+      lien: '../demos/ecole-danse/index.html',
       da: 'Clair et éditorial : photographies monochromes, typographie de magazine, beaucoup de blanc.',
       fonctions: ['Planning des cours de la semaine', 'Réservation en un clic', 'Fiches professeurs', 'Galerie plein écran']
     },
     'korvel': {
       titre: 'KORVEL', secteur: 'Imprimerie et textile', type: 'Boutique en ligne', img: 'korvel',
-      lien: '../demos/korvel/index.html', prix: '5 890 €',
+      lien: '../demos/korvel/index.html',
       da: "Couleurs franches d'atelier, typographie massive, un ton direct de fabricant.",
       fonctions: ['Boutique avec paiement Apple Pay (simulé dans le concept)', 'Configurateur : le client pose son logo sur un T-shirt', 'Catalogue print à feuilleter', 'Trois langues']
     },
     'ashcombe': {
       titre: 'Ashcombe Lorant', secteur: "Cabinet d'avocats", type: 'Site institutionnel', img: 'ashcombe',
-      lien: '../demos/ashcombe-lorant/index.html', prix: '3 740 €',
+      lien: '../demos/ashcombe-lorant/index.html',
       da: "Le cabinet présenté comme la une d'un quotidien financier : colonnes, filets, papier saumon.",
       fonctions: ['Dossiers gagnés', 'Carte des affaires dans le monde', 'Fiches des associés', 'Coupon-réponse']
     },
     'valombre': {
       titre: 'Domaine de Valombre', secteur: 'Centre équestre', type: 'Site vitrine avec rendez-vous', img: 'valombre',
-      lien: '../demos/domaine-equestre/index.html', prix: '6 980 €',
+      lien: '../demos/domaine-equestre/index.html',
       da: 'Sombre et cinématique : grandes photographies, défilement fluide, mise en page de magazine.',
       fonctions: ['Rendez-vous en ligne', 'Photographie plein cadre', 'Galerie des chevaux']
     },
     'orvane': {
       titre: 'Fiduciaire Orvane', secteur: 'Fiduciaire et comptabilité', type: 'Site vitrine multilingue', img: 'orvane',
-      lien: '../demos/fiduciaire-orvane/index.html', prix: '2 730 €',
+      lien: '../demos/fiduciaire-orvane/index.html',
       da: "Sobre et rassurant : vert profond, papier clair, la rigueur d'un cabinet.",
       fonctions: ["La frise des échéances de l'année, avec le compte à rebours de la prochaine", 'Services', 'Rendez-vous', 'Quatre langues']
     }
@@ -297,7 +309,7 @@
       const contexte = p.contexte || ("Concept de démonstration, créé par NS Development pour montrer ce qu'un site peut faire pour ce métier. Ce n'est pas un client : le nom et les contenus sont fictifs.");
       const besoin = p.besoin || "Montrer qu'un site de ce métier peut avoir sa propre personnalité, et pas celle d'un modèle.";
       const resultat = p.resultat ? esc(p.resultat)
-        : '<span>Ce type de site, à partir de</span> <b>' + esc(p.prix) + ' HT</b><span>, hors maintenance.</span> <span>Le vôtre est chiffré sur ce que vous demandez vraiment.</span>';
+        : '<span>Le vôtre est chiffré sur ce que vous demandez vraiment.</span> <span>Le devis est gratuit.</span>';
       dlg.innerHTML =
         '<div class="fp-barre"><span class="label">' + (ext ? 'Réalisation client' : 'Concept de démonstration') + '</span>'
         + '<button type="button" class="fp-fermer" data-fermer><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Fermer</button></div>'
@@ -423,40 +435,26 @@
   })();
 
   /* ---------- 13. Simulateur de devis ----------
-     Prix issus de entreprise/tarifs/grille-tarifaire.md, identiques au site en ligne.
-     Un seul geste : le type de site donne une fourchette indicative, pas un devis. */
+     Plus de montant (règle du 17/11) : le type de site prépare la demande de devis. */
   (function simulateur(){
+    // Règle de Nelson (17/11) : aucun montant hors « à partir de 990 € ». Le choix du type de site
+    // montre ce qu'il comprend et prépare la demande de devis (formulaire pré-rempli).
     const base = $('#simBase'); if (!base) return;
     const NS_TYPES = [
-      { id: 'essentiel', nom: 'Essentiel', desc: "Une page, tout l'essentiel", min: 990, max: 1500 },
-      { id: 'vitrine', nom: 'Vitrine', desc: '4 à 5 pages, galerie, services', min: 1990, max: 3500 },
-      { id: 'pro', nom: 'Pro', desc: '8 à 10 pages, bilingue, SEO renforcé', min: 3290, max: 5000 },
-      { id: 'boutique', nom: 'Boutique', desc: "Vente en ligne jusqu'à 50 produits", min: 3790, max: 6000 },
-      { id: 'signature', nom: 'Signature', desc: 'Sur-mesure, haut de gamme, 3 langues', min: 5990, max: 9000 }
+      { id: 'essentiel', nom: 'Essentiel', desc: "Une page, tout l'essentiel", form: 'Site vitrine' },
+      { id: 'vitrine', nom: 'Vitrine', desc: '4 à 5 pages, galerie, services', form: 'Site vitrine' },
+      { id: 'pro', nom: 'Pro', desc: '8 à 10 pages, bilingue, référencement renforcé', form: 'Site vitrine' },
+      { id: 'boutique', nom: 'Boutique', desc: "Vente en ligne jusqu'à 50 produits", form: 'E-commerce / take-away' },
+      { id: 'signature', nom: 'Signature', desc: 'Sur-mesure, haut de gamme, 3 langues', form: 'Autre' }
     ];
-    const eur = n => Math.round(n).toLocaleString('fr-FR').replace(/\s/g, ' ');
-    let type = 'vitrine', aff = null, raf = 0, filet = 0;
+    let type = 'vitrine';
     const tot = $('#simTot'), detail = $('#simDetail'), cta = $('#simCta');
-    const ecrire = (a, b) => { tot.textContent = eur(a) + ' – ' + eur(b) + ' €'; };
-    function animer(min, max){
-      const duree = 560;
-      const finir = () => { cancelAnimationFrame(raf); clearTimeout(filet); aff = { min, max }; ecrire(min, max); };
-      if (reduit || doc.hidden || !aff) { finir(); return; }
-      const de = aff, t0 = performance.now();
-      cancelAnimationFrame(raf); clearTimeout(filet);
-      (function pas(t){
-        const k = Math.min(1, (t - t0) / duree), e = 1 - Math.pow(1 - k, 3);
-        const m = de.min + (min - de.min) * e, M = de.max + (max - de.max) * e;
-        ecrire(m, M); aff = { min: m, max: M };
-        if (k < 1) raf = requestAnimationFrame(pas); else finir();
-      })(t0);
-      filet = setTimeout(finir, duree + 140);       // onglet masqué : on finit toujours sur la bonne valeur
-    }
     function calculer(){
       const t = NS_TYPES.find(x => x.id === type);
-      animer(t.min, t.max);
-      detail.textContent = t.desc;
-      cta.dataset.resume = 'Type de site : ' + t.nom + ' (estimation ' + eur(t.min) + ' – ' + eur(t.max) + ' € HT).';
+      tot.textContent = T(t.nom);
+      detail.textContent = T(t.desc);
+      cta.dataset.resume = t.nom + ' (' + t.desc + ')';
+      cta.dataset.form = t.form;
       retraduire();
     }
     function rendre(){
@@ -464,8 +462,7 @@
         '<label class="sim-o' + (o.id === type ? ' on' : '') + '" data-id="' + o.id + '">'
         + '<input type="radio" name="sim-base" value="' + o.id + '"' + (o.id === type ? ' checked' : '') + '>'
         + '<span class="rond" aria-hidden="true"></span>'
-        + '<span><b>' + o.nom + '</b><span class="desc">' + o.desc + '</span></span>'
-        + '<i>' + eur(o.min) + ' – ' + eur(o.max) + ' €</i></label>').join('');
+        + '<span><b>' + o.nom + '</b><span class="desc">' + o.desc + '</span></span></label>').join('');
       $$('input', base).forEach(inp => inp.addEventListener('change', () => {
         type = inp.value;
         $$('.sim-o', base).forEach(l => l.classList.toggle('on', l.dataset.id === type));
@@ -474,8 +471,9 @@
       retraduire();
     }
     cta.addEventListener('click', () => {
-      const m = $('#m');
-      if (m && !m.value.trim()) m.value = "Bonjour, j'ai fait une estimation sur votre simulateur :\n\n" + cta.dataset.resume + "\n\nJ'aimerais un devis précis pour mon projet.";
+      const m = $('#m'), ty = $('#ty');
+      if (ty && cta.dataset.form && [...ty.options].some(o => o.value === cta.dataset.form)) ty.value = cta.dataset.form;
+      if (m && !m.value.trim()) m.value = T("Bonjour, je m'intéresse à un site") + ' ' + cta.dataset.resume + '.\n\n' + T("J'aimerais un devis précis pour mon projet.");
     });
     rendre(); calculer();
   })();
@@ -498,7 +496,7 @@
         const j = await r.json();
         if (j.Status === 3) return 'free';
         if (j.Status === 0 && Array.isArray(j.Answer) && j.Answer.length) return 'taken';
-        if (j.Status === 0) return 'free';
+        if (j.Status === 0) return 'error';      // ni nom ni erreur : on ne promet pas « libre », « à confirmer »
         return 'error';
       } catch (e) { clearTimeout(to); return 'error'; }
     }
@@ -529,12 +527,14 @@
   })();
 
   /* ---------- 15. Formulaire de contact ----------
-     Tant qu'aucun service de formulaire n'est branché (Formspree ou table Supabase,
-     décision de Nelson), la demande s'ouvre dans la messagerie, déjà rédigée. */
+     Envoi direct à la fonction contact-site (Supabase), qui range la demande et prévient
+     info@ (décision de Nelson, 17/11). Si la fonction ne répond pas, la demande s'ouvre
+     dans la messagerie du visiteur, déjà rédigée : rien n'est jamais perdu. */
   (function contact(){
     const f = $('#nsForm'); if (!f) return;
-    const ok = $('#nsOk');
-    const FORMSPREE = 'https://formspree.io/f/VOTRE_ID';
+    const ok = $('#nsOk'), bouton = $('button[type=submit]', f);
+    const API = 'https://atgykykesntvporvbvuf.supabase.co/functions/v1/contact-site';
+    const debut = Date.now();
     const mailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
     const telOk = v => !v.trim() || /^[+()\d\s.\-]{6,}$/.test(v.trim());
     const regles = [
@@ -552,23 +552,38 @@
       err.textContent = bon ? '' : T(msg);
       return bon;
     };
+    const dire = (txt, erreur) => { ok.textContent = T(txt); ok.classList.add('on'); ok.classList.toggle('erreur', !!erreur); };
+    function parMessagerie(){
+      const s = encodeURIComponent('Demande de devis · ' + f.type.value + ' · ' + f.nom.value);
+      const b = encodeURIComponent('Nom : ' + f.nom.value + '\nE-mail : ' + f.email.value + '\nTéléphone : ' + (f.tel.value || 'non indiqué') + '\nType de projet : ' + f.type.value + '\n\nMessage :\n' + f.message.value + '\n');
+      location.href = 'mailto:info@nsdevelopment.lu?subject=' + s + '&body=' + b;
+      dire("Notre formulaire ne répond pas pour l'instant : votre messagerie s'ouvre avec la demande déjà rédigée. Envoyez-la et on vous répond sous 24 h ouvrées.", true);
+    }
     regles.forEach(r => $('#' + r[0]).addEventListener('blur', () => { if ($('#' + r[0]).value) verifierChamp(r); }));
     f.addEventListener('submit', ev => {
       ev.preventDefault();
+      if (f.dataset.envoi === '1') return;
       const resultats = regles.map(verifierChamp);
       const premier = regles.find((r, i) => !resultats[i]);
       if (premier) { $('#' + premier[0]).focus(); return; }
-      if (FORMSPREE.indexOf('VOTRE_ID') !== -1) {
-        const s = encodeURIComponent('Demande de devis — ' + f.type.value + ' — ' + f.nom.value);
-        const b = encodeURIComponent('Nom : ' + f.nom.value + '\nEmail : ' + f.email.value + '\nTéléphone : ' + (f.tel.value || '—') + '\nType de projet : ' + f.type.value + '\n\nMessage :\n' + f.message.value + '\n');
-        location.href = 'mailto:info@nsdevelopment.lu?subject=' + s + '&body=' + b;
-        ok.textContent = T("✓ Merci ! Votre messagerie va s'ouvrir avec votre demande pré-remplie. Envoyez-la et on vous répond sous 24 h.");
-        ok.classList.add('on');
-        return;
-      }
-      fetch(FORMSPREE, { method: 'POST', body: new FormData(f), headers: { Accept: 'application/json' } })
-        .then(r => { if (!r.ok) throw new Error(); f.reset(); ok.textContent = T('✓ Merci ! Votre demande a bien été envoyée, on vous répond sous 24 h ouvrées.'); ok.classList.add('on'); })
-        .catch(() => { ok.textContent = T('Une erreur est survenue. Écrivez-nous directement à info@nsdevelopment.lu'); ok.classList.add('on'); });
+      const donnees = {
+        nom: f.nom.value, email: f.email.value, tel: f.tel.value, type: f.type.value, message: f.message.value,
+        site_web: f.site_web ? f.site_web.value : '', duree: Date.now() - debut,
+        langue: (window.nsLangue && window.nsLangue()) || 'fr', page: location.pathname
+      };
+      f.dataset.envoi = '1'; bouton.disabled = true; f.setAttribute('aria-busy', 'true');
+      const fin = () => { f.dataset.envoi = ''; bouton.disabled = false; f.removeAttribute('aria-busy'); };
+      const delai = new AbortController(); const minuteur = setTimeout(() => delai.abort(), 15000);
+      fetch(API, { method: 'POST', body: JSON.stringify(donnees), headers: { 'Content-Type': 'text/plain' }, credentials: 'omit', signal: delai.signal })
+        .then(r => r.json().catch(() => ({})).then(j => ({ r, j })))
+        .then(({ r, j }) => {
+          clearTimeout(minuteur); fin();
+          if (r.ok && j.ok) { f.reset(); regles.forEach(([id]) => $('#' + id).removeAttribute('aria-invalid')); dire('Merci ! Votre demande est bien arrivée, on vous répond sous 24 h ouvrées.'); ok.insertAdjacentHTML('afterbegin', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="14" height="14"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'); return; }
+          if (r.status === 422) { dire('Un champ ne semble pas valide. Vérifiez votre e-mail et votre message.', true); return; }
+          if (r.status === 429) { dire('Vous avez déjà envoyé plusieurs demandes. On vous répond très vite, ou appelez Sam au +352 621 757 113.', true); return; }
+          parMessagerie();
+        })
+        .catch(() => { clearTimeout(minuteur); fin(); parMessagerie(); });
     });
   })();
   /* ---------- 14. Réalisations : le chemin (17/11) ----------
@@ -577,7 +592,7 @@
   (function chemin(){
     const voie = $('#voie'); if (!voie) return;
     const svg = $('.trace', voie), fond = $('.trace-fond', voie), fait = $('.trace-fait', voie), vous = $('.vous', voie);
-    const etapes = $$('.etape', voie), noeuds = etapes.map(e => $('.noeud', e));
+    const etapes = $$('.arret', voie), noeuds = etapes.map(e => $('.noeud', e));
     const depart = $('.depart', voie), arrivee = $('.arrivee .noeud', voie);
     const pts = $$('.pl-pt'), chs = $$('.pl-ch'), ou = $('#plOu');
     const chDe = pts.map(p => chs.indexOf(p.closest('.pl-ch')));

@@ -572,7 +572,16 @@ const NS_I18N = {
     racine.querySelectorAll('[placeholder]').forEach(el=>{
       if(!el.dataset.nsFrPh) el.dataset.nsFrPh = el.placeholder;
     });
+    // Attributs lus par les lecteurs d'écran et les moteurs (17/11) : traduits aussi
+    ATTRS.forEach(([attr, cle])=>{
+      racine.querySelectorAll('['+attr+']').forEach(el=>{
+        if(el.dataset[cle] === undefined && !el.closest('#langSel')) el.dataset[cle] = el.getAttribute(attr);
+      });
+    });
+    if(titreFr === null) titreFr = document.title;
   }
+  const ATTRS = [['aria-label','nsFrAria'], ['alt','nsFrAlt'], ['title','nsFrTitle']];
+  let titreFr = null;
 
   function appliquer(){
     appliquerSplit();
@@ -590,6 +599,12 @@ const NS_I18N = {
     document.querySelectorAll('[data-ns-fr-ph]').forEach(el=>{
       el.placeholder = window.nsT(el.dataset.nsFrPh);
     });
+    ATTRS.forEach(([attr, cle])=>{
+      document.querySelectorAll('[data-' + cle.replace(/[A-Z]/g, m => '-' + m.toLowerCase()) + ']').forEach(el=>{
+        const fr = el.dataset[cle]; if(fr && fr.trim()) el.setAttribute(attr, window.nsT(fr));
+      });
+    });
+    if(titreFr) document.title = window.nsT(titreFr);
     // Mot défilant du hero (géré par ns-fx.js)
     const cy=document.querySelector('[data-cycle]');
     if(cy && cy._nsRetr) cy._nsRetr();
@@ -597,6 +612,7 @@ const NS_I18N = {
     document.querySelectorAll('.lang-b').forEach(b=>{
       b.classList.toggle('on', b.dataset.lang === langue);
     });
+    document.dispatchEvent(new CustomEvent('ns-langue', { detail: langue }));
   }
 
   /* Appelé par le simulateur après chaque régénération de son contenu :

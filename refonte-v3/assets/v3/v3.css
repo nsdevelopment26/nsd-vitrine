@@ -1,15 +1,15 @@
 /* Polices hébergées sur le site, aucune requête vers Google.
    Newsreader (titres, variable opsz 6-72, graisse 300-600, romain + italique)
    Geist (texte, variable 300-700) · Geist Mono (petites étiquettes) */
-@font-face{font-family:'Newsreader';font-style:normal;font-weight:360;font-display:swap;src:url(fonts/newsreader-360.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Newsreader';font-style:italic;font-weight:340;font-display:swap;src:url(fonts/newsreader-italique-340.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Geist';font-style:normal;font-weight:300 700;font-display:swap;
+@font-face{font-family:'Newsreader';font-style:normal;font-weight:200 800;font-display:swap;src:url(fonts/newsreader-360.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Newsreader';font-style:italic;font-weight:200 800;font-display:swap;src:url(fonts/newsreader-italique-340.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Geist';font-style:normal;font-weight:100 900;font-display:swap;
   src:url(fonts/gyByhwUxId8gMEwcGFWNOITd.woff2) format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Geist';font-style:normal;font-weight:300 700;font-display:swap;
+@font-face{font-family:'Geist';font-style:normal;font-weight:100 900;font-display:swap;
   src:url(fonts/gyByhwUxId8gMEwSGFWNOITddY4.woff2) format('woff2');
   unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Geist Mono';font-style:normal;font-weight:400 500;font-display:swap;
+@font-face{font-family:'Geist Mono';font-style:normal;font-weight:100 900;font-display:swap;
   src:url(fonts/or3nQ6H-1_WfwkMZI_qYFrcdmhHkjko.woff2) format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
@@ -118,7 +118,7 @@ h1 em,h2 em,h3 em,.it{font-style:italic;font-weight:330}
 .js [data-r="mask"]{opacity:1;transform:none}
 .js [data-r="mask"] > *{clip-path:inset(0 0 100% 0);transition:clip-path .9s var(--ease-io);transition-delay:var(--d,0ms)}
 .js [data-r="mask"].vu > *{clip-path:inset(0 0 0 0)}
-.js .titre-r{overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.js .titre-r{overflow:hidden;padding-top:.18em;margin-top:-.18em;padding-bottom:.08em;margin-bottom:-.08em}
 .js .titre-r > span{display:block;transform:translateY(105%);transition:transform .85s var(--ease);transition-delay:var(--d,0ms)}
 .js .titre-r.vu > span{transform:none}
 .js [data-r="line"]{opacity:1;transform:scaleX(0);transform-origin:left;transition:transform 1.4s var(--ease-io)}
@@ -1343,11 +1343,11 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
 .chapitre h2{background:var(--paper);display:inline-block;padding:0 .3em}
 .chapitre .label{margin-top:14px}
 
-.etape{position:relative;z-index:1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center;margin-bottom:clamp(96px,12vw,180px)}
-.etape.g .et-visuel{grid-column:1 / span 7}
-.etape.g .et-texte{grid-column:9 / span 4}
-.etape.d .et-visuel{grid-column:6 / span 7;grid-row:1}
-.etape.d .et-texte{grid-column:1 / span 4;grid-row:1}
+.arret{position:relative;z-index:1;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:center;margin-bottom:clamp(96px,12vw,180px)}
+.arret.g .et-visuel{grid-column:1 / span 7}
+.arret.g .et-texte{grid-column:9 / span 4}
+.arret.d .et-visuel{grid-column:6 / span 7;grid-row:1}
+.arret.d .et-texte{grid-column:1 / span 4;grid-row:1}
 .et-cadre{position:relative;display:block;overflow:hidden;aspect-ratio:16/10;background:var(--paper-2);box-shadow:0 0 0 1px var(--line),0 40px 80px -50px rgba(0,0,0,.45)}
 .et-cadre img{width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform 1.4s var(--ease),filter .8s}
 .et-cadre .voir{position:absolute;left:50%;top:50%;width:104px;height:104px;margin:-52px 0 0 -52px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;
@@ -1355,13 +1355,13 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
 @media (hover:hover){
   .et-cadre:hover img{transform:scale(1.04)}
   .et-cadre:hover .voir{transform:scale(1);opacity:1}
-  .etape:not(.atteinte) .et-cadre img{filter:saturate(.35)}
+  .arret:not(.atteinte) .et-cadre img{filter:saturate(.35)}
 }
 .et-texte{position:relative}
 .noeud{position:absolute;top:-4px;width:38px;height:38px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ink);display:grid;place-items:center;z-index:2;
   transition:background .5s,color .5s,transform .5s var(--ease)}
-.etape.g .noeud{left:calc(-12.5% - 34px)}
-.etape.d .noeud{right:calc(-12.5% - 34px)}
+.arret.g .noeud{left:calc(-12.5% - 34px)}
+.arret.d .noeud{right:calc(-12.5% - 34px)}
 .noeud b{font-family:var(--mono);font-weight:500;font-size:11.5px;letter-spacing:.02em}
 .atteinte .noeud{background:var(--ink);color:#fff;transform:scale(1.08)}
 .et-moment{color:var(--or-fonce);margin-bottom:12px}
@@ -1390,9 +1390,9 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
 
 @media (max-width:900px){
   .voie{padding-left:48px}
-  .etape{grid-template-columns:1fr;row-gap:26px;margin-bottom:84px}
-  .etape.g .et-visuel,.etape.d .et-visuel,.etape.g .et-texte,.etape.d .et-texte{grid-column:1;grid-row:auto}
-  .etape .noeud,.etape.g .noeud,.etape.d .noeud{left:-34px;right:auto;top:-2px;width:30px;height:30px;margin-left:-15px}
+  .arret{grid-template-columns:1fr;row-gap:26px;margin-bottom:84px}
+  .arret.g .et-visuel,.arret.d .et-visuel,.arret.g .et-texte,.arret.d .et-texte{grid-column:1;grid-row:auto}
+  .arret .noeud,.arret.g .noeud,.arret.d .noeud{left:-34px;right:auto;top:-2px;width:30px;height:30px;margin-left:-15px}
   .noeud b{font-size:11px}
   .chapitre{text-align:left;padding-block:28px 40px}
   .chapitre h2{padding:0}
@@ -1402,14 +1402,18 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
   .arrivee .noeud{position:absolute;left:-34px;top:0;margin:0 0 0 -15px;width:30px;height:30px}
   .arrivee .num{padding-top:4px}
 }
-@media (max-width:720px){
+@media (max-width:1100px){
   .plan .wrap{gap:12px}
   .plan ol{gap:10px}
   .pl-ch{gap:6px;flex:0 1 auto}
   .pl-nom{display:none}
   .pl-pts{gap:0}
-  .pl-pt{width:21px}
+  .pl-pt{width:26px;height:44px}
   .pl-ch + .pl-ch{padding-left:8px;border-left:1px solid var(--line)}
+  .pl-ou{margin-left:auto;padding-left:8px}
+}
+@media (max-width:720px){
+  .pl-pt{width:22px}
   .en-vrai{grid-template-columns:68px 1fr;padding:14px}
 }
 /* le chemin se lit comme une carte : papier pointé, étiquettes posées dessus */
@@ -1420,8 +1424,100 @@ body[data-page="accueil"] .tete:not(.plein) .burger span{background:#f3f1ec}
 .et-texte{background:linear-gradient(var(--paper),var(--paper)) padding-box;box-shadow:0 0 0 18px var(--paper)}
 .depart{background:var(--paper);padding:10px 18px}
 @media (max-width:900px){
-  .etape .et-texte{order:-1;box-shadow:none;background:none}
+  .arret .et-texte{order:-1;box-shadow:none;background:none}
   .vous .num{display:none}
   .depart{padding:0;background:none}
 }
-.etape,.chapitre{scroll-margin-top:calc(var(--nav) + 90px)}
+.arret,.chapitre{scroll-margin-top:calc(var(--nav) + 90px)}
+
+/* formulaire : champ piège pour les robots, hors écran ; nom du contact sous le téléphone */
+.cf-piege{position:absolute!important;left:-10000px;width:1px;height:1px;overflow:hidden}
+.coord-qui{display:block;font-size:13px;color:var(--mute)}
+.cf-ok.erreur{border-left-color:#8a1f11}
+.cf button[type=submit]:disabled{opacity:.6;cursor:progress}
+
+/* =====================================================================
+   Pages légales (17/11/2026) : mentions, confidentialité, CGV, à l'habillage du site
+   ===================================================================== */
+.legal{padding-block:calc(var(--nav) + clamp(40px,6vw,88px)) clamp(80px,10vw,140px)}
+.legal-wrap{max-width:820px}
+.legal .fil{margin-bottom:28px}
+.legal .fil a{color:var(--ink)}
+.legal .fil span{margin-inline:8px}
+.legal .kick{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--or-fonce);margin-bottom:14px}
+.legal h1{font-family:var(--serif);font-weight:360;font-size:clamp(40px,5.4vw,72px);line-height:1;letter-spacing:-.03em}
+.legal .upd{margin:16px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--mute)}
+.legal h2{font-family:var(--serif);font-weight:400;font-size:clamp(24px,2.2vw,30px);line-height:1.15;letter-spacing:-.015em;margin:52px 0 16px;padding-top:24px;border-top:1px solid var(--line)}
+.legal h3{font-size:17px;font-weight:600;margin:28px 0 8px}
+.legal p,.legal li{font-size:16px;line-height:1.7;color:var(--ink-2)}
+.legal p{margin-bottom:14px}
+.legal ul,.legal ol{margin:0 0 16px 22px}
+.legal li{margin-bottom:6px}
+.legal a{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.legal strong,.legal b{color:var(--ink);font-weight:600}
+.legal .card{background:var(--paper-2);padding:22px 24px;margin:6px 0 20px}
+.legal .card p{margin-bottom:6px}
+.legal button{font:500 14px/1 var(--sans);padding:12px 18px;background:var(--ink);color:#fff;margin-top:8px}
+.legal-voir{margin-top:56px!important;padding-top:24px;border-top:1px solid var(--line);font-size:14px!important;color:var(--mute)!important}
+.legal-langue{display:none;margin-bottom:24px;padding:12px 16px;background:var(--paper-2);font-size:14px}
+html:not([lang="fr"]) .legal-langue{display:block}
+@media (max-width:720px){.hb-bas{padding-right:76px}}
+.page-404 h1 em{color:var(--or-fonce)}.liste-404{list-style:none;margin:8px 0 0!important}.liste-404 li{border-top:1px solid var(--line);padding:12px 0;margin:0!important}.liste-404 a{font-family:var(--serif);font-size:22px;text-decoration:none!important}
+
+/* ---------- Audit visuel du 17/11 ---------- */
+/* 4. accueil, menu mobile ouvert : logo et croix à l'encre sur le rideau blanc */
+html.menu-ouvert body[data-page="accueil"] .tete .marque svg{color:var(--ink)}
+html.menu-ouvert body[data-page="accueil"] .tete .burger span{background:var(--ink)}
+/* 5. focus visible partout : blanc sur la vidéo, en-tête qui réapparaît au clavier */
+body[data-page="accueil"] .tete:not(.plein) :focus-visible,.hero-bio :focus-visible{outline-color:#fff}
+.nsdc-bulle:focus-visible{outline:2px solid var(--or)!important;outline-offset:3px}
+.tete:focus-within{transform:none}
+.svc-det > div{visibility:hidden;transition:visibility 0s .7s}
+.svc-l.ouvert .svc-det > div{visibility:visible;transition-delay:0s}
+/* 8. Services : la légende de l'espace client n'est plus sous le téléphone */
+@media (min-width:561px){.ec-legende{text-align:right}}
+@media (max-width:560px){.ec-legende{text-align:left;padding-right:32%}}
+/* 9. la bulle de discussion ne recouvre plus rien */
+.foot-bas,.hb-bas{padding-right:88px}
+html:has(#intro) .nsdc-bulle,html:has(.intro) .nsdc-bulle{opacity:0;pointer-events:none}
+/* 10. liens d'en-tête lisibles sur la vidéo claire de l'accueil */
+.hb-voile::after{content:"";position:absolute;inset:0 0 auto 0;height:calc(var(--nav) + 60px);background:linear-gradient(180deg,rgba(8,8,8,.6),rgba(8,8,8,0));pointer-events:none}
+/* 11. reels : la piste démarre au bord du gabarit à 1920 */
+@media (min-width:1441px){.rl-piste{scroll-padding-inline:calc((100vw - var(--max)) / 2 + var(--gut))}}
+/* 12. en-têtes de page alignés en haut : le fil d'Ariane ne saute plus d'une page à l'autre */
+.page-tete.avec-objet{justify-content:flex-start}
+/* 13. étiquettes de section cohérentes */
+.ct-titre h2{margin-top:18px}
+.heb-texte .num::before,.ct-titre .num::before{content:"";display:inline-block;width:18px;height:1px;background:currentColor;vertical-align:middle;margin-right:10px}
+/* 14. cibles tactiles */
+@media (hover:none),(max-width:900px){
+  .lien{min-height:44px}
+  .foot-col a{padding-block:10px}
+  .foot-bas nav a{display:inline-block;padding-block:11px}
+  .rideau .lang-b{min-width:44px;min-height:44px}
+  .fil a{display:inline-block;padding-block:12px}
+  .reseaux-l a{display:inline-block;padding-block:10px}
+}
+/* 15-17. finitions */
+.heb-chiffres b{white-space:nowrap}
+.chapitre .label{display:table;margin-inline:auto;background:var(--paper);padding:0 .4em}
+@media (max-width:900px){.chapitre .label{margin-left:0;padding-left:0}}
+.offre360 .o-cond{grid-column:1 / -1}
+.sim-o.on > *{transform:none}
+.sim-o.on{padding-inline:12px}
+.nowrap{white-space:nowrap}
+@media (max-width:820px){.p360 .pan{padding-bottom:88px}}
+.vous{z-index:0}
+
+/* ---------- Audit typographique du 17/11 ---------- */
+html{font-synthesis:none}
+h1,h2,h3,.svc-btn .nom,.suite-titre,.faq summary,.hero-sur,.et-besoin{text-wrap:balance}
+p,li{text-wrap:pretty}
+.foot-col h2{line-height:1.3}
+.rl-lien em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--mute)}
+.label,.num,dt,.f-date,.et-prix,.kick{letter-spacing:.05em}
+/* NSD 360 : la règle d'italique v3 ne doit pas alléger les titres Sora ; mots animés sans rognage */
+.p360 h1 em,.p360 h2 em{font-weight:inherit}
+.p360 [data-words] .w{padding:0 .06em .14em 0;margin:0 -.06em -.14em 0}
+.noeud.fin svg{width:16px;height:16px}
+.cf-ok svg{flex:none;margin-top:3px}

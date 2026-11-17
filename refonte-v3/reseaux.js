@@ -56,13 +56,14 @@
       + '<a class="rl-carte rl-fin" href="'+c.insta+'reels/" target="_blank" rel="noopener">'
       + '<img src="'+c.photo+'" alt="" class="rl-fin-photo">'
       + '<strong>Tous les reels</strong><span>@'+c.handle+'</span>'
-      + '<span class="rl-fin-fl" aria-hidden="true">→</span></a>';
+      + '<span class="rl-fin-fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="20" height="20"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>';
     suivre.innerHTML =
       '<p class="rl-phrase">'+c.phrase+'</p>'
       + '<div class="rl-liens">'
       + '<a class="rl-lien" href="'+c.insta+'" target="_blank" rel="noopener">'+IG+'<span>Instagram</span><em>@'+c.handle+'</em></a>'
       + '<a class="rl-lien" href="'+c.tiktok+'" target="_blank" rel="noopener">'+TT+'<span>TikTok</span><em>@'+c.handle+'</em></a>'
       + '</div>';
+    if (window.nsRetranslate) window.nsRetranslate();
     piste.scrollLeft = 0;
     piste.classList.remove('rl-in'); void piste.offsetWidth; piste.classList.add('rl-in');
     profondeur();

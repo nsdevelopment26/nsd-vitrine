@@ -83,7 +83,7 @@
   .logo-ec-rail{height:24px;width:auto;display:block}
   .marque b{font-family:var(--disp);font-weight:700;font-size:15px}
   .marque b em{font-style:normal;color:var(--soft);font-weight:500}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc2);
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);
     display:inline-flex;align-items:center;gap:10px}
   .eyebrow::before{content:"";width:24px;height:1px;background:var(--acc)}
   #ecConnexion h1{font-size:clamp(30px,7vw,42px);font-weight:800;margin-top:12px}
@@ -100,7 +100,7 @@
   .oubli{align-self:flex-end;font-size:12.5px;font-weight:500;color:var(--acc2)}
   .demo-note{display:inline-flex;align-items:center;gap:7px;padding:10px 15px;border-radius:999px;border:1px solid var(--line);
     background:rgba(255,255,255,.05);font-size:11.5px;color:var(--muted)}
-  .pied-co{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
+  .pied-co{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--muted)}
   /* Bandeau du mode démonstration : doit rester visible en permanence,
      pour qu'on ne confonde jamais la démo avec un vrai compte client. */
   .bandeau-demo{position:fixed;top:0;left:0;right:0;z-index:80;padding:9px 16px;text-align:center;
@@ -205,7 +205,7 @@
   .courbe.tracee .aire,.courbe.tracee .pt{opacity:1}
   .courbe.tracee .trait{stroke-dashoffset:0}
   @media(prefers-reduced-motion:reduce){.courbe .aire,.courbe .pt{opacity:1;transition:none}.courbe .trait{stroke-dashoffset:0;transition:none}}
-  .cv-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
+  .cv-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
 
   /* abonnement */
   .abo{cursor:pointer}
@@ -245,7 +245,7 @@
   .fil li:first-child{padding-top:0}
   .fil li:last-child{border-bottom:none;padding-bottom:0}
   .fil b{display:block;font-weight:400;font-size:13.5px}
-  .fil em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .fil em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
 
   /* segments de période */
   .segments{display:flex;gap:6px;padding:5px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
@@ -308,17 +308,17 @@
   .demande{display:flex;flex-direction:column;gap:12px}
   .dem-tete{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .dem-tete>div{flex:1;min-width:150px}
-  .dem-tete em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+  .dem-tete em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
   .dem-detail{font-size:13.5px;color:var(--soft)}
   .reponse{display:flex;gap:10px;align-items:flex-start;padding-top:12px;border-top:1px solid var(--line)}
   .reponse .ns{flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;
-    font-size:9.5px;color:var(--acc2);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24)}
+    font-size:11px;color:var(--acc2);background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24)}
   .reponse p{font-size:13px;color:var(--soft);font-style:italic}
   .frise{display:flex;align-items:center;gap:4px;margin-top:2px}
   .etape{display:flex;flex-direction:column;align-items:center;gap:5px}
   .etape i{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--line2);background:var(--bg2);display:grid;place-items:center;color:var(--bg)}
   .etape.fait i{background:var(--acc);border-color:var(--acc)}
-  .etape em{font-style:normal;font-size:10.5px;font-weight:500;color:var(--muted)}
+  .etape em{font-style:normal;font-size:11.5px;font-weight:500;color:var(--muted)}
   .etape.fait em{color:var(--acc2)}
   .trait{flex:1;height:1.5px;background:var(--line);margin-bottom:16px}
   .trait.fait{background:var(--acc)}
@@ -348,7 +348,7 @@
   @keyframes monte{from{transform:translate(-50%,70px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
   @media(prefers-reduced-motion:reduce){.feuille,.voile{animation:none}}
   .poignee{width:42px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 18px}
-  .mod-num{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--acc2);margin-bottom:6px}
+  .mod-num{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--acc2);margin-bottom:6px}
   .mod-titre{font-family:var(--disp);font-weight:700;font-size:21px;letter-spacing:-.02em}
   .mod-montant{margin:18px 0;padding:18px;border-radius:16px;border:1px solid var(--line);
     background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.02))}
@@ -383,7 +383,7 @@
     main{padding:24px 18px 112px}
     .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:9px 4px calc(9px + env(safe-area-inset-bottom));
       border-top:1px solid var(--line);background:rgba(10,10,13,.92);backdrop-filter:blur(18px)}
-    .tabbar .onglet{flex:1;flex-direction:column;gap:5px;padding:6px 2px;border-radius:14px;font-size:10.5px;text-align:center}
+    .tabbar .onglet{flex:1;flex-direction:column;gap:5px;padding:6px 2px;border-radius:14px;font-size:11px;text-align:center}
     .tabbar .onglet:hover{transform:none}
     .tabbar .onglet.actif{background:none;border:none}
     .tabbar .onglet.actif .rond{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26)}
@@ -448,6 +448,7 @@
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10" width="15" height="10" rx="2.2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></svg>
     Connexion sécurisée · vos données sont privées
   </span>
+  <p class="ec-legal" data-reveal data-delay="560" style="margin-top:14px;font-size:13px;text-align:center"><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a> · <a href="cgv.html">Conditions générales</a></p>
 
   <!-- Pas d'accès à la démonstration ici : cet écran est réservé aux clients.
        La démonstration s'ouvre depuis la section « Espace client » du site,

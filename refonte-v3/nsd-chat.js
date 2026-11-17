@@ -71,7 +71,7 @@
 
   .nsdc-panneau{position:fixed;right:20px;bottom:92px;width:376px;max-width:calc(100vw - 32px);
     height:min(560px,calc(100vh - 130px));background:#fff;border-radius:18px;z-index:2147483000;display:flex;
-    flex-direction:column;overflow:hidden;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#17161b;
+    flex-direction:column;overflow:hidden;font:15px/1.5 'Geist',system-ui,-apple-system,"Segoe UI",sans-serif;color:#17161b;
     box-shadow:0 24px 60px -12px rgba(0,0,0,.3),0 0 0 1px rgba(0,0,0,.06);
     opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;
     transition:opacity .26s,transform .26s cubic-bezier(.34,1.4,.64,1)}
@@ -115,7 +115,7 @@
     cursor:pointer;display:grid;place-items:center;transition:transform .2s,opacity .2s}
   .nsdc-envoi:hover:not(:disabled){transform:scale(1.07)}
   .nsdc-envoi:disabled{opacity:.4;cursor:default}
-  .nsdc-pied{text-align:center;font-size:10.5px;color:#9a958c;padding:0 0 9px;background:#fff;letter-spacing:.02em}
+  .nsdc-pied{text-align:center;font-size:11.5px;color:#9a958c;padding:0 0 9px;background:#fff;letter-spacing:.02em}
   .nsdc-pied a{color:inherit}
 
   @media(max-width:520px){
@@ -176,6 +176,20 @@
   const form    = racine.querySelector('.nsdc-bas');
   const champ   = form.querySelector('input');
   const envoi   = form.querySelector('.nsdc-envoi');
+  const panneau = racine.querySelector('.nsdc-panneau');
+  // Fermé, le panneau est inerte : rien n'y est atteignable au clavier (audit du 17/11).
+  panneau.inert = true;
+  // Sur notre propre site, pas de lien « propulsé par » vers nous-mêmes.
+  if (/(^|\.)nsdevelopment\.lu$/.test(location.hostname) || CFG.site === 'ns-development') {
+    const lien = racine.querySelector('.nsdc-pied a'); if (lien) lien.replaceWith(document.createTextNode(lien.textContent));
+  }
+  // Les réponses n'existent qu'en français : hors français, l'assistant s'efface.
+  const selonLangue = () => {
+    const l = (window.nsLangue && window.nsLangue()) || document.documentElement.lang || 'fr';
+    racine.hidden = l !== 'fr';
+    if (racine.hidden && ouvert) basculer();
+  };
+  document.addEventListener('ns-langue', selonLangue);
 
   // ---- affichage ------------------------------------------------------------
   function ajoute(texte, qui) {
@@ -219,6 +233,8 @@
     document.documentElement.classList.toggle('nsdc-open', ouvert);
     bulle.setAttribute('aria-expanded', String(ouvert));
     bulle.setAttribute('aria-label', ouvert ? 'Fermer la discussion' : 'Ouvrir la discussion');
+    panneau.inert = !ouvert;
+    if (!ouvert && racine.contains(document.activeElement)) bulle.focus();
     if (ouvert) {
       if (!fil.children.length) {
         ajoute(CFG.bienvenue, 'bot');
@@ -228,6 +244,7 @@
     }
   }
   bulle.onclick = basculer;
+  selonLangue();
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && ouvert) basculer(); });
 
   // ---- envoi ----------------------------------------------------------------
