@@ -136,6 +136,16 @@
     fait = true;
     try { sessionStorage.setItem(DEJA, '1'); } catch (e) {}
     if (matchMedia('(max-width:600px)').matches) {
+      // Au-dessus des barres fixes de la démo collées en bas (« Appeler / Devis », « section suivante »…)
+      var dessus = 0;
+      document.querySelectorAll('body *').forEach(function (el) {
+        if (el === hote || el.closest('#nsd-reseaux')) return;
+        var cs = getComputedStyle(el);
+        if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') return;
+        var r = el.getBoundingClientRect();
+        if (r.height > 0 && r.height < innerHeight * 0.4 && r.bottom >= innerHeight - 4 && r.width > innerWidth * 0.5) dessus = Math.max(dessus, innerHeight - r.top);
+      });
+      if (dessus) carte.style.bottom = (dessus + 12) + 'px';
       carte.classList.add('mini');
       carte.addEventListener('click', function deplier(ev) {
         if (ev.target.closest && ev.target.closest('.fermer')) return;
