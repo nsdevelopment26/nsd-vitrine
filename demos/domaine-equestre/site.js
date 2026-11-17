@@ -38,6 +38,7 @@
     addEventListener('keydown', function (e) { if (e.key === 'Escape') passer(); });
     addEventListener('wheel', passer, { passive: true, once: true });
     addEventListener('touchmove', passer, { passive: true, once: true });
+    addEventListener('pointerdown', function (e) { if (e.target.id !== 'intro-passer') passer(); }, { passive: true, once: true });
     setTimeout(finIntro, 8000); // filet si la 3D ne répond pas
   }
 

@@ -10,6 +10,8 @@
    Émet   : valombre:pret, valombre:choix {id}, valombre:intro-fin
    ========================================================================== */
 import * as THREE from './vendor/three.module.min.js';
+import { GLTFLoader } from './vendor/GLTFLoader.js';
+import { clone as clonerSquelette } from './vendor/SkeletonUtils.js';
 
 const D = window.VALOMBRE;
 const doc = document.documentElement;
@@ -47,8 +49,8 @@ function naturel(x, z) {
 const ZONES = [
   { id: 'ecuries', cx: -14, cz: 4, w: 25, d: 9, m: 6 },
   { id: 'manege', cx: 8, cz: 0, w: 20, d: 13, m: 6 },
-  { id: 'carriere', cx: 14, cz: 18, w: 22, d: 14, m: 5 },
-  { id: 'pres', cx: -2, cz: 26, w: 26, d: 14, m: 6 },
+  { id: 'carriere', cx: 16, cz: 16, w: 21, d: 14, m: 5 },
+  { id: 'pres', cx: 0, cz: 30, w: 26, d: 13, m: 6 },
   { id: 'poneys', cx: -27, cz: 18, w: 15, d: 13, m: 5 },
   { id: 'club', cx: -30, cz: 9, w: 7, d: 6, m: 4 }
 ];
@@ -69,7 +71,7 @@ function dansZone(x, z, marge = 0) {
 }
 
 /* L'allée : du bord sud jusqu'aux écuries. */
-const ALLEE = [[-6, 44], [-6, 14], [-9, 8]];
+const ALLEE = [[-16, 44], [-16, 15], [-13, 9]];
 function distSeg(px, pz, ax, az, bx, bz) {
   const vx = bx - ax, vz = bz - az, t = Math.max(0, Math.min(1, ((px - ax) * vx + (pz - az) * vz) / (vx * vx + vz * vz)));
   return Math.hypot(px - ax - vx * t, pz - az - vz * t);
@@ -123,7 +125,7 @@ for (let i = 0; i < pos.count; i++) {
   if (Math.abs(x - pz.cx) < pz.w / 2 && Math.abs(z - pz.cz) < pz.d / 2) tmp.lerp(pre, 0.6);
   if (Math.abs(x - po.cx) < po.w / 2 && Math.abs(z - po.cz) < po.d / 2) tmp.lerp(pre, 0.5);
   const ca = ZONES.find(zo => zo.id === 'carriere');
-  if (Math.abs(x - ca.cx) < 10 && Math.abs(z - ca.cz) < 6) tmp.copy(sable);
+  if (Math.abs(x - ca.cx) < 9 && Math.abs(z - ca.cz) < 5.5) tmp.copy(sable);
   const dA = distPoly(x, z, ALLEE);
   if (dA < 1.3) tmp.lerp(gravier, 1 - lisse(0.7, 1.3, dA));
   if (Math.abs(x + 14) < 13 && Math.abs(z - 9) < 2.2) tmp.lerp(gravier, 0.85);
@@ -212,7 +214,26 @@ function batiment(cx, cz, w, d, hm, ht, murs, rot = 0) {
   return g;
 }
 const ecuries = batiment(-14, 4, 22, 6, 2.6, 2.4, pierre);
-const manege = batiment(8, 0, 18, 11, 4.2, 3.4, bardage);
+/* le manège : un hangar en bois ouvert au sud sur les prés, comme sur la photo */
+const manege = (function () {
+  const g = new THREE.Group(), w = 18, d = 11, hm = 4.2, ht = 3.4;
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); g.add(m); return m; };
+  add(new THREE.BoxGeometry(w - 0.4, 0.06, d - 0.4), new THREE.MeshStandardMaterial({ color: '#d9ccb1', roughness: 1 }), 0, 0.03, 0);
+  add(new THREE.BoxGeometry(w, hm, 0.3), bardage, 0, hm / 2, -d / 2 + 0.15);
+  add(new THREE.BoxGeometry(0.3, hm, d), bardage, -w / 2 + 0.15, hm / 2, 0);
+  add(new THREE.BoxGeometry(0.3, hm, d), bardage, w / 2 - 0.15, hm / 2, 0);
+  add(new THREE.BoxGeometry(w, 0.9, 0.16), bardage, 0, 0.45, d / 2 - 0.1);
+  for (let i = 0; i <= 6; i++) add(new THREE.BoxGeometry(0.34, hm, 0.34), chene, -w / 2 + 0.2 + i * (w - 0.4) / 6, hm / 2, d / 2 - 0.1);
+  add(new THREE.BoxGeometry(w, 0.4, 0.36), chene, 0, hm - 0.2, d / 2 - 0.1);
+  const forme = new THREE.Shape();
+  forme.moveTo(-d / 2 - 0.5, 0); forme.lineTo(d / 2 + 0.5, 0); forme.lineTo(0, ht); forme.closePath();
+  const tg = new THREE.ExtrudeGeometry(forme, { depth: w + 0.8, bevelEnabled: false });
+  tg.rotateY(Math.PI / 2); tg.translate(-(w + 0.8) / 2, hm, 0);
+  g.add(new THREE.Mesh(tg, ardoise));
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  g.position.set(8, hauteur(8, 0), 0); scene.add(g);
+  return g;
+})();
 const club = batiment(-30, 9, 5, 4, 2.2, 1.8, pierre);
 /* portes des boxes */
 (function portes() {
@@ -224,12 +245,12 @@ const club = batiment(-30, 9, 5, 4, 2.2, 1.8, pierre);
 })();
 /* abri du pré */
 (function abri() {
-  const g = new THREE.Group(), x = 7, z = 30, y = hauteur(x, z);
+  const g = new THREE.Group(), x = 8, z = 33.2, y = hauteur(x, z);
   const t = new THREE.Mesh(new THREE.BoxGeometry(6, 0.25, 3.6), ardoise); t.position.y = 2.3; t.rotation.x = 0.12; g.add(t);
   const fond = new THREE.Mesh(new THREE.BoxGeometry(6, 2.1, 0.2), bardage); fond.position.set(0, 1.05, -1.6); g.add(fond);
   [[-2.8, 1.6], [2.8, 1.6]].forEach(([px, pz]) => { const p = new THREE.Mesh(new THREE.BoxGeometry(0.22, 2.2, 0.22), chene); p.position.set(px, 1.1, pz); g.add(p); });
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-  g.position.set(x, y, z); g.rotation.y = Math.PI; scene.add(g);
+  g.position.set(x, y, z); scene.add(g);
 })();
 
 /* lanternes de l'écurie : elles s'allument le soir */
@@ -271,19 +292,19 @@ function cloture(pts, matPiquet, matLisse, ecart = 2.2, hauteurs = [0.55, 0.95])
   scene.add(ip, il);
 }
 const rect = (cx, cz, w, d) => [[cx - w / 2, cz - d / 2], [cx + w / 2, cz - d / 2], [cx + w / 2, cz + d / 2], [cx - w / 2, cz + d / 2], [cx - w / 2, cz - d / 2]];
-cloture(rect(14, 18, 20, 12), lisseBlanche, lisseBlanche, 2.5, [0.45, 0.9]);
-cloture(rect(-2, 26, 24, 12), piquet, piquet);
+cloture(rect(16, 16, 18, 11), lisseBlanche, lisseBlanche, 2.5, [0.45, 0.9]);
+cloture(rect(0, 30, 24, 11), piquet, piquet);
 cloture(rect(-27, 18, 13, 11), piquet, piquet);
 cloture([[-24, -3], [-24, 0.4], [-4, 0.4]], piquet, piquet);
 
 /* ---------- arbres ---------- */
 const PATHS = D.balades.map(b => b.points);
 (function arbres() {
-  const max = MOBILE ? 420 : 760;
+  const max = MOBILE ? 380 : 700;
   const pal = ['#9a7b3c', '#b06a33', '#6f7b47', '#8b9055', '#c29b4b', '#7d6a3a', '#5f6d40'].map(C);
   const couronnes = [], rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
   // chênes de l'allée
-  for (let z = 15; z <= 40; z += 3.6) { couronnes.push([-9.2, z, 1.9 + rnd() * 0.4, 'chene']); couronnes.push([-2.8, z + 1.2, 1.8 + rnd() * 0.4, 'chene']); }
+  for (let z = 16; z <= 40; z += 3.4) { couronnes.push([-19, z, 1.5 + rnd() * 0.3, 'chene']); couronnes.push([-13.4, z + 1.2, 1.35 + rnd() * 0.25, 'chene']); }
   let essais = 0;
   while (couronnes.length < max && essais < max * 12) {
     essais++;
@@ -298,9 +319,20 @@ const PATHS = D.balades.map(b => b.points);
     couronnes.push([x, z, 1.0 + rnd() * 1.1, 'bois']);
   }
   const n = couronnes.length;
-  const cg = new THREE.IcosahedronGeometry(1, 1); cg.scale(1, 1.15, 1);
+  // une couronne = trois masses lisses (plus une sphère à facettes)
+  const masses = [[0, 0, 0, 1], [0.58, -0.28, 0.22, 0.7], [-0.5, -0.22, -0.3, 0.68]];
+  const pos = [], nor = [];
+  for (const [mx, my, mz, mr] of masses) {
+    const sg = new THREE.IcosahedronGeometry(mr, 2);
+    const p = sg.attributes.position, nn = sg.attributes.normal;
+    for (let k = 0; k < p.count; k++) { pos.push(p.getX(k) + mx, p.getY(k) * 1.08 + my, p.getZ(k) + mz); nor.push(nn.getX(k), nn.getY(k), nn.getZ(k)); }
+    sg.dispose();
+  }
+  const cg = new THREE.BufferGeometry();
+  cg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  cg.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
   const tg = new THREE.CylinderGeometry(0.12, 0.18, 1, 5); tg.translate(0, 0.5, 0);
-  const mc = new THREE.MeshStandardMaterial({ roughness: 0.9, flatShading: true });
+  const mc = new THREE.MeshStandardMaterial({ roughness: 0.92 });
   const mt = new THREE.MeshStandardMaterial({ color: '#4a3b2e', roughness: 1 });
   const ic = new THREE.InstancedMesh(cg, mc, n), it = new THREE.InstancedMesh(tg, mt, n);
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), v = new THREE.Vector3();
@@ -315,56 +347,100 @@ const PATHS = D.balades.map(b => b.points);
   scene.add(ic, it);
 })();
 
-/* ---------- chevaux en figurines ---------- */
-const robes = {
-  bai: [C('#6b3a22'), C('#1f1714')], gris: [C('#c9c9c4'), C('#7a7b7a')], alezan: [C('#a4582a'), C('#8a4a24')],
-  noir: [C('#1d1b1b'), C('#141313')], poney: [C('#4a2e1e'), C('#241812')]
+/* ---------- chevaux en figurines ----------
+   « Horse » de Quaternius (CC0, via poly.pizza), allégé à 4 animations : on le charge une fois,
+   on le clone par cheval (squelette compris) et on le teinte selon la robe. */
+const ROBES = {
+  bai: { Main: '#6e3a1f', Main_Dark: '#2a1d16', Hair: '#17110e', Muzzle: '#2a1d16', Hooves: '#2b2622', Main_Light: '#7d4528' },
+  gris: { Main: '#c9c9c4', Main_Dark: '#8e8f8c', Hair: '#e4e4e0', Muzzle: '#4f4f4d', Hooves: '#4a4642', Main_Light: '#d8d8d4' },
+  alezan: { Main: '#94532c', Main_Dark: '#7a4223', Hair: '#a8663a', Muzzle: '#5e3420', Hooves: '#6a5a4a', Main_Light: '#a0603a' },
+  noir: { Main: '#211e1d', Main_Dark: '#151313', Hair: '#0e0d0d', Muzzle: '#1a1817', Hooves: '#262321', Main_Light: '#2a2625' },
+  poney: { Main: '#4a2c1c', Main_Dark: '#231812', Hair: '#1a120e', Muzzle: '#231812', Hooves: '#2b2622', Main_Light: '#553322' }
 };
-const geoCorps = new THREE.CapsuleGeometry(0.3, 0.8, 4, 10); geoCorps.rotateZ(Math.PI / 2);
-const geoJambe = new THREE.CylinderGeometry(0.065, 0.05, 0.78, 6);
-const geoEncolure = new THREE.CapsuleGeometry(0.14, 0.48, 3, 8);
-const geoTete = new THREE.CapsuleGeometry(0.1, 0.34, 3, 8);
-const geoQueue = new THREE.CylinderGeometry(0.03, 0.08, 0.7, 5);
-function cheval(robe, broute = false, cavalier = false) {
-  const [c1, c2] = robes[robe];
-  const m1 = new THREE.MeshStandardMaterial({ color: c1, roughness: 0.65 }), m2 = new THREE.MeshStandardMaterial({ color: c2, roughness: 0.7 });
+const matsRobe = {};
+function materiauRobe(robe, m) {
+  const k = robe + '|' + m.name;
+  if (!matsRobe[k]) {
+    const c = m.clone();
+    if (ROBES[robe][m.name]) c.color.set(ROBES[robe][m.name]);
+    c.roughness = 0.72; c.metalness = 0;
+    matsRobe[k] = c;
+  }
+  return matsRobe[k];
+}
+const ECHELLE_CHEVAL = 2.35 / 5.69;   // le modèle mesure 5,69 unités du nez à la queue
+const chevaux = [], melangeurs = [];
+function cheval(robe, anim = 'Idle', cavalier = false, echelle = 1) {
   const g = new THREE.Group();
-  const corps = new THREE.Mesh(geoCorps, m1); corps.position.y = 1.08; g.add(corps);
-  [[0.46, 0.17], [0.46, -0.17], [-0.46, 0.17], [-0.46, -0.17]].forEach(([x, z]) => { const j = new THREE.Mesh(geoJambe, m2); j.position.set(x, 0.4, z); g.add(j); });
-  const enc = new THREE.Mesh(geoEncolure, m1);
-  const tete = new THREE.Mesh(geoTete, robe === 'gris' ? m1 : m1);
-  if (broute) {
-    enc.position.set(0.82, 0.82, 0); enc.rotation.z = -2.2;
-    tete.position.set(1.08, 0.36, 0); tete.rotation.z = -2.9;
-  } else {
-    enc.position.set(0.78, 1.42, 0); enc.rotation.z = -0.55;
-    tete.position.set(1.02, 1.74, 0); tete.rotation.z = -1.9;
-  }
-  g.add(enc, tete);
-  const q = new THREE.Mesh(geoQueue, m2); q.position.set(-0.78, 0.86, 0); q.rotation.z = 0.35; g.add(q);
-  if (cavalier) {
-    const veste = new THREE.MeshStandardMaterial({ color: '#232c3f', roughness: 0.8 });
-    const buste = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.32, 3, 8), veste); buste.position.set(0.05, 1.68, 0); g.add(buste);
-    const casque = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), new THREE.MeshStandardMaterial({ color: '#141414', roughness: 0.4 }));
-    casque.position.set(0.07, 2.02, 0); g.add(casque);
-    [0.2, -0.2].forEach(z => { const jb = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.6, 6), veste); jb.position.set(0.12, 1.3, z * 1.25); jb.rotation.z = 0.3; g.add(jb); });
-  }
-  g.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+  chevaux.push({ g, robe, anim, cavalier, echelle });
   return g;
 }
-function poser(g, x, z, rot, echelle = 1.4) { g.position.set(x, hauteur(x, z), z); g.rotation.y = rot; g.scale.setScalar(echelle); scene.add(g); return g; }
-poser(cheval('bai', true), -8, 25, 0.4);
-poser(cheval('gris', true), -1, 28, 2.6);
-poser(cheval('alezan', true), 4, 23, -0.9);
-poser(cheval('noir', false), -12, 29, 1.2);
-poser(cheval('poney', true), -29, 19, 0.8, 1.0);
-poser(cheval('poney', false), -24, 21, 2.2, 1.0);
-poser(cheval('gris', false), -20, -1.4, 0.1);
-const reprise = poser(cheval('gris', false, true), 14, 18, 0);
+function poser(g, x, z, rot) { g.position.set(x, hauteur(x, z), z); g.rotation.y = rot; scene.add(g); return g; }
+poser(cheval('bai', 'Eating'), -6, 29, 0.4);
+poser(cheval('gris', 'Eating'), 2, 32.5, 2.6);
+poser(cheval('alezan', 'Idle_Headlow'), 7, 27.5, -0.9);
+poser(cheval('noir', 'Idle'), -8.5, 33, 1.2);
+poser(cheval('poney', 'Eating', false, 0.72), -29, 19, 0.8);
+poser(cheval('poney', 'Idle', false, 0.72), -24.5, 21, 2.2);
+poser(cheval('gris', 'Idle_Headlow'), -18, -1.4, 0.1);
+const reprise = poser(cheval('gris', 'Walk', true), 16, 16, 0);
 
 /* Les cavaliers de la balade, sur le tracé choisi. */
-const cortege = [cheval('bai', false, true), cheval('gris', false, true)];
-cortege.forEach(c => { c.visible = false; c.scale.setScalar(1.4); scene.add(c); });
+const cortege = [cheval('bai', 'Walk', true), cheval('gris', 'Walk', true)];
+cortege.forEach(c => { c.visible = false; scene.add(c); });
+
+/* Le cavalier : figurine simple mais assise (selle, cuisses, bottes, buste, bombe, bras aux rênes). */
+const tenue = {
+  veste: new THREE.MeshStandardMaterial({ color: '#232c3f', roughness: 0.8 }),
+  culotte: new THREE.MeshStandardMaterial({ color: '#cfc6b4', roughness: 0.85 }),
+  bottes: new THREE.MeshStandardMaterial({ color: '#151313', roughness: 0.45 }),
+  bombe: new THREE.MeshStandardMaterial({ color: '#121212', roughness: 0.35 }),
+  peau: new THREE.MeshStandardMaterial({ color: '#c99b7f', roughness: 0.8 }),
+  tapis: new THREE.MeshStandardMaterial({ color: '#eceee9', roughness: 0.9 })
+};
+function cavalierFig() {
+  const r = new THREE.Group();
+  const add = (geo, mat, x, y, z, rz = 0, rx = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, 0, rz); m.castShadow = true; r.add(m); return m; };
+  add(new THREE.BoxGeometry(0.5, 0.04, 0.5), tenue.tapis, 0, -0.02, 0);
+  add(new THREE.CapsuleGeometry(0.075, 0.24, 3, 8), tenue.culotte, 0.1, 0.03, 0.15, -1.25, 0.25);
+  add(new THREE.CapsuleGeometry(0.075, 0.24, 3, 8), tenue.culotte, 0.1, 0.03, -0.15, -1.25, -0.25);
+  add(new THREE.CapsuleGeometry(0.058, 0.3, 3, 8), tenue.bottes, 0.2, -0.26, 0.22, 0.12, 0.1);
+  add(new THREE.CapsuleGeometry(0.058, 0.3, 3, 8), tenue.bottes, 0.2, -0.26, -0.22, 0.12, -0.1);
+  add(new THREE.CapsuleGeometry(0.12, 0.26, 3, 10), tenue.veste, 0.0, 0.27, 0, -0.1);
+  add(new THREE.SphereGeometry(0.075, 12, 10), tenue.peau, 0.06, 0.56, 0);
+  add(new THREE.SphereGeometry(0.085, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), tenue.bombe, 0.05, 0.585, 0);
+  add(new THREE.CapsuleGeometry(0.038, 0.24, 3, 6), tenue.veste, 0.14, 0.3, 0.13, -0.95);
+  add(new THREE.CapsuleGeometry(0.038, 0.24, 3, 6), tenue.veste, 0.14, 0.3, -0.13, -0.95);
+  return r;
+}
+
+new GLTFLoader().load('modeles/cheval.glb', gltf => {
+  const clips = Object.fromEntries(gltf.animations.map(a => [a.name, a]));
+  const v = new THREE.Vector3();
+  chevaux.forEach(({ g, robe, anim, cavalier, echelle }, i) => {
+    const o = clonerSquelette(gltf.scene);
+    o.traverse(m => { if (m.isMesh) { m.material = materiauRobe(robe, m.material); m.castShadow = true; m.frustumCulled = false; } });
+    o.scale.setScalar(ECHELLE_CHEVAL * echelle);
+    if (robe === 'poney') o.scale.y *= 0.86;   // un poney est plus trapu qu'un petit cheval
+    o.rotation.y = Math.PI / 2;           // le modèle regarde +z, la scène attend +x
+    g.add(o);
+    const mx = new THREE.AnimationMixer(o);
+    const act = mx.clipAction(clips[anim] || clips.Idle);
+    act.play(); act.time = (i * 0.83) % act.getClip().duration;
+    mx.update(0);
+    melangeurs.push(mx);
+    if (cavalier) {
+      g.updateMatrixWorld(true);
+      const dos = o.getObjectByName('Torso2') || o.getObjectByName('Torso');   // le creux du dos, là où va la selle
+      dos.getWorldPosition(v); g.worldToLocal(v);
+      const fig = cavalierFig();
+      fig.position.set(v.x + 0.02, v.y + 0.29 * echelle, 0);
+      g.add(fig);
+      g.updateMatrixWorld(true);
+      dos.attach(fig);                   // le cavalier suit le dos du cheval au pas
+    }
+  });
+}, undefined, e => console.warn('cheval', e));
 
 /* ---------- balades ---------- */
 const accent = C('#c3cf86'), accentFonce = C('#4f5d1c');
@@ -392,7 +468,7 @@ const traces = D.balades.map(b => {
   const tube = new THREE.Mesh(geo, mat);
   tube.renderOrder = 3;
   scene.add(tube);
-  return { id: b.id, courbe: lisseC, mat, cible: 0, actif: false };
+  return { id: b.id, courbe: lisseC, longueur, mat, cible: 0, actif: false };
 });
 
 /* ---------- anneaux des lieux ---------- */
@@ -495,26 +571,27 @@ function cadrer() {
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   const large = w >= 980;
-  decalage = large ? Math.min(w * 0.36, 520) : 0;
+  decalage = large ? Math.min(w * 0.44, 640) : 0;
+  BASE.el = large ? 0.58 : 0.8;          // téléphone : vue plus plongeante, repères moins tassés
   if (decalage) camera.setViewOffset(w + decalage, h, 0, 0, w, h); else camera.clearViewOffset();
   const asp = (w - decalage * 0.5) / h;
   rBase = 212 / Math.min(1.05, Math.max(0.55, asp / 1.55));
-  if (asp < 1) rBase *= 0.86;
+  if (asp < 1) rBase *= 0.97;
   scene.fog.near = rBase * 0.95; scene.fog.far = rBase * 2.3;
   camera.far = rBase * 4;
-  if (!lieuActif && !journee) but.r = rBase;
+  if (!lieuActif && !journee) { but.r = rBase; but.el = BASE.el; }
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(cadrer).observe(stage);
 cadrer();
-cam.r = rBase;
+cam.r = rBase; cam.el = but.el = BASE.el;
 
 function viser(id) {
   if (!id) { but.az = BASE.az; but.el = BASE.el; but.r = rBase; but.cible.copy(BASE.cible); return; }
   const l = LIEUX[id];
   but.cible.set(l.x, hauteur(l.x, l.z) + (id === 'foret' ? 4 : 1), l.z);
-  but.r = id === 'foret' ? rBase * 0.86 : rBase * 0.42;
-  but.el = id === 'foret' ? 0.98 : 0.55;
+  but.r = id === 'foret' ? rBase * 0.86 : rBase * 0.56;
+  but.el = id === 'foret' ? 0.98 : 0.6;
   but.az = BASE.az + (l.x < -10 ? -0.25 : l.x > 6 ? 0.25 : 0);
 }
 
@@ -588,7 +665,8 @@ function placerPins() {
   for (const [id, p] of Object.entries(pins)) {
     vp.copy(p.v).project(camera);
     const x = (vp.x * 0.5 + 0.5) * w, y = (-vp.y * 0.5 + 0.5) * h;
-    const cache = (journee ? journee.lieu !== id : false) || (decalage > 0 && x < decalage * 1.04);
+    const cache = (journee ? journee.lieu !== id : false) || (decalage > 0 && x < decalage * 1.04)
+      || y < 86 || (decalage > 0 && y > h - 130 && x > w - 520);
     p.el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
     p.el.classList.toggle('cache', cache || vp.z > 1);
   }
@@ -688,17 +766,18 @@ function cycle() {
     u.uT.value = t;
   });
   // la reprise en carrière
-  const a = t * 0.32;
-  const rx = 14 + Math.cos(a) * 6.5, rz = 18 + Math.sin(a) * 3.4;
-  reprise.position.set(rx, hauteur(rx, rz) + Math.abs(Math.sin(t * 7)) * 0.05, rz);
-  reprise.rotation.y = Math.atan2(-(Math.cos(a) * 3.4), -Math.sin(a) * 6.5);
+  if (!calme) melangeurs.forEach(m => m.update(dt));
+  const a = t * 0.2;
+  const rx = 16 + Math.cos(a) * 6.2, rz = 16 + Math.sin(a) * 3.2;
+  reprise.position.set(rx, hauteur(rx, rz), rz);
+  reprise.rotation.y = Math.atan2(-(Math.cos(a) * 3.2), -Math.sin(a) * 6.2);
   // le cortège de la balade
   if (baladeActive) {
     const tr = traces.find(x => x.id === baladeActive);
     cortege.forEach((c, i) => {
-      const u = ((t * 0.018) - i * 0.006 + 1) % 1;
+      const u = ((t * 1.25 / tr.longueur) - i * 2.6 / tr.longueur + 1) % 1;
       const p = tr.courbe.getPointAt(u), tg = tr.courbe.getTangentAt(u);
-      c.position.set(p.x + tg.z * (i ? 0.6 : -0.6), hauteur(p.x, p.z) + Math.abs(Math.sin(t * 4 + i)) * 0.04, p.z - tg.x * (i ? 0.6 : -0.6));
+      c.position.set(p.x + tg.z * (i ? 0.6 : -0.6), hauteur(p.x, p.z), p.z - tg.x * (i ? 0.6 : -0.6));
       c.rotation.y = Math.atan2(-tg.z, tg.x);
     });
   }
