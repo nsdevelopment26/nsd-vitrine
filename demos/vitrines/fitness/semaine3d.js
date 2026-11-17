@@ -9,6 +9,7 @@
 
    Seule dépendance : Three.js r170, servi en local (vendor/). */
 import * as THREE from './vendor/three.module.min.js';
+import { RoundedBoxGeometry } from './vendor/RoundedBoxGeometry.js';
 
 const P = window.PULSE;
 const html = document.documentElement;
@@ -49,16 +50,19 @@ const PAR_H = 0.62;          // profondeur d'une heure
 const H0 = 6.5 * 60, H1 = 21.5 * 60;
 const zDe = (m) => (m - (H0 + H1) / 2) / 60 * PAR_H;   // matin au fond (z négatif), soir devant
 const xDe = (j) => (j - 3) * COL;
-const hDe = (int) => 0.16 + int * 0.3;
+const hDe = (int) => 0.12 + int * 0.21;
 
-const lumAmb = new THREE.HemisphereLight(0xffe2cf, 0x2a120c, 1.15);
+/* éclairage : un ciel chaud qui débouche les flancs (sinon l'ambre vire au brun),
+   une clé de face à gauche, un contre-jour vermillon */
+const lumAmb = new THREE.HemisphereLight(0xfff0e4, 0x3a1a12, 1.55);
 scene.add(lumAmb);
-const cle = new THREE.DirectionalLight(0xffd2a8, 2.8);
-cle.position.set(-7, 11, 6);
+const cle = new THREE.DirectionalLight(0xffdcb8, 2.5);
+cle.position.set(-5, 12, 9);
 cle.castShadow = true;
 cle.shadow.mapSize.set(1536, 1536);
 Object.assign(cle.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 30 });
 cle.shadow.bias = -0.0006;
+cle.shadow.radius = 5;
 scene.add(cle);
 const contre = new THREE.DirectionalLight(0xff6a3d, 1.1);
 contre.position.set(6, 4, -9);
@@ -99,24 +103,63 @@ bande.position.set(xDe(P.aujourdhui), 0.004, (zMin + zMax) / 2);
 scene.add(bande);
 
 /* les blocs */
-const geo = new THREE.BoxGeometry(1, 1, 1);
+const geo = new RoundedBoxGeometry(1, 1, 1, 4, 0.07);
 geo.translate(0, 0.5, 0);          // pivot au sol : on règle la hauteur par scale.y
-const brique = new THREE.Color(0x3a1d18);
+const gris = new THREE.Color(0x8c8480);   // un cours complet passe au gris chaud
+
+/* ombre de contact : une tache douce sous chaque bloc */
+const tacheTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d');
+  const d = g.createRadialGradient(64, 64, 8, 64, 64, 64);
+  d.addColorStop(0, 'rgba(0,0,0,0.75)'); d.addColorStop(0.55, 'rgba(0,0,0,0.35)'); d.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = d; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+})();
+const tacheGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+
+/* deux cours qui se chevauchent le même jour se rangent côte à côte */
+const couloirs = {};
+for (let j = 0; j < 7; j++) {
+  const jour = P.COURS.filter((c) => c.j === j).sort((a, b) => P.minutes(a.h) - P.minutes(b.h));
+  const fins = [];
+  jour.forEach((c) => {
+    const d = P.minutes(c.h);
+    let k = fins.findIndex((f) => f <= d);
+    if (k < 0) { k = fins.length; fins.push(0); }
+    fins[k] = d + c.min;
+    couloirs[c.id] = { k };
+  });
+  jour.forEach((c) => {
+    const d = P.minutes(c.h), f = d + c.min;
+    const n = 1 + jour.filter((o) => o !== c && P.minutes(o.h) < f && P.minutes(o.h) + o.min > d).length;
+    couloirs[c.id].n = Math.min(n, fins.length);
+  });
+}
 const blocs = [];
 const groupe = new THREE.Group();
 scene.add(groupe);
 
 P.COURS.forEach((c) => {
   const debut = P.minutes(c.h);
-  const prof = (c.min / 60) * PAR_H * 0.94;
+  const prof = (c.min / 60) * PAR_H * 0.88;
   const base = new THREE.Color(P.FAMILLES[c.fam].couleur);
-  const mat = new THREE.MeshStandardMaterial({ color: base.clone(), roughness: 0.52, metalness: 0.04, emissive: 0x000000, transparent: true });
+  const mat = new THREE.MeshStandardMaterial({ color: base.clone(), roughness: 0.46, metalness: 0.02, emissive: base.clone(), emissiveIntensity: 0.1, transparent: true });
   const m = new THREE.Mesh(geo, mat);
   m.castShadow = true; m.receiveShadow = true;
-  m.scale.set(LARGE, 0.001, prof);
-  m.position.set(xDe(c.j), 0, zDe(debut) + prof / 2);
+  const { k, n } = couloirs[c.id];
+  const large = (LARGE - (n - 1) * 0.08) / n;
+  const x = xDe(c.j) - LARGE / 2 + large / 2 + k * (large + 0.08);
+  const z = zDe(debut) + prof / 2;
+  m.scale.set(large, 0.001, prof);
+  m.position.set(x, 0, z);
+  const tache = new THREE.Mesh(tacheGeo, new THREE.MeshBasicMaterial({ map: tacheTex, transparent: true, depthWrite: false, opacity: 0 }));
+  tache.position.set(x, 0.006, z);
+  tache.scale.set(large + 0.55, 1, prof + 0.55);
+  groupe.add(tache);
   m.userData = {
-    cours: c, base, haut: hDe(c.int), cible: hDe(c.int), h: 0,
+    cours: c, base, haut: hDe(c.int), cible: hDe(c.int), h: 0, tache,
+    semaine: { x, z, sx: large, sz: prof }, ici: { x, z, sx: large, sz: prof },
     visible: 1, lev: 0, levCible: 0, retard: (c.j * 0.09 + (debut - H0) / 900 * 0.35)
   };
   groupe.add(m);
@@ -140,12 +183,32 @@ function teinte(m) {
   const reste = P.libres(c);
   const mat = m.material;
   mat.color.copy(m.userData.base);
-  if (reste === 0 && !P.reserve(c.id)) mat.color.lerp(brique, 0.72);
-  mat.emissive.set(P.reserve(c.id) ? 0x5a1a08 : 0x000000);
+  const plein = reste === 0 && !P.reserve(c.id);
+  if (plein) mat.color.lerp(gris, 0.88);
+  m.userData.plein = plein;
+  mat.emissive.copy(mat.color);
+  mat.emissiveIntensity = P.reserve(c.id) ? 0.32 : (plein ? 0.04 : 0.1);
 }
 function rafraichir() { blocs.forEach(teinte); demander(); }
 P.surChange(rafraichir);
 rafraichir();
+
+/* ------------------------------------------------------------ téléphone : un jour à la fois
+   Sur petit écran, les cours du jour choisi se rangent en une rangée de
+   blocs larges (le doigt doit pouvoir les toucher), les autres rentrent au sol. */
+const PAS_MOB = 2.05;
+function placerMobile() {
+  const mob = estMobile();
+  const jour = mob && jourVise >= 0 ? blocs.filter((b) => b.userData.cours.j === jourVise)
+    .sort((a, b) => P.minutes(a.userData.cours.h) - P.minutes(b.userData.cours.h)) : [];
+  blocs.forEach((b) => {
+    const u = b.userData, i = jour.indexOf(b);
+    u.ici = i < 0 ? u.semaine : { x: (i - (jour.length - 1) / 2) * PAS_MOB, z: 0, sx: 1.72, sz: 1.5 };
+    u.horsJour = mob && i < 0;
+  });
+  return jour.length;
+}
+let nJour = 0;
 
 /* ------------------------------------------------------------ cadrage */
 let L = 1, H = 1;
@@ -153,7 +216,12 @@ const cam = { x: 0, z: 0, dist: 27 };
 const camCible = { x: 0, z: 0, dist: 15 };
 function cadrage() {
   const mob = estMobile();
-  if (jourVise >= 0) {
+  nJour = placerMobile();
+  if (mob && jourVise >= 0) {
+    const fovH = 2 * Math.atan(Math.tan((camera.fov * Math.PI) / 360) * (L / H));
+    camCible.x = 0; camCible.z = 0;
+    camCible.dist = Math.max(9, ((Math.max(nJour, 3) * PAS_MOB) / 2 + 0.7) / Math.tan(fovH / 2));
+  } else if (jourVise >= 0) {
     camCible.x = xDe(jourVise);
     camCible.z = 0.2;
     camCible.dist = mob ? 21 : 19;
@@ -170,7 +238,6 @@ function dimensionner() {
   camera.aspect = L / H;
   /* sur grand écran, la semaine se décale à droite pour laisser le titre respirer */
   if (innerWidth > 1100) camera.setViewOffset(L, H, -L * 0.14, H * 0.07, L, H);
-  else if (estMobile() && L / H < 1.2) camera.setViewOffset(L, H, 0, H * 0.1, L, H);
   else camera.clearViewOffset();
   camera.updateProjectionMatrix();
   cadrage();
@@ -196,12 +263,32 @@ P.COURTS.forEach((nom, j) => {
   calques.appendChild(e);
   etiquettes.push({ e, v: new THREE.Vector3(3.5 * COL + 0.6, 0, zDe(h * 60)) });
 });
+blocs.forEach((b) => {
+  const e = document.createElement('span');
+  e.className = 's3d-bloc';
+  e.innerHTML = `<b>${b.userData.cours.h}</b>${b.userData.cours.nom}`;
+  calques.appendChild(e);
+  b.userData.etiq = e;
+});
 const tmp = new THREE.Vector3();
 function projeter(v) {
   tmp.copy(v).project(camera);
   return { x: (tmp.x * 0.5 + 0.5) * L, y: (-tmp.y * 0.5 + 0.5) * H, dedans: tmp.z < 1 };
 }
 function placerEtiquettes() {
+  const mobJour = estMobile() && jourVise >= 0;
+  calques.classList.toggle('mob-jour', mobJour);
+  if (mobJour) {
+    blocs.forEach((b) => {
+      const e = b.userData.etiq;
+      if (b.userData.horsJour) { e.style.opacity = '0'; return; }
+      tmp.set(b.position.x, 0, b.position.z + b.scale.z / 2 + 0.25);
+      const p = projeter(tmp);
+      e.style.opacity = '1';
+      e.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) translate(-50%,0)`;
+    });
+    return;
+  }
   etiquettes.forEach(({ e, v }) => {
     const p = projeter(v);
     e.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px) translate(-50%,-50%)`;
@@ -238,7 +325,7 @@ function viser(ev) {
   const r = toile.getBoundingClientRect();
   ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
   rayon.setFromCamera(ndc, camera);
-  const touches = rayon.intersectObjects(blocs.filter((b) => b.userData.visible > 0.5 && (jourVise < 0 || b.userData.cours.j === jourVise)), false);
+  const touches = rayon.intersectObjects(blocs.filter((b) => b.userData.visible > 0.5 && !b.userData.horsJour && (jourVise < 0 || b.userData.cours.j === jourVise)), false);
   return touches.length ? touches[0].object : null;
 }
 function changerSurvol(m) {
@@ -295,7 +382,13 @@ function image(maintenant) {
   blocs.forEach((m) => {
     const u = m.userData;
     const m0 = clamp((montee * 1.6 - u.retard), 0, 1);
-    const cible = (u.visible ? u.cible : 0.05) * ioc(m0);
+    const cible = (u.horsJour ? 0.001 : u.visible ? u.cible : 0.05) * ioc(m0);
+    const avX = m.position.x;
+    m.position.x = amortir(m.position.x, u.ici.x, 7, dt);
+    m.position.z = amortir(m.position.z, u.ici.z, 7, dt);
+    m.scale.x = amortir(m.scale.x, u.ici.sx, 7, dt);
+    m.scale.z = amortir(m.scale.z, u.ici.sz, 7, dt);
+    if (Math.abs(avX - u.ici.x) > 0.002 || Math.abs(m.scale.x - u.ici.sx) > 0.002) actif = true;
     const avant = u.h;
     u.h = amortir(u.h, cible, 9, dt);
     u.lev = amortir(u.lev, u.levCible, 12, dt);
@@ -306,7 +399,11 @@ function image(maintenant) {
     }
     m.scale.y = Math.max(0.001, u.h + coup);
     m.position.y = u.lev * 0.14;
-    const opa = !u.visible ? 0.35 : (jourVise < 0 || u.cours.j === jourVise ? 1 : 0.12);
+    const opa = (u.horsJour ? 0 : !u.visible ? 0.35 : (jourVise < 0 || u.cours.j === jourVise ? 1 : 0.12)) * (u.plein ? 0.6 : 1);
+    const t = u.tache;
+    t.position.x = m.position.x; t.position.z = m.position.z;
+    t.scale.set(m.scale.x + 0.55, 1, m.scale.z + 0.55);
+    t.material.opacity = Math.min(1, m.scale.y * 1.6) * 0.55 * m.material.opacity;
     if (Math.abs(avant - u.h) > 0.0008 || Math.abs(u.lev - u.levCible) > 0.002) actif = true;
     const o = m.material.opacity; m.material.opacity = amortir(o, opa, 8, dt);
     if (Math.abs(o - opa) > 0.005) actif = true;
@@ -314,7 +411,10 @@ function image(maintenant) {
   });
   if (!calme) actif = true;           // le battement continue tant que la scène est à l'écran
 
+  const mobJour = estMobile() && jourVise >= 0;
   const angVise = estMobile() ? 0 : (jourVise < 0 ? -0.22 : -0.08);
+  grille.material.opacity = amortir(grille.material.opacity, mobJour ? 0 : 0.55, 6, dt);
+  bande.visible = !mobJour;
   cam.x = amortir(cam.x, camCible.x, 4, dt);
   cam.z = amortir(cam.z, camCible.z, 4, dt);
   cam.dist = amortir(cam.dist, camCible.dist, 4, dt);
@@ -324,7 +424,7 @@ function image(maintenant) {
 
   angBase = amortir(angBase, angVise, 4, dt);
   const ang = angBase + yaw;
-  const elev = 0.62 + tir;
+  const elev = (mobJour ? 0.5 : 0.9) + tir;
   camera.position.set(
     cam.x + Math.sin(ang) * Math.cos(elev) * cam.dist,
     Math.sin(elev) * cam.dist,

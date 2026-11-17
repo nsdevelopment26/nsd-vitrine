@@ -31,6 +31,7 @@
     intro.classList.add("sort");
     html.classList.remove("en-intro");
     lancer3d();
+    $("#intro-passer").hidden = true;
     setTimeout(function () { intro.hidden = true; }, 700);
   }
   var monteeDemandee = false;
@@ -44,6 +45,8 @@
   });
   if (html.classList.contains("en-intro")) {
     intro.classList.add("joue");
+    $("#intro-passer").hidden = false;
+    $("#intro-passer").addEventListener("pointerdown", finIntro);
     $("#intro-passer").addEventListener("click", finIntro);
     addEventListener("wheel", finIntro, { once: true, passive: true });
     addEventListener("keydown", function (e) { if (e.key === "Escape" || e.key === " ") finIntro(); }, { once: true });
@@ -110,6 +113,11 @@
   if (!matchMedia("(hover: hover) and (pointer: fine)").matches) $("#aide").textContent = "Touchez un bloc pour réserver";
   $("#nb-cours").textContent = P.COURS.length + " cours";
 
+  var mobile = matchMedia("(max-width: 820px)");
+  function jourMobile() { if (mobile.matches && etat.j === -1) etat.j = P.aujourdhui; }
+  mobile.addEventListener("change", function () { jourMobile(); appliquer(); });
+  jourMobile();
+
   function appliquer() {
     $$("[data-j]").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.j === etat.j ? "true" : "false"); });
     $$("[data-fam]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.fam === etat.fam ? "true" : "false"); });
@@ -123,16 +131,23 @@
   }
 
   document.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-j],[data-fam],[data-moment],[data-dispo],[data-reset],[data-voir],[data-id]");
+    var b = e.target.closest("[data-j],[data-fam],[data-moment],[data-dispo],[data-reset],[data-voir],[data-id],[data-plier]");
     if (!b) return;
     if (b.hasAttribute("data-id")) return ouvrirResa(b.dataset.id, b);
     if (b.hasAttribute("data-j")) etat.j = +b.dataset.j;
     else if (b.hasAttribute("data-fam")) etat.fam = etat.fam === b.dataset.fam ? "" : b.dataset.fam;
     else if (b.hasAttribute("data-moment")) etat.moment = etat.moment === b.dataset.moment ? "" : b.dataset.moment;
     else if (b.hasAttribute("data-dispo")) etat.dispo = !etat.dispo;
-    else if (b.hasAttribute("data-reset")) { etat = { j: -1, fam: "", moment: "", dispo: false, q: "" }; $("#pl-q").value = ""; }
+    else if (b.hasAttribute("data-reset")) { etat = { j: -1, fam: "", moment: "", dispo: false, q: "" }; $("#pl-q").value = ""; jourMobile(); }
+    else if (b.hasAttribute("data-plier")) {
+      var jj = +b.dataset.plier;
+      if (ouverts[jj]) delete ouverts[jj]; else ouverts[jj] = 1;
+      return liste();
+    }
     else if (b.hasAttribute("data-voir")) {
       etat = { j: -1, fam: "", moment: "", dispo: false, q: b.dataset.voir }; $("#pl-q").value = b.dataset.voir;
+      for (var d = 0; d < 7; d++) ouverts[d] = 1;
+      jourMobile();
       appliquer(); $("#planning").scrollIntoView({ behavior: calme ? "auto" : "smooth" }); return;
     }
     appliquer();
@@ -144,24 +159,43 @@
   });
 
   /* ------------------------------------------------------------ liste */
+  /* La semaine entière se replie par jour : seul aujourd'hui est ouvert au départ. */
+  var ouverts = {}; ouverts[P.aujourdhui] = 1;
+  function ligne(c, i) {
+    var r = P.libres(c), moi = P.reserve(c.id);
+    return '<li class="pl-ligne" style="--i:' + i + ';--f:' + P.FAMILLES[c.fam].couleur + '">' +
+      '<span class="pl-h"><small>' + P.COURTS[c.j] + '</small>' + c.h + '</span>' +
+      '<span class="pl-n">' + esc(c.nom) + '<small>' + c.min + ' min · ' + c.niv + ' · ' + P.SALLES[c.salle] + ' · avec ' + c.coach + '</small></span>' +
+      '<span class="pl-int" aria-label="Intensité ' + c.int + ' sur 5">' + "<i></i>".repeat(c.int) + '</span>' +
+      (moi ? '<button type="button" class="pl-b moi" data-id="' + c.id + '">Réservé</button>'
+           : r === 0 ? '<span class="pl-b plein">Complet</span>'
+           : '<button type="button" class="pl-b" data-id="' + c.id + '">Réserver <em>' + r + (r > 1 ? " places" : " place") + '</em></button>') +
+      '</li>';
+  }
   function liste() {
     var res = P.COURS.filter(function (c) { return passe(c, true); });
+    if (etat.j === -1 && res.length) {
+      var libresS = res.reduce(function (n, c) { return n + P.libres(c); }, 0);
+      $("#pl-compte").innerHTML = "<b>" + res.length + "</b> cours sur la semaine, <b>" + libresS + "</b> places libres";
+      var html = "";
+      for (var d = 0; d < 7; d++) {
+        var jour = res.filter(function (c) { return c.j === d; });
+        if (!jour.length) continue;
+        var ouv = !!ouverts[d] || !!(etat.q || etat.fam || etat.moment || etat.dispo);
+        html += '<li class="pl-groupe' + (ouv ? " ouvert" : "") + '"><button type="button" class="pl-groupe-t" data-plier="' + d + '" aria-expanded="' + ouv + '">' +
+          '<span>' + P.JOURS[d] + (d === P.aujourdhui ? " <em>aujourd'hui</em>" : "") + '</span>' +
+          '<small>' + jour.length + ' cours · ' + jour.map(function (c) { return c.h; }).join(" · ") + '</small><i aria-hidden="true"></i></button>' +
+          (ouv ? '<ol class="pl-sous">' + jour.map(ligne).join("") + '</ol>' : "") + '</li>';
+      }
+      $("#pl-liste").innerHTML = html;
+      return;
+    }
     var libres = res.reduce(function (n, c) { return n + P.libres(c); }, 0);
     var quand = etat.j === -1 ? "sur la semaine" : P.JOURS[etat.j].toLowerCase();
     $("#pl-compte").innerHTML = res.length
       ? "<b>" + res.length + "</b> cours " + quand + ", <b>" + libres + "</b> places libres"
       : "Aucun cours " + quand + " avec ces critères.";
-    $("#pl-liste").innerHTML = res.length ? res.map(function (c, i) {
-      var r = P.libres(c), moi = P.reserve(c.id);
-      return '<li style="--i:' + i + ';--f:' + P.FAMILLES[c.fam].couleur + '">' +
-        '<span class="pl-h"><small>' + P.COURTS[c.j] + '</small>' + c.h + '</span>' +
-        '<span class="pl-n">' + esc(c.nom) + '<small>' + c.min + ' min · ' + c.niv + ' · ' + P.SALLES[c.salle] + ' · avec ' + c.coach + '</small></span>' +
-        '<span class="pl-int" aria-label="Intensité ' + c.int + ' sur 5">' + "<i></i>".repeat(c.int) + '</span>' +
-        (moi ? '<button type="button" class="pl-b moi" data-id="' + c.id + '">Réservé</button>'
-             : r === 0 ? '<span class="pl-b plein">Complet</span>'
-             : '<button type="button" class="pl-b" data-id="' + c.id + '">Réserver <em>' + r + (r > 1 ? " places" : " place") + '</em></button>') +
-        '</li>';
-    }).join("") : '<li class="pl-vide"><p>Changez de jour ou retirez un filtre : le studio tourne sept jours sur sept.</p><button type="button" class="btn btn-ligne" data-reset><span>Tout afficher</span></button></li>';
+    $("#pl-liste").innerHTML = res.length ? res.map(ligne).join("") : '<li class="pl-vide"><p>Changez de jour ou retirez un filtre : le studio tourne sept jours sur sept.</p><button type="button" class="btn btn-ligne" data-reset><span>Tout afficher</span></button></li>';
   }
 
   /* ------------------------------------------------------------ panneaux (réservation, mes séances) */
@@ -169,6 +203,7 @@
   function ouvrir(p, depuis) {
     if (panneau) fermer(true);
     panneau = p; retour = depuis || document.activeElement;
+    ouvertA = Date.now();
     voile.hidden = false; p.hidden = false;
     document.body.classList.add("bloque", "panneau-ouvert");
     requestAnimationFrame(function () { voile.classList.add("on"); p.classList.add("on"); });
@@ -184,7 +219,9 @@
     if (vite || calme) fin(); else setTimeout(fin, 320);
     if (retour && retour.focus && document.contains(retour)) retour.focus({ preventScroll: true });
   }
-  voile.addEventListener("click", function () { fermer(); });
+  var ouvertA = 0;
+  /* au toucher, le « clic » qui suit le doigt levé tombe sur le voile : on l'ignore */
+  voile.addEventListener("click", function () { if (Date.now() - ouvertA > 450) fermer(); });
   $$("[data-fermer]").forEach(function (b) { b.addEventListener("click", function () { fermer(); }); });
   addEventListener("keydown", function (e) {
     if (e.key === "Escape") { if (panneau) fermer(); else if (!menu.hidden) menuOuvert(false); }
@@ -207,9 +244,8 @@
     $("#resa-titre").textContent = c.nom;
     $("#resa-qui").textContent = "Avec " + c.coach + " · " + P.SALLES[c.salle] + " · " + c.niv;
     jauge($("#resa-int"), c.int, 5);
-    var prises = c.cap - r;
-    jauge($("#resa-pl"), prises, c.cap);
-    $("#resa-pl-txt").textContent = r === 0 ? "complet" : r + " sur " + c.cap;
+    jauge($("#resa-pl"), r, c.cap);       // les cases colorées sont les places LIBRES
+    $("#resa-pl-txt").textContent = r === 0 ? "complet" : r + (r > 1 ? " places libres" : " place libre") + " sur " + c.cap;
     var etatEl = $("#resa-etat"), form = $("#resa-form");
     if (moi) {
       form.hidden = true; etatEl.hidden = false;

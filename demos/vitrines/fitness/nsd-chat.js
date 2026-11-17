@@ -115,7 +115,7 @@
     cursor:pointer;display:grid;place-items:center;transition:transform .2s,opacity .2s}
   .nsdc-envoi:hover:not(:disabled){transform:scale(1.07)}
   .nsdc-envoi:disabled{opacity:.4;cursor:default}
-  .nsdc-pied{text-align:center;font-size:10.5px;color:#9a958c;padding:0 0 9px;background:#fff;letter-spacing:.02em}
+  .nsdc-pied{text-align:center;font-size:11.5px;color:#6b665e;padding:0 0 9px;background:#fff;letter-spacing:.02em}
   .nsdc-pied a{color:inherit}
 
   @media(max-width:520px){
