@@ -7,7 +7,7 @@
    ================================================================== */
 import {
   THREE, MOBILE, CALME, creerRendu, ombreCamera, materiaux, Fusion, arbres,
-  prepareFondu, appliquerFondu, Animateur, Orbite, controles, boucle, traits
+  prepareFondu, appliquerFondu, Animateur, Orbite, controles, boucle, traits, gardeCorps, menuiseries
 } from "./scene3d.js";
 
 const HZ = window.HZ;
@@ -43,7 +43,7 @@ export function initImmeuble(root) {
   place.boite(48, 0.12, 30, 0, 0.06, 3);
   place.boite(6, 0.14, 12, -24, 0.07, 20);
   const placeM = place.maillage(M.betonGris, false); scene.add(placeM);
-  scene.add(arbres([[-21, 13, 1.1], [-25, 4, 0.9], [-19, -4, 1], [21, 14, 1], [25, 6, 1.2], [20, -6, 0.9], [-8, 16, 0.8], [9, 17, 0.85], [-27, 18, 0.75], [28, 16, 0.8]], M.arbre));
+  scene.add(arbres([[-21, 13, 1.1], [-25, 4, 0.9], [-19, -4, 1], [21, 14, 1], [25, 6, 1.2], [20, -6, 0.9], [-8, 16, 0.8], [9, 17, 0.85], [-27, 18, 0.75], [28, 16, 0.8]]));
 
   /* immeubles voisins : seulement leurs arêtes, comme sur un plan masse */
   const voisins = new THREE.Group();
@@ -72,35 +72,48 @@ export function initImmeuble(root) {
   function interieur(l, y) {
     const plan = HZ.PLANS[l.plan], rep = repere(l), g = HZ.murs(plan);
     const grp = new THREE.Group();
-    const fs = new Fusion(), fm = new Fusion(), fb = new Fusion();
+    const fs = new Fusion(), fm = new Fusion(), fb = new Fusion(), ft = new Fusion(), fw = new Fusion(), fr = new Fusion();
     const hm = HE - DALLE - 0.02;
     fs.boite(plan.l - 0.1, 0.04, plan.p - 0.1, X(rep, plan.l / 2), y + 0.02, Z(plan.p / 2));
     g.murs.forEach((m) => {
-      if (m.ext && m.z0 === m.z1 && Math.abs(m.z0 - plan.p) < 0.01 && l.plan !== "P") { /* mur du fond */ }
       const ep = m.ext ? 0.22 : 0.1;
       const x0 = X(rep, m.x0), x1 = X(rep, m.x1), z0 = Z(m.z0), z1 = Z(m.z1);
       if (m.z0 === m.z1) fm.boite(Math.abs(x1 - x0) + ep, hm, ep, (x0 + x1) / 2, y + hm / 2, z0);
       else fm.boite(ep, hm, Math.abs(z1 - z0) + ep, x0, y + hm / 2, (z0 + z1) / 2);
     });
+    /* mobilier sobre : textiles gris, bois, laqué blanc, tapis */
     plan.pieces.forEach((p) => {
-      const cx = X(rep, p.x + p.w / 2), cz = Z(p.z + p.d / 2);
+      const cx = X(rep, p.x + p.w / 2), cz = Z(p.z + p.d / 2), fond = Z(p.z + p.d), sx = rep.sx;
       if (p.t === "sejour") {
-        fb.boite(Math.min(2.6, p.w * 0.45), 0.42, 0.95, cx - p.w * 0.12 * rep.sx, y + 0.21, cz + p.d * 0.12);
-        fb.boite(1.1, 0.3, 0.6, cx - p.w * 0.12 * rep.sx, y + 0.15, cz - p.d * 0.05);
-        fb.boite(2, 0.76, 0.95, cx + p.w * 0.2 * rep.sx, y + 0.38, cz - p.d * 0.25);
-        fb.boite(Math.max(1.5, p.w - 1.2), 0.92, 0.62, cx, y + 0.46, Z(p.z + p.d) + 0.45);
+        const sw = Math.min(2.8, p.w * 0.45), sxc = cx - p.w * 0.14 * sx, sz = cz + p.d * 0.1;
+        fr.boite(sw + 0.8, 0.012, 2.4, sxc, y + 0.05, sz - 0.5);                 /* tapis */
+        ft.boite(sw, 0.42, 0.9, sxc, y + 0.21, sz + 0.25);                      /* canapé */
+        ft.boite(sw, 0.38, 0.18, sxc, y + 0.6, sz + 0.62);                      /* dossier */
+        ft.boite(0.85, 0.42, 1.5, sxc - (sw / 2 - 0.42) * sx, y + 0.21, sz - 0.35); /* méridienne */
+        fb.boite(1.0, 0.32, 0.55, sxc, y + 0.16, sz - 0.75);                    /* table basse */
+        fb.boite(2.0, 0.05, 0.95, cx + p.w * 0.22 * sx, y + 0.74, cz - p.d * 0.22); /* table */
+        fb.boite(0.08, 0.72, 0.8, cx + p.w * 0.22 * sx - 0.85, y + 0.36, cz - p.d * 0.22);
+        fb.boite(0.08, 0.72, 0.8, cx + p.w * 0.22 * sx + 0.85, y + 0.36, cz - p.d * 0.22);
+        for (const dx of [-0.6, 0, 0.6]) for (const dz of [-0.75, 0.75]) ft.boite(0.45, 0.45, 0.45, cx + p.w * 0.22 * sx + dx, y + 0.23, cz - p.d * 0.22 + dz);
+        fw.boite(Math.max(1.5, p.w - 1.2), 0.9, 0.62, cx, y + 0.45, fond + 0.4); /* cuisine */
+        fs.boite(Math.max(1.5, p.w - 1.2), 0.03, 0.64, cx, y + 0.915, fond + 0.4);
+        fw.boite(Math.max(1.2, p.w - 2.2), 0.95, 0.9, cx, y + 0.47, fond + 1.75); /* îlot */
       } else if (p.t === "chambre") {
-        fb.boite(1.65, 0.5, 2.05, cx, y + 0.25, Z(p.z + p.d) + 1.15);
-        fb.boite(0.45, 0.5, 0.4, cx - 1.15, y + 0.25, Z(p.z + p.d) + 0.35);
-        fb.boite(0.45, 0.5, 0.4, cx + 1.15, y + 0.25, Z(p.z + p.d) + 0.35);
+        fr.boite(2.4, 0.012, 2.6, cx, y + 0.05, fond + 1.3);
+        fb.boite(1.9, 0.9, 0.08, cx, y + 0.45, fond + 0.12);                    /* tête de lit */
+        fw.boite(1.65, 0.48, 2.0, cx, y + 0.24, fond + 1.15);                   /* lit */
+        ft.boite(1.67, 0.05, 0.7, cx, y + 0.5, fond + 1.75);                    /* plaid */
+        fb.boite(0.45, 0.5, 0.4, cx - 1.15, y + 0.25, fond + 0.3);
+        fb.boite(0.45, 0.5, 0.4, cx + 1.15, y + 0.25, fond + 0.3);
       } else if (p.t === "eau") {
-        fb.boite(Math.min(1.7, p.w - 0.3), 0.58, 0.75, cx, y + 0.29, Z(p.z + p.d) + 0.5);
+        fw.boite(Math.min(1.7, p.w - 0.3), 0.58, 0.75, cx, y + 0.29, fond + 0.5);
+        fb.boite(Math.min(1.2, p.w - 0.6), 0.12, 0.5, cx, y + 0.8, Z(p.z) - 0.35);
       }
     });
-    const sMesh = fs.maillage(M.sol, false), mMesh = fm.maillage(M.mur), bMesh = fb.maillage(M.meuble);
+    const sMesh = fs.maillage(M.sol, false), mMesh = fm.maillage(M.mur), bMesh = fb.maillage(M.bois);
     /* les murs se coupent à 1,2 m en vue intérieure : le plan devient lisible */
     mMesh.geometry.translate(0, -y, 0); mMesh.position.y = y; mMesh.userData.murs = true;
-    grp.add(sMesh, mMesh, bMesh);
+    grp.add(sMesh, mMesh, bMesh, ft.maillage(M.textile), fw.maillage(M.meuble), fr.maillage(M.tapis, false));
     /* plafonnier : s'allume le soir et à la sélection */
     const lum = new THREE.Mesh(new THREE.PlaneGeometry(plan.l - 1, plan.p - 1), M.lumiere.clone());
     lum.rotation.x = Math.PI / 2; lum.position.set(X(rep, plan.l / 2), y + hm - 0.05, Z(plan.p / 2));
@@ -112,7 +125,7 @@ export function initImmeuble(root) {
   for (let n = 0; n <= NB; n++) {
     const grp = new THREE.Group(); grp.userData.n = n;
     const y = base(n), h = n === 0 ? H0 : HE;
-    const fc = new Fusion(), fv = new Fusion(), fg = new Fusion(), fmet = new Fusion();
+    const fc = new Fusion(), fv = new Fusion(), fg = new Fusion(), fmet = new Fusion(), fmen = new Fusion();
     if (n === 0) {
       /* hall : verre en retrait, poteaux, auvent */
       fc.boite(30.4, 0.3, 14.4, 0, 0.15, 0);
@@ -122,17 +135,20 @@ export function initImmeuble(root) {
       for (let x = -15; x <= 15.01; x += 5) fc.boite(0.55, H0, 0.55, x, H0 / 2, 6.6);
       fc.boite(5, H0 - 0.3, 5, 0, H0 / 2, -4.5); /* noyau */
       fmet.boite(8, 0.08, 2.2, 0, 3.4, 5.8);
+      menuiseries(fmen, 26, H0 - 0.3, 0, 0.3 + (H0 - 0.3) / 2, 4.62, "x", 2.6);
     } else if (n < NB) {
       fc.boite(30.4, DALLE, 14.4, 0, y + DALLE / 2, 0);
       /* balcons : A profond, B plus court, nez de dalle épais */
       [["O", -10, 2.4], ["C", 0, 1.6], ["E", 10, 2.4]].forEach(([pos, cx, d]) => {
         const dd = d + (n % 2 && pos !== "C" ? 0.4 : 0);
         fc.boite(10, 0.32, dd, cx, y + 0.16, 7 + dd / 2);
-        fg.boite(10, 1.05, 0.03, cx, y + 0.32 + 0.52, 7 + dd - 0.05);
-        fmet.boite(10, 0.05, 0.06, cx, y + 1.4, 7 + dd - 0.05);
+        const a = cx - 5 + 0.06, b = cx + 5 - 0.06, f = 7 + dd - 0.05;
+        gardeCorps(fg, fmet, [[a, 7.02], [a, f], [b, f], [b, 7.02]], y + 0.32);
       });
-      fg.boite(0.03, 1.05, 2.8, -5, y + 0.84, 8.4); fg.boite(0.03, 1.05, 2.8, 5, y + 0.84, 8.4);
       const hv = HE - DALLE;
+      /* menuiseries des baies, en saillie de 4 cm, un meneau entre chaque refend */
+      for (let x = -15; x < 15; x += 2.5) menuiseries(fmen, 2.5, hv - 0.02, x + 1.25, y + DALLE + hv / 2, 6.99, "x", 1.25);
+      [-15, 15].forEach((x) => menuiseries(fmen, 3.1, hv - 0.02, x + Math.sign(x) * 0.02, y + DALLE + hv / 2, 4.05, "z", 1.55));
       for (let x = -15; x <= 15.01; x += 2.5) fc.boite(x % 5 === 0 ? 0.3 : 0.12, hv, x % 5 === 0 ? 0.5 : 0.35, x, y + DALLE + hv / 2, 6.85);
       /* pignons percés d'une fente, façade arrière */
       [-15, 15].forEach((x) => {
@@ -154,10 +170,10 @@ export function initImmeuble(root) {
       fv.boite(0.05, hv, 14, 10, y + DALLE + hv / 2, 0);
       fc.boite(20.4, hv, 0.3, 0, y + DALLE + hv / 2, -7);
       for (let x = -10; x <= 10.01; x += 2.5) fc.boite(0.12, hv, 0.3, x, y + DALLE + hv / 2, 6.9);
-      fg.boite(20.4, 1.05, 0.03, 0, y + 0.84, 10.95);
-      fg.boite(0.03, 1.05, 18, -15.1, y + 0.84, 0); fg.boite(0.03, 1.05, 18, 15.1, y + 0.84, 0);
-      fg.boite(30.2, 1.05, 0.03, 0, y + 0.84, 7.15 - 0.01);
-      fmet.boite(20.4, 0.05, 0.06, 0, y + 1.4, 10.95);
+      gardeCorps(fg, fmet, [[-10.14, 7.05], [-10.14, 10.94], [10.14, 10.94], [10.14, 7.05]], y + 0.32);
+      [-1, 1].forEach((sg) => gardeCorps(fg, fmet, [[sg * 10.25, 7.1], [sg * 15.1, 7.1], [sg * 15.1, -7.1], [sg * 10.25, -7.1]], y + DALLE));
+      for (let x = -10; x < 10; x += 2.5) menuiseries(fmen, 2.5, hv - 0.02, x + 1.25, y + DALLE + hv / 2, 6.99, "x", 1.25);
+      [-10, 10].forEach((x) => menuiseries(fmen, 14, hv - 0.02, x + Math.sign(x) * 0.02, y + DALLE + hv / 2, 0, "z", 1.4));
       fc.boite(5, hv, 5, 0, y + DALLE + hv / 2, -4.5);
       /* toit et auvent */
       const yt = y + DALLE + hv;
@@ -176,6 +192,7 @@ export function initImmeuble(root) {
     const verre = fv.maillage(M.verre, false); verre.userData.ombre = false; grp.add(verre);
     if (fg.n) { const gc = fg.maillage(M.gardecorps, false); gc.userData.ombre = false; grp.add(gc); }
     if (fmet.n) grp.add(fmet.maillage(M.metal));
+    if (fmen.n) grp.add(fmen.maillage(M.menuiserie));
     etages[n] = grp; immeuble.add(grp);
   }
   immeuble.add(toit);

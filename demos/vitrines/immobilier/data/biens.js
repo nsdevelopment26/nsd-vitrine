@@ -74,7 +74,8 @@
     var o = {
       id: no, etage: etage, pos: pos, plan: plan, miroir: pos === "E",
       prix: prix, statut: statut,
-      m2: plan === "A" ? 118 : plan === "B" ? 82 : 212,
+      /* surface habitable = somme exacte des pièces du plan type */
+      m2: Math.round(p.pieces.reduce(function (t, x) { return t + x.w * x.d; }, 0)),
       ch: plan === "A" ? 3 : plan === "B" ? 2 : 3,
       sdb: plan === "A" ? 2 : plan === "B" ? 1 : 3,
       ext: Math.round(p.exterieur.w * p.exterieur.d),
@@ -197,6 +198,6 @@
     trouver: function (ref) { for (var i = 0; i < CATALOGUE.length; i++) if (CATALOGUE[i].ref === ref) return CATALOGUE[i]; return null; },
     euros: function (n) { return n.toLocaleString("fr-FR").replace(/[  ]/g, " ") + " €"; },
     TEL: "+352 00 00 00", TEL_HREF: "tel:+35200000000", MAIL: "contact@horizon-immo.example",
-    ADRESSE: "Avenue de la Liberté, Luxembourg"
+    ADRESSE: "Luxembourg · adresse fictive"
   };
 })();

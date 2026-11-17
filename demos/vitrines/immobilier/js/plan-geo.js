@@ -89,9 +89,8 @@
     });
     s.push('</g><g class="p-pieces">');
     plan.pieces.forEach(function (p) {
-      if (p.t === "circ" && p.w * p.d < 8) return;
-      var cx = X(p.x + p.w / 2), cz = Z(p.z + p.d / 2);
-      s.push('<text x="' + cx + '" y="' + (cz - 2) + '">' + p.n + '</text><text class="m2" x="' + cx + '" y="' + (cz + 15) + '">' + (Math.round(p.w * p.d * 10) / 10).toString().replace(".", ",") + ' m²</text>');
+      var cx = X(p.x + p.w / 2), cz = Z(p.z + p.d / 2), petit = p.w * p.d < 8 ? ' class="petit"' : "";
+      s.push('<text' + petit + ' x="' + cx + '" y="' + (cz - 2) + '">' + p.n + '</text><text class="m2" x="' + cx + '" y="' + (cz + 15) + '">' + (Math.round(p.w * p.d * 10) / 10).toString().replace(".", ",") + ' m²</text>');
     });
     if (plan.noyau) s.push('<text class="noyau" x="' + X(plan.noyau.x + plan.noyau.w / 2) + '" y="' + Z(plan.noyau.z + plan.noyau.d / 2) + '">Ascenseur · escalier</text>');
     s.push('</g><g class="p-cotes">');

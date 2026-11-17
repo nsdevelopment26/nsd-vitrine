@@ -6,7 +6,7 @@
    ================================================================== */
 import {
   THREE, MOBILE, CALME, creerRendu, ombreCamera, materiaux, Fusion, arbres,
-  Animateur, Orbite, controles, boucle, traits
+  Animateur, Orbite, controles, boucle, traits, gardeCorps, menuiseries
 } from "./scene3d.js";
 
 const HZ = window.HZ;
@@ -14,21 +14,39 @@ const HZ = window.HZ;
 /* ---------- les trois modèles ---------- */
 function haie(f, x, z, w, d) { f.boite(w, 1.1, d, x, 0.55, z); }
 
+/* vitrage + menuiseries en saillie (4 cm), enregistrés ensemble */
+function atelier() {
+  const men = new Fusion(), int = new Fusion(), tx = new Fusion(), bo = new Fusion();
+  return { men, int, tx, bo, vit(v, w, h, d, x, y, z) { v.boite(w, h, d, x, y, z); menuiseries(men, Math.max(w, d), h, x, y, z, w >= d ? "x" : "z", 1.6); } };
+}
+function finitions(M, A) {
+  const out = [A.men.maillage(M.menuiserie)];
+  if (A.int.n) { const s = A.int.maillage(M.sol, false); out.push(s); }
+  if (A.tx.n) out.push(A.tx.maillage(M.textile));
+  if (A.bo.n) out.push(A.bo.maillage(M.bois));
+  out.forEach((o) => { o.userData.sansTraits = true; });
+  return out;
+}
+
 const MODELES = {
   /* Villa Aster : deux volumes croisés, l'étage en porte-à-faux */
   "porte-a-faux"(M) {
+    const A = atelier();
     const c = new Fusion(), n = new Fusion(), v = new Fusion(), p = new Fusion(), h = new Fusion(), m = new Fusion();
     p.boite(26, 0.3, 24, 0, 0.15, 2);                      /* socle minéral */
     c.boite(19, 0.35, 11, 0, 0.47, -1);                   /* dalle RDC */
     n.boite(6, 3.1, 10, -6.4, 2.2, -1);                   /* volume habillé sombre */
-    v.boite(12.6, 3, 0.05, 3.1, 2.15, 4.45);              /* grande baie */
-    v.boite(0.05, 3, 9.9, 9.45, 2.15, -1);
+    A.vit(v, 12.6, 3, 0.05, 3.1, 2.15, 4.45);              /* grande baie */
+    A.vit(v, 0.05, 3, 9.9, 9.45, 2.15, -1);
     c.boite(12.8, 0.25, 0.25, 3.1, 0.75, 4.4);
+    A.int.boite(12.2, 0.04, 10.2, 3.1, 0.67, -0.9);
+    A.tx.boite(3, 0.44, 0.95, 4.2, 0.9, 1.6); A.tx.boite(0.9, 0.44, 1.8, 2.3, 0.9, 1.1);
+    A.bo.boite(2.4, 0.05, 1, 6.6, 1.42, -2.4); A.bo.boite(3.6, 0.9, 0.6, -1.6, 1.1, -5.4);
     c.boite(19.2, 0.4, 11.2, 0, 3.85, -1);                /* toit RDC = terrasse */
     c.boite(8.4, 3.3, 20, 3, 5.7, 2.2);                   /* étage en porte-à-faux */
-    v.boite(7.8, 2.2, 0.05, 3, 5.7, 12.22);
-    v.boite(0.05, 1.4, 14, -1.22, 5.9, 3);
-    v.boite(0.05, 1.5, 16, 7.22, 5.9, 2.6);
+    A.vit(v, 7.8, 2.2, 0.05, 3, 5.7, 12.22);
+    A.vit(v, 0.05, 1.4, 14, -1.22, 5.9, 3);
+    A.vit(v, 0.05, 1.5, 16, 7.22, 5.9, 2.6);
     m.boite(0.06, 2.6, 0.06, 6.8, 5.6, 12.25);
     for (let x = -8.6; x <= -1; x += 0.5) m.boite(0.04, 0.9, 0.04, x, 4.5, 4.35); /* garde-corps fil */
     m.boite(7.8, 0.05, 0.05, -4.9, 4.95, 4.35);
@@ -38,7 +56,7 @@ const MODELES = {
     haie(h, -11, 9, 1.2, 12); haie(h, 12.5, -2, 1.2, 14);
     const eau = new THREE.Mesh(new THREE.BoxGeometry(12, 0.12, 4), M.eau); eau.position.set(2.4, 0.16, 13.4);
     return {
-      maillages: [c.maillage(M.beton), n.maillage(M.noir), v.maillage(M.verre, false), p.maillage(M.betonGris), h.maillage(M.herbe), m.maillage(M.metal), eau],
+      maillages: [c.maillage(M.beton), n.maillage(M.noir), v.maillage(M.verre, false), p.maillage(M.betonGris), h.maillage(M.herbe), m.maillage(M.metal), eau, ...finitions(M, A)],
       arbres: [[-12, 15, 0.9], [-14, -6, 1.1], [13, 12, 0.8], [11, -10, 1], [-9, -12, 0.85]],
       vues: {
         ensemble: { cible: [1, 3, 2], az: 0.62, el: 0.3, dist: 54 },
@@ -53,6 +71,7 @@ const MODELES = {
 
   /* Maison Halde : un pavillon de plain-pied autour d'un patio */
   pavillon(M) {
+    const A = atelier();
     const c = new Fusion(), n = new Fusion(), v = new Fusion(), p = new Fusion(), h = new Fusion(), m = new Fusion(), t = new Fusion();
     p.boite(36, 0.25, 26, 0, 0.12, 1);
     c.boite(30, 0.3, 13, 0, 0.4, 0);
@@ -60,9 +79,12 @@ const MODELES = {
     n.boite(30, 2.9, 0.3, 0, 2, -6.35);                    /* façade rue, sombre */
     for (let x = -14.5; x <= 14.5; x += 0.42) m.boite(0.08, 2.9, 0.12, x, 2, -6.6);
     c.boite(0.3, 2.9, 13, -15, 2, 0); c.boite(0.3, 2.9, 13, 15, 2, 0);
-    v.boite(11, 2.8, 0.05, -9.5, 2, 6.4); v.boite(11, 2.8, 0.05, 9.5, 2, 6.4);
-    v.boite(8, 2.8, 0.05, 0, 2, -2); v.boite(0.05, 2.8, 6, -4, 2, 1); v.boite(0.05, 2.8, 6, 4, 2, 1);
+    A.vit(v, 11, 2.8, 0.05, -9.5, 2, 6.4); A.vit(v, 11, 2.8, 0.05, 9.5, 2, 6.4);
+    A.vit(v, 8, 2.8, 0.05, 0, 2, -2); A.vit(v, 0.05, 2.8, 6, -4, 2, 1); A.vit(v, 0.05, 2.8, 6, 4, 2, 1);
     c.boite(0.3, 2.9, 4.4, -4, 2, -4.2); c.boite(0.3, 2.9, 4.4, 4, 2, -4.2);
+    A.int.boite(10.6, 0.04, 12.4, -9.6, 0.57, 0.1); A.int.boite(10.6, 0.04, 12.4, 9.6, 0.57, 0.1);
+    A.tx.boite(3, 0.44, 0.95, -9.5, 0.8, 3.6); A.tx.boite(0.9, 0.44, 1.8, -11.4, 0.8, 3.1);
+    A.bo.boite(2.6, 0.05, 1, 9.4, 1.32, 3); A.bo.boite(4, 0.9, 0.6, 9.4, 1.0, -5.4);
     /* toiture plate débordante, ouverte au-dessus du patio */
     c.boite(11.8, 0.35, 15, -10.1, 3.6, 0.2); c.boite(11.8, 0.35, 15, 10.1, 3.6, 0.2);
     c.boite(8.4, 0.35, 4.6, 0, 3.6, -4.5);
@@ -74,7 +96,7 @@ const MODELES = {
     haie(h, -17, 4, 1, 22); haie(h, 17, 4, 1, 22);
     const eau = new THREE.Mesh(new THREE.BoxGeometry(18, 0.12, 2.5), M.eau); eau.position.set(0, 0.16, 13);
     return {
-      maillages: [c.maillage(M.beton), n.maillage(M.noir), v.maillage(M.verre, false), p.maillage(M.betonGris), h.maillage(M.herbe), m.maillage(M.metal), t.maillage(M.herbe), eau],
+      maillages: [c.maillage(M.beton), n.maillage(M.noir), v.maillage(M.verre, false), p.maillage(M.betonGris), h.maillage(M.herbe), m.maillage(M.metal), t.maillage(M.herbe), eau, ...finitions(M, A)],
       arbres: [[0, 1.4, 0.75], [-12, 17, 1], [-6, 18, 0.8], [8, 18, 0.95], [13, 16, 0.85], [-18, -9, 1], [18, -10, 0.9]],
       vues: {
         ensemble: { cible: [0, 2, 2], az: 0.5, el: 0.4, dist: 60 },
@@ -89,23 +111,26 @@ const MODELES = {
 
   /* Villa Bel-Orée : trois volumes décalés en gradins */
   gradins(M) {
+    const A = atelier();
     const c = new Fusion(), n = new Fusion(), v = new Fusion(), p = new Fusion(), h = new Fusion(), m = new Fusion(), g = new Fusion();
     p.boite(30, 0.3, 28, 0, 0.15, 2);
     /* niveau 1 */
     c.boite(18, 0.35, 11, 0, 0.47, 1);
-    v.boite(17.4, 3, 0.05, 0, 2.15, 6.45); v.boite(0.05, 3, 10.6, 8.95, 2.15, 1);
+    A.vit(v, 17.4, 3, 0.05, 0, 2.15, 6.45); A.vit(v, 0.05, 3, 10.6, 8.95, 2.15, 1);
     n.boite(0.3, 3, 11, -9, 2.15, 1); c.boite(18, 0.3, 0.3, 0, 0.8, 6.4);
     c.boite(18.4, 0.45, 11.4, 0, 3.85, 1);
     /* niveau 2, en retrait */
-    v.boite(13.4, 3, 0.05, -1.5, 5.55, 2.45); n.boite(0.3, 3, 8, -8.3, 5.55, -1.5); v.boite(0.05, 3, 7.8, 5.2, 5.55, -1.5);
+    A.vit(v, 13.4, 3, 0.05, -1.5, 5.55, 2.45); n.boite(0.3, 3, 8, -8.3, 5.55, -1.5); A.vit(v, 0.05, 3, 7.8, 5.2, 5.55, -1.5);
     c.boite(14.4, 0.45, 8.4, -1.5, 7.3, -1.5);
     /* niveau 3, attique */
-    v.boite(9, 2.8, 0.05, -3, 8.95, -1.6); n.boite(10, 2.8, 0.3, -3, 8.95, -5.6);
+    A.vit(v, 9, 2.8, 0.05, -3, 8.95, -1.6); n.boite(10, 2.8, 0.3, -3, 8.95, -5.6);
     c.boite(10.6, 0.4, 4.6, -3, 10.55, -3.6);
-    /* garde-corps vitrés des toits-terrasses */
-    g.boite(18, 1, 0.03, 0, 4.6, 6.6); g.boite(0.03, 1, 4, 9.1, 4.6, 4.5);
-    g.boite(14, 1, 0.03, -1.5, 8, 2.6);
-    m.boite(18, 0.05, 0.06, 0, 5.12, 6.6); m.boite(14, 0.05, 0.06, -1.5, 8.52, 2.6);
+    /* garde-corps vitrés des toits-terrasses, raccordés aux angles */
+    gardeCorps(g, m, [[-9.05, 2.6], [-9.05, 6.62], [9.05, 6.62], [9.05, -4.3], [5.4, -4.3]], 4.08);
+    gardeCorps(g, m, [[-8.55, -1.6], [-8.55, 2.42], [5.55, 2.42], [5.55, -5.5]], 7.53);
+    A.int.boite(17.2, 0.04, 10.2, 0, 0.67, 1); A.int.boite(13, 0.04, 7.6, -1.5, 4.1, -1.5);
+    A.tx.boite(3.2, 0.44, 1, -2, 0.9, 3.4); A.tx.boite(1, 0.44, 2, -4.1, 0.9, 2.9);
+    A.bo.boite(2.6, 0.05, 1, 4.5, 1.42, 0.5); A.tx.boite(2, 0.5, 2.2, -3.5, 4.37, -1.6);
     /* piscine à débordement + restanques */
     p.boite(15, 0.5, 5, 0, 0.25, 10.2);
     p.boite(26, 0.6, 0.5, 0, 0.3, 15.5); p.boite(26, 0.35, 0.5, 0, 0.18, 18.5);
@@ -113,7 +138,7 @@ const MODELES = {
     haie(h, -14, 0, 1, 18);
     const eau = new THREE.Mesh(new THREE.BoxGeometry(14.4, 0.12, 4.4), M.eau); eau.position.set(0, 0.52, 10.2);
     return {
-      maillages: [c.maillage(M.beton), n.maillage(M.noir), v.maillage(M.verre, false), g.maillage(M.gardecorps, false), p.maillage(M.betonGris), h.maillage(M.herbe), m.maillage(M.metal), eau],
+      maillages: [c.maillage(M.beton), n.maillage(M.noir), v.maillage(M.verre, false), g.maillage(M.gardecorps, false), p.maillage(M.betonGris), h.maillage(M.herbe), m.maillage(M.metal), eau, ...finitions(M, A)],
       arbres: [[-13, 12, 0.9], [12, 14, 1], [13, -6, 1.1], [-12, -9, 0.95], [6, 19, 0.7], [-6, 19, 0.75]],
       vues: {
         ensemble: { cible: [0, 4, 2], az: 0.55, el: 0.26, dist: 58 },
@@ -152,12 +177,12 @@ export function initMaisons(root) {
       mats.push(mesh.material);
       mesh.castShadow = !mesh.material.userData.transBase; mesh.receiveShadow = true;
       g.add(mesh);
-      if (mesh.material.color.getHex() !== M.herbe.color.getHex()) {
+      if (!mesh.userData.sansTraits && mesh.material.color.getHex() !== M.herbe.color.getHex()) {
         const t = traits(mesh, 0x24262a, 25); t.material.opacity = 0; lignes.add(t);
       }
     });
-    const a = arbres(def.arbres, M.arbre.clone());
-    a.material.userData.base = 1; mats.push(a.material); g.add(a);
+    const a = arbres(def.arbres);
+    a.material.userData.base = a.material.opacity; a.material.userData.transBase = true; mats.push(a.material); g.add(a);
     scene.add(g, lignes);
     g.visible = false; lignes.visible = false;
     return { d, def, g, lignes, mats };

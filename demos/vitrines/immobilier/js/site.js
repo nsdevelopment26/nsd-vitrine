@@ -83,6 +83,7 @@
     requestAnimationFrame(function () { hero.classList.add("dessine"); });
     var nb = $$(".trace path").length;
     var tIntro = setTimeout(reveler, 170 * nb + 1500);
+    $(".passer").addEventListener("pointerdown", function (e) { e.preventDefault(); clearTimeout(tIntro); reveler(); });
     $(".passer").addEventListener("click", function () { clearTimeout(tIntro); reveler(); $("h1", hero).setAttribute("tabindex", "-1"); $("h1", hero).focus({ preventScroll: true }); });
     addEventListener("wheel", function w() { clearTimeout(tIntro); reveler(); removeEventListener("wheel", w); }, { passive: true, once: true });
     addEventListener("touchmove", function t() { clearTimeout(tIntro); reveler(); }, { passive: true, once: true });
@@ -159,6 +160,7 @@
       plateau.style.opacity = ((1 - o1 * 0.92) * (1 - o2)).toFixed(3);
       var e = p < 0.4 ? 0 : p < 0.66 ? 1 : p < 0.84 ? 2 : 3;
       etapes.forEach(function (li, i) { li.classList.toggle("on", i === e); });
+      var em = $(".etape-mob"); if (em && em.dataset.e !== String(e)) { em.dataset.e = e; em.textContent = $("p", etapes[e]).textContent; }
       jauge.style.setProperty("--p", p.toFixed(3));
     }
     addEventListener("scroll", function () { requestAnimationFrame(majPlans); }, { passive: true });

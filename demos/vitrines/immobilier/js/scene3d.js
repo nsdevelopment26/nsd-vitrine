@@ -51,13 +51,18 @@ export function materiaux() {
   return {
     beton: new THREE.MeshStandardMaterial({ color: 0xf2f1ed, roughness: 0.82, metalness: 0 }),
     betonGris: new THREE.MeshStandardMaterial({ color: 0xd9d8d3, roughness: 0.9 }),
-    verre: new THREE.MeshStandardMaterial({ color: 0x4f5f68, roughness: 0.03, metalness: 0.6, transparent: true, opacity: 0.66, envMapIntensity: 1.5, depthWrite: false }),
-    gardecorps: new THREE.MeshStandardMaterial({ color: 0xc9d4d8, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.28, depthWrite: false }),
+    /* verre physique : reflets de l'environnement, on devine l'intérieur */
+    verre: new THREE.MeshPhysicalMaterial({ color: 0x45535b, roughness: 0.05, metalness: 0, ior: 1.5, specularIntensity: 1, envMapIntensity: 1.2, clearcoat: 0.6, clearcoatRoughness: 0.05, transparent: true, opacity: 0.64, depthWrite: false }),
+    gardecorps: new THREE.MeshPhysicalMaterial({ color: 0xdfe8ea, roughness: 0.05, metalness: 0, ior: 1.5, envMapIntensity: 1.2, transparent: true, opacity: 0.24, depthWrite: false }),
+    menuiserie: new THREE.MeshStandardMaterial({ color: 0x33363a, roughness: 0.42, metalness: 0.55 }),
     metal: new THREE.MeshStandardMaterial({ color: 0x8c8371, roughness: 0.38, metalness: 0.85 }),
     noir: new THREE.MeshStandardMaterial({ color: 0x2a2b2d, roughness: 0.6 }),
-    sol: new THREE.MeshStandardMaterial({ color: 0xe7e1d6, roughness: 0.75 }),
+    sol: new THREE.MeshStandardMaterial({ color: 0xd2bea4, roughness: 0.62 }),      /* chêne clair */
     mur: new THREE.MeshStandardMaterial({ color: 0xfbfaf8, roughness: 0.9 }),
-    meuble: new THREE.MeshStandardMaterial({ color: 0xd8d4cc, roughness: 0.85 }),
+    meuble: new THREE.MeshStandardMaterial({ color: 0xf1efea, roughness: 0.8 }),    /* laqué blanc, literie */
+    textile: new THREE.MeshStandardMaterial({ color: 0x8e8a83, roughness: 0.95 }),  /* canapés, plaids */
+    bois: new THREE.MeshStandardMaterial({ color: 0x8f7a66, roughness: 0.6 }),     /* tables, têtes de lit */
+    tapis: new THREE.MeshStandardMaterial({ color: 0xdedad2, roughness: 1 }),
     eau: new THREE.MeshStandardMaterial({ color: 0x4f93a8, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.85, envMapIntensity: 2 }),
     herbe: new THREE.MeshStandardMaterial({ color: 0xd5ddcc, roughness: 1 }),
     arbre: new THREE.MeshStandardMaterial({ color: 0xe4e6e0, roughness: 0.95, flatShading: true }),
@@ -105,16 +110,58 @@ export class Fusion {
   }
 }
 
-/* Arbre de maquette : un tronc fin, une couronne en facettes blanches. */
-export function arbres(liste, mat) {
-  const f = new Fusion();
+/* Arbre d'architecte : un tronc et une couronne en traits (trois
+   ellipses croisées), comme sur un plan de présentation. */
+export function arbres(liste, couleur = 0x8d9094) {
+  const pts = [];
+  const N = 28;
   liste.forEach(([x, z, s = 1]) => {
-    f.boite(0.14 * s, 2.6 * s, 0.14 * s, x, 1.3 * s, z);
-    const c = new THREE.IcosahedronGeometry(1.15 * s, 0);
-    c.scale(1, 1.35, 1); c.translate(x, 3.9 * s, z);
-    f.ajouter(c);
+    const r = 1.35 * s, ry = 1.75 * s, cy = 3.9 * s;
+    pts.push(x, 0, z, x, cy - ry * 0.55, z);
+    for (let a = 0; a < 3; a++) {
+      const ang = (a * Math.PI) / 3;
+      for (let i = 0; i < N; i++) {
+        const t0 = (i / N) * Math.PI * 2, t1 = ((i + 1) / N) * Math.PI * 2;
+        const p = (t) => [x + Math.cos(t) * r * Math.cos(ang), cy + Math.sin(t) * ry, z + Math.cos(t) * r * Math.sin(ang)];
+        pts.push(...p(t0), ...p(t1));
+      }
+    }
+    for (let i = 0; i < N; i++) { /* ceinture horizontale */
+      const t0 = (i / N) * Math.PI * 2, t1 = ((i + 1) / N) * Math.PI * 2;
+      pts.push(x + Math.cos(t0) * r, cy, z + Math.sin(t0) * r, x + Math.cos(t1) * r, cy, z + Math.sin(t1) * r);
+    }
   });
-  return f.maillage(mat);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+  const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: couleur, transparent: true, opacity: 0.55 }));
+  l.userData.horsFondu = true;
+  return l;
+}
+
+/* Garde-corps : lames de verre et main courante continues le long
+   d'une ligne brisée [[x,z],…], raccordées aux angles. */
+export function gardeCorps(fv, fm, pts, y0, h = 1.02) {
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, z0] = pts[i], [x1, z1] = pts[i + 1];
+    const L = Math.hypot(x1 - x0, z1 - z0), cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    const ang = -Math.atan2(z1 - z0, x1 - x0);
+    fv.boite(L, h - 0.06, 0.025, cx, y0 + 0.04 + (h - 0.06) / 2, cz, ang);
+    fm.boite(L + 0.05, 0.045, 0.06, cx, y0 + h, cz, ang);          /* main courante */
+    fm.boite(L + 0.05, 0.05, 0.07, cx, y0 + 0.025, cz, ang);       /* sabot */
+  }
+}
+
+/* Menuiseries : cadre et meneaux en saillie de 4 cm devant un vitrage
+   (w × h, plan vertical), meneaux tous les `pas` mètres. */
+export function menuiseries(fm, w, h, x, y, z, axe = "x", pas = 1.25) {
+  const e = 0.05, p = 0.08;
+  if (axe === "x") {
+    fm.boite(w, e, p, x, y - h / 2 + e / 2, z); fm.boite(w, e, p, x, y + h / 2 - e / 2, z);
+    for (let k = -w / 2; k <= w / 2 + 0.001; k += pas) fm.boite(e, h, p, x + k, y, z);
+  } else {
+    fm.boite(p, e, w, x, y - h / 2 + e / 2, z); fm.boite(p, e, w, x, y + h / 2 - e / 2, z);
+    for (let k = -w / 2; k <= w / 2 + 0.001; k += pas) fm.boite(p, h, e, x, y, z + k);
+  }
 }
 
 /* Traits d'architecte : les arêtes d'un maillage, dessinables
