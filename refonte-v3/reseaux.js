@@ -37,6 +37,7 @@
   const suivre = sec.querySelector('.rl-suivre');
   const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let actif = 'nsd';
+  const IMAGES = {};   // code → couverture servie par le stockage public (mise à jour automatique)
 
   const IG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/><circle cx="17.6" cy="6.4" r="1.1" class="pl"/></svg>';
   const TT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="pl" d="M16.6 2h-3.4v13.3a2.9 2.9 0 1 1-2.1-2.8V9a6.4 6.4 0 1 0 5.5 6.3V8.6a7.9 7.9 0 0 0 4.6 1.5V6.7a4.6 4.6 0 0 1-4.6-4.7z"/></svg>';
@@ -48,7 +49,7 @@
     sec.dataset.compte = cle;
     piste.innerHTML = c.reels.map((code, i) =>
       '<a class="rl-carte" style="--i:'+i+'" href="https://www.instagram.com/reel/'+code+'/" target="_blank" rel="noopener" aria-label="Voir le reel '+(i+1)+' de @'+c.handle+' sur Instagram">'
-      + '<img src="assets/reels/'+code+'.jpg" width="540" height="960" alt="" loading="lazy" decoding="async">'
+      + '<img src="'+(IMAGES[code] || 'assets/reels/'+code+'.jpg')+'" width="540" height="960" alt="" loading="lazy" decoding="async">'
       + '<span class="rl-voile"></span>'
       + '<span class="rl-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>'
       + '<span class="rl-pied">'+IG+'<span>Voir le reel</span></span>'
@@ -127,4 +128,27 @@
   new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? lance() : arret()), {threshold:.35}).observe(piste);
 
   rendre('nsd');
+
+  /* Mise à jour automatique (17/11/2026, demande de Nelson) : tous les 3 jours, la fonction
+     Pilotage `reels-site` recopie les derniers Reels des comptes reliés à Meta dans un stockage
+     public (couvertures servies par nous, jamais par Instagram) et écrit reels.json. Le site le lit
+     à chaque visite ; si le fichier ne répond pas, ou qu'un compte n'y figure pas (Sam tant que son
+     Instagram n'est pas relié à Meta Business), la liste ci-dessus reste affichée. */
+  const SOURCE = 'https://atgykykesntvporvbvuf.supabase.co/storage/v1/object/public/site-reels/reels.json';
+  const delai = new AbortController(); setTimeout(() => delai.abort(), 5000);
+  fetch(SOURCE, { cache: 'no-cache', credentials: 'omit', signal: delai.signal })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d.comptes) return;
+      let change = false;
+      Object.keys(d.comptes).forEach(cle => {
+        const liste = d.comptes[cle];
+        if (!COMPTES[cle] || !Array.isArray(liste) || liste.length < 3) return;
+        liste.forEach(x => { if (x && x.code && x.image) IMAGES[x.code] = x.image; });
+        const codes = liste.filter(x => x && x.code && x.image).map(x => x.code);
+        if (codes.join() !== COMPTES[cle].reels.join()) { COMPTES[cle].reels = codes; change = true; }
+      });
+      if (change && !touche) rendre(actif);
+    })
+    .catch(() => {});
 })();
