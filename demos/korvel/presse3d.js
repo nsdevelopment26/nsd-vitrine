@@ -17,7 +17,7 @@ var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPre
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.6 : 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
+renderer.toneMappingExposure = 0.98;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setClearColor(0x0c0d0f, 1);
@@ -40,15 +40,20 @@ var camera = new THREE.PerspectiveCamera(30, 1, 0.05, 30);
   fen.position.set(3.5, 1.4, -4.9); env.add(fen);
   var bande = new THREE.Mesh(new THREE.PlaneGeometry(6, 0.4), new THREE.MeshBasicMaterial({ color: 0x9aa3ad }));
   bande.position.set(0, 1.2, 4.9); bande.rotation.y = Math.PI; env.add(bande);
+  // deux grandes softbox : l'aluminium de la tête et des chromes a quelque chose à refléter
+  [[0, 3.2, -3.6, 0.9], [-2.6, 2.4, 2.8, 0.55]].forEach(function (b) {
+    var sb = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.6), new THREE.MeshBasicMaterial({ color: new THREE.Color(b[3], b[3], b[3] * 1.04), side: THREE.DoubleSide }));
+    sb.position.set(b[0], b[1], b[2]); sb.lookAt(0, 0.3, 0); env.add(sb);
+  });
   scene.environment = pm.fromScene(env, 0.04).texture;
-  scene.environmentIntensity = 0.55;
+  scene.environmentIntensity = 0.85;
   pm.dispose();
 })();
 
 /* lumières : la suspension de l'atelier, un contre-jour froid, un fond très bas */
-var lampe = new THREE.SpotLight(0xffe7cf, 38, 6.5, 0.66, 0.6, 1.4);
-lampe.position.set(0.35, 2.15, 1.25);
-lampe.target.position.set(0.05, 0, -0.05);
+var lampe = new THREE.SpotLight(0xfff7f0, 30, 7, 0.7, 0.55, 1.3);
+lampe.position.set(0.35, 1.9, 1.75);
+lampe.target.position.set(0.0, 0.05, -0.02);
 lampe.castShadow = true;
 lampe.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
 lampe.shadow.bias = -0.00025;
@@ -56,10 +61,13 @@ lampe.shadow.normalBias = 0.012;
 lampe.shadow.radius = 4;
 lampe.shadow.camera.near = 0.8; lampe.shadow.camera.far = 4.5;
 scene.add(lampe, lampe.target);
-var contre = new THREE.DirectionalLight(0x8aa4ff, 0.35);
-contre.position.set(-1.8, 1.4, -2.4);
+var contre = new THREE.DirectionalLight(0xb4c2e6, 0.7);   // contre-jour froid : détache la tête et les bras
+contre.position.set(-1.2, 2.2, -2.6);
 scene.add(contre);
-scene.add(new THREE.HemisphereLight(0x4a505a, 0x0b0b0c, 0.7));
+var bordD = new THREE.DirectionalLight(0xffe2c4, 0.7);     // liseré chaud côté droit
+bordD.position.set(2.4, 1.0, -0.6);
+scene.add(bordD);
+scene.add(new THREE.HemisphereLight(0x5a616c, 0x0b0b0c, 0.85));
 
 /* ---------- textures fabriquées ---------- */
 function canvas(w, h, f) { var c = document.createElement("canvas"); c.width = w; c.height = h; f(c.getContext("2d"), w, h); return c; }
@@ -100,7 +108,7 @@ function normaleDe(src, force) {
 var normMaille = texCanvas(normaleDe(T.grain(), 2.2), [14, 14]);
 
 /* ---------- table ---------- */
-var matTable = new THREE.MeshStandardMaterial({ color: 0x3b3e43, metalness: 0.75, roughness: 0.42, roughnessMap: texCanvas(brosse, [3, 2]), map: texCanvas(brosse, [3, 2], true) });
+var matTable = new THREE.MeshStandardMaterial({ color: 0x34373c, metalness: 0.5, roughness: 0.58, roughnessMap: texCanvas(brosse, [3, 2]), map: texCanvas(brosse, [3, 2], true) });
 var table = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.06, 2.3), matTable);
 table.position.set(0.35, -0.03, 0.05);
 table.receiveShadow = true;
@@ -108,7 +116,7 @@ scene.add(table);
 
 /* ---------- la presse ---------- */
 var noir = new THREE.MeshStandardMaterial({ color: 0x141518, metalness: 0.35, roughness: 0.38 });
-var noirMat = new THREE.MeshStandardMaterial({ color: 0x18191c, metalness: 0.2, roughness: 0.7 });
+var noirMat = new THREE.MeshStandardMaterial({ color: 0x26282c, metalness: 0.45, roughness: 0.42 });
 var chrome = new THREE.MeshStandardMaterial({ color: 0xd8dade, metalness: 1, roughness: 0.18 });
 var alu = new THREE.MeshStandardMaterial({ color: 0xc9ccd1, metalness: 1, roughness: 0.3, roughnessMap: texCanvas(brosse, [1, 1]) });
 var feutre = new THREE.MeshStandardMaterial({ color: 0x4f5359, metalness: 0, roughness: 0.9, normalMap: texCanvas(normaleDe(T.grain(), 0.8), [5, 5]) });
@@ -125,7 +133,7 @@ function boiteArrondie(w, h, d, r, mat) {
 }
 var presse = new THREE.Group();
 scene.add(presse);
-var PW = 0.72, PD = 0.86;                // plateau
+var PW = 0.88, PD = 0.94;                // plateau
 var Y0 = 0.095;                          // dessus du plateau inférieur
 var socle = boiteArrondie(PW + 0.06, 0.06, PD + 0.06, 0.02, noir); presse.add(socle);
 var pieds = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
@@ -140,7 +148,14 @@ var PIVOT = new THREE.Vector3(0, 0.43, -PD / 2 - 0.09);
 var bras = new THREE.Group(); bras.position.copy(PIVOT); presse.add(bras);
 var haut = new THREE.Group(); haut.position.set(0, Y0 + 0.012 - PIVOT.y, -PIVOT.z); bras.add(haut); // repère : centre du plateau, dessous
 var plateauHaut = boiteArrondie(PW + 0.02, 0.05, PD + 0.02, 0.022, alu); haut.add(plateauHaut);
-var chauffe = boiteArrondie(PW - 0.12, 0.03, PD - 0.16, 0.02, noirMat); chauffe.position.y = 0.05; haut.add(chauffe);
+var chauffe = boiteArrondie(PW - 0.36, 0.035, PD - 0.4, 0.03, noirMat); chauffe.position.y = 0.05; haut.add(chauffe);
+// semelle chauffante (face qui touche le textile) : gris anti-adhésif, éclairée par la lampe quand la tête est ouverte
+var semelle = new THREE.Mesh(new THREE.PlaneGeometry(PW - 0.01, PD - 0.01), new THREE.MeshStandardMaterial({ color: 0x6d7076, metalness: 0.35, roughness: 0.38, normalMap: texCanvas(normaleDe(T.grain(), 0.25), [6, 6]) }));
+semelle.rotation.x = Math.PI / 2; semelle.position.y = -0.0015; haut.add(semelle);
+var liseretSemelle = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(PW - 0.08, PD - 0.08)), new THREE.LineBasicMaterial({ color: 0x9a9da3 }));
+liseretSemelle.rotation.x = Math.PI / 2; liseretSemelle.position.y = -0.002; haut.add(liseretSemelle);
+// nervures du capot chauffant
+[-0.12, 0, 0.12].forEach(function (z) { var n = new THREE.Mesh(new THREE.BoxGeometry(PW - 0.42, 0.008, 0.012), chrome); n.position.set(0, 0.089, z); haut.add(n); });
 var tige = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.09, 16), chrome); tige.position.set(0, 0.12, 0); haut.add(tige);
 var molette = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.03, 28), noirMat); molette.position.set(0, 0.17, 0); haut.add(molette);
 // deux bras latéraux du pivot jusqu'à la poignée avant
@@ -159,8 +174,9 @@ var poignee = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.4, 24), 
 poignee.rotation.z = Math.PI / 2; poignee.position.set(0, -0.06, 0.84); poignee.castShadow = true; bras.add(poignee);
 [-0.205, 0.205].forEach(function (x) { var c = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.012, 24), chrome); c.rotation.z = Math.PI / 2; c.position.set(x, -0.06, 0.84); bras.add(c); });
 var axe = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.27, 20), chrome); axe.rotation.z = Math.PI / 2; bras.add(axe);
-var OUVERT = -1.02, FERME = 0;
+var OUVERT = -0.98, FERME = 0;
 bras.rotation.x = OUVERT;
+bras.traverse(function (o) { if (o.isMesh) o.castShadow = false; });
 // voyant de chauffe sur la colonne
 var voyant = new THREE.Mesh(new THREE.CircleGeometry(0.008, 16), new THREE.MeshBasicMaterial({ color: 0x3a1020 }));
 voyant.position.set(0.06, 0.4, -PD / 2 - 0.1 + 0.071); presse.add(voyant);
@@ -171,7 +187,10 @@ var geoTissu = new THREE.PlaneGeometry(T.M, T.M, SEG, SEG); geoTissu.rotateX(-Ma
 var canTissu = document.createElement("canvas"); canTissu.width = canTissu.height = T.N;
 var texTissu = new THREE.CanvasTexture(canTissu); texTissu.colorSpace = THREE.SRGBColorSpace; texTissu.anisotropy = 8;
 var canRelief = document.createElement("canvas"); canRelief.width = canRelief.height = 512;
-var matTissu = new THREE.MeshStandardMaterial({ map: texTissu, alphaTest: 0.5, roughness: 0.92, metalness: 0, normalMap: normMaille, normalScale: new THREE.Vector2(0.55, 0.55), side: THREE.DoubleSide });
+/* jersey de coton : normale Poly Haven « cotton_jersey » (CC0), reflet velouté (sheen) */
+var normJersey = new THREE.TextureLoader().load("textures/jersey-normale.jpg");
+normJersey.wrapS = normJersey.wrapT = THREE.RepeatWrapping; normJersey.repeat.set(22, 22); normJersey.anisotropy = 8;
+var matTissu = new THREE.MeshPhysicalMaterial({ map: texTissu, alphaTest: 0.5, alphaToCoverage: true, roughness: 0.94, metalness: 0, normalMap: normJersey, normalScale: new THREE.Vector2(0.6, 0.6), sheen: 0.35, sheenRoughness: 0.8, sheenColor: new THREE.Color(0x5c6066), side: THREE.DoubleSide });
 var tissu = new THREE.Mesh(geoTissu, matTissu);
 tissu.castShadow = true; tissu.receiveShadow = true;
 var porte = new THREE.Group(); porte.add(tissu); presse.add(porte);
@@ -209,7 +228,7 @@ function relief() {
 var film = new THREE.Group(); presse.add(film);
 var matSupport = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.07, roughness: 0.1, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.08, depthWrite: false, side: THREE.DoubleSide });
 var support = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), matSupport); support.rotation.x = -Math.PI / 2;
-var texLogo = new THREE.Texture(); texLogo.colorSpace = THREE.SRGBColorSpace;
+var texLogo = new THREE.Texture(); texLogo.colorSpace = THREE.SRGBColorSpace; var logoVu = null;
 var matLogo = new THREE.MeshStandardMaterial({ map: texLogo, transparent: true, alphaTest: 0.05, roughness: 0.45, metalness: 0, depthWrite: false });
 var logoFilm = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), matLogo); logoFilm.rotation.x = -Math.PI / 2; logoFilm.position.y = 0.0008;
 var bord = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(1, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 }));
@@ -258,7 +277,7 @@ var rouleau = new THREE.Group();
 var r1 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.62, 40), new THREE.MeshStandardMaterial({ color: 0xb9c3cb, roughness: 0.18, metalness: 0.1, transparent: true, opacity: 0.85 }));
 r1.rotation.z = Math.PI / 2; r1.castShadow = true; rouleau.add(r1);
 var r2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.66, 24), noirMat); r2.rotation.z = Math.PI / 2; rouleau.add(r2);
-rouleau.position.set(0.7, 0.06, -0.72); rouleau.rotation.y = -0.4; scene.add(rouleau);
+rouleau.position.set(0.66, 0.06, -0.78); rouleau.rotation.y = -0.15; scene.add(rouleau);
 
 function plieGeo() {
   var w = 0.3, d = 0.36, r = 0.03, s = new THREE.Shape(), x = -w / 2, z = -d / 2;
@@ -276,13 +295,13 @@ function matPlie(hex, tex) {
   return [dessus, cote];
 }
 [["#eceeef", 0], ["#16171a", 1], ["#1d2a44", 2], ["#3a3d42", 3]].forEach(function (c, i) {
-  var m = new THREE.Mesh(GEO_PLIE, matPlie(c[0])); m.position.set(-0.86, i * 0.034, -0.42); m.rotation.y = 0.08 * (i % 2 ? 1 : -1);
+  var m = new THREE.Mesh(GEO_PLIE, matPlie(c[0])); m.position.set(-0.86, i * 0.034, 0.02); m.rotation.y = 0.08 * (i % 2 ? 1 : -1);
   m.castShadow = m.receiveShadow = true; scene.add(m);
 });
 
 /* ---------- l'équipe : piles et étiquettes ---------- */
 var piles = new THREE.Group(); scene.add(piles);
-var PILE_X = 0.74, PAR_PILE = 8;
+var PILE_X = 0.86, PAR_PILE = 8;
 function etiquette(nom, taille) {
   var c = canvas(256, 64, function (x) {
     x.fillStyle = "#121316"; x.fillRect(0, 0, 256, 64);
@@ -319,8 +338,8 @@ function poserPlie(i, membre, tex, hex) {
 
 /* ---------- caméra ---------- */
 var vues = {
-  presse: { cible: new THREE.Vector3(0.0, 0.12, mobile ? -0.04 : -0.12), largeur: mobile ? 1.16 : 1.42, dir: new THREE.Vector3(0.14, 0.66, 0.74) },
-  equipe: { cible: new THREE.Vector3(0.5, 0.12, 0.0), largeur: 2.1, dir: new THREE.Vector3(0.22, 0.64, 0.74) }
+  presse: { cible: new THREE.Vector3(0.0, 0.26, -0.1), largeur: mobile ? 1.5 : 1.95, dir: new THREE.Vector3(0.42, 0.5, 0.76) },
+  equipe: { cible: new THREE.Vector3(0.42, 0.22, 0.0), largeur: 2.45, dir: new THREE.Vector3(0.36, 0.52, 0.78) }
 };
 var vueCourante = "presse", camCible = new THREE.Vector3(), camPos = new THREE.Vector3(), camPosVoulue = new THREE.Vector3(), camCibleVoulue = new THREE.Vector3();
 var decalage = 0;      // part de la largeur occupée par le volet (ordinateur)
@@ -370,8 +389,8 @@ function dessinerTissu(e, avecLogo, nom) {
   if (avecLogo && logoTech && ((faceVoulue === "dos") === (e.zone === "dos"))) imprime.push({ img: logoTech, rect: rectPx });
   T.dessiner({ piece: e.piece, couleur: e.couleur, face: faceVoulue, imprime: imprime, nom: nom ? nom.nom : null, numero: nom ? nom.num : null, texteNom: e.couleur === "blanc" ? "#121316" : "#f4f5f6" }, canTissu);
   texTissu.needsUpdate = true;
-  var cle = e.piece + ":" + faceVoulue;
-  if (!masques[cle]) masques[cle] = T.masque(e.piece, faceVoulue, 192);
+  var cle = e.piece;   // la silhouette posée est toujours entière (le dos ferme l'encolure)
+  if (!masques[cle]) masques[cle] = T.masque(e.piece, "dos", 192);
   if (forme !== cle) { forme = cle; relief(); }
   face = faceVoulue;
 }
@@ -391,7 +410,11 @@ var api = {
   etat: function (e) {
     E = e;
     logoTech = e.logo ? T.logoTechnique(e.logo, e.technique, e.teinte) : null;
-    if (logoTech) { texLogo.image = logoTech; texLogo.needsUpdate = true; }
+    if (logoTech && logoTech !== logoVu) {
+      // une texture neuve à chaque logo : une texture réutilisée garde sa taille d'origine et l'ancien logo restait visible autour
+      var ancienne = texLogo; texLogo = new THREE.CanvasTexture(logoTech); texLogo.colorSpace = THREE.SRGBColorSpace; texLogo.anisotropy = 8;
+      matLogo.map = texLogo; matLogo.needsUpdate = true; ancienne.dispose(); logoVu = logoTech;
+    }
     placerFilm(e);
     if (!occupe) {
       dessinerTissu(e, e.presse, null);

@@ -7,7 +7,7 @@
   var N = 1024;                      // côté du canevas
   var M = 0.9;                       // mètres représentés par le côté
   var COULEURS = {
-    noir:    { hex: "#16171a", fil: "#2a2c31" },
+    noir:    { hex: "#111215", fil: "#25272c" },
     anthra:  { hex: "#3a3d42", fil: "#4c5056" },
     blanc:   { hex: "#eceeef", fil: "#d9dcdf" },
     marine:  { hex: "#1d2a44", fil: "#2b3a59" },
@@ -199,7 +199,7 @@
     x.clearRect(0, 0, N, N);
     // tissu
     x.save();
-    tracer(x, o.piece, o.face);
+    tracer(x, o.piece, "dos");   // la pièce posée est entière : le dos ferme l'encolure du devant
     x.fillStyle = col.hex; x.fill("nonzero");
     x.clip("nonzero");
     x.globalAlpha = 0.5;
@@ -233,12 +233,53 @@
       x.beginPath(); x.moveTo(38, 342); x.lineTo(112, 418); x.stroke();
     }
     x.setLineDash([]);
-    // col côtelé
-    x.lineWidth = o.piece === "hoodie" ? 0 : 16;
-    if (x.lineWidth) {
-      x.strokeStyle = "rgba(0,0,0,.18)";
+    // emmanchures et volume des manches (le T-shirt n'est pas une découpe plate)
+    if (o.piece !== "hoodie") {
+      x.save();
+      [[1, 800, 138, 814, 336, 992, 330, 904, 424], [-1, 224, 138, 210, 336, 32, 330, 120, 424]].forEach(function (m) {
+        // ombre de la manche, plus sombre vers l'ourlet
+        var g2 = x.createLinearGradient(m[1], m[2], (m[5] + m[7]) / 2, (m[6] + m[8]) / 2);
+        g2.addColorStop(0, "rgba(0,0,0,0)"); g2.addColorStop(1, "rgba(0,0,0,.16)");
+        x.fillStyle = g2;
+        x.beginPath(); x.moveTo(m[1], m[2]); x.lineTo(m[5], m[6]); x.lineTo(m[7], m[8]); x.lineTo(m[3], m[4]); x.closePath(); x.fill();
+        // couture d'emmanchure, légèrement creusée
+        x.strokeStyle = "rgba(0,0,0,.28)"; x.lineWidth = 3;
+        x.beginPath(); x.moveTo(m[1], m[2]); x.quadraticCurveTo(m[1] + m[0] * 22, (m[2] + m[4]) / 2, m[3], m[4]); x.stroke();
+        x.strokeStyle = col.fil; x.lineWidth = 2; x.setLineDash([6, 5]);
+        x.beginPath(); x.moveTo(m[1] + m[0] * 8, m[2] + 4); x.quadraticCurveTo(m[1] + m[0] * 30, (m[2] + m[4]) / 2, m[3] + m[0] * 8, m[4]); x.stroke();
+        x.setLineDash([]);
+        // pli de la manche posée
+        x.strokeStyle = "rgba(255,255,255,.05)"; x.lineWidth = 10;
+        x.beginPath(); x.moveTo(m[1] + m[0] * 40, m[2] + 40); x.lineTo((m[5] + m[7]) / 2 - m[0] * 30, (m[6] + m[8]) / 2 - 20); x.stroke();
+      });
+      x.restore();
+    }
+    // encolure : au devant, l'intérieur du dos se voit dans le creux, bord-côte autour
+    if (o.piece !== "hoodie") {
+      var fond = "rgba(0,0,0,.34)";
+      if (o.face !== "dos") {
+        x.fillStyle = fond;
+        x.beginPath(); x.moveTo(432, 96); x.bezierCurveTo(434, 118, 458, 186, 512, 186); x.bezierCurveTo(566, 186, 590, 118, 592, 96);
+        x.bezierCurveTo(574, 118, 556, 128, 512, 128); x.bezierCurveTo(468, 128, 450, 118, 432, 96); x.closePath(); x.fill();
+        // bord-côte du dos vu de l'intérieur
+        x.strokeStyle = "rgba(0,0,0,.22)"; x.lineWidth = 9;
+        x.beginPath(); x.moveTo(440, 100); x.bezierCurveTo(456, 116, 474, 124, 512, 124); x.bezierCurveTo(550, 124, 568, 116, 584, 100); x.stroke();
+      }
       var enc = o.face === "dos" ? 128 : 186;
-      x.beginPath(); x.moveTo(436, 100); x.bezierCurveTo(440, 124, 462, enc - 6, 512, enc - 6); x.bezierCurveTo(562, enc - 6, 584, 124, 588, 100); x.stroke();
+      // bord-côte : bande plus claire, fines côtes, ombre portée sur le corps
+      x.lineCap = "round";
+      x.strokeStyle = "rgba(0,0,0,.30)"; x.lineWidth = 22;
+      x.beginPath(); x.moveTo(434, 98); x.bezierCurveTo(438, 126, 460, enc + 4, 512, enc + 4); x.bezierCurveTo(564, enc + 4, 586, 126, 590, 98); x.stroke();
+      x.strokeStyle = col.fil; x.lineWidth = 16;
+      x.beginPath(); x.moveTo(436, 98); x.bezierCurveTo(440, 122, 462, enc - 2, 512, enc - 2); x.bezierCurveTo(562, enc - 2, 584, 122, 588, 98); x.stroke();
+      x.strokeStyle = "rgba(0,0,0,.18)"; x.lineWidth = 16; x.setLineDash([1.5, 3]);
+      x.stroke();
+      x.setLineDash([]); x.lineCap = "butt";
+    } else if (o.face !== "dos") {
+      // hoodie : l'intérieur de la capuche dans l'encolure
+      x.fillStyle = "rgba(0,0,0,.32)";
+      x.beginPath(); x.moveTo(426, 150); x.bezierCurveTo(434, 172, 464, 205, 512, 205); x.bezierCurveTo(560, 205, 590, 172, 598, 150);
+      x.bezierCurveTo(570, 166, 548, 172, 512, 172); x.bezierCurveTo(476, 172, 454, 166, 426, 150); x.closePath(); x.fill();
     }
     // impressions
     (o.imprime || []).forEach(function (p) {
