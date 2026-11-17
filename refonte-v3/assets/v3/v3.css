@@ -1517,7 +1517,6 @@ p,li{text-wrap:pretty}
 .rl-lien em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--mute)}
 .label,.num,dt,.f-date,.et-prix,.kick{letter-spacing:.05em}
 /* NSD 360 : la règle d'italique v3 ne doit pas alléger les titres Sora ; mots animés sans rognage */
-.p360 h1 em,.p360 h2 em{font-weight:inherit}
 .p360 [data-words] .w{padding:0 .06em .14em 0;margin:0 -.06em -.14em 0}
 .noeud.fin svg{width:16px;height:16px}
 .cf-ok svg{flex:none;margin-top:3px}
