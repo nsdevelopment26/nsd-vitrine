@@ -201,6 +201,52 @@ function placerMobile() {
 }
 let nJour = 0;
 
+/* ------------------------------------------------------------ cadrage automatique (bureau, tablette)
+   La grille projetée (blocs, heures au sol, noms des jours) doit tenir dans la
+   zone libre : à droite de la colonne de texte, sous la navigation, au-dessus
+   des puces. À chaque image on mesure sa boîte à l'écran et on corrige le
+   décalage de vue et la distance de la caméra, en douceur. */
+const cadre = { x: 0, y: 0, k: 1 };
+const coins = [];
+function zoneLibre() {
+  const rc = toile.getBoundingClientRect();
+  let g = 28, h = 24, b = rc.height - 24;
+  const nav = document.getElementById('nav');
+  if (nav) h = Math.max(h, nav.getBoundingClientRect().bottom - rc.top + 16);
+  document.querySelectorAll('.semaine-texte > *').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width && r.bottom > rc.top && r.top < rc.bottom && r.left < rc.left + rc.width / 2) g = Math.max(g, r.right - rc.left + 40);
+  });
+  const cmd = document.querySelector('.commandes');
+  if (cmd) {
+    const r = cmd.getBoundingClientRect();
+    if (r.top > rc.top + rc.height / 2 && r.top < rc.bottom && r.left < rc.right) b = Math.min(b, r.top - rc.top - 12);
+  }
+  return { g, d: rc.width - 28, h, b };
+}
+function ajusterCadre(dt) {
+  camera.updateMatrixWorld();
+  const vis = blocs.filter((m) => !m.userData.horsJour && (jourVise < 0 || m.userData.cours.j === jourVise));
+  if (!vis.length) return false;
+  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  vis.forEach((m) => { const u = m.userData.ici; x0 = Math.min(x0, u.x - u.sx / 2); x1 = Math.max(x1, u.x + u.sx / 2); z0 = Math.min(z0, u.z - u.sz / 2); z1 = Math.max(z1, u.z + u.sz / 2); });
+  x0 -= 0.35; x1 += 0.35; z0 -= 0.3; z1 = zMax + 0.85;      // marge pour les heures et les jours
+  coins.length = 0;
+  for (const x of [x0, x1]) for (const z of [z0, z1]) for (const y of [0, 1.0]) coins.push(projeter(tmp.set(x, y, z)));
+  const bx0 = Math.min(...coins.map((c) => c.x)), bx1 = Math.max(...coins.map((c) => c.x));
+  const by0 = Math.min(...coins.map((c) => c.y)), by1 = Math.max(...coins.map((c) => c.y));
+  const z = zoneLibre();
+  const s = Math.min((z.d - z.g) / (bx1 - bx0), (z.b - z.h) / (by1 - by0));
+  const kCible = clamp(cadre.k / Math.min(s / 1.02, 1.25), 0.6, 2.5);
+  const t = 1 - Math.exp(-6 * dt);
+  const dx = (bx0 + bx1) / 2 - (z.g + z.d) / 2, dy = (by0 + by1) / 2 - (z.h + z.b) / 2;
+  cadre.k = lerp(cadre.k, kCible, t);
+  cadre.x += dx * t; cadre.y += dy * t;
+  camera.setViewOffset(L, H, cadre.x, cadre.y, L, H);
+  camera.updateProjectionMatrix();
+  return Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5 || Math.abs(kCible - cadre.k) > 0.003;
+}
+
 /* ------------------------------------------------------------ cadrage */
 let L = 1, H = 1;
 const cam = { x: 0, z: 0, dist: 27 };
@@ -218,7 +264,7 @@ function cadrage() {
     camCible.dist = mob ? 21 : 19;
   } else {
     camCible.x = 0; camCible.z = 0;
-    camCible.dist = mob ? (L / H > 1.2 ? 21 : 31) : (L / H < 1.3 ? 27 : 27);
+    camCible.dist = mob ? (L / H > 1.2 ? 21 : 31) : 27;
   }
 }
 function dimensionner() {
@@ -228,8 +274,8 @@ function dimensionner() {
   rendu.setSize(L, H, false);
   camera.aspect = L / H;
   /* sur grand écran, la semaine se décale à droite pour laisser le titre respirer */
-  if (innerWidth > 1100) camera.setViewOffset(L, H, -L * 0.14, H * 0.07, L, H);
-  else camera.clearViewOffset();
+  if (estMobile()) camera.clearViewOffset();
+  else camera.setViewOffset(L, H, cadre.x, cadre.y, L, H);
   camera.updateProjectionMatrix();
   cadrage();
   demander();
@@ -401,10 +447,11 @@ function image(maintenant) {
   bande.visible = !mobJour;
   cam.x = amortir(cam.x, camCible.x, 4, dt);
   cam.z = amortir(cam.z, camCible.z, 4, dt);
-  cam.dist = amortir(cam.dist, camCible.dist, 4, dt);
+  const distVise = camCible.dist * (estMobile() ? 1 : cadre.k);
+  cam.dist = amortir(cam.dist, distVise, 4, dt);
   yaw = amortir(yaw, yawCible, 5, dt);
   tir = amortir(tir, tirCible, 5, dt);
-  if (Math.abs(angBase - angVise) > 0.001 || Math.abs(cam.dist - camCible.dist) > 0.01 || Math.abs(cam.x - camCible.x) > 0.005 || Math.abs(yaw - yawCible) > 0.001) actif = true;
+  if (Math.abs(angBase - angVise) > 0.001 || Math.abs(cam.dist - distVise) > 0.01 || Math.abs(cam.x - camCible.x) > 0.005 || Math.abs(yaw - yawCible) > 0.001) actif = true;
 
   angBase = amortir(angBase, angVise, 4, dt);
   const ang = angBase + yaw;
@@ -415,6 +462,7 @@ function image(maintenant) {
     cam.z + Math.cos(ang) * Math.cos(elev) * cam.dist
   );
   camera.lookAt(cam.x, 0.4, cam.z);
+  if (!estMobile() && ajusterCadre(dt)) actif = true;
 
   bande.material.opacity = 0.05 + (calme ? 0 : Math.max(0, Math.sin(temps * 2.4)) * 0.035);
   rendu.render(scene, camera);
