@@ -46,6 +46,7 @@
     "  transform:translateY(calc(100% + 40px)) scale(.96);opacity:0;visibility:hidden;",
     "  transition:transform .75s cubic-bezier(.2,1.25,.3,1),opacity .4s ease,visibility 0s .75s}",
     ".carte.ouvert{transform:none;opacity:1;visibility:visible;transition:transform .75s cubic-bezier(.2,1.25,.3,1),opacity .4s ease,visibility 0s}",
+    ".carte.au-dessus:not(.ouvert){transform:translateY(-14px) scale(.98)}.carte.au-dessus.ouvert{transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s ease,visibility 0s}",
     ".carte.sort{transform:translateY(30px) scale(.97);opacity:0;visibility:hidden;transition:transform .35s ease-in,opacity .3s ease-in,visibility 0s .35s}",
     /* reflet qui traverse la carte une fois à l'ouverture */
     ".carte::before{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;pointer-events:none;",
@@ -136,16 +137,30 @@
     fait = true;
     try { sessionStorage.setItem(DEJA, '1'); } catch (e) {}
     if (matchMedia('(max-width:600px)').matches) {
-      // Au-dessus des barres fixes de la démo collées en bas (« Appeler / Devis », « section suivante »…)
-      var dessus = 0;
-      document.querySelectorAll('body *').forEach(function (el) {
-        if (el === hote || el.closest('#nsd-reseaux')) return;
+      // Au-dessus des barres fixes de la démo collées en bas (« Appeler / Devis », « section suivante »…),
+      // y compris quand elles glissent ou apparaissent au défilement : position suivie à chaque image.
+      var barres = [].filter.call(document.querySelectorAll('body *'), function (el) {
+        if (el === hote || el.closest('#nsd-reseaux')) return false;
         var cs = getComputedStyle(el);
-        if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') return;
+        if (cs.position !== 'fixed') return false;
         var r = el.getBoundingClientRect();
-        if (r.height > 0 && r.height < innerHeight * 0.4 && r.bottom >= innerHeight - 4 && r.width > innerWidth * 0.5) dessus = Math.max(dessus, innerHeight - r.top);
+        return r.width > innerWidth * 0.5 && r.height < innerHeight * 0.4 && (r.bottom >= innerHeight - 4 || cs.bottom === '0px');
       });
-      if (dessus) carte.style.bottom = (dessus + 12) + 'px';
+      var placer = function () {
+        var dessus = 0;
+        barres.forEach(function (el) {
+          var cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.05) return;
+          var r = el.getBoundingClientRect(); if (r.top < innerHeight && r.height > 0) dessus = Math.max(dessus, innerHeight - r.top);
+        });
+        carte.style.bottom = (dessus ? dessus + 12 : 16) + 'px';
+      };
+      if (barres.length) {
+        // position de départ posée SANS transition (sinon la carte remonte depuis le bas et passe sur la barre)
+        carte.style.transition = 'none'; carte.classList.add('au-dessus'); placer(); void carte.offsetWidth;
+        carte.style.transition = ''; void carte.offsetWidth;
+        var suivre = function () { if (ouvert) { placer(); requestAnimationFrame(suivre); } };
+        requestAnimationFrame(suivre);
+      }
       carte.classList.add('mini');
       carte.addEventListener('click', function deplier(ev) {
         if (ev.target.closest && ev.target.closest('.fermer')) return;
