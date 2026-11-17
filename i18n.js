@@ -194,12 +194,13 @@ const NS_I18N = {
   "Leads": {lb:"Leads", de:"Leads", en:"Leads", pt:"Leads"},
   "Voir la démo →": {lb:"Demo kucken →", de:"Demo ansehen →", en:"View demo →", pt:"Ver demo →"},
   "Imprimerie & textile": {lb:"Dréckerei & Textil", de:"Druckerei & Textil", en:"Print shop & apparel", pt:"Gráfica & têxtil"},
-  "Boutique avec paiement Apple Pay, configurateur où le client pose son logo sur un T-shirt, catalogue print à feuilleter, en trois langues.":
-    {lb:"Buttek mat Apple Pay, e Konfigurator wou de Client säi Logo op en T-Shirt setzt, e Printkatalog fir ze bliederen, an dräi Sproochen.",
-     de:"Shop mit Apple Pay, ein Konfigurator, in dem der Kunde sein Logo auf ein T-Shirt setzt, ein Druckkatalog zum Durchblättern, in drei Sprachen.",
-     en:"A shop with Apple Pay, a configurator where customers place their logo on a T-shirt, and a flip-through print catalogue, in three languages.",
-     pt:"Loja com Apple Pay, um configurador onde o cliente coloca o seu logótipo numa T-shirt e um catálogo de impressão para folhear, em três línguas."},
-  "Configurateur textile": {lb:"Textil-Konfigurator", de:"Textil-Konfigurator", en:"Apparel configurator", pt:"Configurador têxtil"},
+  "La presse de l'atelier en 3D : le client pose son logo, presse, puis ajoute les prénoms de l'équipe au dos, un par un. Boutique, badges brodés, catalogue à feuilleter et devis, en trois langues.":
+    {lb:"D'Press vum Atelier an 3D: de Client leet säi Logo drop, dréckt, a setzt dann d'Virnimm vun der Equipe hannen drop, een nom aneren. Buttek, gestéckte Badgen, Katalog fir ze bliederen an Devis, an dräi Sproochen.",
+     de:"Die Presse der Werkstatt in 3D: Der Kunde legt sein Logo auf, presst und setzt dann die Vornamen des Teams auf den Rücken, einen nach dem anderen. Shop, gestickte Namensschilder, Katalog zum Blättern und Angebot, in drei Sprachen.",
+     en:"The workshop's heat press in 3D: customers place their logo, press it, then add each team member's name on the back, one by one. Shop, embroidered badges, flip-through catalogue and quotes, in three languages.",
+     pt:"A prensa da oficina em 3D: o cliente coloca o logótipo, prensa e depois acrescenta os nomes da equipa nas costas, um a um. Loja, crachás bordados, catálogo para folhear e orçamento, em três línguas."},
+  "Presse en 3D": {lb:"Press an 3D", de:"Presse in 3D", en:"3D heat press", pt:"Prensa em 3D"},
+  "Tenues d'équipe": {lb:"Equipe-Kleedung", de:"Teamkleidung", en:"Team kit", pt:"Fardas de equipa"},
   "Artisan & dépannage": {lb:"Handwierker & Depannage", de:"Handwerk & Notdienst", en:"Trades & call-outs", pt:"Artesão & reparações"},
   "Un mur la nuit, en 3D : la lampe torche ouvre le plâtre et montre tuyaux, câbles et serrure. On touche la panne, les gestes d'urgence s'affichent. Devis avec photos, chantiers avant/après.":
     {lb:"Eng Mauer an der Nuecht, a 3D: d'Täschelämpchen mécht de Gips op a weist Päifen, Kabelen a Schlass. Een tippt op d'Pann, an déi éischt Handgrëffer erschéngen. Devis mat Fotoen, Chantiere virdrun/nodrun.",
