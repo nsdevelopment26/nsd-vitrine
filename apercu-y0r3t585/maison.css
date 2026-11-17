@@ -240,3 +240,43 @@
 @media (max-width:860px){.maison.mawi .m-rencontre .mot{font-size:min(9.5vw,70px);letter-spacing:.02em}}
 @media (max-width:860px){.m-rencontre .visionneuse,.maison.mawi .m-rencontre .visionneuse{width:100%;height:auto;max-height:none}.maison.milea .m-rencontre .visionneuse{width:min(100%,380px)}}
 @media (max-width:860px){.m-rencontre .cadre-360{width:100%}}
+
+/* ============================================================
+   Corrections de l'audit du 17/11/2026
+   ============================================================ */
+/* Logo Milea lisible sur la photo du hero (il se perdait dans les cheveux du modèle) */
+@media (min-width:701px){
+  .maison.milea .m-nav:not(.ns-solid) .logo{background:var(--fond);filter:drop-shadow(0 1px 14px rgba(31,13,16,.45))}
+}
+/* « Rencontrez le body / les dômes » : le curseur 360 ne touche plus le dernier mot (accent de DÔMES) */
+.m-rencontre .mot.trois{margin-top:.28em}
+.maison.mawi .m-rencontre .mot{line-height:.98}
+@media (max-width:860px){.m-rencontre .mot.trois{margin-top:.2em}}
+/* « Les mots de Milea » : carte pleine, le logo de la photo ne transparaît plus derrière le texte */
+.m-banniere.clair .texte{background:var(--fond)}
+/* Cibles tactiles : filtres et points du diaporama assez grands pour le doigt */
+.m-filtres button{padding:14px 0}
+.points button{height:31px;padding:14px 0;background-clip:content-box}
+/* Téléphone : catalogue sur deux colonnes, comme une vraie boutique */
+@media (max-width:560px){
+  .maison .catalogue{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 8px}
+  .maison .piece h3{font-size:17px}
+  .maison .piece .etiquette{top:8px;left:8px;padding:5px 7px;font-size:10px}
+  .maison .piece .rapide{right:8px;bottom:8px;padding:10px 10px;font-size:11px}
+  .maison .piece .ligne{padding-inline:2px}
+}
+/* Téléphone : collage sans photo orpheline (7 photos, la dernière prend toute la largeur) */
+@media (max-width:860px){.m-collage figure:last-of-type{grid-column:1/-1;aspect-ratio:3/2!important}}
+/* Téléphone : titre MAWI lisible sur les perles claires */
+@media (max-width:700px){
+  .maison.mawi .m-hero::after{background:linear-gradient(180deg,transparent 22%,rgba(34,38,26,.78) 100%)}
+  .maison.mawi .m-hero h1{text-shadow:0 1px 18px rgba(20,22,14,.55)}
+}
+/* Téléphone : le sélecteur de maquette ne mord plus sur la carte produit du hero */
+@media (max-width:700px){
+  .bandeau-maquette{padding:4px;gap:2px;font-size:12px}
+  .bandeau-maquette a{padding:8px 11px}
+}
+/* Liens soulignés et pied de page : zone cliquable agrandie sans changer le dessin */
+.souligne,.m-pied a{position:relative}
+.souligne::before,.m-pied a::before{content:"";position:absolute;inset:-12px -4px}
