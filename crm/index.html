@@ -5575,6 +5575,34 @@ const Factu = (() => {
     if (type === 'devis') ouvrirDevis(id); else if (type === 'facture') ouvrirFacture(id); else fermer();
   }
 
+
+  // Choix du client d'un devis (Nelson, 18/11/2026 : « il faut que j'aie accès à toutes les fiches du CRM ») :
+  // les fiches de facturation, puis toutes les fiches du CRM qui n'en ont pas encore. Une fiche du CRM
+  // choisie remplit les infos, et sa fiche de facturation se crée à l'enregistrement du devis (lien gardé).
+  const nomTri = (a, b) => String(a).localeCompare(String(b), 'fr', { sensitivity: 'base' });
+  function optionsClient(choisi, filtre, avecNouveau) {
+    const f = sansAccent(filtre || '').trim(), ok = t => !f || sansAccent(t).includes(f);
+    const lies = new Set(F.clients.map(c => c.id));
+    const cl = F.clients.filter(c => ok([c.nom_etablissement, c.contact_nom, c.telephone, c.ville].join(' '))).sort((a, b) => nomTri(a.nom_etablissement, b.nom_etablissement));
+    const pr = ((S.data && S.data.prospects) || []).filter(p => !(p.client && lies.has(p.client)))
+      .filter(p => ok([p.entreprise, p.commune, p.telephone, p.gerant, p.id].join(' '))).sort((a, b) => nomTri(a.entreprise, b.entreprise));
+    return '<option value="">' + (f ? (cl.length + pr.length) + ' résultat' + (cl.length + pr.length > 1 ? 's' : '') + ' : choisir…' : 'Choisir un client…') + '</option>'
+      + (avecNouveau ? '<option value="__nouveau"' + (choisi === '__nouveau' ? ' selected' : '') + '>＋ Nouveau client (écrit ci-dessous)</option>' : '')
+      + (cl.length ? '<optgroup label="Fiches de facturation (' + cl.length + ')">' + cl.map(c => '<option value="' + esc(c.id) + '"' + (c.id === choisi ? ' selected' : '') + '>' + esc(c.nom_etablissement) + '</option>').join('') + '</optgroup>' : '')
+      + (pr.length ? '<optgroup label="Fiches du CRM (' + pr.length + ')">' + pr.map(p => '<option value="p:' + esc(p.id) + '"' + ('p:' + p.id === choisi ? ' selected' : '') + '>'
+        + esc(p.entreprise) + (p.commune ? ' · ' + esc(p.commune) : '') + ' (' + esc(p.id) + ')</option>').join('') + '</optgroup>' : '');
+  }
+  function champChoixClient(choisi, avecNouveau) {
+    return `<label class="champ">Chercher une fiche<input type="search" data-fx-cherche-client="${avecNouveau ? 'dc' : 'devis'}" placeholder="Nom, commune, téléphone, gérant ou n° (P0809)" autocomplete="off"></label>
+      <label class="champ">Client<select name="client">${optionsClient(choisi, '', avecNouveau)}</select></label>`;
+  }
+  // Ce qu'un choix dans la liste veut dire : une fiche de facturation, une fiche du CRM, ou un nouveau client.
+  function lireChoixClient(v) {
+    if (v && v.indexOf('p:') === 0) { const p = S.data.prospects.find(x => x.id === v.slice(2)) || null;
+      return { prospect: p, clientId: p && p.client && F.clients.some(c => c.id === p.client) ? p.client : '' }; }
+    return { prospect: null, clientId: v && v !== '__nouveau' ? v : '' };
+  }
+
   function nouveauDevis(prospect, edit) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
@@ -5595,9 +5623,7 @@ const Factu = (() => {
       <form id="fx-devis">
       ${edit ? '' : `<div class="dc-mode"><button type="button" class="btn" disabled>Un site</button><button type="button" class="btn clair" data-fx="dc-depuis-classique">Devis complet<br><small>plusieurs sites, marketing</small></button></div>`}
       <div class="bloc"><h3>Client &amp; références</h3>
-      ${prospect || edit ? '' : `<label class="champ">Client<select name="client" required><option value="">Choisir un client…</option>
-        ${F.clients.map(c => `<option value="${c.id}">${esc(c.nom_etablissement)}</option>`).join('')}</select></label>
-        <div class="sous" style="margin-bottom:10px">Pour un nouveau client, pars plutôt de sa fiche prospect : ses infos sont reprises.</div>`}
+      ${prospect || edit ? '' : champChoixClient('', false) + `<div class="sous" style="margin-bottom:10px">Toutes les fiches du CRM sont dans la liste : une fiche sans facturation reçoit la sienne à l’enregistrement du devis.</div>`}
         <div id="fx-champs-client">${champsClient(cc, prospect || prospectDuClient(D.clientId) || {})}</div></div>
       <div class="bloc"><h3>1 · Formule de base</h3><div class="fx-chips" id="fx-bases"></div><div id="fx-inclus"></div></div>
       <div class="bloc"><h3>2 · Options complémentaires</h3><div id="fx-qtes"></div><div class="fx-chips" id="fx-opts"></div></div>
@@ -5772,8 +5798,7 @@ const Factu = (() => {
       ${edit ? '' : `<div class="dc-modele">Pour <b>Mélodie Sousa</b> (Milea Intimates et MAWI Jewelry), pars du modèle : tout le devis du 17/11 est repris, ligne pour ligne. Il ne reste qu’à vérifier.
         <div style="margin-top:8px"><button type="button" class="btn clair large" data-fx="dc-modele">Remplir avec le devis Milea / MAWI</button></div></div>`}
       <div class="bloc"><h3>Client</h3>
-        ${DC.prospect || edit ? '' : `<label class="champ">Client<select name="client"><option value="">Choisir un client…</option><option value="__nouveau">＋ Nouveau client (écrit ci-dessous)</option>
-          ${F.clients.map(c => `<option value="${c.id}" ${c.id === DC.clientId ? 'selected' : ''}>${esc(c.nom_etablissement)}</option>`).join('')}</select></label>`}
+        ${DC.prospect || edit ? '' : champChoixClient(DC.clientId, true)}
         <div id="fx-champs-client">${champsClient(cc, p)}</div>
         <label class="champ" style="flex-direction:row;align-items:center;gap:8px;display:flex"><input type="checkbox" name="cliente" ${DC.cliente ? 'checked' : ''} style="width:20px;height:20px"> C’est une cliente (« la cliente » dans les modalités)</label></div>
       <div class="bloc"><h3>Marques ou sites</h3><div class="sous" style="margin:0 0 6px">Séparés par une virgule. Chaque ligne ajoutée commence par le nom choisi (« Milea · … »).</div>
@@ -5917,7 +5942,7 @@ const Factu = (() => {
     const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
     const echec = m => { btn.disabled = false; btn.textContent = DC.editId ? 'Enregistrer les modifications' : 'Enregistrer le devis'; toast(m, true); };
     try {
-      let clientId = DC.clientId || (form.client && form.client.value !== '__nouveau' ? form.client.value : '');
+      let clientId = DC.clientId || (form.client && form.client.value && form.client.value !== '__nouveau' && !/^p:/.test(form.client.value) ? form.client.value : '');
       const nomClient = (form.c_nom && form.c_nom.value.trim()) || (DC.prospect && DC.prospect.entreprise) || '';
       if (!clientId && (DC.prospect || (form.client && form.client.value === '__nouveau'))) {
         if (!nomClient) return echec('Écris le nom du client (raison sociale ou nom de la personne).');
@@ -6039,7 +6064,7 @@ const Factu = (() => {
     const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
     const echec = m => { btn.disabled = false; btn.textContent = 'Enregistrer le devis'; toast(m, true); };
     try {
-      let clientId = D.clientId || (form.client ? form.client.value : '');
+      let clientId = D.clientId || (form.client && form.client.value && !/^p:/.test(form.client.value) ? form.client.value : '');
       // Prospect sans fiche client : on la crée depuis le CRM, et on garde le lien.
       if (!clientId && D.prospect) {
         const p = D.prospect;
@@ -6724,6 +6749,12 @@ const Factu = (() => {
   document.addEventListener('input', e => {
     if (e.target.closest('#fx-recue')) { lireFormRecue(); const z = document.getElementById('fx-recue-total');
       if (z) z.textContent = eur(FR.tournages.reduce((t, x) => t + (Number(String(x.heures).replace(',', '.')) || 0) * tauxRecue(), 0)) + ' €'; return; }
+    const cc = e.target.dataset && e.target.dataset.fxChercheClient;
+    if (cc) { const form = e.target.closest('form'), sel = form && form.client; if (!sel) return;
+      sel.innerHTML = optionsClient('', e.target.value, cc === 'dc');
+      const opts = [...sel.options].filter(o => o.value && o.value !== '__nouveau');
+      if (e.target.value.trim() && opts.length === 1) { sel.value = opts[0].value; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+      return; }
     // Devis complet : on garde la saisie dans DC sans redessiner (le curseur reste où il est).
     const dl = e.target.closest('.dc-ligne');
     if (dl) { const l = DC[dl.dataset.dcL][Number(dl.dataset.i)], k = e.target.dataset.k; if (l && k) { l[k] = e.target.value; if (k === 'pu' && l.src && (l.src.type === 'mtn' || l.src.type === 'rec')) l.src = null; } return dcCalculer(); }
@@ -6768,17 +6799,18 @@ const Factu = (() => {
     if (k === 'mois') { DC.mois = Math.max(1, Math.min(12, Math.round(Number(t.value) || 2))); dcMajPacks(); return dcDessiner(); }
     if (k === 'prix') { DC.prixPack = Number(t.value) || CP.PACK360.lancement; dcMajPacks(); return dcDessiner(); }
     const mo = t.closest('.dc-mod'); if (mo && t.dataset.k === 'on') { DC.modalites[Number(mo.dataset.dcMod)].on = t.checked; return; }
-    if (t.name === 'client') { const id = t.value, z = document.getElementById('fx-champs-client');
-      DC.clientId = id && id !== '__nouveau' ? id : '';
-      if (z) z.innerHTML = champsClient(F.clients.find(c => c.id === id) || {}, prospectDuClient(id) || {}); }
+    if (t.name === 'client') { const ch = lireChoixClient(t.value), z = document.getElementById('fx-champs-client');
+      DC.clientId = ch.clientId; DC.prospect = ch.prospect;
+      if (z) z.innerHTML = champsClient(F.clients.find(c => c.id === ch.clientId) || {}, ch.prospect || prospectDuClient(ch.clientId) || {}); }
   });
   // Facture à un autre nom : un nom déjà facturé reprend ses coordonnées.
   document.addEventListener('change', e => { if (e.target.name === 'nom' && e.target.closest('#fx-recue')) { lireFormRecue(); reprendrePersonne(); } });
   // Devis sans prospect : choisir le client dans la liste remplit ses infos.
   document.addEventListener('change', e => {
     if (e.target.name !== 'client' || !e.target.closest('#fx-devis')) return;
-    const id = e.target.value, z = document.getElementById('fx-champs-client');
-    if (z) z.innerHTML = champsClient(F.clients.find(c => c.id === id) || {}, prospectDuClient(id) || {});
+    const ch = lireChoixClient(e.target.value), z = document.getElementById('fx-champs-client');
+    D.clientId = ch.clientId; D.prospect = ch.prospect;
+    if (z) z.innerHTML = champsClient(F.clients.find(c => c.id === ch.clientId) || {}, ch.prospect || prospectDuClient(ch.clientId) || {});
   });
   document.addEventListener('submit', e => {
     if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
