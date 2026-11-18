@@ -1102,6 +1102,23 @@
   html[data-theme="sombre"] .an-onglets button.on, html[data-theme="sombre"] .tag-epingle { background: #f2f3f5; border-color: #f2f3f5; color: #0c0d10; }
   html[data-theme="sombre"] .an-objs button.on, html[data-theme="sombre"] .btn.epingle.on { border-color: #f2f3f5; box-shadow: 0 0 0 1px #f2f3f5; }
   html[data-theme="sombre"] :is(.an-num, .an-fait) { background: rgba(255,255,255,.04); }
+
+  /* Performance par personne (18/11/2026) */
+  .pf-zone { margin-top: 14px; }
+  .pf-defile { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; }
+  .pf { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  .pf th, .pf td { padding: 10px 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--v-ligne, var(--ligne)); }
+  .pf tr:last-child th, .pf tr:last-child td { border-bottom: 0; }
+  .pf thead th, .pf tr:first-child th[scope=col] { font-weight: 650; white-space: nowrap; }
+  .pf th[scope=col] { display: table-cell; }
+  .pf th[scope=col] .av, .pf th[scope=col] svg { vertical-align: middle; margin-right: 6px; }
+  .pf th[scope=row] { font-weight: 600; color: var(--v-doux, var(--doux)); white-space: nowrap; width: 1%; padding-right: 14px; }
+  .pf td b { font-size: 16px; font-weight: 700; color: var(--v-encre, var(--encre)); }
+  .pf td small { display: block; font-size: 11.5px; color: var(--v-doux, var(--doux)); margin-top: 2px; line-height: 1.3; }
+  .pf td.pf-top b { color: #12a150; }
+  .pf-na { font-size: 12px; color: var(--v-doux, var(--doux)); font-weight: 500; }
+  .pf-sans { font-size: 12.5px; margin: 12px 0 0; padding: 9px 11px; border-radius: 10px; border: 1px solid var(--v-ligne, var(--ligne)); line-height: 1.4; }
+  .pf-note { font-size: 12px; color: var(--v-doux, var(--doux)); margin: 10px 0 0; line-height: 1.4; }
 </style>
 </head>
 <body>
@@ -2550,6 +2567,10 @@ async function ajouterAudience(form) {
 // de Factu (devis et factures Supabase) ; sans connexion à la facturation, seuls les RDV
 // s'affichent. Tout ce qui est estimé est dit comme tel, avec l'hypothèse utilisée.
 const OBJECTIF_MOIS = 15000; // CA HT visé par mois (context/CONTEXT.md)
+// Date de signature d'un devis accepté : sa première facture (l'acompte), sinon la date du devis.
+function dateSigneDevis(F, d) {
+  return F.factures.filter(f => f.devis_id === d.id).map(f => String(f.date_emission || '')).filter(Boolean).sort()[0] || String(d.date_emission || '');
+}
 const eur0 = n => Math.round(Number(n) || 0).toLocaleString('fr-FR') + ' €';
 function vueObjectif() {
   const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
@@ -2566,8 +2587,7 @@ function vueObjectif() {
       <div class="obj-haut"><div class="obj-lib">RDV obtenus en ${nomMois}</div><div class="obj-val">${rdvMois}</div></div>
       <div class="obj-note">Connecte la facturation (onglet Factu, une fois sur ce téléphone) pour suivre l’objectif de ${eur0(OBJECTIF_MOIS)} HT en euros signés.</div></div>`);
   }
-  // Date de signature d'un devis accepté : sa première facture (l'acompte), sinon la date du devis.
-  const dateSigne = d => F.factures.filter(f => f.devis_id === d.id).map(f => String(f.date_emission || '')).filter(Boolean).sort()[0] || String(d.date_emission || '');
+  const dateSigne = d => dateSigneDevis(F, d);
   const acceptes = F.devis.filter(d => d.statut === 'accepté'), refuses = F.devis.filter(d => d.statut === 'refusé');
   const signesMois = acceptes.filter(d => dateSigne(d).startsWith(mois));
   const signe = signesMois.reduce((t, d) => t + (Number(d.total_ht) || 0), 0);
@@ -2673,6 +2693,76 @@ function donut(parts, centre, sous) {
     <ul>${parts.map(p => `<li><span><i style="background:${p.c}"></i>${esc(p.l)}</span><b>${Math.round(p.n / total * 100)} %</b></li>`).join('')}</ul></div>`;
 }
 
+// ---------------------------------------------------------------------------
+// Performance par personne (18/11/2026, lot 2, demandé par Nelson) : tout le parcours, de l'appel
+// à l'argent encaissé, pour chacun, sur la période choisie en haut de Stats.
+// Appels, décrochés, liens, RDV : le Journal (qui a noté). Devis, signatures, encaissé : Factu.
+// Factu n'a qu'un compte NSD partagé : un document est donc attribué au RESPONSABLE du prospect
+// relié à sa fiche client (colonne ID CLIENT FACTU). Sans prospect relié : « Non attribué ».
+// Encaissé = paiements reçus (TTC), jamais le facturé : les deux ne se confondent pas.
+// ---------------------------------------------------------------------------
+function respDuClient(clientId) {
+  const p = clientId && S.data.prospects.find(x => x.client === clientId);
+  return p ? respDe(p) || 'Non attribué' : 'Non attribué';
+}
+function blocPerformance(P, dans, debut) {
+  const appels = RES_APPEL(), estAppel = e => appels.includes(e.resultat);
+  const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
+  const factu = !!(F && F.session && F.pret);
+  const auj = aujourdhui(), dansJour = j => { j = String(j || '').slice(0, 10); return j >= debut && j <= auj; };
+  const gens = S.data.equipe.slice();
+  const ligne = n => ({ n, a: 0, d: 0, l: 0, r: 0, dv: 0, dvHt: 0, sg: 0, sgHt: 0, enc: 0 });
+  const T = {}; gens.forEach(n => T[n] = ligne(n));
+  const de = n => T[n] || (T[n] = ligne(n));
+  S.data.journal.filter(dans).forEach(e => {
+    const x = de(parDe(e));
+    if (estAppel(e)) { x.a++; if (e.resultat !== 'Pas de réponse') x.d++; }
+    if (e.resultat === 'Lien envoyé') x.l++;
+    if (e.resultat === 'RDV obtenu') x.r++;
+  });
+  let encSource = '';
+  if (factu) {
+    F.devis.filter(d => d.numero && d.statut !== 'brouillon' && dansJour(d.date_emission)).forEach(d => { const x = de(respDuClient(d.client_id)); x.dv++; x.dvHt += Number(d.total_ht) || 0; });
+    F.devis.filter(d => d.statut === 'accepté' && dansJour(dateSigneDevis(F, d))).forEach(d => { const x = de(respDuClient(d.client_id)); x.sg++; x.sgHt += Number(d.total_ht) || 0; });
+    const facture = id => F.factures.find(f => f.id === id);
+    if (F.paiements) {
+      encSource = 'paiements enregistrés dans Factu, à leur date';
+      F.paiements.filter(y => dansJour(y.date)).forEach(y => { const f = facture(y.facture_id); if (f) de(respDuClient(f.client_id)).enc += Number(y.montant) || 0; });
+    } else {
+      encSource = 'factures payées, à leur date d’émission (table des paiements illisible)';
+      F.factures.filter(f => f.numero && Number(f.montant_paye) > 0 && dansJour(f.date_emission)).forEach(f => { de(respDuClient(f.client_id)).enc += Number(f.montant_paye) || 0; });
+    }
+  }
+  const cols = gens.map(n => T[n]);
+  // Les documents sans prospect relié : une ligne sous le tableau, pas une colonne (illisible sur téléphone).
+  const na = T['Non attribué'];
+  const pct = (a, b) => b ? Math.round(a / b * 100) + ' %' : '—';
+  const sans = '<span class="pf-na">Factu non connecté</span>';
+  const rangs = [
+    ['Appels', x => x.a, x => ''],
+    ['Conversations', x => x.d, x => x.a ? pct(x.d, x.a) + ' des appels' : ''],
+    ['Liens envoyés', x => x.l, x => ''],
+    ['RDV obtenus', x => x.r, x => x.r && x.a ? Math.round(x.a / x.r) + ' appels par RDV' : ''],
+    ['Devis envoyés', x => factu ? x.dv : null, x => factu && x.dv ? eur0(x.dvHt) + ' HT' + (x.r ? ' · ' + pct(x.dv, x.r) + ' des RDV' : '') : ''],
+    ['Signatures', x => factu ? x.sg : null, x => factu && x.sg ? eur0(x.sgHt) + ' HT' + (x.dv ? ' · ' + pct(x.sg, x.dv) + ' des devis' : '') : ''],
+    ['Encaissé', x => factu ? x.enc : null, x => factu && x.enc ? 'TTC' : '', eur2],
+  ];
+  const meilleur = (f, x) => { const v = cols.map(f).filter(n => typeof n === 'number'); const m = Math.max(0, ...v); return cols.length > 1 && m > 0 && f(x) === m; };
+  const tete = `<tr><th scope="col"></th>${cols.map(x => `<th scope="col">${avatar(x.n, true)}${esc(x.n)}</th>`).join('')}</tr>`;
+  const corps = rangs.map(([lib, val, sous, forme]) => `<tr><th scope="row">${lib}</th>${cols.map(x => { const v = val(x);
+    return `<td class="${typeof v === 'number' && meilleur(val, x) ? 'pf-top' : ''}">${v === null ? sans : `<b>${esc(forme ? forme(v) : v)}</b>`}${sous(x) ? `<small>${esc(sous(x))}</small>` : ''}</td>`; }).join('')}</tr>`).join('');
+  const lignesNa = factu && na && (na.dv || na.sg || na.enc) ? [na.dv ? na.dv + ' devis envoyé' + (na.dv > 1 ? 's' : '') + ' (' + eur0(na.dvHt) + ' HT)' : '',
+    na.sg ? na.sg + ' signature' + (na.sg > 1 ? 's' : '') + ' (' + eur0(na.sgHt) + ' HT)' : '', na.enc ? eur2(na.enc) + ' encaissés' : ''].filter(Boolean).join(', ') : '';
+  const periode = P === 1 ? 'aujourd’hui' : 'sur ' + P + ' jours';
+  const note = factu
+    ? `Devis, signatures et encaissé : attribués au responsable du prospect relié à la fiche client. Encaissé : ${encSource}.`
+    : 'Connecte Factu une fois sur cet appareil pour voir les devis, les signatures et l’argent encaissé de chacun.';
+  return carteV('Performance par personne', 'de l’appel à l’argent encaissé, ' + periode, ICO.equipe, '',
+    `<div class="pf-defile"><table class="pf">${tete}${corps}</table></div>`
+    + (lignesNa ? `<p class="pf-sans"><b>Sans prospect relié :</b> ${esc(lignesNa)}. Leur fiche client n’est reliée à aucun prospect (colonne ID CLIENT FACTU du Sheets).</p>` : '')
+    + `<p class="pf-note">${esc(note)}</p>`);
+}
+
 function vueStats() {
   const P = S.statsJours || 30;
   const appels = RES_APPEL(), J = S.data.journal.filter(entreeVisible);
@@ -2744,7 +2834,8 @@ function vueStats() {
     <div class="v-rep-sous">${r.d} décrochés · ${r.l} liens · ${r.r} RDV</div></div>`).join('')}</div>`);
 
   setTimeout(bullesDeDepart, 0);
-  return tete + tuiles + `<div class="v-deux">${c1}${c2}</div><div class="v-trois">${c3}${c4}${c5}</div>` + vueObjectif();
+  return tete + tuiles + `<div class="v-deux">${c1}${c2}</div><div class="v-trois">${c3}${c4}${c5}</div>`
+    + `<div class="pf-zone">${blocPerformance(P, dans, debut)}</div>` + vueObjectif();
 }
 
 // ---------------------------------------------------------------------------
