@@ -6097,7 +6097,9 @@ const Factu = (() => {
   }
 
   // ------------------------------------------------------------------ devis : fiche
-  function prospectDuClient(clientId) { return S.data.prospects.find(p => p.client === clientId); }
+  // Sans client choisi, aucun prospect : sinon le premier prospect sans fiche client (client vide) remontait
+  // dans le formulaire du devis (« Ali Baba Kebab House » vu le 18/11/2026).
+  function prospectDuClient(clientId) { return clientId ? S.data.prospects.find(p => p.client === clientId) : undefined; }
   // Le contrat se remplit d'abord avec la fiche du client dans le CRM (Nelson, 14/10/2026) :
   // le N° RCS, le gérant et l'enseigne n'existent que là. La fiche de facturation complète
   // ce que la fiche n'a pas (adresse postale, TVA, e-mail et téléphone saisis au devis).
