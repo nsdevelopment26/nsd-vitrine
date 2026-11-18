@@ -1364,6 +1364,10 @@ function chaud(p) {
 function vuesTxt(v) { return 'ouverte ' + (v.n > 1 ? v.n + ' fois' : 'une fois') + ' · ' + dureeTxt(v.s) + (v.nbPages > 1 ? ' · ' + v.nbPages + ' pages' : '') + ' · ' + ilYa(v.derniere); }
 function historique(id) { return S.data.journal.filter(j => j.id === id).sort((a, b) => b.date.localeCompare(a.date)); }
 const RES_APPEL = () => Object.values(S.data.resultats).filter(r => r.appel).map(r => r.label);
+// Décroché = on a parlé au patron : ni « Pas de réponse » ni « Gérant absent » (Nelson, 18/11/2026).
+// Une seule définition pour la Journée, Stats et Suivi. À appliquer à un résultat d'appel.
+const PAS_PARLE = () => new Set(['pas_repondu', 'absent'].map(k => (S.data.resultats[k] || {}).label).filter(Boolean));
+const aParle = resultat => !PAS_PARLE().has(resultat);
 
 // --- Espaces ---------------------------------------------------------------
 // Un prospect travaillé sans responsable date d'avant les espaces : c'est Sam.
@@ -1566,7 +1570,7 @@ function bilanJour(entrees) {
   const faits = entrees.filter(e => appels.includes(e.resultat));
   const n = f => faits.filter(f).length;
   return `<div class="bilan"><div><b>${faits.length}</b><span>appels</span></div>
-    <div><b>${n(e => e.resultat !== 'Pas de réponse')}</b><span>décrochés</span></div>
+    <div><b>${n(e => aParle(e.resultat))}</b><span>décrochés</span></div>
     <div><b>${n(e => e.resultat === 'Lien envoyé')}</b><span>liens</span></div>
     <div><b>${n(e => e.resultat === 'RDV obtenu')}</b><span>RDV</span></div></div>`;
 }
@@ -2707,9 +2711,7 @@ function respDuClient(clientId) {
 }
 function blocPerformance(P, dans, debut) {
   const appels = RES_APPEL(), estAppel = e => appels.includes(e.resultat);
-  // Conversation = on a parlé au patron : ni « Pas de réponse » ni « Gérant absent » (Nelson, 18/11/2026).
-  // La tuile « Décrochés » garde sa définition (tout sauf « Pas de réponse »).
-  const pasParle = new Set(['pas_repondu', 'absent'].map(k => (S.data.resultats[k] || {}).label).filter(Boolean));
+  // Conversation = décroché, même définition partout (aParle).
   const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
   const factu = !!(F && F.session && F.pret);
   const auj = aujourdhui(), dansJour = j => { j = String(j || '').slice(0, 10); return j >= debut && j <= auj; };
@@ -2719,7 +2721,7 @@ function blocPerformance(P, dans, debut) {
   const de = n => T[n] || (T[n] = ligne(n));
   S.data.journal.filter(dans).forEach(e => {
     const x = de(parDe(e));
-    if (estAppel(e)) { x.a++; if (!pasParle.has(e.resultat)) x.d++; }
+    if (estAppel(e)) { x.a++; if (aParle(e.resultat)) x.d++; }
     if (e.resultat === 'Lien envoyé') x.l++;
     if (e.resultat === 'RDV obtenu') x.r++;
   });
@@ -2770,7 +2772,7 @@ function vueStats() {
   const P = S.statsJours || 30;
   const appels = RES_APPEL(), J = S.data.journal.filter(entreeVisible);
   const estAppel = e => appels.includes(e.resultat);
-  const decroche = e => estAppel(e) && e.resultat !== 'Pas de réponse';
+  const decroche = e => estAppel(e) && aParle(e.resultat);
   const rdv = e => e.resultat === 'RDV obtenu', lien = e => e.resultat === 'Lien envoyé';
   const jourK = n => { const d = new Date(); d.setDate(d.getDate() - n); return fmt(d).slice(0, 10); };
   const debut = jourK(P - 1), avant = jourK(2 * P - 1);
@@ -4203,7 +4205,7 @@ function vueSuivi() {
   const p = etatDe(qui);
   if (ouverte !== null) { const n = new Date(); total += (ecart === 0 && p && p.etat !== 'hors' ? n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds() : sec(L[L.length - 1].date)) - ouverte; }
   for (let i = 1; i < L.length; i++) pause = Math.max(pause, sec(L[i].date) - sec(L[i - 1].date));
-  const decroches = resultats.filter(r => appelsRes.includes(r.detail) && r.detail !== 'Pas de réponse').length;
+  const decroches = resultats.filter(r => appelsRes.includes(r.detail) && aParle(r.detail)).length;
   const rdv = resultats.filter(r => r.detail === 'RDV obtenu').length;
   const sansRes = lances.filter(a => !a.res && a.id).length;
   const hm = s => s ? hms(s).slice(0, 5).replace(/^0/, '') : '—';
