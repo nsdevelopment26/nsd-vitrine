@@ -4413,6 +4413,175 @@ var NSDocs = (function () {
     PREFIXE_GESTE: 'Geste commercial',
   };
   const C = CATALOGUE;
+
+  // ------------------------------------------------------------------ devis complet
+  // Devis complet (18/11/2026, Nelson, d'après le devis Milea Intimates / MAWI Jewelry du 17/11) :
+  // plusieurs sites ou marques, chaque ligne avec un titre et une description, trois parties
+  // (création payée une fois, maintenance, marketing Pack NSD 360), une offre de lancement sur la
+  // création, un récapitulatif, un échéancier et des modalités. La base ne change pas : chaque ligne
+  // porte une étiquette en tête de sa désignation, la description suit le titre après un retour à la ligne.
+  //   [[creation]] / [[maintenance]] / [[marketing]]     une prestation
+  //   [[<partie>:intro]] Titre | sous-titre \n texte      l'en-tête d'une partie ; quantite = mois par période
+  //   [[creation:remise]]                                  l'offre de lancement (montant négatif)
+  //   [[marketing:contenu]] / [[marketing:noncompris]]     les deux textes de la partie marketing
+  // Les modalités vivent dans devis.notes, une par ligne. Le devis « un site » (docDevisHTML) n'est pas touché.
+  const COMPLET = {
+    PARTIES: ['creation', 'maintenance', 'marketing'],
+    JOUR_DEV: 600,             // développement spécifique, prix de la journée (manuel du commercial)
+    PRODUCTION_VISUELLE: 490,  // équivalent d'une séance photo
+    PACK360: { miseEnPlace: 990, lancement: 3290, standard: 5490, // Pack NSD 360, décidé par Nelson le 16/11/2026
+      contenu: '12 vidéos par mois (3 par semaine), écriture, tournage et montage · un tournage et une réunion de travail chaque semaine · publication et animation des réseaux de la marque · gestion des campagnes Meta Ads · rapport chaque mois.',
+      noncompris: 'Non compris : le budget publicitaire, payé directement à Meta par le client.' },
+    ACOMPTE_CREATION: 50,      // % de la création payé à la signature, le reste à la livraison
+  };
+  const RE_TAG = /^\[\[(creation|maintenance|marketing)(?::(intro|remise|contenu|noncompris))?\]\]\s?/;
+  const estComplet = lignes => (lignes || []).some(l => RE_TAG.test(String(l.designation || '')));
+  function etiqueter(partie, role, titre, desc) {
+    const t = String(titre || '').replace(/\s*\n\s*/g, ' ').trim(), d = String(desc || '').trim();
+    return '[[' + partie + (role ? ':' + role : '') + ']] ' + t + (d ? '\n' + d : '');
+  }
+  function lireComplete(l) {
+    const brut = String(l.designation || ''), m = RE_TAG.exec(brut);
+    if (!m) return null;
+    const reste = brut.slice(m[0].length), i = reste.indexOf('\n');
+    const titre = (i < 0 ? reste : reste.slice(0, i)).trim(), desc = i < 0 ? '' : reste.slice(i + 1).trim();
+    const [t, sous] = titre.split(' | ');
+    return { partie: m[1], role: m[2] || '', titre: (m[2] === 'intro' ? t : titre).trim(), sous: m[2] === 'intro' ? (sous || '').trim() : '', desc,
+      q: Number(l.quantite) || 0, pu: Number(l.prix_unitaire_ht) || 0, mt: Number(l.montant_ht) || 0 };
+  }
+  function analyserComplet(lignes) {
+    const a = { creation: { intro: null, lignes: [], remise: null }, maintenance: { intro: null, lignes: [] }, marketing: { intro: null, lignes: [], contenu: '', noncompris: '' } };
+    (lignes || []).slice().sort((x, y) => (x.ordre || 0) - (y.ordre || 0)).forEach(l => {
+      const x = lireComplete(l); if (!x) return;
+      const P = a[x.partie];
+      if (x.role === 'intro') P.intro = x;
+      else if (x.role === 'remise') P.remise = x;
+      else if (x.role === 'contenu') P.contenu = x.desc || x.titre;
+      else if (x.role === 'noncompris') P.noncompris = x.desc || x.titre;
+      else P.lignes.push(x);
+    });
+    const somme = L => arr(L.reduce((s, x) => s + x.mt, 0));
+    const brut = somme(a.creation.lignes), remise = a.creation.remise ? a.creation.remise.mt : 0;
+    a.totaux = { creationBrut: brut, remise, creation: arr(brut + remise), maintenance: somme(a.maintenance.lignes), marketing: somme(a.marketing.lignes) };
+    a.totaux.ht = arr(a.totaux.creation + a.totaux.maintenance + a.totaux.marketing);
+    a.annuel = !a.maintenance.intro || a.maintenance.intro.q !== 3;
+    a.mois = a.marketing.intro && a.marketing.intro.q ? a.marketing.intro.q : 2;
+    return a;
+  }
+  // Échéancier : à la signature, la part de la création + toute la maintenance + tout le marketing ;
+  // à la livraison, le reste de la création. TVA par échéance, arrondie au centime.
+  function echeancier(a, taux, pct) {
+    pct = pct == null ? COMPLET.ACOMPTE_CREATION : pct;
+    const t = a.totaux, partCrea = arr(t.creation * pct / 100);
+    const ligne = (lib, desc, ht) => { const tva = arr(ht * taux / 100); return { lib, desc, ht: arr(ht), tva, ttc: arr(ht + tva) }; };
+    const quoi = [pct + ' % de la création'].concat(t.maintenance ? ['la maintenance de la première ' + (a.annuel ? 'année' : 'période')] : [])
+      .concat(t.marketing ? ['le marketing des ' + a.mois + ' premiers mois'] : []);
+    const E = [ligne('À la signature du devis', quoi.join(', ').replace(/, ([^,]*)$/, ' et $1'), partCrea + t.maintenance + t.marketing)];
+    if (t.creation - partCrea > 0.004) E.push(ligne('À la livraison', (100 - pct) + ' % restants de la création, avant la mise en ligne publique', t.creation - partCrea));
+    const tot = ligne('Total', '', E.reduce((s, e) => s + e.ht, 0));
+    tot.tva = arr(E.reduce((s, e) => s + e.tva, 0)); tot.ttc = arr(tot.ht + tot.tva);
+    return { echeances: E, total: tot };
+  }
+  // Le devis complet vu par le reste du code (contrat, factures) : création = site, maintenance = maintenance.
+  function commeAnalyser(ac) {
+    return { formule: null, options: {}, frais: [], geste: null, recurrentes: [],
+      libres: ac.creation.lignes.map(x => ({ designation: x.titre, quantite: x.q, prix_unitaire_ht: x.pu, montant_ht: x.mt })),
+      mtn: ac.maintenance.lignes.length ? { cat: '', annuel: ac.annuel, montant: ac.totaux.maintenance } : null,
+      site: ac.totaux.creation, maintenance: ac.totaux.maintenance, marketing: ac.totaux.marketing, complet: ac };
+  }
+  // Modalités proposées par défaut (Sam coche et réécrit). ctx : { marketing, mois, marques, client: 'le client' | 'la cliente' }.
+  function modalitesDefaut(ctx) {
+    ctx = ctx || {}; const qui = ctx.client || 'le client', P = COMPLET.PACK360;
+    const L = [{ id: 'domaines', texte: 'Les noms de domaine sont réservés au nom ' + (qui === 'la cliente' ? 'de la cliente' : 'du client') + ' ou de sa structure.', on: true }];
+    if (ctx.shopify) L.unshift({ id: 'shopify', texte: 'Payés directement par ' + qui + ' à Shopify, hors devis : l’abonnement de chaque boutique (formule Basic, à partir de 24 € par mois en paiement annuel, tarif à reconfirmer pour le Luxembourg) et les frais sur les ventes par carte.', on: true });
+    if (ctx.marketing) {
+      L.push({ id: 'duree', texte: 'Marketing, durée : ' + (ctx.mois || 2) + ' mois à compter du premier tournage. Le pack se renouvelle ensuite par périodes de ' + (ctx.mois || 2) + ' mois ; arrêt possible par écrit 15 jours avant la fin d’une période.', on: true });
+      L.push({ id: 'renouvellement', texte: 'Prix en cas de renouvellement, fixé dès aujourd’hui : ' + eur(P.standard).replace(/,00$/, '') + ' € HT par mois' + ((ctx.marques || 0) > 1 ? ' et par marque, soit ' + eur(P.standard * (ctx.mois || 2) * ctx.marques).replace(/,00$/, '') + ' € HT par période de ' + (ctx.mois || 2) + ' mois pour les ' + ctx.marques + ' marques.' : '.'), on: true });
+      L.push({ id: 'pub', texte: 'Le budget publicitaire est fixé avec ' + qui + ' avant chaque campagne et réglé par ' + (qui.startsWith('la') ? 'elle' : 'lui') + ' directement à Meta.', on: true });
+    }
+    L.push({ id: 'heure', texte: 'Heure de travail hors forfait, au-delà de l’heure de petites modifications comprise chaque trimestre : ' + eur(C.TAUX_HORAIRE).replace(/,00$/, '') + ' € HT, toujours annoncée et acceptée avant d’être facturée.', on: true });
+    L.push({ id: 'cgv', texte: 'Prix hors taxes, TVA luxembourgeoise 17 % en sus. Conditions générales de vente de NS Development applicables.', on: true });
+    return L;
+  }
+
+  const CSS_COMPLET = '.dc{--gold:#a07d43;--accent:#a07d43}.dc .eyebrow{color:var(--gold)}'
+    + '.dc .head{border-bottom:2px solid var(--ink)}.dc .partie{margin-top:26px}.dc .ph{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.dc .ph h2{margin:0;font-size:18px}.dc .ph .ps{font-size:12.5px;color:var(--gold);font-weight:700}'
+    + '.dc .pi{font-size:12.5px;color:var(--ink-soft);margin:4px 0 10px;white-space:pre-wrap}.dc .bloc-txt{margin:6px 0 10px}.dc .bloc-txt b{display:block;font-size:13px}.dc .bloc-txt span{font-size:12.5px;color:var(--ink-soft);white-space:pre-wrap}'
+    + '.dc table.pr{width:100%;border-collapse:collapse}.dc table.pr th{text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 0 7px;border-bottom:1px solid var(--line-strong)}.dc table.pr th.num{text-align:right}'
+    + '.dc table.pr td{padding:10px 0;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}.dc table.pr td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;padding-left:16px}'
+    + '.dc .lt{font-weight:700}.dc .ld{font-size:12px;color:var(--ink-soft);margin-top:2px;white-space:pre-wrap}.dc tr.st td{font-weight:700;border-bottom:1px solid var(--line-strong)}.dc tr.tot td{font-weight:800;font-size:14px;border-bottom:0}'
+    + '.dc .nc{font-size:12px;color:var(--ink-soft);margin-top:10px}.dc .recapc{margin-top:26px;background:#f6f4f0;border-radius:4px;padding:18px 22px}.dc .recapc .r{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #e5e0d6;font-size:13.5px;font-variant-numeric:tabular-nums}'
+    + '.dc .recapc .r.b{font-weight:700}.dc .recapc .r.ttc{font-size:17px;font-weight:800;border-bottom:0}.dc .recapc h3{margin:0 0 6px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}'
+    + '.dc table.ech{width:100%;border-collapse:collapse;margin-top:6px}.dc table.ech th{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;text-align:right;padding:6px 0;border-bottom:1px solid #e5e0d6}.dc table.ech th:first-child{text-align:left}'
+    + '.dc table.ech td{padding:9px 0;border-bottom:1px solid #e5e0d6;font-size:12.5px;text-align:right;vertical-align:top;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:12px}.dc table.ech td:first-child{text-align:left;white-space:normal;padding-left:0}.dc table.ech td small{display:block;color:var(--ink-soft);font-size:11.5px}.dc table.ech tr:last-child td{font-weight:700;border-bottom:0}'
+    + '.dc .moda ul{margin:6px 0 0;padding-left:18px}.dc .moda li{font-size:12.5px;margin:4px 0;color:var(--ink)}'
+    + '.dc .signc{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:28px}.dc .signc>div{border:1px solid var(--line-strong);padding:14px 16px;min-height:120px;font-size:12.5px}.dc .signc b{display:block;font-size:13px}'
+    + '@media (max-width:640px){.dc .signc{grid-template-columns:1fr}}'
+    + '@media print{.dc .partie{margin-top:14px}.dc table.pr td{padding:6px 0;font-size:11.5px}.dc .ld{font-size:10.5px}.dc .recapc{padding:12px 16px;margin-top:16px}.dc .recapc .r{padding:5px 0;font-size:12px}.dc .signc{grid-template-columns:1fr 1fr}'
+    + '.dc tr,.dc .recapc,.dc .signc,.dc .moda li{break-inside:avoid}.dc .recapc{-webkit-print-color-adjust:exact;print-color-adjust:exact}}';
+
+  function docDevisCompletHTML(d, lignes, c, signataire) {
+    const E = EMETTEUR(), num = d.numero || 'N° à attribuer à l’envoi', taux = Number(d.tva_taux) || 0;
+    const a = analyserComplet(lignes), t = a.totaux, ech = echeancier(a, taux);
+    const m = n => eur(n) + ' €';
+    const contact = [c.contact_prenom, c.contact_nom].filter(Boolean).join(' ');
+    const ac = v => v ? esc(v) : 'à compléter';
+    const client = '<div class="party"><div class="eyebrow">Client</div><div class="who">' + esc(contact || c.nom_etablissement || '') + '</div>'
+      + (contact && c.nom_etablissement ? '<div class="r">' + esc(c.nom_etablissement) + '</div>' : '')
+      + '<div class="r">Adresse : ' + ac(c.adresse) + '</div>' + (c.tva_intra ? '<div class="r">N° TVA : ' + esc(c.tva_intra) + '</div>' : '')
+      + '<div class="r">E-mail : ' + ac(c.email) + '</div><div class="r">Tél. : ' + ac(c.telephone) + '</div></div>';
+    const emetteur = '<div class="party"><div class="eyebrow">Émetteur</div><div class="who">' + E.nom + '</div><div class="r">' + E.adresse + '</div>'
+      + '<div class="r">RCS Luxembourg ' + E.rcs + ' · TVA ' + E.tva + '</div><div class="r">Aut. d’établissement ' + E.autorisation + '</div><div class="r">' + E.email + ' · ' + E.tel + '</div></div>';
+    const meta = [['Devis N°', num], ['Date', fmtDate(d.date_emission)], ['Valable jusqu’au', d.date_validite ? fmtDate(d.date_validite) : '30 jours']];
+    const rangee = x => '<tr><td><div class="lt">' + esc(x.titre) + '</div>' + (x.desc ? '<div class="ld">' + esc(x.desc) + '</div>' : '') + '</td><td class="num">' + m(x.mt) + '</td></tr>';
+    const tete2 = (no, P, defT, defS) => '<div class="ph"><h2>' + no + ' · ' + esc(P.intro && P.intro.titre || defT) + '</h2>' + ((P.intro ? P.intro.sous : defS) ? '<span class="ps">' + esc(P.intro ? P.intro.sous : defS) + '</span>' : '') + '</div>'
+      + (P.intro && P.intro.desc ? '<div class="pi">' + esc(P.intro.desc) + '</div>' : '');
+    let no = 0, h = '';
+    if (a.creation.lignes.length) {
+      no++;
+      h += '<section class="partie">' + tete2(no, a.creation, 'Création', 'payé une fois') + '<table class="pr"><thead><tr><th>Prestation</th><th class="num">Prix HT</th></tr></thead><tbody>'
+        + a.creation.lignes.map(rangee).join('')
+        + (a.creation.remise ? '<tr class="st"><td>Sous-total création</td><td class="num">' + m(t.creationBrut) + '</td></tr>' + rangee(a.creation.remise) : '')
+        + '<tr class="tot"><td>Total création</td><td class="num">' + m(t.creation) + '</td></tr></tbody></table></section>';
+    }
+    if (a.maintenance.lignes.length) {
+      no++;
+      h += '<section class="partie">' + tete2(no, a.maintenance, 'Maintenance', a.annuel ? 'par an, engagement 12 mois' : 'par trimestre, engagement 12 mois')
+        + '<table class="pr"><thead><tr><th>Prestation</th><th class="num">Prix HT / ' + (a.annuel ? 'an' : 'trim.') + '</th></tr></thead><tbody>'
+        + a.maintenance.lignes.map(rangee).join('') + '<tr class="tot"><td>Total maintenance ' + (a.annuel ? 'annuelle' : 'trimestrielle') + '</td><td class="num">' + m(t.maintenance) + '</td></tr></tbody></table></section>';
+    }
+    if (a.marketing.lignes.length) {
+      no++;
+      h += '<section class="partie">' + tete2(no, a.marketing, 'Marketing et réseaux, Pack NSD 360', '')
+        + (a.marketing.contenu ? '<div class="bloc-txt"><b>Contenu de chaque pack</b><span>' + esc(a.marketing.contenu) + '</span></div>' : '')
+        + '<table class="pr"><thead><tr><th>Prestation</th><th class="num">Prix HT</th></tr></thead><tbody>' + a.marketing.lignes.map(rangee).join('')
+        + '<tr class="tot"><td>Total de la période</td><td class="num">' + m(t.marketing) + '</td></tr></tbody></table>'
+        + (a.marketing.noncompris ? '<div class="nc">' + esc(a.marketing.noncompris) + '</div>' : '') + '</section>';
+    }
+    no++;
+    const lib = (P, def) => esc(P.intro && P.intro.titre || def);
+    const recap = '<div class="recapc"><h3>' + no + ' · Récapitulatif</h3>'
+      + (a.creation.lignes.length ? '<div class="r"><span>' + lib(a.creation, 'Création') + (a.creation.remise ? ' (après remise)' : '') + '</span><span>' + m(t.creation) + '</span></div>' : '')
+      + (a.maintenance.lignes.length ? '<div class="r"><span>' + lib(a.maintenance, 'Maintenance') + ' (' + (a.annuel ? '1 an' : '1 trimestre') + ')</span><span>' + m(t.maintenance) + '</span></div>' : '')
+      + (a.marketing.lignes.length ? '<div class="r"><span>' + lib(a.marketing, 'Marketing') + ' (' + a.mois + ' mois)</span><span>' + m(t.marketing) + '</span></div>' : '')
+      + '<div class="r b"><span>Total HT</span><span>' + m(t.ht) + '</span></div><div class="r"><span>TVA ' + eur(taux).replace(/,00$/, '') + ' %</span><span>' + m(arr(t.ht * taux / 100)) + '</span></div>'
+      + '<div class="r ttc"><span>Total TTC</span><span>' + m(arr(t.ht + arr(t.ht * taux / 100))) + '</span></div>'
+      + '<h3 style="margin-top:14px">Échéancier des paiements</h3><table class="ech"><thead><tr><th>Échéance</th><th>HT</th><th>TVA ' + eur(taux).replace(/,00$/, '') + ' %</th><th>TTC</th></tr></thead><tbody>'
+      + ech.echeances.map(e => '<tr><td><b>' + esc(e.lib) + '</b><small>' + esc(e.desc) + '</small></td><td>' + m(e.ht) + '</td><td>' + m(e.tva) + '</td><td><b>' + m(e.ttc) + '</b></td></tr>').join('')
+      + '<tr><td>Total</td><td>' + m(ech.total.ht) + '</td><td>' + m(ech.total.tva) + '</td><td>' + m(ech.total.ttc) + '</td></tr></tbody></table></div>';
+    no++;
+    const gras = s => { const i = s.indexOf(' : '); return i > 0 && i < 60 ? '<b>' + esc(s.slice(0, i)) + ' :</b>' + esc(s.slice(i + 2)) : esc(s); };
+    const paiements = ech.echeances.map(e => '<b>' + esc(e.lib.replace(' du devis', '')) + ' :</b> ' + esc(e.desc) + ', soit ' + m(e.ht) + ' HT (' + m(e.ttc) + ' TTC).');
+    const moda = String(d.notes || '').split('\n').map(x => x.replace(/^[•\-·]\s*/, '').trim()).filter(Boolean);
+    const modalites = '<section class="partie moda"><div class="ph"><h2>' + no + ' · Modalités</h2></div><ul>'
+      + paiements.map(x => '<li>' + x + '</li>').join('') + moda.map(x => '<li>' + gras(x) + '</li>').join('') + '</ul></section>';
+    const qui = SIGNATAIRES[signataire] || SIGNATAIRES.Sam;
+    const sign = '<div class="signc"><div><b>Bon pour accord (le client)</b>Mention « Bon pour accord », date et signature :</div>'
+      + '<div><b>NS Development</b>' + esc(qui) + ', co-gérant' + (d.numero && signataire ? signatureNSD(signataire, d.date_emission, 'devis ' + d.numero) : '') + '</div></div>';
+    const corps = '<div class="sheet dc">' + tete('DEVIS', meta) + '<div class="parties">' + emetteur + client + '</div>'
+      + h + recap + modalites + sign + piedLegal(E) + '</div>';
+    return page('Devis ' + (d.numero || 'brouillon') + ' · ' + (contact || c.nom_etablissement || ''), corps, CSS_COMPLET + (d.numero && signataire ? CSS_SIGNE() : ''));
+  }
   // Options déjà comprises dans une formule (inclus) : cochées d'office, jamais facturées
   // en plus (Nelson, 28/09/2026). Sam ne peut pas revendre ce que le client a déjà.
   const optionsIncluses = formule => { const f = C.FORMULES.find(x => x.n === formule); return (f && f.inclus) || []; };
@@ -4422,6 +4591,9 @@ var NSDocs = (function () {
   const estMaintenance = l => String(l.designation || '').startsWith(C.PREFIXE_MTN) || estRecurrente(l);
   const estFrais = l => String(l.designation || '').startsWith(C.PREFIXE_FRAIS);
   const estGeste = l => String(l.designation || '').startsWith(C.PREFIXE_GESTE);
+  // Lignes de marketing d'une facture née d'un devis complet : « Marketing · … ».
+  const PREFIXE_MKT = 'Marketing ·';
+  const estMarketing = l => String(l.designation || '').startsWith(PREFIXE_MKT);
   // « Geste commercial · 10 % sur la création du site », montant négatif, calculé sur le site hors geste.
   function ligneGeste(pct, siteBrut) {
     const p = arr(pct), mt = -arr(siteBrut * p / 100);
@@ -4457,6 +4629,7 @@ var NSDocs = (function () {
   const libelleRecurrente = l => String(l.designation).slice(C.PREFIXE_REC.length).replace(/^\s*·\s*/, '');
   // Répartit les lignes d'un devis entre le catalogue (cases à cocher) et le reste.
   function analyser(lignes, c) {
+    if (estComplet(lignes)) return commeAnalyser(analyserComplet(lignes));
     const r = { formule: null, options: {}, libres: [], mtn: null, site: 0, maintenance: 0, frais: [], geste: null, recurrentes: [] };
     lignes.forEach(l => {
       const mt = Number(l.montant_ht) || 0;
@@ -4571,6 +4744,7 @@ var NSDocs = (function () {
   // ------------------------------------------------------------------ devis
   // signataire : 'Sam' ou 'Nelson'. Un devis numéroté porte le cachet et la signature de NS Development.
   function docDevisHTML(d, lignes, c, signataire) {
+    if (estComplet(lignes)) return docDevisCompletHTML(d, lignes, c, signataire);
     const E = EMETTEUR();
     const num = d.numero || 'Brouillon';
     const taux = Number(d.tva_taux) || 0;
@@ -4658,16 +4832,18 @@ var NSDocs = (function () {
     lignes = lignes.filter(l => !estFrais(l));
     const m = n => eur(n) + ' €';
     const taux = Number(f.tva_taux) || 0;
-    const site = arr(lignes.filter(l => !estMaintenance(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
+    const site = arr(lignes.filter(l => !estMaintenance(l) && !estMarketing(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
     const mtn = arr(lignes.filter(estMaintenance).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
-    const ht = arr(site + mtn), tva = arr(ht * taux / 100), ttc = arr(ht + tva);
+    const mkt = arr(lignes.filter(estMarketing).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0));
+    const ht = arr(site + mtn + mkt), tva = arr(ht * taux / 100), ttc = arr(ht + tva);
     const paye = Number(f.montant_paye) || 0, reste = arr(ttc - paye);
     const num = f.numero || 'Brouillon', ech = f.date_echeance ? fmtDate(f.date_echeance) : 'à réception';
     const obj = objetFacture(lignes);
     const refDevis = f.devis && f.devis.numero ? f.devis.numero : '';
     const meta = [['Facture N°', num], ['Date', fmtDate(f.date_emission)], ['Échéance', ech]];
     if (refDevis) meta.push(['Réf. devis', refDevis]);
-    const table = lignes.length ? lignes.map(l => '<tr><td><div class="nm">' + esc(l.designation) + '</div></td><td class="num">' + eur(l.quantite).replace(/,00$/, '')
+    const table = lignes.length ? lignes.map(l => '<tr><td><div class="nm">' + esc(String(l.designation).split('\n')[0]) + '</div>'
+      + (String(l.designation).indexOf('\n') > 0 ? '<div style="font-size:11.5px;color:var(--ink-soft);white-space:pre-wrap">' + esc(String(l.designation).split('\n').slice(1).join('\n')) + '</div>' : '') + '</td><td class="num">' + eur(l.quantite).replace(/,00$/, '')
       + '</td><td class="num">' + m(l.prix_unitaire_ht) + '</td><td class="num">' + m(l.montant_ht) + '</td></tr>').join('')
       : '<tr><td colspan="4" style="color:#8b95a7;font-style:italic">Aucune ligne</td></tr>';
     const joint = contrat && contrat.devis ? contratCorps(contrat.devis, contrat.lignes || [], contrat.client || c, contrat.signataire, f.date_emission, contrat.signer) : '';
@@ -4681,8 +4857,9 @@ var NSDocs = (function () {
       + '<p><b>Communication :</b> le numéro de la facture. Échéance : <b>' + ech + '</b>.</p>'
       + (mtn ? '<p>La maintenance est obligatoire et facturée dès l’acompte ; les 12 mois courent à partir de la mise en ligne du site.</p>' : '')
       + '<p>Retard de paiement : intérêts au taux légal et indemnité forfaitaire de recouvrement de 40 €.</p></div>'
-      + '<div class="recap"><div class="r"><span class="rl">Création du site (HT)</span><span class="rv">' + m(site) + '</span></div>'
+      + '<div class="recap">' + (site || !mkt ? '<div class="r"><span class="rl">Création' + (mkt ? '' : ' du site') + ' (HT)</span><span class="rv">' + m(site) + '</span></div>' : '')
       + (mtn ? '<div class="r"><span class="rl">Maintenance (HT)</span><span class="rv">' + m(mtn) + '</span></div>' : '')
+      + (mkt ? '<div class="r"><span class="rl">Marketing (HT)</span><span class="rv">' + m(mkt) + '</span></div>' : '')
       + '<div class="r"><span class="rl">TVA (' + eur(taux).replace(/,00$/, '') + ' %)</span><span class="rv">' + m(tva) + '</span></div>'
       + (paye > 0 ? '<div class="r"><span class="rl">Total TTC</span><span class="rv">' + m(ttc) + '</span></div><div class="r"><span class="rl">Déjà réglé</span><span class="rv">- ' + m(paye) + '</span></div>' : '')
       + '<div class="r total"><span class="rl">NET À PAYER</span><span class="rv">' + m(paye > 0 ? reste : ttc) + '</span></div></div></div></section>'
@@ -4876,6 +5053,7 @@ var NSDocs = (function () {
   }
 
   return {
+    COMPLET, estComplet, etiqueter, lireComplete, analyserComplet, echeancier, modalitesDefaut, estMarketing, PREFIXE_MKT,
     CATALOGUE, optionsIncluses, modulesVendus, ligneMaintenance, lireMaintenance, ligneRecurrente, estRecurrente, estMaintenance, estFrais, estGeste, ligneGeste, ligneFrais, decompte, analyser, objetFacture,
     // options : { iban, bic, logo } ; seules les valeurs non vides remplacent les défauts.
     devis(d, lignes, c, options, signataire) { regler(options); return docDevisHTML(d, lignes || [], c || {}, signataire); },
@@ -4980,6 +5158,30 @@ if (typeof module !== 'undefined') module.exports = NSDocs;
   .fx-sig-cases { display: flex; gap: 18px; flex-wrap: wrap; font-size: 15px; }
   .fx-sig-case input { width: 20px; height: 20px; vertical-align: -4px; margin-right: 4px; }
   .sv-carte .reste { color: var(--danger); font-weight: 650; }
+
+  /* Devis complet (18/11/2026) */
+  .dc-ligne { border: 1px solid var(--ligne); border-radius: 12px; padding: 10px; margin-bottom: 8px; display: grid; gap: 6px; background: var(--carte); }
+  .dc-ligne .h { display: grid; grid-template-columns: 1fr 30px; gap: 6px; align-items: start; }
+  .dc-ligne .n { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .dc-ligne, .dc-ligne *, .dc-ajout *, .dc-mod * { box-sizing: border-box; min-width: 0; }
+  .dc-ligne input, .dc-ligne textarea, .dc-ajout select, .dc-ajout input, .dc-mod textarea { border: 1px solid var(--ligne); border-radius: 8px; padding: 8px; font-size: 15px; width: 100%; background: #fff; color: inherit; font-family: inherit; }
+  .dc-ligne input.t { font-weight: 650; }
+  .dc-ligne textarea { font-size: 13.5px; min-height: 52px; resize: vertical; }
+  .dc-ligne .n label { font-size: 11.5px; color: var(--doux); display: grid; gap: 3px; }
+  .dc-ligne .mt { font-size: 13px; color: var(--doux); text-align: right; }
+  .dc-ligne button.x { border: 0; background: none; font-size: 20px; color: var(--doux); }
+  .dc-ajout { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+  .dc-ajout .btn { grid-column: 1 / -1; }
+  .dc-mod { display: grid; grid-template-columns: 26px 1fr 30px; gap: 6px; align-items: start; margin-bottom: 8px; }
+  .dc-mod input[type=checkbox] { width: 20px; height: 20px; margin-top: 8px; }
+  .dc-mod textarea { font-size: 13.5px; min-height: 60px; }
+  .dc-mod button { border: 0; background: none; font-size: 20px; color: var(--doux); }
+  .dc-ech { margin-top: 8px; border-top: 1px solid #333; padding-top: 8px; }
+  .dc-ech div { font-size: 13px !important; }
+  .dc-modele { background: #f6f4f0; border: 1px solid #e5e0d6; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 10px; }
+  .dc-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  html[data-theme="sombre"] :is(.dc-ligne input, .dc-ligne textarea, .dc-ajout select, .dc-ajout input, .dc-mod textarea) { background: var(--carte); color: var(--encre); border-color: var(--ligne); }
+  html[data-theme="sombre"] .dc-modele { background: rgba(255,255,255,.04); border-color: var(--ligne); }
 </style>
 
 <script>
@@ -5391,6 +5593,7 @@ const Factu = (() => {
     const nomClient = prospect ? prospect.entreprise : (edit ? cc.nom_etablissement || '' : '');
     feuille(tete(edit ? 'Modifier le brouillon' : 'Nouveau devis', nomClient ? esc(nomClient) + (D.clientId ? '' : ' · la fiche client sera créée') : '') + `
       <form id="fx-devis">
+      ${edit ? '' : `<div class="dc-mode"><button type="button" class="btn" disabled>Un site</button><button type="button" class="btn clair" data-fx="dc-depuis-classique">Devis complet<br><small>plusieurs sites, marketing</small></button></div>`}
       <div class="bloc"><h3>Client &amp; références</h3>
       ${prospect || edit ? '' : `<label class="champ">Client<select name="client" required><option value="">Choisir un client…</option>
         ${F.clients.map(c => `<option value="${c.id}">${esc(c.nom_etablissement)}</option>`).join('')}</select></label>
@@ -5440,7 +5643,320 @@ const Factu = (() => {
     const { data: lignes, error } = await F.sb.from('devis_lignes').select('*').eq('devis_id', id).order('ordre');
     if (error) return toast(error.message, true);
     const client = F.clients.find(c => c.id === d.client_id) || {};
+    if (NSDocs.estComplet(lignes || [])) return dcOuvrir(null, { devis: d, lignes: lignes || [] });
     nouveauDevis(null, { devis: d, a: NSDocs.analyser(lignes || [], client), client });
+  }
+
+
+  // ------------------------------------------------------------------ devis complet
+  // Devis complet (18/11/2026, Nelson, d'après le devis Milea Intimates / MAWI Jewelry) : plusieurs
+  // marques ou sites, des lignes avec titre et description, trois parties (création, maintenance,
+  // marketing Pack NSD 360), une offre de lancement, un échéancier et des modalités. Le rendu, le
+  // stockage (étiquettes en tête de designation) et les calculs sont dans Documents.html (NSDocs).
+  const CP = NSDocs.COMPLET;
+  const nouvelleLigne = (titre, desc, q, pu, src) => ({ titre: titre || '', desc: desc || '', q: q == null ? 1 : q, pu: pu == null ? '' : pu, src: src || null });
+  const PARTIES_DEF = {
+    creation: { titre: 'Création', sous: 'payé une fois', intro: '' },
+    maintenance: { titre: 'Maintenance', sous: 'par an, engagement 12 mois', intro: 'Payable à l’année (11 mois payés sur 12) ou au trimestre.' },
+    marketing: { titre: 'Marketing et réseaux, Pack NSD 360', sous: '', intro: '' },
+  };
+  const DC = { editId: null, clientId: '', prospect: null, marques: [], cliente: false, shopify: false, parts: {}, creation: [], remise: { pct: 0, titre: 'Offre de lancement', desc: '' },
+    annuel: true, maintenance: [], mktActif: false, mois: 2, prixPack: CP.PACK360.lancement, contenu: CP.PACK360.contenu, noncompris: CP.PACK360.noncompris, marketing: [], modalites: [] };
+  const DESC_MTN = 'Hébergement, mises à jour, sécurité, sauvegardes, support, 1 h de petites modifications par trimestre, espace client.';
+  const DESC_MEP = 'Audit des comptes, ligne éditoriale, calendrier de publication, réglages du compte publicitaire. Une seule fois.';
+  const prefixe = m => m ? m + ' · ' : '';
+  const titreMois = n => n === 1 ? 'mois 1' : n === 2 ? 'mois 1 et 2' : 'mois 1 à ' + n;
+  const prixMtn = src => { if (!src) return null;
+    if (src.type === 'mtn') { const m = MAINTENANCE.find(x => x.cat === src.cat); return m ? (DC.annuel ? m.an : m.trim) : null; }
+    if (src.type === 'rec') { const r = RECURRENTES.find(x => x.id === src.id); return r ? (DC.annuel ? r.an : r.trim) : null; }
+    return null; };
+
+  function dcVide() {
+    Object.assign(DC, { editId: null, clientId: '', prospect: null, marques: [], cliente: false, shopify: false, creation: [], remise: { pct: 0, titre: 'Offre de lancement', desc: '' },
+      annuel: true, maintenance: [], mktActif: false, mois: 2, prixPack: CP.PACK360.lancement, contenu: CP.PACK360.contenu, noncompris: CP.PACK360.noncompris, marketing: [], modalites: [] });
+    DC.parts = JSON.parse(JSON.stringify(PARTIES_DEF));
+    DC.modalites = NSDocs.modalitesDefaut({ client: 'le client' });
+  }
+  // Le devis du 17/11/2026 pour Mélodie Sousa (Milea Intimates et MAWI Jewelry), ligne pour ligne.
+  function dcModeleMilea() {
+    const F360 = CP.PACK360;
+    Object.assign(DC, { marques: ['Milea', 'MAWI'], cliente: true, shopify: true, annuel: true, mktActif: true, mois: 2, prixPack: F360.lancement,
+      contenu: F360.contenu, noncompris: 'Non compris : le budget publicitaire, payé directement à Meta par la cliente ; la rémunération éventuelle de modèles pour les tournages en lingerie.' });
+    DC.parts = {
+      creation: { titre: 'Création des deux boutiques', sous: 'payé une fois', intro: 'Deux boutiques Shopify, un seul thème codé sur mesure par NS Development, décliné aux deux marques.' },
+      maintenance: { titre: 'Maintenance des deux boutiques', sous: 'par an, engagement 12 mois', intro: 'Payable à l’année (11 mois payés sur 12) ou au trimestre (195 € HT par boutique et 15 € HT par domaine supplémentaire).' },
+      marketing: { titre: 'Marketing et réseaux, Pack NSD 360', sous: '× 2, un par marque', intro: 'Un pack complet pour Milea Intimates et un pour MAWI Jewelry, chacun avec ses comptes, ses tournages et sa ligne éditoriale. Première période de 2 mois, au prix de lancement.' },
+    };
+    DC.creation = [
+      nouvelleLigne('Milea · formule Boutique', 'Thème Shopify codé sur mesure à la charte Milea (bordeaux intense, champagne), jusqu’à 50 produits, panier, paiement sécurisé, gestion des produits et des commandes dans Shopify, adapté au téléphone, mise en ligne.', 1, 3790),
+      nouvelleLigne('Milea · développement spécifique', 'Vue 360° des pièces portées (à faire tourner au doigt) et film d’atelier synchronisé au défilement (découpe, couture, écrin). 2 jours à 600 € HT.', 2, CP.JOUR_DEV),
+      nouvelleLigne('Milea · production visuelle', 'Visuels de mise en scène et vidéos courtes pour la boutique (équivalent d’une séance photo : une vingtaine d’images retouchées).', 1, CP.PRODUCTION_VISUELLE),
+      nouvelleLigne('MAWI · seconde boutique déclinée', 'Le même thème décliné à la charte MAWI (vert militaire, rose poudré, filet doré) : six collections, catalogue filtrable, vue 360° d’un bijou, page « Cercle privé » avec inscription avant l’ouverture.', 1, 2290),
+      nouvelleLigne('MAWI · production visuelle', 'Visuels de mise en scène et vidéos courtes pour la boutique (équivalent d’une séance photo).', 1, CP.PRODUCTION_VISUELLE),
+    ];
+    DC.remise = { pct: 50, titre: 'Offre de lancement', desc: 'Offre en cours de NS Development sur la création des sites.' };
+    DC.maintenance = [
+      nouvelleLigne('Maintenance Boutique · Milea', 'Hébergement du thème, mises à jour après chaque évolution de Shopify, sécurité, support, 1 h de petites modifications par trimestre, espace client.', 1, 715, { type: 'mtn', cat: 'Pro / Boutique' }),
+      nouvelleLigne('Maintenance Boutique · MAWI', 'Même contenu, pour la seconde boutique.', 1, 715, { type: 'mtn', cat: 'Pro / Boutique' }),
+      nouvelleLigne('Domaine supplémentaire · Milea', 'Le .com en plus du .lu (ex. milea.lu + mileaintimates.com).', 1, 55, { type: 'rec', id: 'domaine' }),
+      nouvelleLigne('Domaine supplémentaire · MAWI', 'Le .com en plus du .lu (ex. mawijewelry.lu + mawijewelry.com).', 1, 55, { type: 'rec', id: 'domaine' }),
+    ];
+    DC.marketing = [];
+    DC.marques.forEach(m => DC.marketing.push(nouvelleLigne(m + ' · mise en place', DESC_MEP, 1, F360.miseEnPlace, { type: 'mep' }),
+      nouvelleLigne(m + ' · Pack NSD 360, ' + titreMois(2), '2 × 3 290 € HT, prix de lancement.', 2, F360.lancement, { type: 'pack' })));
+    DC.modalites = NSDocs.modalitesDefaut({ marketing: true, mois: 2, marques: 2, client: 'la cliente', shopify: true });
+  }
+
+  // Lignes prêtes pour la base, avec leurs étiquettes.
+  function dcLignesBD() {
+    const L = [], tag = NSDocs.etiqueter, mt = (q, pu) => Math.round((Number(q) || 0) * (Number(pu) || 0) * 100) / 100;
+    const push = (partie, role, titre, desc, q, pu) => L.push({ designation: tag(partie, role, titre, desc), quantite: Number(q) || 0, prix_unitaire_ht: Number(pu) || 0, montant_ht: mt(q, pu) });
+    const intro = (k, mois) => { const P = DC.parts[k]; push(k, 'intro', (P.titre || PARTIES_DEF[k].titre) + (P.sous ? ' | ' + P.sous : ''), P.intro, mois || 0, 0); };
+    const lignes = (k, arrL) => arrL.filter(x => String(x.titre).trim()).forEach(x => push(k, '', x.titre, x.desc, x.q, x.pu));
+    const crea = DC.creation.filter(x => String(x.titre).trim());
+    if (crea.length) {
+      intro('creation'); lignes('creation', DC.creation);
+      const brut = crea.reduce((s, x) => s + mt(x.q, x.pu), 0), pct = Number(DC.remise.pct) || 0;
+      if (pct > 0 && brut > 0) { const r = -Math.round(brut * pct / 100 * 100) / 100;
+        L.push({ designation: tag('creation', 'remise', (DC.remise.titre || 'Remise') + ' : ' + String(pct).replace('.', ',') + ' % sur la création', DC.remise.desc), quantite: 1, prix_unitaire_ht: r, montant_ht: r }); }
+    }
+    if (DC.maintenance.some(x => String(x.titre).trim())) { intro('maintenance', DC.annuel ? 12 : 3); lignes('maintenance', DC.maintenance); }
+    if (DC.mktActif && DC.marketing.some(x => String(x.titre).trim())) {
+      intro('marketing', DC.mois);
+      if (String(DC.contenu).trim()) push('marketing', 'contenu', 'Contenu', DC.contenu, 0, 0);
+      lignes('marketing', DC.marketing);
+      if (String(DC.noncompris).trim()) push('marketing', 'noncompris', 'Non compris', DC.noncompris, 0, 0);
+    }
+    return L.map((l, i) => Object.assign(l, { ordre: i }));
+  }
+  // Un devis complet enregistré, remis dans l'éditeur.
+  function dcDepuisLignes(lignes, devis) {
+    dcVide();
+    const a = NSDocs.analyserComplet(lignes);
+    ['creation', 'maintenance', 'marketing'].forEach(k => { const i = a[k].intro; if (i) DC.parts[k] = { titre: i.titre, sous: i.sous, intro: i.desc }; });
+    const vers = x => nouvelleLigne(x.titre, x.desc, x.q, x.pu);
+    DC.creation = a.creation.lignes.map(vers);
+    if (a.creation.remise) { const r = a.creation.remise, m = /^(.*?)\s*:\s*([\d.,]+)\s*%/.exec(r.titre);
+      DC.remise = { pct: m ? Number(m[2].replace(',', '.')) : 0, titre: m ? m[1] : r.titre, desc: r.desc }; }
+    DC.annuel = a.annuel;
+    DC.maintenance = a.maintenance.lignes.map(x => { const l = vers(x);
+      const cat = MAINTENANCE.find(m => x.titre.indexOf(m.cat.split(' / ').pop()) >= 0 || x.titre.indexOf(m.cat) >= 0);
+      const rec = RECURRENTES.find(r => x.titre.indexOf(r.court || r.n) === 0 || (r.id === 'domaine' && /^Domaine supplémentaire/.test(x.titre)) || (r.id === 'mail' && /^Boîte mail supplémentaire/.test(x.titre)));
+      l.src = /^Maintenance/.test(x.titre) && cat ? { type: 'mtn', cat: cat.cat } : rec ? { type: 'rec', id: rec.id } : null; return l; });
+    DC.mktActif = a.marketing.lignes.length > 0; DC.mois = a.mois;
+    DC.marketing = a.marketing.lignes.map(x => { const l = vers(x); l.src = /mise en place/.test(x.titre) ? { type: 'mep' } : /Pack NSD 360/.test(x.titre) ? { type: 'pack' } : null; return l; });
+    const pack = DC.marketing.find(x => x.src && x.src.type === 'pack'); if (pack) DC.prixPack = Number(pack.pu) || CP.PACK360.lancement;
+    if (a.marketing.contenu) DC.contenu = a.marketing.contenu;
+    DC.noncompris = a.marketing.noncompris || (DC.mktActif ? '' : CP.PACK360.noncompris);
+    const noms = new Set(); [...DC.creation, ...DC.maintenance, ...DC.marketing].forEach(x => { const m = /^(.+?) · /.exec(x.titre); if (m && !/^(Maintenance|Domaine|Boîte|Option)/.test(m[1])) noms.add(m[1]); });
+    DC.maintenance.forEach(x => { const m = / · ([^·]+)$/.exec(x.titre); if (m) noms.add(m[1].trim()); });
+    DC.marques = [...noms];
+    DC.cliente = /la cliente/.test(String(devis.notes || '')) || /la cliente/.test(DC.noncompris);
+    DC.shopify = /Shopify/.test(String(devis.notes || ''));
+    DC.modalites = String(devis.notes || '').split('\n').map(x => x.trim()).filter(Boolean).map(texte => ({ texte, on: true }));
+    DC.editId = devis.id; DC.clientId = devis.client_id;
+  }
+
+  function dcOuvrir(prospect, edit) {
+    if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
+    if (edit) dcDepuisLignes(edit.lignes, edit.devis);
+    else { dcVide(); DC.prospect = prospect || null; DC.clientId = prospect && prospect.client ? prospect.client : ''; }
+    const cc = F.clients.find(c => c.id === DC.clientId) || {}, p = DC.prospect || prospectDuClient(DC.clientId) || {};
+    const nom = DC.prospect ? DC.prospect.entreprise : cc.nom_etablissement || '';
+    const dans30 = new Date(Date.now() + 30 * 864e5);
+    const champsParte = (k, aide) => `<div class="fx-deux"><label class="champ">Titre de la partie<input data-dc-part="${k}" data-k="titre" value="${esc(DC.parts[k].titre)}"></label>
+      <label class="champ">À côté du titre<input data-dc-part="${k}" data-k="sous" value="${esc(DC.parts[k].sous)}" placeholder="${esc(aide)}"></label></div>
+      <label class="champ">Texte sous le titre (facultatif)<textarea data-dc-part="${k}" data-k="intro" rows="2">${esc(DC.parts[k].intro)}</textarea></label>`;
+    feuille(tete(edit ? 'Modifier le devis complet' : 'Devis complet', nom ? esc(nom) : 'plusieurs sites ou marques, marketing') + `
+      <form id="fx-dc">
+      ${edit ? '' : `<div class="dc-modele">Pour <b>Mélodie Sousa</b> (Milea Intimates et MAWI Jewelry), pars du modèle : tout le devis du 17/11 est repris, ligne pour ligne. Il ne reste qu’à vérifier.
+        <div style="margin-top:8px"><button type="button" class="btn clair large" data-fx="dc-modele">Remplir avec le devis Milea / MAWI</button></div></div>`}
+      <div class="bloc"><h3>Client</h3>
+        ${DC.prospect || edit ? '' : `<label class="champ">Client<select name="client"><option value="">Choisir un client…</option><option value="__nouveau">＋ Nouveau client (écrit ci-dessous)</option>
+          ${F.clients.map(c => `<option value="${c.id}" ${c.id === DC.clientId ? 'selected' : ''}>${esc(c.nom_etablissement)}</option>`).join('')}</select></label>`}
+        <div id="fx-champs-client">${champsClient(cc, p)}</div>
+        <label class="champ" style="flex-direction:row;align-items:center;gap:8px;display:flex"><input type="checkbox" name="cliente" ${DC.cliente ? 'checked' : ''} style="width:20px;height:20px"> C’est une cliente (« la cliente » dans les modalités)</label></div>
+      <div class="bloc"><h3>Marques ou sites</h3><div class="sous" style="margin:0 0 6px">Séparés par une virgule. Chaque ligne ajoutée commence par le nom choisi (« Milea · … »).</div>
+        <input name="marques" class="champ-libre" value="${esc(DC.marques.join(', '))}" placeholder="Ex. Milea, MAWI" style="width:100%;border:1px solid var(--ligne);border-radius:8px;padding:9px 8px;font-size:15px"></div>
+
+      <div class="bloc"><h3>1 · Création <small style="color:var(--doux);font-weight:500">payée une fois</small></h3>${champsParte('creation', 'payé une fois')}
+        <div id="dc-creation"></div>
+        <div class="dc-ajout"><select data-dc-quoi="creation">${dcChoixCreation()}</select><select data-dc-marque="creation"></select>
+          <button type="button" class="btn clair" data-fx="dc-ajout" data-p="creation">＋ Ajouter cette ligne</button></div>
+        <h3 style="margin-top:14px">Remise sur la création</h3>
+        <div class="fx-deux"><label class="champ">Nom de la remise<input data-dc-remise="titre" value="${esc(DC.remise.titre)}" list="dc-remises"></label>
+          <label class="champ">Remise en %<input data-dc-remise="pct" type="number" min="0" max="99" step="0.5" value="${DC.remise.pct}"></label></div>
+        <datalist id="dc-remises"><option value="Offre de lancement"><option value="Geste commercial"></datalist>
+        <label class="champ">Texte sous la remise (facultatif)<input data-dc-remise="desc" value="${esc(DC.remise.desc)}" placeholder="Ex. Offre en cours de NS Development sur la création des sites."></label></div>
+
+      <div class="bloc"><h3>2 · Maintenance</h3>
+        <div class="fx-chips" id="dc-rythme"></div>
+        ${champsParte('maintenance', 'par an, engagement 12 mois')}
+        <div id="dc-maintenance"></div>
+        <div class="dc-ajout"><select data-dc-quoi="maintenance">${dcChoixMaintenance()}</select><select data-dc-marque="maintenance"></select>
+          <button type="button" class="btn clair" data-fx="dc-ajout" data-p="maintenance">＋ Ajouter cette ligne</button></div></div>
+
+      <div class="bloc"><h3>3 · Marketing et réseaux (Pack NSD 360)</h3>
+        <label class="champ" style="display:flex;flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="mkt" ${DC.mktActif ? 'checked' : ''} style="width:20px;height:20px"> Ajouter le marketing à ce devis</label>
+        <div id="dc-mkt-zone"></div></div>
+
+      <div class="bloc"><h3>Modalités</h3><div class="sous" style="margin:0 0 8px">Les deux paiements (signature et livraison) s’écrivent seuls, avec les bons montants. Coche, corrige ou ajoute le reste.</div>
+        <div id="dc-modalites"></div>
+        <div class="fx-deux"><button type="button" class="btn clair" data-fx="dc-mod-ajout">＋ Ajouter une modalité</button><button type="button" class="btn clair" data-fx="dc-mod-defaut">Refaire selon le devis</button></div></div>
+
+      <div class="bloc"><div class="fx-deux">
+          <label class="champ">TVA %<input name="tva" type="number" value="17" min="0" step="0.01"></label>
+          <label class="champ">Valable jusqu’au<input name="validite" type="date" value="${isoJour(dans30)}"></label></div>
+        <label class="champ">Enregistrer comme<select name="statut"><option value="brouillon">Brouillon, sans numéro</option><option value="envoyé">Envoyé : reçoit son numéro DEV</option></select></label></div>
+      <div class="fx-totaux" id="dc-totaux"></div>
+      <div class="fx-deux" style="margin:12px 0 18px"><button type="button" class="btn clair" data-fx="dc-apercu">Aperçu du PDF</button><button class="btn" type="submit">${edit ? 'Enregistrer les modifications' : 'Enregistrer le devis'}</button></div></form>`);
+    if (edit) { const f = document.getElementById('fx-dc'), d = edit.devis; f.tva.value = d.tva_taux != null ? d.tva_taux : 17; if (d.date_validite) f.validite.value = String(d.date_validite).slice(0, 10); }
+    dcDessiner();
+  }
+  function dcChoixCreation() {
+    return '<option value="">Ajouter en création…</option><optgroup label="Formules">' + FORMULES.map((f, i) => `<option value="f${i}">Formule ${esc(f.n)} · ${eur(f.pu)} €</option>`).join('') + '</optgroup>'
+      + '<optgroup label="Sur mesure"><option value="dev">Développement spécifique · ' + CP.JOUR_DEV + ' € le jour</option><option value="visuel">Production visuelle · ' + CP.PRODUCTION_VISUELLE + ' €</option>'
+      + '<option value="decline">Second site décliné du même thème (prix à fixer)</option><option value="libre">Ligne libre</option></optgroup>'
+      + '<optgroup label="Options du catalogue">' + OPTIONS.map((o, i) => `<option value="o${i}">${esc(o.court)} · ${eur(o.pu)} €</option>`).join('') + '</optgroup>';
+  }
+  function dcChoixMaintenance() {
+    return '<option value="">Ajouter en maintenance…</option><optgroup label="Maintenance d’un site">' + MAINTENANCE.map((m, i) => `<option value="m${i}">Maintenance ${esc(m.cat)}</option>`).join('') + '</optgroup>'
+      + '<optgroup label="Options récurrentes">' + RECURRENTES.filter(r => !r.lie).map(r => `<option value="r${r.id}">${esc(r.court || r.n)}</option>`).join('') + '</optgroup><option value="libre">Ligne libre</option>';
+  }
+  function dcAjouter(partie) {
+    const q = document.querySelector('[data-dc-quoi="' + partie + '"]'), mq = document.querySelector('[data-dc-marque="' + partie + '"]');
+    const v = q ? q.value : '', marque = mq ? mq.value : '';
+    if (!v) return toast('Choisis d’abord quoi ajouter.', true);
+    if (partie === 'creation') {
+      let l;
+      if (v[0] === 'f') { const f = FORMULES[Number(v.slice(1))]; l = nouvelleLigne(prefixe(marque) + 'formule ' + f.n, f.desc, 1, f.pu); }
+      else if (v[0] === 'o') { const o = OPTIONS[Number(v.slice(1))]; l = nouvelleLigne(prefixe(marque) + o.court, o.n, 1, o.pu); if (o.alerte) toast('⚠ ' + o.court + ' : ' + o.alerte, true); }
+      else if (v === 'dev') l = nouvelleLigne(prefixe(marque) + 'développement spécifique', 'À décrire : ce qui est développé. Nombre de jours × ' + CP.JOUR_DEV + ' € HT.', 1, CP.JOUR_DEV);
+      else if (v === 'visuel') l = nouvelleLigne(prefixe(marque) + 'production visuelle', 'Visuels de mise en scène et vidéos courtes pour le site (équivalent d’une séance photo : une vingtaine d’images retouchées).', 1, CP.PRODUCTION_VISUELLE);
+      else if (v === 'decline') l = nouvelleLigne(prefixe(marque) + 'second site décliné', 'Le même thème décliné à la charte de la marque : à décrire.', 1, '');
+      else l = nouvelleLigne(prefixe(marque), '', 1, '');
+      DC.creation.push(l);
+    } else {
+      let l;
+      if (v[0] === 'm') { const m = MAINTENANCE[Number(v.slice(1))]; l = nouvelleLigne('Maintenance ' + m.cat.split(' / ').pop() + (marque ? ' · ' + marque : ''), DESC_MTN, 1, DC.annuel ? m.an : m.trim, { type: 'mtn', cat: m.cat }); }
+      else if (v[0] === 'r') { const r = RECURRENTES.find(x => x.id === v.slice(1)); l = nouvelleLigne((r.court || r.n) + (marque ? ' · ' + marque : ''), r.n === (r.court || r.n) ? '' : r.n, 1, DC.annuel ? r.an : r.trim, { type: 'rec', id: r.id }); }
+      else l = nouvelleLigne(marque ? ' · ' + marque : '', '', 1, '');
+      DC.maintenance.push(l);
+    }
+    if (q) q.value = '';
+    dcDessiner(); toast('Ligne ajoutée : relis le titre et la description.');
+  }
+  function dcAjouterPack(marque) {
+    const P = CP.PACK360, n = Number(DC.mois) || 2, prix = Number(DC.prixPack) || P.lancement;
+    DC.marketing.push(nouvelleLigne(prefixe(marque) + 'mise en place', DESC_MEP, 1, P.miseEnPlace, { type: 'mep' }),
+      nouvelleLigne(prefixe(marque) + 'Pack NSD 360, ' + titreMois(n), n + ' × ' + eur(prix) + ' € HT' + (prix === P.lancement ? ', prix de lancement.' : '.'), n, prix, { type: 'pack' }));
+    dcDessiner();
+  }
+  // Mois ou prix du pack changés : les lignes du pack suivent (titre, quantité, description).
+  function dcMajPacks() {
+    const n = Number(DC.mois) || 2, prix = Number(DC.prixPack) || CP.PACK360.lancement;
+    DC.marketing.forEach(l => { if (!l.src || l.src.type !== 'pack') return;
+      l.q = n; l.pu = prix; l.titre = l.titre.replace(/Pack NSD 360, mois .*$/, 'Pack NSD 360, ' + titreMois(n));
+      l.desc = n + ' × ' + eur(prix) + ' € HT' + (prix === CP.PACK360.lancement ? ', prix de lancement.' : '.'); });
+  }
+  function dcLigneHTML(partie, l, i) {
+    const mt = Math.round((Number(l.q) || 0) * (Number(l.pu) || 0) * 100) / 100;
+    return `<div class="dc-ligne" data-dc-l="${partie}" data-i="${i}"><div class="h"><input class="t" data-k="titre" value="${esc(l.titre)}" placeholder="Titre (ex. Milea · formule Boutique)" aria-label="Titre">
+      <button type="button" class="x" data-fx="dc-suppr" data-p="${partie}" data-i="${i}" aria-label="Retirer la ligne">×</button></div>
+      <textarea data-k="desc" rows="2" placeholder="Description, sous le titre" aria-label="Description">${esc(l.desc)}</textarea>
+      <div class="n"><label>Quantité<input data-k="q" type="number" min="0" step="0.5" inputmode="decimal" value="${l.q}"></label><label>Prix unitaire HT<input data-k="pu" type="number" min="0" step="0.01" inputmode="decimal" value="${l.pu}"></label></div>
+      <div class="mt" data-dc-mt>${eur(mt)} € HT${partie === 'maintenance' ? (DC.annuel ? ' / an' : ' / trim.') : ''}</div></div>`;
+  }
+  function dcDessiner() {
+    const opts = '<option value="">Sans marque</option>' + DC.marques.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+    document.querySelectorAll('[data-dc-marque]').forEach(s => { const v = s.value; s.innerHTML = opts; if (DC.marques.includes(v)) s.value = v; else if (DC.marques.length) s.value = DC.marques[0]; });
+    document.getElementById('dc-creation').innerHTML = DC.creation.map((l, i) => dcLigneHTML('creation', l, i)).join('') || '<div class="sous">Aucune ligne : ajoute une formule, une ligne sur mesure ou une option.</div>';
+    document.getElementById('dc-maintenance').innerHTML = DC.maintenance.map((l, i) => dcLigneHTML('maintenance', l, i)).join('') || '<div class="sous">Aucune ligne : ajoute la maintenance de chaque site.</div>';
+    document.getElementById('dc-rythme').innerHTML = `<button type="button" data-fx="dc-rythme" data-v="an" class="${DC.annuel ? 'on' : ''}">À l’année<b>11 mois payés sur 12</b></button><button type="button" data-fx="dc-rythme" data-v="trim" class="${DC.annuel ? '' : 'on'}">Au trimestre<b>3 mois</b></button>`;
+    const P = CP.PACK360;
+    document.getElementById('dc-mkt-zone').innerHTML = DC.mktActif ? `${['marketing'].map(k => `<div class="fx-deux"><label class="champ">Titre de la partie<input data-dc-part="${k}" data-k="titre" value="${esc(DC.parts[k].titre)}"></label>
+        <label class="champ">À côté du titre<input data-dc-part="${k}" data-k="sous" value="${esc(DC.parts[k].sous)}" placeholder="× 2, un par marque"></label></div>
+        <label class="champ">Texte sous le titre (facultatif)<textarea data-dc-part="${k}" data-k="intro" rows="2">${esc(DC.parts[k].intro)}</textarea></label>`).join('')}
+      <div class="fx-deux"><label class="champ">Durée de la première période (mois)<input data-dc-mkt="mois" type="number" min="1" max="12" value="${DC.mois}"></label>
+        <label class="champ">Prix du pack par mois<select data-dc-mkt="prix"><option value="${P.lancement}" ${Number(DC.prixPack) === P.lancement ? 'selected' : ''}>${eur(P.lancement)} € · prix de lancement</option><option value="${P.standard}" ${Number(DC.prixPack) === P.standard ? 'selected' : ''}>${eur(P.standard)} € · prix normal</option></select></label></div>
+      <label class="champ">Contenu de chaque pack<textarea data-dc-mkt="contenu" rows="3">${esc(DC.contenu)}</textarea></label>
+      <div id="dc-marketing">${DC.marketing.map((l, i) => dcLigneHTML('marketing', l, i)).join('') || '<div class="sous">Aucun pack : ajoute celui de chaque marque.</div>'}</div>
+      <div class="fx-chips" style="margin:6px 0 10px">${(DC.marques.length ? DC.marques : ['']).map(m => `<button type="button" data-fx="dc-pack" data-m="${esc(m)}">＋ Pack NSD 360${m ? ' · ' + esc(m) : ''}<b>mise en place ${eur(P.miseEnPlace)} € + ${DC.mois} mois</b></button>`).join('')}
+        <button type="button" data-fx="dc-mkt-libre">＋ Ligne libre<b>en marketing</b></button></div>
+      <label class="champ">Ce qui n’est pas compris (sous le tableau)<textarea data-dc-mkt="noncompris" rows="2">${esc(DC.noncompris)}</textarea></label>` : '';
+    document.getElementById('dc-modalites').innerHTML = DC.modalites.map((m, i) => `<div class="dc-mod" data-dc-mod="${i}"><input type="checkbox" data-k="on" ${m.on ? 'checked' : ''} aria-label="Garder cette modalité">
+      <textarea data-k="texte" rows="2">${esc(m.texte)}</textarea><button type="button" data-fx="dc-mod-suppr" data-i="${i}" aria-label="Retirer">×</button></div>`).join('');
+    dcCalculer();
+  }
+  function dcCalculer() {
+    const z = document.getElementById('dc-totaux'), form = document.getElementById('fx-dc'); if (!z || !form) return;
+    const taux = Number(form.tva.value) || 0, L = dcLignesBD(), a = NSDocs.analyserComplet(L), t = a.totaux, ech = NSDocs.echeancier(a, taux);
+    document.querySelectorAll('.dc-ligne').forEach(el => { const arrL = DC[el.dataset.dcL], l = arrL && arrL[Number(el.dataset.i)]; if (!l) return;
+      const mt = Math.round((Number(l.q) || 0) * (Number(l.pu) || 0) * 100) / 100, out = el.querySelector('[data-dc-mt]');
+      if (out) out.textContent = eur(mt) + ' € HT' + (el.dataset.dcL === 'maintenance' ? (DC.annuel ? ' / an' : ' / trim.') : ''); });
+    z.innerHTML = (t.remise ? `<div><span>Création avant remise</span><span>${eur(t.creationBrut)} €</span></div><div class="fx-remise"><span>${esc(DC.remise.titre || 'Remise')} ${eur(DC.remise.pct)} %</span><span>− ${eur(-t.remise)} €</span></div>` : '')
+      + `<div><span>Création HT</span><span>${eur(t.creation)} €</span></div><div><span>Maintenance HT ${DC.annuel ? '(1 an)' : '(1 trimestre)'}</span><span>${eur(t.maintenance)} €</span></div>`
+      + (DC.mktActif ? `<div><span>Marketing HT (${DC.mois} mois)</span><span>${eur(t.marketing)} €</span></div>` : '')
+      + `<div><span>Total HT</span><span>${eur(t.ht)} €</span></div><div><span>TVA ${eur(taux)} %</span><span>${eur(ech.total.tva)} €</span></div><div class="gros"><span>Total TTC</span><span>${eur(ech.total.ttc)} €</span></div>`
+      + `<div class="dc-ech">${ech.echeances.map(e => `<div><span>${esc(e.lib)}</span><span>${eur(e.ttc)} € TTC</span></div>`).join('')}</div>`;
+  }
+  function dcModalitesFinales() { return DC.modalites.filter(m => m.on && String(m.texte).trim()).map(m => String(m.texte).replace(/\s*\n\s*/g, ' ').trim()).join('\n'); }
+  async function dcApercu() {
+    const form = document.getElementById('fx-dc'); if (!form) return;
+    const cc = Object.assign({}, F.clients.find(c => c.id === DC.clientId) || {}, majDepuisForm(form));
+    if (!cc.nom_etablissement && form.c_nom) cc.nom_etablissement = form.c_nom.value.trim();
+    const d = { numero: '', date_emission: isoJour(new Date()), date_validite: form.validite.value, tva_taux: Number(form.tva.value) || 0, notes: dcModalitesFinales() };
+    montrerDoc(NSDocs.devis(d, dcLignesBD(), cc, S.data.banque, null));
+  }
+  async function dcEnregistrer(form) {
+    const lignes = dcLignesBD(), a = NSDocs.analyserComplet(lignes);
+    if (!a.creation.lignes.length && !a.marketing.lignes.length) return toast('Ajoute au moins une ligne en création ou en marketing.', true);
+    const vides = lignes.filter(l => !/:(intro|contenu|noncompris|remise)\]\]/.test(l.designation) && !(Number(l.montant_ht) > 0));
+    if (vides.length) return toast('Une ligne n’a pas de prix : ' + NSDocs.lireComplete(vides[0]).titre, true);
+    if (a.creation.lignes.length && !a.maintenance.lignes.length && !confirm('Pas de maintenance sur ce devis ? Elle est obligatoire pour toute mise en ligne.')) return;
+    const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+    const echec = m => { btn.disabled = false; btn.textContent = DC.editId ? 'Enregistrer les modifications' : 'Enregistrer le devis'; toast(m, true); };
+    try {
+      let clientId = DC.clientId || (form.client && form.client.value !== '__nouveau' ? form.client.value : '');
+      const nomClient = (form.c_nom && form.c_nom.value.trim()) || (DC.prospect && DC.prospect.entreprise) || '';
+      if (!clientId && (DC.prospect || (form.client && form.client.value === '__nouveau'))) {
+        if (!nomClient) return echec('Écris le nom du client (raison sociale ou nom de la personne).');
+        const p = DC.prospect || {};
+        const { data: c, error } = await F.sb.from('clients').insert({ nom_etablissement: nomClient, contact_nom: p.gerant || null, email: p.email || null,
+          telephone: p.telephone || null, ville: p.commune || null, metier: p.secteur || null, site_domaine: p.site || null, statut: 'prospect',
+          notes: 'Créé depuis le devis complet du CRM NSD' + (p.id ? ' (' + p.id + ')' : '') + '.' }).select('*').single();
+        if (error) return echec('Fiche client : ' + error.message);
+        clientId = c.id; F.clients.unshift(c);
+        if (p.id) { try { const maj = await appel('api_modifier', S.pin, p.id, { client: c.id }); majLocale(maj); } catch (e) { toast('Fiche client créée, lien avec le prospect non posé : ' + e.message, true); } }
+        DC.clientId = c.id;
+      }
+      if (!clientId) return echec('Choisis un client, ou « Nouveau client ».');
+      const taux = Number(form.tva.value) || 0, ech = NSDocs.echeancier(a, taux);
+      const champs = { date_validite: form.validite.value || null, statut: form.statut.value, tva_taux: taux, total_ht: a.totaux.ht, total_ttc: ech.total.ttc, notes: dcModalitesFinales() || null };
+      let id;
+      if (DC.editId) {
+        const { data: anciennes, error: e0 } = await F.sb.from('devis_lignes').select('id').eq('devis_id', DC.editId);
+        if (e0) return echec('Devis : ' + e0.message);
+        const { data: maj, error: e1 } = await F.sb.from('devis').update(champs).eq('id', DC.editId).eq('statut', 'brouillon').select('id');
+        if (e1) return echec('Devis : ' + e1.message);
+        if (!maj || !maj.length) return echec('Ce devis n’est plus un brouillon : il ne se modifie plus.');
+        id = DC.editId;
+        const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: id })));
+        if (e2) return echec('Erreur sur les lignes, le devis garde ses anciennes lignes : ' + e2.message);
+        const ids = (anciennes || []).map(l => l.id);
+        if (ids.length) { const { error: e3 } = await F.sb.from('devis_lignes').delete().in('id', ids); if (e3) return echec('Nouvelles lignes posées, mais les anciennes restent : ' + e3.message); }
+      } else {
+        const { data: cree, error: e1 } = await F.sb.from('devis').insert(Object.assign({ client_id: clientId, date_emission: isoJour(new Date()) }, champs)).select('id').single();
+        if (e1) return echec('Devis : ' + e1.message);
+        id = cree.id;
+        const { error: e2 } = await F.sb.from('devis_lignes').insert(lignes.map(l => Object.assign({}, l, { devis_id: id })));
+        if (e2) return echec('Devis créé, mais erreur sur les lignes : ' + e2.message);
+      }
+      const e3 = await ecrireClient(clientId, form);
+      if (e3) toast('Devis enregistré, mais les infos du client n’ont pas pu être gardées : ' + e3.message, true);
+      toast((DC.editId ? 'Devis modifié' : 'Devis enregistré') + (form.statut.value === 'envoyé' ? ' avec son numéro.' : ' en brouillon.'));
+      await charger(); ouvrirDevis(id);
+    } catch (e) { echec(e.message || String(e)); }
   }
 
   function dessinerChoix() {
@@ -5608,10 +6124,11 @@ const Factu = (() => {
     if (d.statut === 'brouillon') act.push('<button class="btn clair large" data-fx="statut-devis" data-st="envoyé" data-id="' + id + '">Marquer envoyé (attribue le numéro)</button>');
     if (d.statut === 'envoyé') act.push('<div class="fx-deux"><button class="btn" data-fx="statut-devis" data-st="accepté" data-id="' + id + '">Accepté</button><button class="btn clair" data-fx="statut-devis" data-st="refusé" data-id="' + id + '">Refusé</button></div>');
     // Modèle validé : facture d'acompte à la signature, facture de solde à la livraison.
+    const complet = NSDocs.estComplet(d.devis_lignes || []);
     if (d.statut !== 'refusé') {
-      if (!facs.length) act.push('<button class="btn clair large" data-fx="facturer" data-objet="acompte" data-id="' + id + '">Facture d’acompte (50 % du site + maintenance)</button>'
+      if (!facs.length) act.push('<button class="btn clair large" data-fx="facturer" data-objet="acompte" data-id="' + id + '">' + (complet ? 'Facture de la signature (50 % de la création + maintenance + marketing)' : 'Facture d’acompte (50 % du site + maintenance)') + '</button>'
         + '<button class="btn clair large" data-fx="facturer" data-objet="unique" data-id="' + id + '">Facture unique (100 %)</button>');
-      else if (objets.includes('acompte') && !objets.includes('solde')) act.push('<button class="btn clair large" data-fx="facturer" data-objet="solde" data-id="' + id + '">Facture de solde (50 % du site, à la livraison)</button>');
+      else if (objets.includes('acompte') && !objets.includes('solde')) act.push('<button class="btn clair large" data-fx="facturer" data-objet="solde" data-id="' + id + '">' + (complet ? 'Facture de la livraison (50 % restants de la création)' : 'Facture de solde (50 % du site, à la livraison)') + '</button>');
     }
     const libelle = { acompte: 'd’acompte', solde: 'de solde', unique: '' };
     facs.forEach((f, i) => act.push('<button class="btn clair large" data-fx-facture="' + f.id + '">Voir la facture ' + libelle[objets[i]] + ' ' + esc(f.numero || 'brouillon') + '</button>'));
@@ -5648,6 +6165,7 @@ const Factu = (() => {
     const { data: lignes, error: e0 } = await F.sb.from('devis_lignes').select('*').eq('devis_id', devisId).order('ordre');
     if (e0) return toast(e0.message, true);
     const L = (lignes || []).filter(l => !NSDocs.estFrais(l)), ref = dev.numero ? ' (devis ' + dev.numero + ')' : '';
+    if (NSDocs.estComplet(L)) return facturerComplet(dev, L, objet, ref);
     const site = Math.round(L.filter(l => !NSDocs.estMaintenance(l)).reduce((s, l) => s + (Number(l.montant_ht) || 0), 0) * 100) / 100;
     const moitie = Math.round(site / 2 * 100) / 100;
     const mtn = L.filter(NSDocs.estMaintenance).map(l => ({ designation: l.designation, quantite: l.quantite, prix_unitaire_ht: l.prix_unitaire_ht, montant_ht: l.montant_ht }));
@@ -5668,6 +6186,36 @@ const Factu = (() => {
       if (e2) toast('Facture créée, mais erreur sur les lignes : ' + e2.message, true);
     }
     await charger(); toast('Facture ' + ({ acompte: 'd’acompte', solde: 'de solde', unique: '' }[objet] || '') + ' créée en brouillon. Vérifie-la, puis émets-la.'); ouvrirFacture(fac.id);
+  }
+
+  // Devis complet (18/11/2026) : à la signature, la part de la création + toute la maintenance + tout le
+  // marketing ; à la livraison, le reste de la création. Les lignes de facture perdent leurs étiquettes :
+  // « Acompte 50 % · … » et « Solde 50 % · … » disent l'objet (objetFacture), la maintenance garde son
+  // préfixe habituel, le marketing prend « Marketing · ».
+  async function facturerComplet(dev, L, objet, ref) {
+    const a = NSDocs.analyserComplet(L), t = a.totaux, pct = CP.ACOMPTE_CREATION;
+    const arr = n => Math.round((Number(n) || 0) * 100) / 100;
+    const ligne = (designation, q, pu, mt) => ({ designation, quantite: q, prix_unitaire_ht: pu, montant_ht: mt == null ? arr(q * pu) : mt });
+    const avecDesc = x => x.titre + (x.desc ? '\n' + x.desc : '');
+    const mtn = a.maintenance.lignes.map(x => ligne(NSDocs.CATALOGUE.PREFIXE_MTN + ' · ' + avecDesc(x).replace(/^Maintenance\s+/, ''), x.q, x.pu, x.mt));
+    const mkt = a.marketing.lignes.map(x => ligne(NSDocs.PREFIXE_MKT + ' ' + avecDesc(x), x.q, x.pu, x.mt));
+    const crea = a.creation.lignes.map(x => x.titre).join(' · ');
+    const partCrea = arr(t.creation * pct / 100);
+    let FL;
+    if (objet === 'acompte') FL = [ligne('Acompte ' + pct + ' % · création' + ref + (crea ? '\n' + crea : ''), 1, partCrea, partCrea), ...mtn, ...mkt];
+    else if (objet === 'solde') FL = [ligne('Solde ' + (100 - pct) + ' % · création, à la livraison' + ref + (crea ? '\n' + crea : ''), 1, arr(t.creation - partCrea), arr(t.creation - partCrea))];
+    else FL = [...a.creation.lignes.map(x => ligne(avecDesc(x), x.q, x.pu, x.mt)), ...(a.creation.remise ? [ligne(avecDesc(a.creation.remise), 1, a.creation.remise.mt, a.creation.remise.mt)] : []), ...mtn, ...mkt];
+    FL = FL.filter(l => Math.abs(Number(l.montant_ht) || 0) > 0.004);
+    FL.forEach((l, i) => { l.ordre = i; });
+    const ht = arr(FL.reduce((s, l) => s + (Number(l.montant_ht) || 0), 0)), taux = Number(dev.tva_taux) || 0;
+    const { data: fac, error: e1 } = await F.sb.from('factures').insert({
+      client_id: dev.client_id, devis_id: dev.id, date_emission: isoJour(new Date()), date_echeance: isoJour(new Date(Date.now() + 15 * 864e5)),
+      statut: 'brouillon', tva_taux: taux, total_ht: ht, total_ttc: arr(ht * (1 + taux / 100)), notes: null,
+    }).select('id').single();
+    if (e1) return toast(e1.message, true);
+    if (FL.length) { const { error: e2 } = await F.sb.from('factures_lignes').insert(FL.map(l => Object.assign({ facture_id: fac.id }, l)));
+      if (e2) toast('Facture créée, mais erreur sur les lignes : ' + e2.message, true); }
+    await charger(); toast('Facture ' + ({ acompte: 'de la signature', solde: 'de la livraison', unique: 'unique' }[objet] || '') + ' créée en brouillon. Vérifie-la, puis émets-la.'); ouvrirFacture(fac.id);
   }
 
   function ouvrirFacture(id) {
@@ -6090,6 +6638,29 @@ const Factu = (() => {
     const act = a.dataset.fx, id = a.dataset.id;
     if (act === 'fermer') fermer();
     else if (act === 'nouveau-devis') nouveauDevis(null);
+    // Devis complet (18/11/2026)
+    else if (act === 'dc-depuis-classique') dcOuvrir(D.prospect, null);
+    else if (act === 'dc-modele') { const garde = { prospect: DC.prospect, clientId: DC.clientId }; dcModeleMilea(); Object.assign(DC, garde);
+      const f = document.getElementById('fx-dc'); if (f) { f.marques.value = DC.marques.join(', '); f.cliente.checked = DC.cliente; f.mkt.checked = DC.mktActif;
+        document.querySelectorAll('[data-dc-part]').forEach(el => { el.value = DC.parts[el.dataset.dcPart][el.dataset.k] || ''; });
+        document.querySelectorAll('[data-dc-remise]').forEach(el => { el.value = DC.remise[el.dataset.dcRemise]; }); }
+      const z = a.closest('.dc-modele'); if (z) z.remove();
+      dcDessiner(); toast('Devis Milea / MAWI repris. Vérifie les infos de la cliente (adresse, e-mail) et chaque ligne.'); }
+    else if (act === 'dc-ajout') dcAjouter(a.dataset.p);
+    else if (act === 'dc-suppr') { DC[a.dataset.p].splice(Number(a.dataset.i), 1); dcDessiner(); }
+    else if (act === 'dc-rythme') { DC.annuel = a.dataset.v === 'an';
+      DC.maintenance.forEach(l => { const pu = prixMtn(l.src); if (pu != null) l.pu = pu; });
+      const P = DC.parts.maintenance; if (/^par (an|trimestre), engagement 12 mois$/.test(P.sous)) P.sous = DC.annuel ? 'par an, engagement 12 mois' : 'par trimestre, engagement 12 mois';
+      const ch = document.querySelector('[data-dc-part="maintenance"][data-k="sous"]'); if (ch) ch.value = P.sous;
+      dcDessiner(); }
+    else if (act === 'dc-pack') dcAjouterPack(a.dataset.m);
+    else if (act === 'dc-mkt-libre') { DC.marketing.push(nouvelleLigne(prefixe(DC.marques[0] || ''), '', 1, '')); dcDessiner(); }
+    else if (act === 'dc-mod-ajout') { DC.modalites.push({ texte: '', on: true }); dcDessiner(); }
+    else if (act === 'dc-mod-suppr') { DC.modalites.splice(Number(a.dataset.i), 1); dcDessiner(); }
+    else if (act === 'dc-mod-defaut') { if (DC.modalites.some(m => m.texte) && !confirm('Remplacer les modalités par celles proposées pour ce devis ? Tes corrections seront perdues.')) return;
+      DC.modalites = NSDocs.modalitesDefaut({ marketing: DC.mktActif, mois: DC.mois, marques: Math.max(1, DC.marques.length), client: DC.cliente ? 'la cliente' : 'le client',
+        shopify: DC.shopify || DC.creation.some(l => /shopify/i.test(l.titre + ' ' + l.desc)) }); dcDessiner(); }
+    else if (act === 'dc-apercu') dcApercu();
     else if (act === 'onglet-docs' || act === 'onglet-suivi') { F.onglet = act === 'onglet-suivi' ? 'suivi' : 'docs'; rendre(); }
     else if (act === 'filtre') { F.filtre = a.dataset.k; rendre(); }
     else if (act === 'menage') { F.menage = true; F.choix.clear(); rendre(); }
@@ -6147,6 +6718,21 @@ const Factu = (() => {
   document.addEventListener('input', e => {
     if (e.target.closest('#fx-recue')) { lireFormRecue(); const z = document.getElementById('fx-recue-total');
       if (z) z.textContent = eur(FR.tournages.reduce((t, x) => t + (Number(String(x.heures).replace(',', '.')) || 0) * tauxRecue(), 0)) + ' €'; return; }
+    // Devis complet : on garde la saisie dans DC sans redessiner (le curseur reste où il est).
+    const dl = e.target.closest('.dc-ligne');
+    if (dl) { const l = DC[dl.dataset.dcL][Number(dl.dataset.i)], k = e.target.dataset.k; if (l && k) { l[k] = e.target.value; if (k === 'pu' && l.src && (l.src.type === 'mtn' || l.src.type === 'rec')) l.src = null; } return dcCalculer(); }
+    const dp = e.target.dataset && e.target.dataset.dcPart;
+    if (dp) { DC.parts[dp][e.target.dataset.k] = e.target.value; return; }
+    const dr = e.target.dataset && e.target.dataset.dcRemise;
+    if (dr) { DC.remise[dr] = dr === 'pct' ? Math.max(0, Math.min(99, Number(String(e.target.value).replace(',', '.')) || 0)) : e.target.value; return dcCalculer(); }
+    const dmk = e.target.dataset && e.target.dataset.dcMkt;
+    if (dmk === 'contenu' || dmk === 'noncompris') { DC[dmk] = e.target.value; return; }
+    const dmo = e.target.closest('.dc-mod');
+    if (dmo && e.target.dataset.k === 'texte') { DC.modalites[Number(dmo.dataset.dcMod)].texte = e.target.value; return; }
+    if (e.target.name === 'marques' && e.target.closest('#fx-dc')) { DC.marques = e.target.value.split(',').map(x => x.trim()).filter(Boolean);
+      const opts = '<option value="">Sans marque</option>' + DC.marques.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+      document.querySelectorAll('[data-dc-marque]').forEach(sel => { sel.innerHTML = opts; if (DC.marques.length) sel.value = DC.marques[0]; }); return; }
+    if (e.target.closest('#fx-dc')) return dcCalculer();
     const fl = e.target.closest('.fx-fligne');
     if (fl) { FE.lignes[Number(fl.dataset.i)][e.target.dataset.k] = e.target.value; return totauxFacture(); }
     const l = e.target.closest('.fx-ligne');
@@ -6166,6 +6752,20 @@ const Factu = (() => {
     const k = e.target.dataset && e.target.dataset.fxSig;
     if (k) { changerSig(k, e.target.checked); toast('Signature ' + (e.target.checked ? 'ajoutée sur les ' : 'retirée des ') + { devis: 'devis', facture: 'factures', contrat: 'contrats' }[k] + '.'); }
   });
+  // Devis complet : cases, mois et prix du pack (redessin à la sortie du champ).
+  document.addEventListener('change', e => {
+    if (!e.target.closest('#fx-dc')) return;
+    const t = e.target, k = t.dataset && t.dataset.dcMkt;
+    if (t.name === 'cliente') { DC.cliente = t.checked; return; }
+    if (t.name === 'mkt') { DC.mktActif = t.checked; return dcDessiner(); }
+    if (t.name === 'marques') return dcDessiner();
+    if (k === 'mois') { DC.mois = Math.max(1, Math.min(12, Math.round(Number(t.value) || 2))); dcMajPacks(); return dcDessiner(); }
+    if (k === 'prix') { DC.prixPack = Number(t.value) || CP.PACK360.lancement; dcMajPacks(); return dcDessiner(); }
+    const mo = t.closest('.dc-mod'); if (mo && t.dataset.k === 'on') { DC.modalites[Number(mo.dataset.dcMod)].on = t.checked; return; }
+    if (t.name === 'client') { const id = t.value, z = document.getElementById('fx-champs-client');
+      DC.clientId = id && id !== '__nouveau' ? id : '';
+      if (z) z.innerHTML = champsClient(F.clients.find(c => c.id === id) || {}, prospectDuClient(id) || {}); }
+  });
   // Facture à un autre nom : un nom déjà facturé reprend ses coordonnées.
   document.addEventListener('change', e => { if (e.target.name === 'nom' && e.target.closest('#fx-recue')) { lireFormRecue(); reprendrePersonne(); } });
   // Devis sans prospect : choisir le client dans la liste remplit ses infos.
@@ -6177,6 +6777,7 @@ const Factu = (() => {
   document.addEventListener('submit', e => {
     if (e.target.id === 'fx-login') { e.preventDefault(); connexion(e.target); }
     if (e.target.id === 'fx-devis') { e.preventDefault(); enregistrerDevis(e.target); }
+    if (e.target.id === 'fx-dc') { e.preventDefault(); dcEnregistrer(e.target); }
     if (e.target.id === 'fx-client') { e.preventDefault(); enregistrerClient(e.target); }
     if (e.target.id === 'fx-facture-edit') { e.preventDefault(); enregistrerFacture(e.target); }
     if (e.target.id === 'fx-paiement') { e.preventDefault(); payer(e.target); }
