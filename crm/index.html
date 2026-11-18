@@ -4527,7 +4527,7 @@ var NSDocs = (function () {
     const contact = [c.contact_prenom, c.contact_nom].filter(Boolean).join(' ');
     const ac = v => v ? esc(v) : 'à compléter';
     const client = '<div class="party"><div class="eyebrow">Client</div><div class="who">' + esc(contact || c.nom_etablissement || '') + '</div>'
-      + (contact && c.nom_etablissement ? '<div class="r">' + esc(c.nom_etablissement) + '</div>' : '')
+      + (contact && c.nom_etablissement && cleNom(contact).normalize('NFD').replace(/[\u0300-\u036f]/g, '') !== cleNom(c.nom_etablissement).normalize('NFD').replace(/[\u0300-\u036f]/g, '') ? '<div class="r">' + esc(c.nom_etablissement) + '</div>' : '')
       + '<div class="r">Adresse : ' + ac(c.adresse) + '</div>' + (c.tva_intra ? '<div class="r">N° TVA : ' + esc(c.tva_intra) + '</div>' : '')
       + '<div class="r">E-mail : ' + ac(c.email) + '</div><div class="r">Tél. : ' + ac(c.telephone) + '</div></div>';
     const emetteur = '<div class="party"><div class="eyebrow">Émetteur</div><div class="who">' + E.nom + '</div><div class="r">' + E.adresse + '</div>'
@@ -6642,6 +6642,10 @@ const Factu = (() => {
     else if (act === 'dc-depuis-classique') dcOuvrir(D.prospect, null);
     else if (act === 'dc-modele') { const garde = { prospect: DC.prospect, clientId: DC.clientId }; dcModeleMilea(); Object.assign(DC, garde);
       const f = document.getElementById('fx-dc'); if (f) { f.marques.value = DC.marques.join(', '); f.cliente.checked = DC.cliente; f.mkt.checked = DC.mktActif;
+        // Comme sur le devis du 17/11 : la personne en interlocutrice, les deux marques en raison sociale.
+        if (f.c_nom && (!f.c_nom.value.trim() || /m[ée]lodie\s+sousa/i.test(f.c_nom.value))) f.c_nom.value = 'Marques Milea Intimates et MAWI Jewelry';
+        if (f.c_contact && !f.c_contact.value.trim()) f.c_contact.value = 'Mélodie Sousa';
+        if (f.c_tel && !f.c_tel.value.trim()) f.c_tel.value = '+352 691 301 293';
         document.querySelectorAll('[data-dc-part]').forEach(el => { el.value = DC.parts[el.dataset.dcPart][el.dataset.k] || ''; });
         document.querySelectorAll('[data-dc-remise]').forEach(el => { el.value = DC.remise[el.dataset.dcRemise]; }); }
       const z = a.closest('.dc-modele'); if (z) z.remove();
