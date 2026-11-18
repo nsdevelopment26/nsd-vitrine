@@ -1119,6 +1119,10 @@
   .pf-na { font-size: 12px; color: var(--v-doux, var(--doux)); font-weight: 500; }
   .pf-sans { font-size: 12.5px; margin: 12px 0 0; padding: 9px 11px; border-radius: 10px; border: 1px solid var(--v-ligne, var(--ligne)); line-height: 1.4; }
   .pf-note { font-size: 12px; color: var(--v-doux, var(--doux)); margin: 10px 0 0; line-height: 1.4; }
+
+  .mr-titre { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--v-doux, var(--doux)); margin: 4px 0 8px; }
+  .mr-titre + .v-entonnoir { margin-bottom: 14px; }
+  .motifs-refus button { text-align: left; }
 </style>
 </head>
 <body>
@@ -2768,6 +2772,29 @@ function blocPerformance(P, dans, debut) {
     + `<p class="pf-note">${esc(note)}</p>`);
 }
 
+// Pourquoi ils refusent (18/11/2026) : les motifs choisis à chaque « Pas intéressé », sur la période.
+// Deux familles : les vrais refus (ce que Sam doit apprendre à retourner) et les mauvaises cibles
+// (ce que Tom doit retirer de ses listes). Les refus d'avant le motif obligatoire sont comptés à part.
+function blocMotifsRefus(J, periode) {
+  const refus = J.filter(e => e.resultat === (S.data.resultats.refus || {}).label);
+  if (!refus.length) return carteV('Pourquoi ils refusent', periode, ICO.entonnoir, '', '<div class="vide">Aucun refus sur la période.</div>');
+  const parMotif = {}; let sans = 0;
+  refus.forEach(e => { const m = motifDeNote(e.note); if (m) parMotif[m] = (parMotif[m] || 0) + 1; else sans++; });
+  const avec = refus.length - sans;
+  const ligne = ([k, l]) => ({ l, n: parMotif[l] || 0 });
+  const vente = MOTIFS_REFUS.filter(m => !m[2]).map(ligne).filter(x => x.n).sort((a, b) => b.n - a.n);
+  const cible = MOTIFS_REFUS.filter(m => m[2]).map(ligne).filter(x => x.n).sort((a, b) => b.n - a.n);
+  const max = Math.max(1, ...vente.concat(cible).map(x => x.n));
+  const barres = L => L.map(x => `<div class="v-et"><span>${esc(x.l)}</span><div class="barre"><i style="width:${Math.max(4, x.n / max * 100)}%">${x.n}</i></div><em>${Math.round(x.n / avec * 100)} %</em></div>`).join('');
+  const nCible = cible.reduce((t, x) => t + x.n, 0);
+  const corps = avec
+    ? `${vente.length ? `<div class="mr-titre">Refus de vente</div><div class="v-entonnoir">${barres(vente)}</div>` : ''}
+       ${cible.length ? `<div class="mr-titre">Prospects qui n’auraient pas dû être appelés · ${nCible}</div><div class="v-entonnoir">${barres(cible)}</div>` : ''}`
+    : '<div class="vide">Pas encore de motif noté sur la période : le choix est obligatoire depuis le 18/11/2026.</div>';
+  return carteV('Pourquoi ils refusent', avec + ' refus avec motif, ' + periode, ICO.entonnoir, '', corps
+    + (sans ? `<p class="pf-note">${sans} refus sans motif sur la période (notés avant le 18/11/2026, quand le choix n’était pas obligatoire).</p>` : ''));
+}
+
 function vueStats() {
   const P = S.statsJours || 30;
   const appels = RES_APPEL(), J = S.data.journal.filter(entreeVisible);
@@ -2840,7 +2867,8 @@ function vueStats() {
 
   setTimeout(bullesDeDepart, 0);
   return tete + tuiles + `<div class="v-deux">${c1}${c2}</div><div class="v-trois">${c3}${c4}${c5}</div>`
-    + `<div class="pf-zone">${blocPerformance(P, dans, debut)}</div>` + vueObjectif();
+    + `<div class="pf-zone">${blocPerformance(P, dans, debut)}</div>`
+    + `<div class="pf-zone">${blocMotifsRefus(J.filter(dans), periode)}</div>` + vueObjectif();
 }
 
 // ---------------------------------------------------------------------------
@@ -3320,10 +3348,10 @@ function rafraichirAnti() {
   if (tmp.firstElementChild) z.replaceWith(tmp.firstElementChild);
 }
 
-const CHOIX = { res: '', rappel: '', duree: 60 };
+const CHOIX = { res: '', rappel: '', duree: 60, refus: '' };
 
 function ouvrirFiche(id) {
-  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60; APRES.modele = null; ANTI.obj = -1;
+  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60; CHOIX.refus = ''; APRES.modele = null; ANTI.obj = -1;
   rendreFiche();
   document.getElementById('fiche').classList.remove('cache');
   document.body.style.overflow = 'hidden';
@@ -3441,6 +3469,18 @@ async function ajouterNote(form) {
 const BOUTONS_RES = [['rappel', 'Rappel'], ['lien'], ['rdv'], ['negociation'], ['refus'], ['note']];
 const MOTIFS_RAPPEL = [['pas_repondu', 'Pas de réponse'], ['absent', 'Gérant absent'], ['rappel', 'Convenu avec lui']];
 const boutonDe = res => MOTIFS_RAPPEL.some(([k]) => k === res) ? 'rappel' : res;
+// Motif de refus, obligatoire depuis le 18/11/2026 (Nelson, après le diagnostic : 69 % des refus
+// n'avaient aucune note). Il part dans la note du Journal sous la forme « Motif : … », que Stats relit.
+// cible = true : ce n'est pas un refus de vente mais un prospect qui n'aurait pas dû être appelé
+// (Tom le relit pour corriger ses listes, skill journee-appels étape 0).
+const MOTIFS_REFUS = [
+  ['besoin', 'Pas besoin, assez de travail'], ['site', 'A déjà un site', true], ['prix', 'Trop cher, pas de budget'],
+  ['moment', 'Pas le moment'], ['reseaux', 'Réseaux ou plateforme lui suffisent'], ['ecoute', 'Raccroche sans écouter'],
+  ['ferme', 'Fermé ou en cessation', true], ['retraite', 'Retraite ou cession', true], ['numero', 'Mauvais numéro', true],
+  ['autre', 'Autre (à préciser)']];
+const motifRefus = k => MOTIFS_REFUS.find(m => m[0] === k);
+// Le motif d'une ligne du Journal : celui choisi depuis le 18/11/2026, sinon rien.
+function motifDeNote(note) { const m = String(note || '').match(/(?:^|· )Motif : ([^·]+)/); return m ? m[1].trim() : ''; }
 // Plages d'appel par personne (règles de Nelson du 28/09/2026, tournages déplacés le 14/10/2026).
 // Sam : mar, mer, ven 10 h-12 h et 14 h-18 h ; lun, jeu et sam 10 h-12 h (lundi et jeudi après-midi : tournage) ;
 // dim 14 h-17 h. Nelson : 9 h-12 h et 13 h 30-20 h, sauf le lundi et le jeudi 9 h-12 h (tournage).
@@ -3521,13 +3561,15 @@ function zoneResultat() {
   return `${motif ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">Pourquoi ?</div>
     <div class="dates">${MOTIFS_RAPPEL.map(([k, l]) => `<button data-motif="${k}" class="${CHOIX.res === k ? 'choisi' : ''}">${l}</button>`).join('')}</div>` : ''}
     ${garderRdv ? '<div class="sous" style="margin-top:10px">Le RDV reste à sa date, l’appel est noté dans l’historique.</div>' : ''}
+    ${CHOIX.res === 'refus' ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">Pourquoi il refuse ? *</div>
+    <div class="dates motifs-refus">${MOTIFS_REFUS.map(([k, l]) => `<button data-refus="${k}" class="${CHOIX.refus === k ? 'choisi' : ''}">${esc(l)}</button>`).join('')}</div>` : ''}
     ${CHOIX.res === 'pas_repondu' && troisiemeSansReponse(p) ? '<div class="sous" style="margin-top:10px;color:var(--danger)"><b>3e appel sans réponse : il passera en Perdu.</b></div>' : ''}
     ${avecDate && !garderRdv ? `<div style="margin-top:14px;font-size:13px;color:var(--doux)">${titreDate}${def.rappelObligatoire ? ' *' : ''}</div>
     <div class="dates">${optionsDates().map(([l, v]) => `<button data-date="${v}" class="${CHOIX.rappel === v ? 'choisi' : ''}">${l}</button>`).join('')}</div>
     <label class="champ">Ou une date précise<input type="datetime-local" id="date-precise" value="${CHOIX.rappel ? CHOIX.rappel.replace(' ', 'T') : ''}"></label>` : ''}
     ${CHOIX.res === 'rdv' ? `<div style="font-size:13px;color:var(--doux)">Durée dans l’agenda</div>
     <div class="dates">${(S.data.rdvDurees || [30, 60, 90]).map(m => `<button data-duree="${m}" class="${CHOIX.duree === m ? 'choisi' : ''}">${m < 60 ? m + ' min' : (m / 60 + ' h').replace('.5 h', ' h 30')}</button>`).join('')}</div>` : ''}
-    <label class="champ">${CHOIX.res === 'note' ? 'Note' : 'Ce qui s’est dit (facultatif)'}<textarea id="note-res" placeholder="Nom de la personne, objection, heure qui l’arrange…"></textarea></label>
+    <label class="champ">${CHOIX.res === 'note' ? 'Note' : CHOIX.res === 'refus' && CHOIX.refus === 'autre' ? 'Ce qui s’est dit *' : 'Ce qui s’est dit (facultatif)'}<textarea id="note-res" placeholder="Nom de la personne, objection, heure qui l’arrange…"></textarea></label>
     ${motif && CHOIX.res !== 'rappel' ? '<div class="sous" style="margin-top:6px">Un texte au client ? Choisis « Convenu avec lui ».</div>' : ''}
     <button class="btn large" data-action="enregistrer">Enregistrer « ${esc(motif ? 'Rappel · ' + def.label.replace('Rappel convenu', 'convenu') : def.label)} »${modeleApres(CHOIX.res, p) ? ' sans message' : ''}</button>`;
 }
@@ -3749,7 +3791,11 @@ async function enregistrer(btn, message) {
   const pr = trouver(S.ouvert);
   const garderRdv = pr && cle(pr) === 'rdv' && (res === 'pas_repondu' || res === 'absent');
   if (def.rappelObligatoire && !rappel && !garderRdv) return toast('Choisis une date.', true);
-  const note = [(document.getElementById('note-res') || {}).value || '', message || ''].filter(Boolean).join(' · ');
+  const dit = ((document.getElementById('note-res') || {}).value || '').trim();
+  const mr = res === 'refus' ? motifRefus(CHOIX.refus) : null;
+  if (res === 'refus' && !mr) { const z = document.querySelector('.motifs-refus'); if (z) z.scrollIntoView({ behavior: 'smooth', block: 'center' }); return toast('Choisis pourquoi il refuse.', true); }
+  if (mr && mr[0] === 'autre' && !dit) return toast('Écris en quelques mots pourquoi il refuse.', true);
+  const note = [mr ? 'Motif : ' + mr[1] : '', dit, message || ''].filter(Boolean).join(' · ');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   try {
     const p = await appel('api_logger', S.pin, S.ouvert, res, note, rappel, S.par, res === 'rdv' ? CHOIX.duree : null);
@@ -3839,11 +3885,15 @@ document.addEventListener('click', e => {
   const c = e.target.closest('.lp, .pc, tr[data-id]'); if (c && !e.target.closest('[data-action], [data-stop]')) { ouvrirFiche(c.dataset.id); return; }
   if (e.target.id === 'fiche') { fermerFiche(); return; }
   const r = e.target.closest('[data-res]');
-  if (r) { CHOIX.res = r.dataset.res === 'rappel' ? 'pas_repondu' : r.dataset.res;
+  if (r) { CHOIX.res = r.dataset.res === 'rappel' ? 'pas_repondu' : r.dataset.res; CHOIX.refus = '';
     // Un rappel part par défaut le lendemain à la même heure : un tap et c'est posé.
     CHOIX.rappel = r.dataset.res === 'rappel' ? demainMemeHeure() : '';
     document.querySelectorAll('[data-res]').forEach(b => b.classList.toggle('choisi', b === r));
     const z = document.getElementById('zone-res'); z.innerHTML = zoneResultat(); rendreMessageHaut(); z.classList.remove('cache'); z.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+  const rf = e.target.closest('[data-refus]');
+  if (rf) { CHOIX.refus = rf.dataset.refus; document.querySelectorAll('[data-refus]').forEach(b => b.classList.toggle('choisi', b === rf));
+    const z = document.getElementById('zone-res'), note = (document.getElementById('note-res') || {}).value || '';
+    z.innerHTML = zoneResultat(); const n = document.getElementById('note-res'); if (n) { n.value = note; if (CHOIX.refus === 'autre') n.focus(); } return; }
   const mo = e.target.closest('[data-motif]');
   if (mo) { CHOIX.res = mo.dataset.motif;
     const note = (document.getElementById('note-res') || {}).value || '', pr = (document.getElementById('date-precise') || {}).value || '';
