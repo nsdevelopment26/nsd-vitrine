@@ -2707,6 +2707,9 @@ function respDuClient(clientId) {
 }
 function blocPerformance(P, dans, debut) {
   const appels = RES_APPEL(), estAppel = e => appels.includes(e.resultat);
+  // Conversation = on a parlé au patron : ni « Pas de réponse » ni « Gérant absent » (Nelson, 18/11/2026).
+  // La tuile « Décrochés » garde sa définition (tout sauf « Pas de réponse »).
+  const pasParle = new Set(['pas_repondu', 'absent'].map(k => (S.data.resultats[k] || {}).label).filter(Boolean));
   const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
   const factu = !!(F && F.session && F.pret);
   const auj = aujourdhui(), dansJour = j => { j = String(j || '').slice(0, 10); return j >= debut && j <= auj; };
@@ -2716,7 +2719,7 @@ function blocPerformance(P, dans, debut) {
   const de = n => T[n] || (T[n] = ligne(n));
   S.data.journal.filter(dans).forEach(e => {
     const x = de(parDe(e));
-    if (estAppel(e)) { x.a++; if (e.resultat !== 'Pas de réponse') x.d++; }
+    if (estAppel(e)) { x.a++; if (!pasParle.has(e.resultat)) x.d++; }
     if (e.resultat === 'Lien envoyé') x.l++;
     if (e.resultat === 'RDV obtenu') x.r++;
   });
@@ -2740,7 +2743,7 @@ function blocPerformance(P, dans, debut) {
   const sans = '<span class="pf-na">Factu non connecté</span>';
   const rangs = [
     ['Appels', x => x.a, x => ''],
-    ['Conversations', x => x.d, x => x.a ? pct(x.d, x.a) + ' des appels' : ''],
+    ['Conversations', x => x.d, x => x.a ? pct(x.d, x.a) + ' des appels · avec le patron' : ''],
     ['Liens envoyés', x => x.l, x => ''],
     ['RDV obtenus', x => x.r, x => x.r && x.a ? Math.round(x.a / x.r) + ' appels par RDV' : ''],
     ['Devis envoyés', x => factu ? x.dv : null, x => factu && x.dv ? eur0(x.dvHt) + ' HT' + (x.r ? ' · ' + pct(x.dv, x.r) + ' des RDV' : '') : ''],
