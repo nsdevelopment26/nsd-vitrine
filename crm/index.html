@@ -1068,6 +1068,40 @@
   html[data-theme="sombre"] .leaflet-popup-content-wrapper, html[data-theme="sombre"] .leaflet-popup-tip { background: var(--carte); color: var(--encre); }
   html[data-theme="sombre"] .pop-act a, html[data-theme="sombre"] .pop-act button { background: var(--carte); border-color: var(--ligne); color: var(--encre) !important; }
   html[data-theme="sombre"] .pop-act > :first-child { background: #f2f3f5; color: #0c0d10 !important; }
+
+  /* Antisèche d'appel (18/11/2026) */
+  .antiseche { padding: 0; overflow: hidden; }
+  .an-tete { width: 100%; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; background: none; border: 0; padding: 14px; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+  .an-tete span { font-family: var(--titre, inherit); font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .an-tete small { font-size: 12px; font-weight: 650; color: var(--vert-texte, #11704d); }
+  .an-onglets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 14px 12px; }
+  .an-onglets button { border: 1px solid var(--ligne); background: transparent; color: inherit; border-radius: 10px; padding: 9px 6px; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+  .an-onglets button.on { background: var(--noir, #141414); border-color: var(--noir, #141414); color: #fff; }
+  .an-corps { padding: 0 14px 14px; display: grid; gap: 12px; }
+  .an-etape { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; }
+  .an-corps > .an-etape:not(:has(.an-num)) { grid-template-columns: 1fr; }
+  .an-num { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 750; background: var(--fond); border: 1px solid var(--ligne); }
+  .an-titre { font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; color: var(--doux); margin-bottom: 3px; }
+  .an-phrase { font-size: 15.5px; line-height: 1.45; font-weight: 550; }
+  .an-phrase + .an-note, .an-note { font-size: 12.5px; line-height: 1.4; color: var(--doux); margin-top: 4px; }
+  .an-fait { font-size: 13px; margin-top: 6px; padding: 7px 9px; border-radius: 9px; background: var(--fond); border: 1px solid var(--ligne); }
+  .an-fait.manque { color: var(--alerte, #a85600); }
+  .an-objs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .an-objs button { border: 1px solid var(--ligne); background: var(--carte); color: inherit; border-radius: 999px; padding: 8px 12px; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; text-align: left; }
+  .an-objs button.on { border-color: var(--noir, #141414); box-shadow: 0 0 0 1px var(--noir, #141414); }
+  .an-reponse { border-left: 3px solid var(--accent, #35d29a); padding: 4px 0 4px 12px; }
+  .an-reponse .an-phrase { font-size: 17px; }
+  .tag-epingle { margin-left: 8px; font-size: 11px; font-weight: 750; padding: 2px 7px; border-radius: 999px; background: var(--noir, #141414); color: #fff; vertical-align: 2px; }
+  .btn.epingle.on { border-color: var(--noir, #141414); font-weight: 750; }
+  .oub-resume { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .oub-resume span { font-size: 13px; font-weight: 650; padding: 6px 10px; border-radius: 999px; background: var(--carte); border: 1px solid var(--ligne); }
+  .oub-doc { display: flex; justify-content: space-between; gap: 10px; align-items: center; background: var(--carte); border: 1px solid var(--ligne); border-left: 4px solid var(--statut, #e5484d); border-radius: 14px; padding: 12px 14px; }
+  .oub-doc + .oub-doc { margin-top: 8px; }
+  .oub-doc b { display: block; } .oub-doc small { color: var(--doux); }
+  @media (prefers-reduced-motion: no-preference) { .an-reponse { animation: an-in .18s ease-out; } @keyframes an-in { from { opacity: 0; transform: translateY(3px); } } }
+  html[data-theme="sombre"] .an-onglets button.on, html[data-theme="sombre"] .tag-epingle { background: #f2f3f5; border-color: #f2f3f5; color: #0c0d10; }
+  html[data-theme="sombre"] .an-objs button.on, html[data-theme="sombre"] .btn.epingle.on { border-color: #f2f3f5; box-shadow: 0 0 0 1px #f2f3f5; }
+  html[data-theme="sombre"] :is(.an-num, .an-fait) { background: rgba(255,255,255,.04); }
 </style>
 </head>
 <body>
@@ -1364,7 +1398,7 @@ function carteRiche(p, droite, entree) {
       + (nbNotes ? `${notes ? ' · ' : ''}<span class="faible">${nbNotes} note${nbNotes > 1 ? 's' : ''} d’appel, toutes dans la fiche</span>` : '')] : null,
   ].filter(Boolean);
   return `<div class="lp" data-id="${esc(p.id)}" style="--statut:${couleur(p)}">
-    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}${medaille(p)}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
+    <div class="lp-tete"><div><div class="lp-nom">${esc(p.entreprise)}${medaille(p)}${estEpingle(p.id) ? '<span class="tag-epingle">En tête</span>' : ''}</div><div class="lp-sous">${esc(sous || '—')} · <span class="pastille" style="--statut:${couleur(p)}">${esc(statut(p.statut).label)}</span>${badgeQui(p)}</div></div>
       ${droite || ''}</div>
     <dl class="lp-grille">${lignes.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
     ${liensRapides(p, true)}
@@ -1635,6 +1669,58 @@ function listesJour() {
     aDater, maintenantOk: froid(maintenantOk), plusTard: froid(plusTard), relances: froid(relances), vusDemo };
 }
 
+// ---------------------------------------------------------------------------
+// Opportunités oubliées (18/11/2026, demandé par Nelson). Ce que les autres blocs de la Journée
+// ne montrent pas déjà, et qui finit par se perdre :
+//   démos ouvertes depuis plus de 3 jours sans rappel (le bloc « Ont ouvert la démo » s'arrête à 72 h),
+//   RDV sans date, intéressés passés en Perdu faute de réponse (à retenter après 30 jours),
+//   clients signés sans nouvelles depuis 90 jours, devis acceptés pas encore facturés, factures en retard.
+// Lecture seule : rien n'est écrit, chaque carte s'ouvre et se traite comme d'habitude.
+// ---------------------------------------------------------------------------
+const OUBLI = { demoJours: 30, retenterJours: 30, clientJours: 90 };
+function oublies() {
+  const auj = aujourdhui(), il = n => decalerJour(auj, -n);
+  const miens = S.data.prospects.filter(p => aLui(p));
+  const labels = k => (S.data.resultats[k] || {}).label;
+  const interet = new Set(['lien', 'rdv', 'negociation'].map(labels));
+  const demos = miens.filter(p => { const v = vuesDe(p);
+    return v && v.derniere && !chaud(p) && !['signe', 'perdu'].includes(cle(p)) && v.derniere.slice(0, 10) >= il(OUBLI.demoJours) && v.derniere > String(p.dernier || ''); })
+    .sort((a, b) => vuesDe(b).derniere.localeCompare(vuesDe(a).derniere));
+  const rdvSansDate = miens.filter(p => cle(p) === 'rdv' && !p.rappel);
+  const retenter = miens.filter(p => { if (cle(p) !== 'perdu' || !p.telephone || String(p.dernier || '').slice(0, 10) > il(OUBLI.retenterJours)) return false;
+    const h = historique(p.id); return h.length && h[0].resultat === labels('pas_repondu') && h.some(e => interet.has(e.resultat)); });
+  const clients = miens.filter(p => cle(p) === 'signe' && p.dernier && String(p.dernier).slice(0, 10) <= il(OUBLI.clientJours))
+    .sort((a, b) => String(a.dernier).localeCompare(String(b.dernier)));
+  const F = typeof Factu !== 'undefined' && Factu.donnees ? Factu.donnees() : null;
+  const factuOk = !!(F && F.session && F.pret);
+  const aFacturer = factuOk ? F.devis.filter(d => d.statut === 'accepté' && !F.factures.some(f => f.devis_id === d.id && f.statut !== 'annulée')) : [];
+  const enRetard = factuOk ? F.factures.filter(f => f.numero && (f.statut === 'en_retard' || f.statut === 'envoyée' && f.date_echeance && f.date_echeance < auj)) : [];
+  return { demos, rdvSansDate, retenter, clients, aFacturer, enRetard, factuOk,
+    total: demos.length + rdvSansDate.length + retenter.length + clients.length + aFacturer.length + enRetard.length };
+}
+function sectionOublies() {
+  const O = oublies();
+  if (!O.total) return '';
+  const chips = [[O.demos, 'démo ouverte sans rappel', 'démos ouvertes sans rappel'], [O.rdvSansDate, 'RDV sans date', 'RDV sans date'],
+    [O.retenter, 'intéressé à retenter', 'intéressés à retenter'], [O.clients, 'client sans nouvelles', 'clients sans nouvelles'],
+    [O.aFacturer, 'devis accepté à facturer', 'devis acceptés à facturer'], [O.enRetard, 'facture en retard', 'factures en retard']]
+    .filter(([l]) => l.length).map(([l, un, plus]) => `<span>${l.length} ${l.length > 1 ? plus : un}</span>`).join('');
+  let h = `<div class="oub-resume">${chips}</div>`;
+  if (!S.voirOublies) return section('Opportunités oubliées', O.total + ' à reprendre', h + '<button class="plus" data-action="oublies">Les voir</button>');
+  const doc = (titre, sous, droiteTxt, action, id, couleur) => `<div class="oub-doc" style="--statut:${couleur}"><div><b>${esc(titre)}</b><small>${esc(sous)}</small></div>
+    <button class="btn clair" data-action="${action}" data-id="${esc(id)}">${esc(droiteTxt)}</button></div>`;
+  const nomDoc = d => d.clients ? d.clients.nom_etablissement : '?';
+  if (O.enRetard.length) h += section('Factures en retard', O.enRetard.length + '', O.enRetard.map(f => doc(nomDoc(f),
+    `${f.numero} · reste ${eur2((Number(f.total_ttc) || 0) - (Number(f.montant_paye) || 0))} · échéance ${jourCourt(String(f.date_echeance).slice(0, 10))}`, 'Ouvrir Factu', 'aller-factu', f.id, '#e5484d')).join(''));
+  if (O.aFacturer.length) h += section('Devis acceptés pas encore facturés', O.aFacturer.length + '', O.aFacturer.map(d => doc(nomDoc(d),
+    `${d.numero || 'devis'} · ${eur2(d.total_ttc)} TTC`, 'Ouvrir le devis', 'ouvrir-devis', d.id, '#35d29a')).join(''));
+  if (O.demos.length) h += section('Ont ouvert la démo, jamais rappelés', 'depuis plus de 3 jours', grille(O.demos.map(p => carteRiche(p, droite(ilYa(vuesDe(p).derniere), vuesDe(p).n + '× · ' + dureeTxt(vuesDe(p).s), true))).join('')));
+  if (O.rdvSansDate.length) h += section('RDV sans date', 'à dater', grille(O.rdvSansDate.map(p => carteRiche(p, droite('à dater', '', true))).join('')));
+  if (O.retenter.length) h += section('Intéressés passés en Perdu faute de réponse', 'à retenter', grille(O.retenter.map(p => carteRiche(p, droite('à retenter', p.dernier ? 'dernier ' + dateCourte(p.dernier) : ''))).join('')));
+  if (O.clients.length) h += section('Clients sans nouvelles', 'depuis plus de 3 mois', grille(O.clients.map(p => carteRiche(p, droite('à recontacter', p.dernier ? 'dernier ' + dateCourte(p.dernier) : ''))).join('')));
+  return section('Opportunités oubliées', O.total + ' à reprendre', h + '<button class="plus" data-action="oublies">Replier</button>');
+}
+
 function vueAujourdhui() {
   const { jour, negoSansDate, rdv, rappels, appelsJour, pasFaits, aDater, maintenantOk, plusTard, relances, vusDemo } = listesJour();
   const quand = p => p.rappel.slice(0, 10) < jour ? dateCourte(p.rappel) : heure(p.rappel);
@@ -1643,6 +1729,7 @@ function vueAujourdhui() {
   // Ils ont ouvert la démo et personne ne les a rappelés depuis : c'est maintenant qu'ils l'ont en tête.
   if (vusDemo.length) h += section('Ont ouvert la démo', vusDemo.length + ' à rappeler maintenant',
     grille(vusDemo.map(p => carteRiche(p, `<div class="lp-droite chaud">${esc(ilYa(vuesDe(p).derniere))}<small>${esc(vuesDe(p).n + '× · ' + dureeTxt(vuesDe(p).s))}</small></div>`)).join('')));
+  h += sectionOublies();
   // Devis envoyés à relancer (3 jours sans contact, ou pause finie) : Sam les voit dans sa journée.
   const aRelancer = devisARelancer();
   if (aRelancer.length) h += section('Devis à relancer', aRelancer.length + ' en attente de réponse',
@@ -1691,7 +1778,7 @@ const OBJECTIF_JOUR = { Sam: { 0: 16, 1: 12, 2: 33, 3: 33, 4: 12, 5: 33, 6: 12 }
 const SESSION = lireSession();
 function lireSession() {
   try { const x = JSON.parse(lire('session') || 'null'); if (x && x.jour === aujourdhui()) return x; } catch (e) {}
-  return { actif: false, jour: '', debut: '', vus: [], faits: 0, rdv: 0, liens: 0, courant: '' };
+  return { actif: false, jour: '', debut: '', vus: [], faits: 0, rdv: 0, liens: 0, courant: '', epingles: [], fin: [] };
 }
 function garderSession() { stocker('session', JSON.stringify(SESSION)); }
 function objectifJour() { const o = OBJECTIF_JOUR[S.espace]; return o ? o[new Date().getDay()] || 0 : 0; }
@@ -1699,8 +1786,36 @@ function objectifJour() { const o = OBJECTIF_JOUR[S.espace]; return o ? o[new Da
 function fileSession(depuis) {
   const L = listesJour(), dans15 = fmt(new Date(Date.now() + 15 * 6e4)), vus = new Set(SESSION.actif ? SESSION.vus : []);
   const du = l => l.filter(p => p.rappel <= dans15);
-  const tous = [...L.vusDemo, ...du(L.rdv), ...du(L.rappels), ...du(L.appelsJour), ...L.maintenantOk, ...L.relances, ...L.negoSansDate, ...L.pasFaits];
+  // Épinglés d'abord (dans l'ordre où on les a épinglés), « Plus tard » à la fin (18/11/2026, Nelson).
+  const ids = l => (l || []).map(trouver).filter(p => p && visible(p));
+  const fin = new Set(SESSION.fin || []);
+  const ordinaires = [...L.vusDemo, ...du(L.rdv), ...du(L.rappels), ...du(L.appelsJour), ...L.maintenantOk, ...L.relances, ...L.negoSansDate, ...L.pasFaits];
+  const tous = [...ids(SESSION.epingles), ...ordinaires.filter(p => !fin.has(p.id)), ...ids(SESSION.fin)];
   return tous.filter((p, i) => tous.indexOf(p) === i && !vus.has(p.id) && telInternational(p.telephone) && String(p.dernier || '') < depuis);
+}
+function estEpingle(id) { return SESSION.jour === aujourdhui() && (SESSION.epingles || []).includes(id); }
+// Épingler : ce prospect passe en tête de la session d'aujourd'hui. Rien n'est écrit dans le Sheets.
+function basculerEpingle(id) {
+  if (SESSION.jour !== aujourdhui()) Object.assign(SESSION, { jour: aujourdhui(), epingles: [], fin: [], vus: [] });
+  const l = SESSION.epingles = SESSION.epingles || [];
+  const i = l.indexOf(id);
+  if (i >= 0) l.splice(i, 1); else { l.push(id); SESSION.fin = (SESSION.fin || []).filter(x => x !== id); SESSION.vus = (SESSION.vus || []).filter(x => x !== id || x === SESSION.courant); }
+  garderSession();
+  toast(i >= 0 ? 'Retiré de la tête de session.' : 'Épinglé : il passe en premier dans ta session.');
+  if (S.ouvert === id) rendreFiche(); else rendre();
+}
+// Plus tard : remis en fin de file, sans toucher au rappel du CRM (ce n'est pas un résultat d'appel).
+function reporterSession() {
+  const id = SESSION.courant; if (!id) return suivantSession();
+  SESSION.vus = SESSION.vus.filter(x => x !== id);
+  SESSION.fin = (SESSION.fin || []).filter(x => x !== id).concat(id);
+  SESSION.epingles = (SESSION.epingles || []).filter(x => x !== id);
+  const autre = fileSession(SESSION.debut).find(p => p.id !== id);
+  if (!autre) { toast('C’est le dernier de la file : il reste ouvert.'); return; }
+  SESSION.courant = autre.id; SESSION.vus.push(autre.id); garderSession();
+  ouvrirFiche(autre.id);
+  const f = document.getElementById('feuille'); if (f) f.scrollTop = 0;
+  toast('Remis en fin de session.');
 }
 function carteSession(duJour) {
   if (vueEquipe()) return '';
@@ -1719,7 +1834,9 @@ function carteSession(duJour) {
       : `<button class="btn sess-go" data-action="sess-lancer" ${reste ? '' : 'disabled'}>Lancer ma session →</button>`}</div></div>`;
 }
 function lancerSession() {
-  Object.assign(SESSION, { actif: true, jour: aujourdhui(), debut: maintenant(), vus: [], faits: 0, rdv: 0, liens: 0, courant: '' });
+  // Les épinglés du jour survivent au lancement : on les a choisis avant de démarrer.
+  Object.assign(SESSION, { actif: true, jour: aujourdhui(), debut: maintenant(), vus: [], faits: 0, rdv: 0, liens: 0, courant: '', fin: [],
+    epingles: SESSION.jour === aujourdhui() ? SESSION.epingles || [] : [] });
   garderSession(); suivantSession();
 }
 function suivantSession() {
@@ -1745,7 +1862,7 @@ function bandeauSession(p) {
   if (!SESSION.actif || SESSION.courant !== p.id) return '';
   const reste = fileSession(SESSION.debut).length;
   return `<div class="sess-bandeau"><span><i class="sess-point"></i><b>Session · n° ${SESSION.vus.length}</b>${reste ? ' · encore ' + reste : ' · le dernier'}</span>
-    <button data-action="sess-passer">Passer →</button><button data-action="sess-fin">Terminer</button></div>`;
+    <button data-action="sess-plus-tard">Plus tard</button><button data-action="sess-passer">Passer →</button><button data-action="sess-fin">Terminer</button></div>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -3042,10 +3159,75 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') agFermer(); 
 // ---------------------------------------------------------------------------
 // Fiche prospect
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Antisèche d'appel (18/11/2026, demandé par Nelson) : pendant l'appel, sans quitter la fiche,
+// l'ouverture, le constat, la question, la démo, l'argent, la date, puis les objections en un
+// geste et l'offre à proposer. Le texte vit dans l'onglet « Scripts » du Sheets (Code.gs,
+// SCRIPTS_DEFAUT tant qu'il n'existe pas) : on le change là, sans redéployer.
+// ---------------------------------------------------------------------------
+const ANTI = { onglet: 'appel', obj: -1, ouvert: lire('anti') !== 'ferme' };
+const ETAPES_APPEL = [['ouverture', 'Ouvrir'], ['constat', 'Le constat'], ['question', 'La question, puis se taire'],
+  ['demo', 'La démo, ouverte pendant l’appel'], ['argent', 'Son argent'], ['date', 'Ne pas raccrocher sans date']];
+function metiersScript(r) { return String(r.metier || '').split(',').map(x => sansAccent(x).trim()).filter(x => x && x !== '*'); }
+// Lignes d'un type pour ce prospect : celles de son métier si elles existent, sinon les générales.
+function lignesScript(type, m) {
+  const L = (S.data.scripts || []).filter(r => r.type === type);
+  const nom = m ? sansAccent(m.metier).trim() : '';
+  const propres = nom ? L.filter(r => metiersScript(r).includes(nom)) : [];
+  const generales = L.filter(r => !metiersScript(r).length);
+  return type === 'objection' ? propres.concat(generales) : propres.length ? propres : generales;
+}
+function remplirScript(t, p, m) {
+  const moi = (S.moi && S.moi.nom) || '';
+  return String(t || '').replace(/\{(\w+)\}/g, (x, k) => ({ moi, gerant: p.gerant || '', entreprise: p.entreprise || '', commune: p.commune || '',
+    metier: (m && m.metier) || p.secteur || '' })[k] ?? x);
+}
+function phraseScript(r, p, m) {
+  return `<div class="an-phrase">${esc(remplirScript(r.texte, p, m))}</div>${r.note ? `<div class="an-note">${esc(remplirScript(r.note, p, m))}</div>` : ''}`;
+}
+function contenuAnti(p, m) {
+  if (ANTI.onglet === 'objections') {
+    const O = lignesScript('objection', m);
+    if (!O.length) return '<div class="an-note">Aucune objection dans l’onglet « Scripts ».</div>';
+    return `<div class="an-objs">${O.map((r, i) => `<button data-action="anti-obj" data-i="${i}" class="${ANTI.obj === i ? 'on' : ''}">${esc(r.titre || 'Objection')}</button>`).join('')}</div>
+      ${ANTI.obj >= 0 && O[ANTI.obj] ? `<div class="an-reponse">${phraseScript(O[ANTI.obj], p, m)}</div>` : '<div class="an-note">Touche ce qu’il vient de dire : la réponse s’affiche ici.</div>'}`;
+  }
+  if (ANTI.onglet === 'offre') {
+    const L = lignesScript('offre', m).concat(lignesScript('interdit', m));
+    return L.map(r => `<div class="an-etape">${phraseScript(r, p, m)}</div>`).join('') || '<div class="an-note">Rien dans l’onglet « Scripts ».</div>';
+  }
+  return ETAPES_APPEL.map(([type, titre], i) => {
+    let L = lignesScript(type === 'ouverture' && !p.gerant ? 'ouverture_sans_gerant' : type, m);
+    if (!L.length && type === 'ouverture') L = lignesScript('ouverture', m);
+    if (!L.length) return '';
+    let extra = '';
+    if (type === 'constat') extra = p.mauvais ? `<div class="an-fait"><b>Sa fiche :</b> ${esc(p.mauvais)}</div>`
+      : '<div class="an-fait manque">Aucun constat dans la fiche : regarder son site ou Google avant de composer.</div>';
+    if (type === 'demo' && m && m.lien) extra = `<div class="an-fait"><b>Démo :</b> <a href="${esc(m.lien)}" target="_blank" rel="noopener">${esc(m.metier)}</a></div>`;
+    return `<div class="an-etape"><div class="an-num">${i + 1}</div><div><div class="an-titre">${esc(titre)}</div>${L.map(r => phraseScript(r, p, m)).join('')}${extra}</div></div>`;
+  }).join('');
+}
+function blocAntiseche(p, m) {
+  if (!(S.data.scripts || []).length) return '';
+  const nb = lignesScript('objection', m).length;
+  const ong = [['appel', 'L’appel'], ['objections', 'Objections' + (nb ? ' · ' + nb : '')], ['offre', 'L’offre']];
+  return `<div class="bloc antiseche ${ANTI.ouvert ? '' : 'replie'}" id="antiseche">
+    <button class="an-tete" data-action="anti-replier" aria-expanded="${ANTI.ouvert}"><span>Antisèche${m ? ' · ' + esc(m.metier) : ''}</span><small>${ANTI.ouvert ? 'Replier' : 'Ouvrir'}</small></button>
+    ${ANTI.ouvert ? `<div class="an-onglets" role="tablist">${ong.map(([k, l]) => `<button role="tab" data-action="anti-onglet" data-o="${k}" class="${ANTI.onglet === k ? 'on' : ''}" aria-selected="${ANTI.onglet === k}">${esc(l)}</button>`).join('')}</div>
+    <div class="an-corps">${contenuAnti(p, m)}</div>` : ''}</div>`;
+}
+// Redessine l'antisèche seule : le résultat en cours de saisie et les notes ne bougent pas.
+function rafraichirAnti() {
+  const z = document.getElementById('antiseche'), p = S.ouvert && trouver(S.ouvert);
+  if (!z || !p) return;
+  const tmp = document.createElement('div'); tmp.innerHTML = blocAntiseche(p, metierDe(p));
+  if (tmp.firstElementChild) z.replaceWith(tmp.firstElementChild);
+}
+
 const CHOIX = { res: '', rappel: '', duree: 60 };
 
 function ouvrirFiche(id) {
-  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60; APRES.modele = null;
+  S.ouvert = id; CHOIX.res = ''; CHOIX.rappel = ''; CHOIX.duree = 60; APRES.modele = null; ANTI.obj = -1;
   rendreFiche();
   document.getElementById('fiche').classList.remove('cache');
   document.body.style.overflow = 'hidden';
@@ -3086,6 +3268,8 @@ function rendreFiche(edition) {
     </div>
 
     ${edition ? formEdition(p) : `
+    ${blocAntiseche(p, m)}
+
     <div class="bloc"><h3>Résultat du contact</h3>
       <div class="resultats">${BOUTONS_RES.map(([k, l]) => `<button data-res="${k}" style="--statut:${statut(couleurRes[k]).color}" class="${boutonDe(CHOIX.res) === k ? 'choisi' : ''}">${esc(l || res[k].label)}</button>`).join('')}</div>
       <div id="zone-res" class="${CHOIX.res ? '' : 'cache'}">${zoneResultat()}</div>
@@ -3112,6 +3296,7 @@ function rendreFiche(edition) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
       <button class="btn clair" data-action="editer">Modifier la fiche</button>
       <button class="btn" data-action="devis">Faire un devis</button></div>
+    ${vueEquipe() || !telInternational(p.telephone) ? '' : `<button class="btn clair large epingle ${estEpingle(p.id) ? 'on' : ''}" data-action="epingler" data-id="${esc(p.id)}" style="margin-top:8px">${estEpingle(p.id) ? 'Épinglé en tête de session · retirer' : 'Appeler en premier dans ma session'}</button>`}
     ${p.client ? '<div class="sous" style="margin-top:8px">Fiche client liée à la facturation.</div>' : ''}</div>
 
     <div class="bloc"><h3>Historique</h3>${hist.length ? `<ul class="histo">${hist.map(e =>
@@ -3598,6 +3783,13 @@ document.addEventListener('click', e => {
   else if (act === 'sess-lancer') lancerSession();
   else if (act === 'sess-reprendre') reprendreSession();
   else if (act === 'sess-passer') suivantSession();
+  else if (act === 'sess-plus-tard') reporterSession();
+  else if (act === 'epingler') basculerEpingle(a.dataset.id || S.ouvert);
+  else if (act === 'anti-onglet') { ANTI.onglet = a.dataset.o; ANTI.obj = -1; rafraichirAnti(); }
+  else if (act === 'anti-obj') { const n = Number(a.dataset.i); ANTI.obj = ANTI.obj === n ? -1 : n; rafraichirAnti();
+    const r = document.querySelector('#antiseche .an-reponse'); if (r && ANTI.obj >= 0) r.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  else if (act === 'anti-replier') { ANTI.ouvert = !ANTI.ouvert; stocker('anti', ANTI.ouvert ? '' : 'ferme'); rafraichirAnti(); }
+  else if (act === 'oublies') { S.voirOublies = !S.voirOublies; rendre(); }
   else if (act === 'sess-fin') finSession(false);
   else if (act === 'plus') { S.plusJour += 25; rendre(); }
   else if (act === 'pas-faits') { S.voirPasFaits = !S.voirPasFaits; rendre(); }
