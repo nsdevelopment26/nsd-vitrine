@@ -4622,11 +4622,6 @@ var NSDocs = (function () {
     return '<header class="dc-head">' + LOGO_DEVIS + '<div class="dc-titre"><h1>DEVIS</h1><p>' + esc(d.numero ? 'N° ' + num : num) + '</p><p>Date : ' + fmtDate(d.date_emission) + '</p>'
       + '<p>Valable jusqu’au ' + (d.date_validite ? fmtDate(d.date_validite) : '30 jours') + '</p></div></header>';
   }
-  function piedDevisComplet(E, taux) {
-    return '<footer class="dc-pied">' + esc(E.nom) + ' · ' + esc(E.adresse) + ' · RCS ' + esc(E.rcs) + ' · TVA ' + esc(E.tva) + ' · Aut. d’établissement ' + esc(E.autorisation)
-      + '<br>' + esc(E.email) + ' · ' + esc(E.tel) + ' · IBAN ' + esc(E.iban) + ' · BIC ' + esc(E.bic)
-      + ' · ' + (taux === 0 ? 'TVA selon la mention fiscale ci-dessus' : 'TVA luxembourgeoise ' + String(taux).replace('.', ',') + ' %') + '</footer>';
-  }
   function docDevisCompletHTML(d, lignes, c, signataire) {
     const E = EMETTEUR(), num = d.numero || 'N° à attribuer à l’envoi', taux = Number(d.tva_taux) || 0;
     const a = analyserComplet(lignes), t = a.totaux, ech = echeancier(a, taux);
@@ -4716,8 +4711,8 @@ var NSDocs = (function () {
     const sign = '<div class="signc"><div><b>Bon pour accord (le client)</b>Mention « Bon pour accord », date et signature :</div>'
       + '<div><b>NS Development</b>' + esc(qui) + ', co-gérant' + (d.numero && signataire ? signatureNSD(signataire, d.date_emission, 'devis ' + d.numero) : '') + '</div></div>';
     const corps = '<div class="sheet dc">' + teteDevisComplet(num, d) + '<div class="parties">' + emetteur + client + '</div>'
-      + h + recap + modalites + sign + piedDevisComplet(E, taux) + '</div>';
-    return page('Devis ' + (d.numero || 'brouillon') + ' · ' + (contact || c.nom_etablissement || ''), corps, CSS_COMPLET + CSS_MELODIE + (d.numero && signataire ? CSS_SIGNE() : ''), POLICE_DEVIS);
+      + h + recap + modalites + sign + piedLegal(E, taux) + '</div>';
+    return page('Devis ' + (d.numero || 'brouillon') + ' · ' + (contact || c.nom_etablissement || ''), corps, CSS_COMPLET + CSS_MELODIE + (d.numero && signataire ? CSS_SIGNE() : ''));
   }
   // Options déjà comprises dans une formule (inclus) : cochées d'office, jamais facturées
   // en plus (Nelson, 28/09/2026). Sam ne peut pas revendre ce que le client a déjà.
@@ -4845,10 +4840,11 @@ var NSDocs = (function () {
   const sec = (no, t, sub) => '<div class="sec"><span class="no">' + no + '</span><span class="t">' + t + '</span><span class="sub">' + sub + '</span></div>';
   const champ = (k, v) => '<div class="champ-c"><div class="k">' + k + '</div><div class="v">' + (v ? esc(v) : '&nbsp;') + '</div></div>';
 
+  // Style du devis de Mélodie pour tous les documents (Nelson, 22/11/2026) : logo vague + DEVELOPMENT,
+  // titre espacé, références en texte simple (« N° … », « Date : … »).
   function tete(titre, meta) {
-    return '<header class="head"><div class="brand"><img class="brandlogo" src="' + OPTS.logo + '" alt="NS Development">'
-      + '<div><div class="n">NS DEVELOPMENT</div><div class="s">CRÉATION DE SITES WEB</div><div class="l">SARL-S · Luxembourg</div></div></div>'
-      + '<div class="doc-label"><h1>' + titre + '</h1><div class="doc-meta">' + meta.map(m => '<div class="k">' + m[0] + '</div><div class="v">' + esc(m[1]) + '</div>').join('') + '</div></div></header>';
+    const ligne = m => /N°$/.test(m[0]) ? 'N° ' + esc(m[1]) : m[0] === 'Page' ? 'Page ' + esc(m[1]) : esc(m[0]) + ' : ' + esc(m[1]);
+    return '<header class="dc-head">' + LOGO_DEVIS + '<div class="dc-titre"><h1>' + titre + '</h1>' + meta.map(m => '<p>' + ligne(m) + '</p>').join('') + '</div></header>';
   }
   function parties(c, qui) {
     const E = EMETTEUR();
@@ -4864,13 +4860,26 @@ var NSDocs = (function () {
   // taux : celui du document. Un document sans TVA (autoliquidation, hors champ) ne dit pas « 17 % applicable » (22/11/2026).
   function piedLegal(E, taux) {
     const tvaTxt = taux === 0 ? 'Prix exprimés en hors taxes, TVA selon la mention fiscale ci-dessus ; n° TVA intracommunautaire ' : 'Prix exprimés en hors taxes. TVA luxembourgeoise de ' + (taux > 0 && taux !== 17 ? String(taux).replace('.', ',') : '17') + ' % applicable, n° TVA intracommunautaire ';
-    return '<footer><div class="soc">NS DEVELOPMENT SARL-S</div><div>Co-gérants : ' + E.gerants + '</div>'
-      + '<div class="pay">IBAN : ' + esc(E.iban) + ' · BIC : ' + esc(E.bic) + '</div>'
-      + tvaTxt + E.tva + '.<br>'
-      + E.nom + ' · ' + E.adresse + ' · ' + E.email + ' · ' + E.tel + '<br>RCS Luxembourg ' + E.rcs + ' · N° TVA Intra. ' + E.tva + ' · Autorisation d’établissement n° ' + E.autorisation + '</footer>';
+    return '<footer class="dc-pied">' + E.nom + ' · ' + E.adresse + ' · RCS Luxembourg ' + E.rcs + ' · N° TVA Intra. ' + E.tva + ' · Aut. d’établissement ' + E.autorisation
+      + '<br>Co-gérants : ' + E.gerants + ' · ' + E.email + ' · ' + E.tel
+      + '<br><b>IBAN ' + esc(E.iban) + ' · BIC ' + esc(E.bic) + '</b> · ' + tvaTxt + E.tva + '.</footer>';
   }
+  // Palette et police du devis de Mélodie (22/11/2026), sur tous les documents : encre #111, gris #5d5d5d, filets
+  // #e3e3e3, or #a8894f, zones #f6f5f2, Inter 400/500/600.
+  const CSS_NSD = ':root{--ink:#111;--ink-soft:#5d5d5d;--muted:#5d5d5d;--faint:#b9b9b9;--line:#e3e3e3;--line-strong:#d9d9d9;--accent:#a8894f;--accent-wash:#f6f5f2;--fill:#f6f5f2;'
+    + '--sans:Inter,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}body{background:#ecebe7;font-family:var(--sans);color:#111}'
+    + '.sheet{border:0;border-radius:0;box-shadow:0 8px 40px rgba(0,0,0,.08);padding:48px 52px 36px}b,strong{font-weight:600}'
+    + '.dc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;border-bottom:2px solid #111;padding-bottom:20px}.dc-logo{width:220px;height:auto;display:block;margin-top:4px}'
+    + '.dc-titre{text-align:right}.dc-titre h1{margin:0;font-size:30px;font-weight:600;letter-spacing:.12em;line-height:1.2}.dc-titre p{margin:2px 0;color:#5d5d5d;font-size:13px}'
+    + '.eyebrow,.sign .lbl{font-weight:500;letter-spacing:.14em;color:var(--accent)}.party .who,.row .nm,.row .p,.sec .t,.detail .nm,.mtn td.cat,.frais .ft,.cond b{font-weight:600}'
+    + '.sec .t{font-size:16px}.sec .no{font-weight:600}.recap{border-radius:0;border-color:#e3e3e3}.recap .r.total .rl,.recap .r.total .rv{font-weight:600}.recap .r.total{background:#111}'
+    + '.recap .r.acc .rl,.recap .r.acc .rv{font-weight:600}.modal{border-radius:0}.detail th,.mtn th{font-weight:500;color:#5d5d5d}.champ-c{border-bottom-color:#e3e3e3}'
+    + 'footer.dc-pied{margin-top:30px;border-top:1px solid #e3e3e3;padding-top:12px;font-size:11.5px;color:#5d5d5d;text-align:center;line-height:1.6}footer.dc-pied b{font-weight:500;color:#111}'
+    + '@media (max-width:640px){.sheet{padding:28px 18px}.dc-head{flex-direction:column}.dc-titre{text-align:left}.dc-logo{width:180px}}'
+    + '@media print{body{background:#fff}.sheet{box-shadow:none;padding:0}.dc-head{flex-direction:row;padding-bottom:14px}.dc-titre{text-align:right}.dc-titre h1{font-size:26px}.dc-titre p{font-size:11.5px}.dc-logo{width:190px}'
+    + 'footer.dc-pied{margin-top:18px;font-size:9.5px;break-inside:avoid}}';
   const page = (titre, corps, cssPlus, tetePlus) => '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'
-    + esc(titre) + '</title>' + (tetePlus || '') + '<style>' + CSS_DOC + (cssPlus || '') + '</style></head><body>' + corps + '</body></html>';
+    + esc(titre) + '</title>' + POLICE_DEVIS + (tetePlus || '') + '<style>' + CSS_DOC + CSS_NSD + (cssPlus || '') + '</style></head><body>' + corps + '</body></html>';
 
   // Les montants du décompte, calculés comme sur le modèle validé :
   // acompte = 50 % du site + 100 % de la maintenance, solde = 50 % du site.
@@ -4930,7 +4939,7 @@ var NSDocs = (function () {
         : '<div class="vide"></div><div class="vide"></div>') + '</div></section>'
       + '<div class="bas">NS Development SARL-S · devis ' + esc(num) + ' · page 1 / 2 · le décompte financier est en page 2</div></div>';
 
-    const page2 = '<div class="sheet">' + tete('DEVIS', [['Page', '2 / 2'], ['N°', num]])
+    const page2 = '<div class="sheet">' + tete('DEVIS', [['N°', num], ['Page', '2 / 2']])
       + '<section>' + sec(4, 'Décompte financier &amp; modalités', 'montants en euros')
       + '<div class="page2"><div class="cond"><p><b>Conditions de paiement :</b></p>'
       + '<p><b>Acompte initial :</b> 50 % HT du prix du site web + 100 % HT du forfait de maintenance choisi (trimestriel ou annuel).</p>'
@@ -5054,7 +5063,13 @@ var NSDocs = (function () {
     + '.k-signe{display:flex;align-items:center;gap:8px}.k-cachet{flex:none;transform:rotate(-9deg);opacity:.93;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     + '.k-manuscrit{font-family:"NSD Signature",cursive;font-size:30px;line-height:1.05;color:#14234f;white-space:nowrap;transform:rotate(-3deg);transform-origin:left bottom;margin:0 0 4px}'
     + '.k-mention{font-size:7pt;line-height:1.35;color:#45454d}';
-  const CSS_CONTRAT = () => (typeof NSContrat === 'undefined' ? '' : NSContrat.css)
+  // Contrat au style des devis (22/11/2026) : le texte généré (Contrat.html) ne change pas, on l'habille par-dessus :
+  // police Inter, logo vague + DEVELOPMENT à la place du symbole, palette encre / gris / or.
+  const LOGO_DEVIS_URI = () => 'data:image/svg+xml,' + encodeURIComponent(LOGO_DEVIS.replace(' class="dc-logo"', ''));
+  const CSS_CONTRAT_NSD = () => '.k{--k-ink:#111;--k-soft:#5d5d5d;--k-muted:#5d5d5d;--k-line:#e3e3e3;--k-fill:#f6f5f2;font-family:Inter,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}'
+    + '.k .k-doc-tete img{content:url("' + LOGO_DEVIS_URI() + '");height:auto;width:170px}.k .k-doc-tete{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:8px 16px}.k .k-doc-tete img{grid-row:1;grid-column:1}.k .k-doc-tete .k-ver{grid-row:1;grid-column:2}'
+    + '.k .k-doc-tete .k-id{grid-row:2;grid-column:1/-1}.k .k-doc-tete .k-id b{font-weight:600;font-size:11pt}.k h1,.k h2,.k h3,.k b,.k strong{font-weight:600}';
+  const CSS_CONTRAT = () => (typeof NSContrat === 'undefined' ? '' : NSContrat.css + CSS_CONTRAT_NSD())
     + '.k .k-v{font-weight:600}.k .k-box.k-on{background:var(--k-ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}'
     + '.k .k-blank.k-plein{min-width:0;padding:0 4px;font-weight:600}'
     + CSS_SIGNE() + '.k .k-sign .k-signe,.k .k-sign .k-signe div{border:0;padding:0;min-height:0}.k .k-sign .k-signe{margin-top:4px}'
