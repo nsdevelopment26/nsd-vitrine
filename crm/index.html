@@ -7319,7 +7319,11 @@ const Atelier = (() => {
     const attente = vivants.filter(x => x.e.k === 'envoye');
     const somme = L => L.reduce((s, x) => s + x.e.ht, 0);
     const optionsAcc = acceptes.reduce((s, x) => s + (Number(x.e.it.donnees.optionsAcceptees && x.e.it.donnees.optionsAcceptees.ht) || 0), 0);
-    const signe = somme(acceptes) + optionsAcc;
+    // Signé (22/11/2026, Nelson : MB Cars a payé bien plus que son devis) : pour chaque devis accepté, le plus grand
+    // de « devis + options acceptées » et de ce qui est réellement facturé sur ce devis (ajouts facturés sans nouveau devis).
+    const factureHT = d => (f.factures || []).filter(x => x.devis_id === d.id && x.statut !== 'annulée').reduce((s, x) => s + (Number(x.total_ht) || 0), 0);
+    const signe = acceptes.reduce((s, x) => s + Math.max(x.e.ht + (Number(x.e.it.donnees.optionsAcceptees && x.e.it.donnees.optionsAcceptees.ht) || 0), factureHT(x.d)), 0);
+    const enPlus = acceptes.reduce((s, x) => s + Math.max(0, factureHT(x.d) - x.e.ht - (Number(x.e.it.donnees.optionsAcceptees && x.e.it.donnees.optionsAcceptees.ht) || 0)), 0);
     const taux = tranches.length ? Math.round(acceptes.length / tranches.length * 100) : null;
     const potentiel = attente.reduce((s, x) => s + x.e.ht * x.e.proba / 100, 0);
     const aRelancer = attente.filter(x => ['retard', 'reprise'].includes(suiviDevis(x.d).etat));
@@ -7346,7 +7350,7 @@ const Atelier = (() => {
         <button class="btn clair" data-at="avance">Devis avancé</button><button class="btn clair" data-at="parametres">Paramètres</button></div>
       ${aValider.length && moi() === 'Nelson' ? `<div class="fx-alerte">${aValider.length} remise${aValider.length > 1 ? 's' : ''} au-delà de la limite attend${aValider.length > 1 ? 'ent' : ''} ta validation : ${aValider.map(x => `<a href="#" data-at="ouvrir" data-id="${x.d.id}">${esc(x.d.clients ? x.d.clients.nom_etablissement : '?')}</a>`).join(', ')}.</div>` : ''}
       <div class="at-kpis">
-        ${kpi(eur(signe), 'signé HT' + (optionsAcc ? ' (options comprises)' : ''))}${kpi(eur(somme(attente)), 'en attente HT')}
+        ${kpi(eur(signe), 'signé HT' + (enPlus ? ' (dont ' + eur(enPlus) + ' facturés en plus)' : optionsAcc ? ' (options comprises)' : ''))}${kpi(eur(somme(attente)), 'en attente HT')}
         ${kpi(taux == null ? '—' : taux + ' %', 'taux de conversion' + (tranches.length ? ' (' + acceptes.length + '/' + tranches.length + ')' : ''))}
         ${kpi(aRelancer.length, 'à relancer', aRelancer.length ? 'alerte' : '')}${kpi(bientot.length, 'expirent sous 7 j', bientot.length ? 'alerte' : '')}</div>
       <details class="at-plus" ${A.plusOuvert ? 'open' : ''}><summary data-at="plus">Tous les indicateurs</summary><div class="at-kpis" style="margin-top:8px">
