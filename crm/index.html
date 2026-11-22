@@ -5795,36 +5795,6 @@ const Factu = (() => {
     DC.parts = JSON.parse(JSON.stringify(PARTIES_DEF));
     DC.modalites = NSDocs.modalitesDefaut({ client: 'le client' });
   }
-  // Le devis du 17/11/2026 pour Mélodie Sousa (Milea Intimates et MAWI Jewelry), ligne pour ligne.
-  function dcModeleMilea() {
-    const F360 = CP.PACK360;
-    Object.assign(DC, { marques: ['Milea', 'MAWI'], cliente: true, shopify: true, annuel: true, mktActif: true, mois: 2, prixPack: F360.lancement,
-      contenu: F360.contenu, noncompris: 'Non compris : le budget publicitaire, payé directement à Meta par la cliente ; la rémunération éventuelle de modèles pour les tournages en lingerie.' });
-    DC.parts = {
-      creation: { titre: 'Création des deux boutiques', sous: 'payé une fois', intro: 'Deux boutiques Shopify, un seul thème codé sur mesure par NS Development, décliné aux deux marques.' },
-      maintenance: { titre: 'Maintenance des deux boutiques', sous: 'par an, engagement 12 mois', intro: 'Payable à l’année (11 mois payés sur 12) ou au trimestre (195 € HT par boutique et 15 € HT par domaine supplémentaire).' },
-      marketing: { titre: 'Marketing et réseaux, Pack NSD 360', sous: '× 2, un par marque', intro: 'Un pack complet pour Milea Intimates et un pour MAWI Jewelry, chacun avec ses comptes, ses tournages et sa ligne éditoriale. Première période de 2 mois, au prix de lancement.' },
-    };
-    DC.creation = [
-      nouvelleLigne('Milea · formule Boutique', 'Thème Shopify codé sur mesure à la charte Milea (bordeaux intense, champagne), jusqu’à 50 produits, panier, paiement sécurisé, gestion des produits et des commandes dans Shopify, adapté au téléphone, mise en ligne.', 1, 3790),
-      nouvelleLigne('Milea · développement spécifique', 'Vue 360° des pièces portées (à faire tourner au doigt) et film d’atelier synchronisé au défilement (découpe, couture, écrin). 2 jours à 600 € HT.', 2, CP.JOUR_DEV),
-      nouvelleLigne('Milea · production visuelle', 'Visuels de mise en scène et vidéos courtes pour la boutique (équivalent d’une séance photo : une vingtaine d’images retouchées).', 1, CP.PRODUCTION_VISUELLE),
-      nouvelleLigne('MAWI · seconde boutique déclinée', 'Le même thème décliné à la charte MAWI (vert militaire, rose poudré, filet doré) : six collections, catalogue filtrable, vue 360° d’un bijou, page « Cercle privé » avec inscription avant l’ouverture.', 1, 2290),
-      nouvelleLigne('MAWI · production visuelle', 'Visuels de mise en scène et vidéos courtes pour la boutique (équivalent d’une séance photo).', 1, CP.PRODUCTION_VISUELLE),
-    ];
-    DC.remise = { pct: 50, titre: 'Offre de lancement', desc: 'Offre en cours de NS Development sur la création des sites.' };
-    DC.maintenance = [
-      nouvelleLigne('Maintenance Boutique · Milea', 'Hébergement du thème, mises à jour après chaque évolution de Shopify, sécurité, support, 1 h de petites modifications par trimestre, espace client.', 1, 715, { type: 'mtn', cat: 'Pro / Boutique' }),
-      nouvelleLigne('Maintenance Boutique · MAWI', 'Même contenu, pour la seconde boutique.', 1, 715, { type: 'mtn', cat: 'Pro / Boutique' }),
-      nouvelleLigne('Domaine supplémentaire · Milea', 'Le .com en plus du .lu (ex. milea.lu + mileaintimates.com).', 1, 55, { type: 'rec', id: 'domaine' }),
-      nouvelleLigne('Domaine supplémentaire · MAWI', 'Le .com en plus du .lu (ex. mawijewelry.lu + mawijewelry.com).', 1, 55, { type: 'rec', id: 'domaine' }),
-    ];
-    DC.marketing = [];
-    DC.marques.forEach(m => DC.marketing.push(nouvelleLigne(m + ' · mise en place', DESC_MEP, 1, F360.miseEnPlace, { type: 'mep' }),
-      nouvelleLigne(m + ' · Pack NSD 360, ' + titreMois(2), '2 × 3 290 € HT, prix de lancement.', 2, F360.lancement, { type: 'pack' })));
-    DC.modalites = NSDocs.modalitesDefaut({ marketing: true, mois: 2, marques: 2, client: 'la cliente', shopify: true });
-  }
-
   // Lignes prêtes pour la base, avec leurs étiquettes.
   function dcLignesBD() {
     const L = [], tag = NSDocs.etiqueter, mt = (q, pu) => Math.round((Number(q) || 0) * (Number(pu) || 0) * 100) / 100;
@@ -5910,14 +5880,12 @@ const Factu = (() => {
       <label class="champ">Texte sous le titre (facultatif)<textarea data-dc-part="${k}" data-k="intro" rows="2">${esc(DC.parts[k].intro)}</textarea></label>`;
     feuille(tete(edit ? 'Modifier le devis complet' : 'Devis complet', nom ? esc(nom) : 'plusieurs sites ou marques, marketing') + `
       <form id="fx-dc">
-      ${edit ? '' : `<div class="dc-modele">Pour <b>Mélodie Sousa</b> (Milea Intimates et MAWI Jewelry), pars du modèle : tout le devis du 17/11 est repris, ligne pour ligne. Il ne reste qu’à vérifier.
-        <div style="margin-top:8px"><button type="button" class="btn clair large" data-fx="dc-modele">Remplir avec le devis Milea / MAWI</button></div></div>`}
       <div class="bloc"><h3>Client</h3>
         ${DC.prospect || edit ? '' : champChoixClient(DC.clientId, true)}
         <div id="fx-champs-client">${champsClient(cc, p)}</div>
         <label class="champ" style="flex-direction:row;align-items:center;gap:8px;display:flex"><input type="checkbox" name="cliente" ${DC.cliente ? 'checked' : ''} style="width:20px;height:20px"> C’est une cliente (« la cliente » dans les modalités)</label></div>
-      <div class="bloc"><h3>Marques ou sites</h3><div class="sous" style="margin:0 0 6px">Séparés par une virgule. Chaque ligne ajoutée commence par le nom choisi (« Milea · … »).</div>
-        <input name="marques" class="champ-libre" value="${esc(DC.marques.join(', '))}" placeholder="Ex. Milea, MAWI" style="width:100%;border:1px solid var(--ligne);border-radius:8px;padding:9px 8px;font-size:15px"></div>
+      <div class="bloc"><h3>Plusieurs sites ou marques ? <small style="color:var(--doux);font-weight:500">facultatif</small></h3><div class="sous" style="margin:0 0 6px">Seulement si le devis en couvre plusieurs, séparés par une virgule : chaque ligne ajoutée commence alors par le nom choisi (« Boutique · … »).</div>
+        <input name="marques" class="champ-libre" value="${esc(DC.marques.join(', '))}" placeholder="Ex. Site, Boutique (laisser vide s’il n’y en a qu’un)" style="width:100%;border:1px solid var(--ligne);border-radius:8px;padding:9px 8px;font-size:15px"></div>
 
       <div class="bloc"><h3>1 · Création <small style="color:var(--doux);font-weight:500">payée une fois</small></h3>${champsParte('creation', 'payé une fois')}
         <div id="dc-creation"></div>
@@ -6007,7 +5975,7 @@ const Factu = (() => {
     return l.offert ? 'Offert (valeur ' + eur(mt) + ' € HT)' : eur(mt) + ' € HT' + (partie === 'maintenance' ? (DC.annuel ? ' / an' : ' / trim.') : '');
   }
   function dcLigneHTML(partie, l, i) {
-    return `<div class="dc-ligne" data-dc-l="${partie}" data-i="${i}"><div class="h"><input class="t" data-k="titre" value="${esc(l.titre)}" placeholder="Titre (ex. Milea · formule Boutique)" aria-label="Titre">
+    return `<div class="dc-ligne" data-dc-l="${partie}" data-i="${i}"><div class="h"><input class="t" data-k="titre" value="${esc(l.titre)}" placeholder="Titre (ex. formule Vitrine)" aria-label="Titre">
       <button type="button" class="x" data-fx="dc-suppr" data-p="${partie}" data-i="${i}" aria-label="Retirer la ligne">×</button></div>
       <textarea data-k="desc" rows="2" placeholder="Description, sous le titre" aria-label="Description">${esc(l.desc)}</textarea>
       <div class="n"><label>Quantité<input data-k="q" type="number" min="0" step="0.5" inputmode="decimal" value="${l.q}"></label><label>Prix unitaire HT<input data-k="pu" type="number" min="0" step="0.01" inputmode="decimal" value="${l.pu}"></label></div>
@@ -6863,16 +6831,6 @@ const Factu = (() => {
     // Devis complet (18/11/2026)
     else if (act === 'dc-depuis-classique') { const sel = document.querySelector('#fx-devis [name=client]'), ch = sel ? lireChoixClient(sel.value) : {};
       dcOuvrir(D.prospect || ch.prospect || null, null, { clientId: D.clientId || ch.clientId || '' }); }
-    else if (act === 'dc-modele') { const garde = { prospect: DC.prospect, clientId: DC.clientId }; dcModeleMilea(); Object.assign(DC, garde);
-      const f = document.getElementById('fx-dc'); if (f) { f.marques.value = DC.marques.join(', '); f.cliente.checked = DC.cliente; f.mkt.checked = DC.mktActif;
-        // Comme sur le devis du 17/11 : la personne en interlocutrice, les deux marques en raison sociale.
-        if (f.c_nom && (!f.c_nom.value.trim() || /m[ée]lodie\s+sousa/i.test(f.c_nom.value))) f.c_nom.value = 'Marques Milea Intimates et MAWI Jewelry';
-        if (f.c_contact && !f.c_contact.value.trim()) f.c_contact.value = 'Mélodie Sousa';
-        if (f.c_tel && !f.c_tel.value.trim()) f.c_tel.value = '+352 691 301 293';
-        document.querySelectorAll('[data-dc-part]').forEach(el => { el.value = DC.parts[el.dataset.dcPart][el.dataset.k] || ''; });
-        document.querySelectorAll('[data-dc-remise]').forEach(el => { el.value = DC.remise[el.dataset.dcRemise]; }); }
-      const z = a.closest('.dc-modele'); if (z) z.remove();
-      dcDessiner(); toast('Devis Milea / MAWI repris. Vérifie les infos de la cliente (adresse, e-mail) et chaque ligne.'); }
     else if (act === 'dc-ajout') dcAjouter(a.dataset.p);
     else if (act === 'dc-suppr') { DC[a.dataset.p].splice(Number(a.dataset.i), 1); dcDessiner(); }
     else if (act === 'dc-rythme') { DC.annuel = a.dataset.v === 'an';
