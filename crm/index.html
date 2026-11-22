@@ -1802,9 +1802,10 @@ function vueAujourdhui() {
 // « Lancer ma session » ouvre le prochain prospect ; dès que l'appel est noté, le suivant
 // s'ouvre tout seul. La file se recalcule à chaque fois, dans l'ordre de la Journée : une
 // démo qui vient d'être ouverte ou un rappel qui arrive à son heure passe devant.
-// Objectif du jour : la grille de Sam, un créneau toutes les 10 minutes (règle du 28/09/2026,
-// rappels compris). Nelson prospecte par WhatsApp sans grille fixe : pas d'objectif chiffré.
-const OBJECTIF_JOUR = { Sam: { 0: 16, 1: 12, 2: 33, 3: 33, 4: 12, 5: 33, 6: 12 } };
+// Objectif du jour : la grille de Sam de la skill journee-appels, un créneau toutes les 5 minutes, rappels compris
+// (22/11/2026, Nelson) : 94 les mardi, mercredi et vendredi, 30 les lundi, jeudi et samedi, 16 le dimanche.
+// Nelson prospecte par WhatsApp sans grille fixe : pas d'objectif chiffré.
+const OBJECTIF_JOUR = { Sam: { 0: 16, 1: 30, 2: 94, 3: 94, 4: 30, 5: 94, 6: 30 } };
 const SESSION = lireSession();
 function lireSession() {
   try { const x = JSON.parse(lire('session') || 'null'); if (x && x.jour === aujourdhui()) return x; } catch (e) {}
@@ -5479,7 +5480,7 @@ const Factu = (() => {
       <div class="grille" style="margin-bottom:6px">
         <div class="kpi"><div class="v">${eur(du)} €</div><div class="l">à encaisser TTC</div></div>
         <div class="kpi"><div class="v">${enAttente.length}</div><div class="l">devis en attente de réponse</div></div></div>
-      ${F.menage ? `<div class="fx-alerte" style="background:#fff8e1;border-color:#f3d98b">Touche les devis et factures à supprimer. Une facture émise (avec numéro FAC) ne se supprime pas : c'est un document légal. Un devis déjà facturé non plus.</div>`
+      ${F.menage ? `<div class="fx-alerte" style="background:#fff8e1;border-color:#f3d98b">Touche les devis et factures à supprimer. Une facture émise (avec numéro FAC) ne se supprime pas : c'est un document légal. Un devis envoyé (numéro DEV) non plus : il s'archive dans l'onglet Devis.</div>`
         : `<div class="fx-bar"><button class="btn" data-fx="nouveau-devis">＋ Nouveau devis</button><button class="btn clair" data-fx="recues">Facture de Tatjana</button><button class="btn clair" data-fx="recues-libre">Facture à un autre nom</button><button class="btn clair" data-fx="menage">Supprimer…</button></div>`}
       ${F.menage ? '' : blocRelances()}
       ${aEmettre.length ? section('Factures à émettre', 'brouillons sans numéro', aEmettre.map(carteFacture).join('')) : ''}
@@ -5629,7 +5630,26 @@ const Factu = (() => {
   // devis de test qu'il ne pouvait pas effacer). Une facture numérotée est un document
   // légal : la numérotation FAC doit rester continue, elle ne se supprime jamais.
   const factureSupprimable = id => { const f = F.factures.find(x => x.id === id); return !!f && f.statut === 'brouillon' && !f.numero && !(Number(f.montant_paye) > 0); };
-  const devisSupprimable = id => !!F.devis.find(x => x.id === id) && !F.factures.some(f => f.devis_id === id && (f.numero || f.statut !== 'brouillon'));
+  // 22/11/2026 (Nelson) : seul un devis brouillon, jamais numéroté, se supprime ; un devis envoyé s'archive (onglet Devis).
+  const devisSupprimable = id => { const d = F.devis.find(x => x.id === id); return !!d && d.statut === 'brouillon' && !d.numero && !F.factures.some(f => f.devis_id === id && (f.numero || f.statut !== 'brouillon')); };
+  // Le projet né du devis accepté (Pilotage, déclencheur Supabase du 22/11/2026), visible ici.
+  // Dans Pilotage, le moteur généré (crm/factu-moteur.js) définit window.CRMFactuMoteur ; dans le CRM, non.
+  const dansPilotage = () => typeof window.CRMFactuMoteur === 'function';
+  const lienProjet = pid => (dansPilotage() ? '' : 'https://nsdevelopment.lu/pilotage/') + '#/projets?projet=' + pid;
+  const blocProjet = d => d && d.statut === 'accepté' ? '<div class="bloc" data-projet-devis="' + d.id + '" style="display:none"></div>' : '';
+  async function remplirProjet() {
+    const els = [...document.querySelectorAll('[data-projet-devis]')]; if (!els.length || !F.sb || typeof F.sb.rpc !== 'function') return;
+    let r; try { r = await F.sb.rpc('pil_projets_des_devis', { p_devis: els.map(e => e.dataset.projetDevis) }); } catch (e) { return; }
+    const { data, error } = r || {}; if (error) return;  // migration pas encore jouée : rien à montrer
+    const nom = { a_faire: 'à faire', en_cours: 'en cours', en_attente: 'en attente', termine: 'terminé', annule: 'annulé' };
+    els.forEach(el => {
+      const p = (data || []).find(x => x.devis_id === el.dataset.projetDevis); el.style.display = '';
+      el.innerHTML = p ? '<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><b>Projet : ' + esc(p.nom) + '</b><div class="sous">' + esc(nom[p.statut] || p.statut)
+          + (p.progression == null ? '' : ' · ' + p.progression + ' % fait') + (p.echeance ? ' · échéance ' + fmtDate(p.echeance) : '') + '</div></div>'
+          + '<a class="btn clair" href="' + lienProjet(p.projet_id) + '"' + (dansPilotage() ? '' : ' target="_blank" rel="noopener"') + '>Ouvrir le projet</a></div>'
+        : '<div class="sous">Pas encore de projet pour ce devis : il se crée tout seul à l’acceptation (Pilotage › Projets › Nouveau projet pour le rattraper).</div>';
+    });
+  }
 
   async function supprimer(elements) {
     const devis = elements.filter(e => e.type === 'devis' && devisSupprimable(e.id)).map(e => e.id);
@@ -6391,8 +6411,9 @@ const Factu = (() => {
     feuille(tete(d.numero ? esc(d.numero) : 'Devis brouillon', esc(d.clients ? d.clients.nom_etablissement : '') + ' · <span class="fx-st ' + cls(d.statut) + '">' + esc(d.statut) + '</span>')
       + `<div class="bloc"><dl class="infos"><dt>Émis le</dt><dd>${fmtDate(d.date_emission)}</dd><dt>Valable jusqu’au</dt><dd>${fmtDate(d.date_validite)}</dd>
          <dt>Total HT</dt><dd>${eur(d.total_ht)} €</dd><dt>Total TTC</dt><dd><b>${eur(d.total_ttc)} €</b></dd></dl></div>
-         ${d.statut !== 'brouillon' ? blocSuiviRelances(d) : ''}
+         ${blocProjet(d)}${d.statut !== 'brouillon' ? blocSuiviRelances(d) : ''}
          <div style="display:grid;gap:8px;margin-top:12px">${act.join('')}</div>`);
+    remplirProjet();
   }
 
   async function changerStatutDevis(id, st) {
@@ -6906,7 +6927,7 @@ const Factu = (() => {
   document.addEventListener('click', e => {
     const t = e.target;
     const ch = t.closest('[data-fx-choix]'); if (ch) { const k = ch.dataset.fxChoix; if (F.choix.has(k)) F.choix.delete(k); else F.choix.add(k); return rendre(); }
-    if (t.closest('[data-fx-bloque]')) return toast('Facture émise ou devis déjà facturé : ne se supprime pas.', true);
+    if (t.closest('[data-fx-bloque]')) return toast('Facture émise ou devis envoyé : ne se supprime pas (le devis s’archive dans l’onglet Devis).', true);
     const dv = t.closest('[data-fx-devis]'); if (dv) return ouvrirDevis(dv.dataset.fxDevis);
     const fc = t.closest('[data-fx-facture]'); if (fc) return ouvrirFacture(fc.dataset.fxFacture);
     const b = t.closest('[data-fx-base]'); if (b) { D.base = D.base === b.dataset.fxBase ? null : b.dataset.fxBase; if (D.base) { D.mtnCat = catDe(D.base); NSDocs.optionsIncluses(D.base).forEach(n => delete D.opts[n]); } dessinerChoix(); return calculer(); }
@@ -7081,7 +7102,7 @@ const Factu = (() => {
   // donnees : lu par l'objectif du mois (Stats), en lecture seule.
   return { init, vue, nouveauDevis, ouvrirDevis, recharger: () => F.session && charger(), donnees: () => F,
     // Atelier devis (22/11/2026) : le mode avancé est l'éditeur du devis complet, mêmes données, même moteur.
-    dcOuvrir, ouvrirFacture, montrerDoc, infosClient, feuille, fermer };
+    dcOuvrir, ouvrirFacture, montrerDoc, infosClient, feuille, fermer, blocProjet, remplirProjet };
 })();
 </script>
 
@@ -7399,6 +7420,7 @@ const Atelier = (() => {
         ${dd.acceptation ? `<dt>Accepté</dt><dd>${esc(dd.acceptation.date)} par ${esc(dd.acceptation.signataire)} (${esc(dd.acceptation.mode)})</dd>` : ''}
         ${it.motifRefus ? `<dt>Motif du refus</dt><dd>${esc(it.motifRefus)}</dd>` : ''}
         ${sv ? `<dt>Relance</dt><dd>${esc(etatRelance(sv).txt)}</dd>` : ''}</dl></div>
+      ${Factu.blocProjet(d)}
       <div class="bloc"><h3 style="margin:0 0 8px">Suivi commercial <small style="color:var(--doux);font-weight:500">interne</small></h3>
         <div class="at-deux"><label class="at-champ">Commercial responsable<select data-at-int="responsable" data-id="${id}">${['', ...new Set([...(S.data.equipe || []), e.resp].filter(Boolean))].map(r => `<option ${r === e.resp ? 'selected' : ''} value="${esc(r)}">${esc(r || '—')}</option>`).join('')}</select></label>
         <label class="at-champ">Probabilité de signature<select data-at-int="proba" data-id="${id}">${[0, 10, 25, 40, 50, 75, 90, 100].map(p => `<option ${p === e.proba ? 'selected' : ''} value="${p}">${p} %</option>`).join('')}</select></label></div>
@@ -7407,6 +7429,7 @@ const Atelier = (() => {
         ${rentabiliteHTML(id, rent)}</details>
       <div style="display:grid;gap:8px;margin-top:12px">${act.filter(Boolean).join('')}</div>
       <div class="bloc"><h3 style="margin:0 0 6px">Historique</h3>${journal.length ? journal.slice(0, 40).map(j => `<div style="font-size:13px;padding:5px 0;border-top:1px solid var(--ligne)"><b>${esc(j.action)}</b> · ${esc(String(j.date).slice(0, 16))}${j.par ? ' · ' + esc(j.par) : ''}${j.detail ? `<div style="color:var(--doux)">${esc(j.detail)}</div>` : ''}</div>`).join('') : '<div class="sous">Rien encore.</div>'}</div>`);
+    Factu.remplirProjet();
   }
   // Rentabilité : coûts estimés au devis (catalogue) + saisis ensuite. Le coût horaire vient des réglages.
   function rentabilite(d, it) {
@@ -7542,7 +7565,7 @@ const Atelier = (() => {
       if (p && cle(p) !== 'signe' && confirm('Passer ' + p.entreprise + ' en « Client signé » dans le CRM ?')) {
         try { const maj = await appel('api_logger', S.pin, p.id, 'signe', 'Devis ' + (nd.numero || '') + ' accepté', '', S.par, null); majLocale(maj, { resultat: 'Client signé', note: 'Devis accepté', rappel: '' }); } catch (e) { toast(e.message, true); }
       }
-      toast('Acceptation enregistrée. Prochaine étape : la facture de la signature.'); ouvrir(id);
+      toast('Acceptation enregistrée : le projet se crée dans Pilotage. Prochaine étape : la facture de la signature.'); ouvrir(id);
     } catch (e) { btn.disabled = false; toast(e.message, true); }
   }
   function formRefuser(id) {
