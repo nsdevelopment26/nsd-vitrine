@@ -1,0 +1,321 @@
+- generic [active] [ref=f2e1]:
+  - navigation [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - link "Fiduciaire Orvane, retour en haut" [ref=f2e4] [cursor=pointer]:
+        - /url: "#hero"
+        - generic [ref=f2e6]:
+          - generic [ref=f2e7]: Fiduciaire Orvane
+          - generic [ref=f2e8]: Fiduciaire · Dudelange
+      - generic [ref=f2e9]:
+        - list [ref=f2e10]:
+          - listitem [ref=f2e11]:
+            - link "Prestations" [ref=f2e12] [cursor=pointer]:
+              - /url: "#services"
+          - listitem [ref=f2e13]:
+            - link "Méthode" [ref=f2e14] [cursor=pointer]:
+              - /url: "#methode"
+          - listitem [ref=f2e15]:
+            - link "Le cabinet" [ref=f2e16] [cursor=pointer]:
+              - /url: "#cabinet"
+          - listitem [ref=f2e17]:
+            - link "Contact" [ref=f2e18] [cursor=pointer]:
+              - /url: "#contact"
+        - button "Choisir la langue" [ref=f2e20] [cursor=pointer]:
+          - generic [ref=f2e24]: FR
+        - link "(+352) 27 00 00 00" [ref=f2e25] [cursor=pointer]:
+          - /url: tel:+35227000000
+  - banner [ref=f2e26]:
+    - generic [ref=f2e28]:
+      - generic [ref=f2e29]:
+        - paragraph [ref=f2e30]: Fiduciaire indépendante · Dudelange, Luxembourg
+        - heading "Vos comptes tenus, vos échéances jamais manquées ." [level=1] [ref=f2e31]: Vos comptes tenus,vos échéancesjamais manquées .
+        - paragraph [ref=f2e32]: Comptabilité, salaires, création de société et fiscalité luxembourgeoise. Un cabinet à taille humaine où vous parlez toujours à la même personne.
+        - generic [ref=f2e33]:
+          - link "Prendre rendez-vous" [ref=f2e34] [cursor=pointer]:
+            - /url: "#contact"
+          - link "Voir les prestations" [ref=f2e38] [cursor=pointer]:
+            - /url: "#services"
+        - paragraph [ref=f2e39]: Premier entretien gratuit, sans engagement.
+      - generic [ref=f2e40]:
+        - img "La façade de l'immeuble du cabinet, à Dudelange" [ref=f2e41]
+        - paragraph [ref=f2e42]: Le cabinet · Dudelange
+        - generic [ref=f2e43]:
+          - generic [ref=f2e44]:
+            - generic [ref=f2e46]:
+              - generic [ref=f2e47]: Dossier client
+              - generic [ref=f2e48]: SARL · exercice en cours
+            - generic [ref=f2e49]: Orvane
+          - list [ref=f2e50]:
+            - listitem [ref=f2e51]:
+              - generic [ref=f2e52]: Déclaration TVA
+              - generic [ref=f2e53]: Transmise
+            - listitem [ref=f2e54]:
+              - generic [ref=f2e55]: Salaires · CCSS
+              - generic [ref=f2e56]: Traités
+            - listitem [ref=f2e57]:
+              - generic [ref=f2e58]: Comptes annuels · RCS
+              - generic [ref=f2e59]: En préparation
+            - listitem [ref=f2e60]:
+              - generic [ref=f2e61]: Impôts IRC / ICC
+              - generic [ref=f2e62]: Planifié
+          - paragraph [ref=f2e63]: Point mensuel avec votre interlocuteur
+  - generic [ref=f2e66]:
+    - generic [ref=f2e67]:
+      - generic [ref=f2e68]: "2007"
+      - generic [ref=f2e69]: Année de création
+      - generic [ref=f2e70]: Cabinet indépendant, jamais racheté
+    - generic [ref=f2e71]:
+      - generic [ref=f2e72]: "04"
+      - generic [ref=f2e73]: Domaines couverts
+      - generic [ref=f2e74]: Comptabilité · Sociétés · Salaires · Fiscal
+    - generic [ref=f2e75]:
+      - generic [ref=f2e76]: "04"
+      - generic [ref=f2e77]: Langues de travail
+      - generic [ref=f2e78]: Français · Deutsch · English · Português
+    - generic [ref=f2e79]:
+      - generic [ref=f2e80]: 24 h
+      - generic [ref=f2e81]: Délai de réponse
+      - generic [ref=f2e82]: Sur toute demande écrite, jours ouvrés
+  - generic [ref=f2e84]:
+    - generic [ref=f2e85]:
+      - paragraph [ref=f2e86]: Prestations
+      - heading "Ce que nous prenons en charge" [level=2] [ref=f2e87]
+      - paragraph [ref=f2e88]: "Quatre domaines, détaillés ligne par ligne. Ouvrez celui qui vous concerne : vous saurez exactement ce qui est inclus avant même de nous appeler."
+    - generic [ref=f2e89]:
+      - generic [ref=f2e90]:
+        - button "01 Comptabilité" [expanded] [ref=f2e91] [cursor=pointer]:
+          - generic [ref=f2e92]: "01"
+          - generic [ref=f2e93]: Comptabilité
+        - generic [ref=f2e97]:
+          - paragraph [ref=f2e99]: Tenue complète de votre comptabilité générale et analytique. Bilans, comptes annuels et déclarations dans les délais légaux.
+          - list [ref=f2e100]:
+            - listitem [ref=f2e101]: Tenue de la comptabilité courante
+            - listitem [ref=f2e102]: Établissement des bilans et comptes annuels
+            - listitem [ref=f2e103]: Déclarations fiscales TVA et revenus
+            - listitem [ref=f2e104]: Rapports de gestion et tableaux de bord
+            - listitem [ref=f2e105]: Comptabilité analytique et par projet
+            - listitem [ref=f2e106]: Clôture des exercices comptables
+      - generic [ref=f2e107]:
+        - button "02 Constitution de sociétés" [ref=f2e108] [cursor=pointer]:
+          - generic [ref=f2e109]: "02"
+          - generic [ref=f2e110]: Constitution de sociétés
+        - generic [ref=f2e112]:
+          - paragraph [ref=f2e114]: Accompagnement complet dans la création et la structuration juridique de votre entreprise au Grand-Duché de Luxembourg.
+          - list [ref=f2e115]:
+            - listitem [ref=f2e116]: Choix de la forme juridique (SARL, SA, SCS…)
+            - listitem [ref=f2e117]: Rédaction des statuts et actes constitutifs
+            - listitem [ref=f2e118]: Démarches auprès du RCS (Registre de Commerce)
+            - listitem [ref=f2e119]: Ouverture de compte bancaire professionnel
+            - listitem [ref=f2e120]: Immatriculation TVA et administration fiscale
+            - listitem [ref=f2e121]: Conseil en structure d'actionnariat
+      - generic [ref=f2e122]:
+        - button "03 Gestion des salaires" [ref=f2e123] [cursor=pointer]:
+          - generic [ref=f2e124]: "03"
+          - generic [ref=f2e125]: Gestion des salaires
+        - generic [ref=f2e127]:
+          - paragraph [ref=f2e129]: Traitement complet de votre paie luxembourgeoise en conformité avec la législation sociale du Grand-Duché.
+          - list [ref=f2e130]:
+            - listitem [ref=f2e131]: Établissement des fiches de salaire mensuelles
+            - listitem [ref=f2e132]: Calcul des cotisations sociales (CCSS, CNS)
+            - listitem [ref=f2e133]: Déclarations SEQRES et relevés de cotisations
+            - listitem [ref=f2e134]: Gestion des congés, absences et arrêts maladie
+            - listitem [ref=f2e135]: Entrée et sortie des employés
+            - listitem [ref=f2e136]: Attestations d'employeur et certificats
+      - generic [ref=f2e137]:
+        - button "04 Conseil fiscal" [ref=f2e138] [cursor=pointer]:
+          - generic [ref=f2e139]: "04"
+          - generic [ref=f2e140]: Conseil fiscal
+        - generic [ref=f2e142]:
+          - paragraph [ref=f2e144]: Optimisation fiscale légale et planification patrimoniale adaptées aux spécificités du droit fiscal luxembourgeois.
+          - list [ref=f2e145]:
+            - listitem [ref=f2e146]: Optimisation de la charge fiscale de l'entreprise
+            - listitem [ref=f2e147]: Déclarations impôt sur le revenu des collectivités (IRC)
+            - listitem [ref=f2e148]: Impôt commercial communal (ICC) et impôt fortune
+            - listitem [ref=f2e149]: Conseil en restructuration et transmission
+            - listitem [ref=f2e150]: Représentation auprès de l'administration fiscale
+            - listitem [ref=f2e151]: Suivi des conventions fiscales internationales
+  - generic [ref=f2e153]:
+    - generic [ref=f2e154]:
+      - paragraph [ref=f2e155]: Méthode
+      - heading "Trois étapes, pas une de plus" [level=2] [ref=f2e156]
+      - paragraph [ref=f2e157]: Changer de fiduciaire fait peur parce qu'on imagine des mois de flottement. Voici exactement comment ça se passe chez nous.
+    - generic [ref=f2e158]:
+      - generic [ref=f2e159]:
+        - generic [ref=f2e160]: "01"
+        - heading "Premier entretien" [level=3] [ref=f2e161]
+        - paragraph [ref=f2e162]: Quarante-cinq minutes, gratuites. Vous montrez votre situation actuelle et vos documents. Nous disons ce qui va, ce qui manque et ce que ça coûte. Pas de devis à rallonge.
+      - generic [ref=f2e163]:
+        - generic [ref=f2e164]: "02"
+        - heading "Reprise du dossier" [level=3] [ref=f2e165]
+        - paragraph [ref=f2e166]: Nous récupérons vos pièces auprès de votre prestataire précédent, remettons la comptabilité à niveau et posons le calendrier de vos échéances de l'année.
+      - generic [ref=f2e167]:
+        - generic [ref=f2e168]: "03"
+        - heading "Suivi mensuel" [level=3] [ref=f2e169]
+        - paragraph [ref=f2e170]: Vous déposez vos pièces, nous passons les écritures. Un point clair chaque mois, et un interlocuteur qui répond dans la journée quand vous appelez.
+  - generic [ref=f2e173]:
+    - generic [ref=f2e175]:
+      - generic [ref=f2e176]:
+        - generic [ref=f2e177]: CR
+        - generic [ref=f2e178]: Photo d'illustration, à remplacer par celle du cabinet.
+      - generic [ref=f2e179]:
+        - generic [ref=f2e180]: Camille Roth
+        - generic [ref=f2e181]: Fondateur, expert-comptable
+        - paragraph [ref=f2e182]: Camille Roth a fondé Orvane en 2007 après avoir exercé en cabinet international. Sa double expertise en comptabilité et en fiscalité luxembourgeoise couvre l'essentiel des dossiers, du premier bilan d'un indépendant à la restructuration d'une PME.
+        - generic [ref=f2e183]:
+          - generic [ref=f2e184]: Comptabilité
+          - generic [ref=f2e185]: Fiscalité LU
+          - generic [ref=f2e186]: Droit des sociétés
+          - generic [ref=f2e187]: Paie LU
+          - generic [ref=f2e188]: Conseil patrimonial
+    - generic [ref=f2e189]:
+      - paragraph [ref=f2e190]: Le cabinet
+      - heading "Indépendants depuis 2007" [level=2] [ref=f2e191]
+      - paragraph [ref=f2e193]: "Fiduciaire Orvane est un cabinet indépendant implanté à Dudelange. Pas de réseau, pas de service client à étages : l'entreprise appartient à celui qui tient vos comptes."
+      - paragraph [ref=f2e194]: Nous travaillons avec des artisans, des commerçants, des indépendants et des PME du sud du pays. Assez petits pour vous connaître, assez outillés pour tenir les délais légaux luxembourgeois.
+      - generic [ref=f2e195]:
+        - generic [ref=f2e196]: "19"
+        - generic [ref=f2e197]: années d'exercice au Luxembourg
+      - list [ref=f2e198]:
+        - listitem [ref=f2e199]:
+          - generic [ref=f2e200]: I
+          - generic [ref=f2e201]:
+            - generic [ref=f2e202]: Fiabilité et confidentialité
+            - generic [ref=f2e203]: Vos données financières sont traitées avec discrétion et en conformité totale avec le RGPD.
+        - listitem [ref=f2e204]:
+          - generic [ref=f2e205]: II
+          - generic [ref=f2e206]:
+            - generic [ref=f2e207]: Réactivité
+            - generic [ref=f2e208]: Un interlocuteur joignable, des réponses rapides. Votre temps est précieux, nous le respectons.
+        - listitem [ref=f2e209]:
+          - generic [ref=f2e210]: III
+          - generic [ref=f2e211]:
+            - generic [ref=f2e212]: Accompagnement sur mesure
+            - generic [ref=f2e213]: Chaque entreprise est différente. Nos solutions s'adaptent à votre secteur, votre taille et vos ambitions.
+  - generic [ref=f2e216]:
+    - paragraph [ref=f2e217]: Prochaine étape
+    - heading "Parlons de votre dossier." [level=2] [ref=f2e218]
+    - paragraph [ref=f2e219]: Un appel de quinze minutes suffit pour savoir si nous sommes le bon cabinet pour vous. Et si ce n'est pas le cas, nous vous le dirons.
+    - generic [ref=f2e220]:
+      - link "Appeler le cabinet" [ref=f2e221] [cursor=pointer]:
+        - /url: tel:+35227000000
+      - link "Écrire un message" [ref=f2e225] [cursor=pointer]:
+        - /url: "#contact"
+  - generic [ref=f2e228]:
+    - generic [ref=f2e229]:
+      - paragraph [ref=f2e230]: Nous trouver
+      - heading "Contact et accès" [level=2] [ref=f2e231]
+      - paragraph [ref=f2e232]: Le cabinet est ouvert du lundi au vendredi. Un rendez-vous en dehors de ces horaires reste possible sur demande.
+      - generic [ref=f2e233]:
+        - generic [ref=f2e234]:
+          - generic [ref=f2e235]: Téléphone
+          - link "(+352) 27 00 00 00" [ref=f2e237] [cursor=pointer]:
+            - /url: tel:+35227000000
+        - generic [ref=f2e238]:
+          - generic [ref=f2e239]: Email
+          - link "contact@fiduciaire-orvane.example" [ref=f2e241] [cursor=pointer]:
+            - /url: mailto:contact@fiduciaire-orvane.example
+        - generic [ref=f2e242]:
+          - generic [ref=f2e243]: Adresse
+          - generic [ref=f2e244]: 9, rue des MinièresL-3453 Dudelange, Luxembourg
+        - generic [ref=f2e245]:
+          - generic [ref=f2e246]: Horaires
+          - generic [ref=f2e247]:
+            - generic [ref=f2e248]:
+              - generic [ref=f2e249]: Lundi — vendredi
+              - generic [ref=f2e250]: 08:30 — 17:30
+            - generic [ref=f2e251]:
+              - generic [ref=f2e252]: Samedi
+              - generic [ref=f2e253]: Sur rendez-vous
+            - generic [ref=f2e254]:
+              - generic [ref=f2e255]: Dimanche
+              - generic [ref=f2e256]: Fermé
+    - generic [ref=f2e257]:
+      - generic [ref=f2e258]:
+        - heading "Écrire au cabinet" [level=3] [ref=f2e259]
+        - paragraph [ref=f2e260]: Réponse sous 24 heures ouvrées. Premier entretien gratuit et sans engagement.
+        - generic [ref=f2e261]:
+          - generic [ref=f2e262]:
+            - generic [ref=f2e263]: Nom et prénom
+            - textbox "Nom et prénom" [ref=f2e264]
+          - generic [ref=f2e265]:
+            - generic [ref=f2e266]: Email
+            - textbox "Email" [ref=f2e267]
+        - generic [ref=f2e268]:
+          - generic [ref=f2e269]:
+            - generic [ref=f2e270]: Téléphone
+            - textbox "Téléphone" [ref=f2e271]
+          - generic [ref=f2e272]:
+            - generic [ref=f2e273]: Type de demande
+            - combobox "Type de demande" [ref=f2e274] [cursor=pointer]:
+              - option "Choisir…" [selected]
+              - option "Comptabilité"
+              - option "Constitution de société"
+              - option "Gestion des salaires"
+              - option "Conseil fiscal"
+              - option "Autre demande"
+        - generic [ref=f2e276]:
+          - generic [ref=f2e277]: Votre message
+          - textbox "Votre message" [ref=f2e278]
+        - button "Envoyer ma demande" [ref=f2e279]
+      - generic [ref=f2e283]:
+        - iframe [ref=f2e284]
+        - button "Afficher la carte La carte est fournie par Google, qui recevra votre adresse IP." [ref=f2e285] [cursor=pointer]:
+          - strong [ref=f2e286]: Afficher la carte
+          - generic [ref=f2e287]: La carte est fournie par Google, qui recevra votre adresse IP.
+  - contentinfo [ref=f2e288]:
+    - generic [ref=f2e289]:
+      - generic [ref=f2e290]:
+        - generic [ref=f2e291]:
+          - link "Fiduciaire Orvane Fiduciaire · Dudelange" [ref=f2e292] [cursor=pointer]:
+            - /url: "#hero"
+            - generic [ref=f2e294]:
+              - generic [ref=f2e295]: Fiduciaire Orvane
+              - generic [ref=f2e296]: Fiduciaire · Dudelange
+          - paragraph [ref=f2e297]: Cabinet fiduciaire indépendant à Dudelange depuis 2007. Comptabilité, gestion des salaires, conseil fiscal et constitution de sociétés au Grand-Duché de Luxembourg.
+        - generic [ref=f2e298]:
+          - generic [ref=f2e299]: Prestations
+          - list [ref=f2e300]:
+            - listitem [ref=f2e301]:
+              - link "Comptabilité" [ref=f2e302] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e303]:
+              - link "Constitution de sociétés" [ref=f2e304] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e305]:
+              - link "Gestion des salaires" [ref=f2e306] [cursor=pointer]:
+                - /url: "#services"
+            - listitem [ref=f2e307]:
+              - link "Conseil fiscal" [ref=f2e308] [cursor=pointer]:
+                - /url: "#services"
+        - generic [ref=f2e309]:
+          - generic [ref=f2e310]: Cabinet
+          - list [ref=f2e311]:
+            - listitem [ref=f2e312]:
+              - link "Le cabinet" [ref=f2e313] [cursor=pointer]:
+                - /url: "#cabinet"
+            - listitem [ref=f2e314]:
+              - link "Méthode" [ref=f2e315] [cursor=pointer]:
+                - /url: "#methode"
+            - listitem [ref=f2e316]:
+              - link "Contact" [ref=f2e317] [cursor=pointer]:
+                - /url: "#contact"
+        - generic [ref=f2e318]:
+          - generic [ref=f2e319]: Contact
+          - list [ref=f2e320]:
+            - listitem [ref=f2e321]:
+              - link "(+352) 27 00 00 00" [ref=f2e322] [cursor=pointer]:
+                - /url: tel:+35227000000
+            - listitem [ref=f2e323]:
+              - link "contact@fiduciaire-orvane.example" [ref=f2e324] [cursor=pointer]:
+                - /url: mailto:contact@fiduciaire-orvane.example
+            - listitem [ref=f2e325]: 9, rue des Minières
+            - listitem [ref=f2e326]: L-3453 Dudelange
+      - generic [ref=f2e327]:
+        - generic [ref=f2e328]: © 2026 Fiduciaire Orvane. Tous droits réservés.
+        - generic [ref=f2e329]:
+          - link "Mentions légales" [ref=f2e330] [cursor=pointer]:
+            - /url: mentions-legales.html
+          - link "Politique de confidentialité" [ref=f2e331] [cursor=pointer]:
+            - /url: confidentialite.html
+          - generic [ref=f2e332]: Maquette de démonstration réalisée par NS Development — création de sites web au Luxembourg
+      - paragraph [ref=f2e333]: "Démonstration : le nom, les coordonnées, les photos et les chiffres de ce site sont fictifs."

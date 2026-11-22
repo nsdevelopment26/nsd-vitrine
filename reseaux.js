@@ -7,7 +7,7 @@
      ./assets/reels/maj-couvertures.sh CODE1 CODE2 …
    Les couvertures sont servies par le site lui-même : Instagram signe
    ses liens d'images et les fait expirer, on ne les appelle jamais en direct.
-   Vérifié le 25/10/2026 : les quatre comptes existent et répondent.
+   Listes mises à jour le 16/11/2026 (derniers reels publiés). Vérifié le 25/10/2026 : les quatre comptes existent et répondent.
    ============================================================= */
 (function(){
   const COMPTES = {
@@ -16,9 +16,8 @@
       photo: 'assets/reseaux/av-nsd.png',
       insta: 'https://www.instagram.com/nsdevelopment.lu/',
       tiktok: 'https://www.tiktok.com/@nsdevelopment.lu',
-      phrase: 'Nos réalisations, nos méthodes, et ce que coûte vraiment un site.',
-      reels: ['De6lxStN7tn','De392F_tiqI','De1cgHdNnPH','Dey4GW2N6vc','DewP76QtoN5',
-              'Del32cRtgJA','DejUBPlNRP5','DeeMACDtMGc','Dd9d1phNNOL','Dd4UupXNcpx','DdmUne4tcvo']
+      phrase: 'Nos réalisations, nos méthodes, et les coulisses de l\'agence.',
+      reels: ['DfxUk5dDiEu','DfuvvwNCcC1','DfsK8_titkx','DfpnDILtrtD','DfnNwStt2NN','DfkdZodNTjr','Dfh3OtNNVrN','De6lxStN7tn','De392F_tiqI','De1cgHdNnPH','Dey4GW2N6vc']
     },
     sam: {
       nom: 'Sam', handle: 'samnsdevelopment',
@@ -26,8 +25,7 @@
       insta: 'https://www.instagram.com/samnsdevelopment/',
       tiktok: 'https://www.tiktok.com/@samnsdevelopment',
       phrase: 'Les appels du jour, les refus, les oui. La vie d\'une agence qui démarre.',
-      reels: ['De4UX1vIGJA','De1xLHGo4ls','DezL6RJoAYL','DewkpFEol_o','Det-BXCo2cP','DerfmFso3Kg',
-              'Deo3Oc7MHri','DemRgL0IE2q','Dejst3ws-K_','DehH__lIJV3','DeejQSuoL59']
+      reels: ['DfxDaHVMV2x','Dful5q5R-Io','Dfr7inVRNI1','DfpVBrOMzCH','Dfm-cKzx7Df','DfkPnxxMO7k','DfhmmGwI2GS','DfCt8x0o4AX','DfAIWvgMdx6','De6-vSOs1zj','De4UX1vIGJA']
     }
   };
 
@@ -39,6 +37,7 @@
   const suivre = sec.querySelector('.rl-suivre');
   const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let actif = 'nsd';
+  const IMAGES = {};   // code → couverture servie par le stockage public (mise à jour automatique)
 
   const IG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/><circle cx="17.6" cy="6.4" r="1.1" class="pl"/></svg>';
   const TT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="pl" d="M16.6 2h-3.4v13.3a2.9 2.9 0 1 1-2.1-2.8V9a6.4 6.4 0 1 0 5.5 6.3V8.6a7.9 7.9 0 0 0 4.6 1.5V6.7a4.6 4.6 0 0 1-4.6-4.7z"/></svg>';
@@ -50,7 +49,7 @@
     sec.dataset.compte = cle;
     piste.innerHTML = c.reels.map((code, i) =>
       '<a class="rl-carte" style="--i:'+i+'" href="https://www.instagram.com/reel/'+code+'/" target="_blank" rel="noopener" aria-label="Voir le reel '+(i+1)+' de @'+c.handle+' sur Instagram">'
-      + '<img src="assets/reels/'+code+'.jpg" width="540" height="960" alt="" loading="'+(i<5?'eager':'lazy')+'" decoding="async">'
+      + '<img src="'+(IMAGES[code] || 'assets/reels/'+code+'.jpg')+'" width="540" height="960" alt="" loading="lazy" decoding="async">'
       + '<span class="rl-voile"></span>'
       + '<span class="rl-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>'
       + '<span class="rl-pied">'+IG+'<span>Voir le reel</span></span>'
@@ -58,13 +57,14 @@
       + '<a class="rl-carte rl-fin" href="'+c.insta+'reels/" target="_blank" rel="noopener">'
       + '<img src="'+c.photo+'" alt="" class="rl-fin-photo">'
       + '<strong>Tous les reels</strong><span>@'+c.handle+'</span>'
-      + '<span class="rl-fin-fl" aria-hidden="true">→</span></a>';
+      + '<span class="rl-fin-fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="20" height="20"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>';
     suivre.innerHTML =
       '<p class="rl-phrase">'+c.phrase+'</p>'
       + '<div class="rl-liens">'
       + '<a class="rl-lien" href="'+c.insta+'" target="_blank" rel="noopener">'+IG+'<span>Instagram</span><em>@'+c.handle+'</em></a>'
       + '<a class="rl-lien" href="'+c.tiktok+'" target="_blank" rel="noopener">'+TT+'<span>TikTok</span><em>@'+c.handle+'</em></a>'
       + '</div>';
+    if (window.nsRetranslate) window.nsRetranslate();
     piste.scrollLeft = 0;
     piste.classList.remove('rl-in'); void piste.offsetWidth; piste.classList.add('rl-in');
     profondeur();
@@ -128,4 +128,27 @@
   new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? lance() : arret()), {threshold:.35}).observe(piste);
 
   rendre('nsd');
+
+  /* Mise à jour automatique (17/11/2026, demande de Nelson) : tous les 3 jours, la fonction
+     Pilotage `reels-site` recopie les derniers Reels des comptes reliés à Meta dans un stockage
+     public (couvertures servies par nous, jamais par Instagram) et écrit reels.json. Le site le lit
+     à chaque visite ; si le fichier ne répond pas, ou qu'un compte n'y figure pas (Sam tant que son
+     Instagram n'est pas relié à Meta Business), la liste ci-dessus reste affichée. */
+  const SOURCE = 'https://atgykykesntvporvbvuf.supabase.co/storage/v1/object/public/site-reels/reels.json';
+  const delai = new AbortController(); setTimeout(() => delai.abort(), 5000);
+  fetch(SOURCE, { cache: 'no-cache', credentials: 'omit', signal: delai.signal })
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d || !d.comptes) return;
+      let change = false;
+      Object.keys(d.comptes).forEach(cle => {
+        const liste = d.comptes[cle];
+        if (!COMPTES[cle] || !Array.isArray(liste) || liste.length < 3) return;
+        liste.forEach(x => { if (x && x.code && x.image) IMAGES[x.code] = x.image; });
+        const codes = liste.filter(x => x && x.code && x.image).map(x => x.code);
+        if (codes.join() !== COMPTES[cle].reels.join()) { COMPTES[cle].reels = codes; change = true; }
+      });
+      if (change && !touche) rendre(actif);
+    })
+    .catch(() => {});
 })();

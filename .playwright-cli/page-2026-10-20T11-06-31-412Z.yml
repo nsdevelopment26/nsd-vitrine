@@ -1,0 +1,346 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "Horizon" [ref=e4] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=e5]:
+        - link "Nos biens" [ref=e6] [cursor=pointer]:
+          - /url: "#biens"
+        - link "Services" [ref=e7] [cursor=pointer]:
+          - /url: "#services"
+        - link "Estimation" [ref=e8] [cursor=pointer]:
+          - /url: "#estimation"
+        - link "Contact" [ref=e9] [cursor=pointer]:
+          - /url: "#contact"
+        - link "Estimer mon bien" [ref=e10] [cursor=pointer]:
+          - /url: "#estimation"
+  - banner [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]: Agence immobilière · Luxembourg
+        - heading "Voir plus loin que quatre murs." [level=1] [ref=e15]:
+          - generic [ref=e16]:
+            - generic [ref=e17]: Voir
+            - generic [ref=e18]: plus
+            - generic [ref=e19]: loin
+          - generic [ref=e20]: que
+          - emphasis [ref=e22]: quatre murs.
+        - paragraph [ref=e23]: Achat, vente, location, estimation. Un conseiller qui connaît chaque rue du pays, et des biens choisis avec la même exigence que vous.
+        - generic [ref=e24]:
+          - generic [ref=e25]: Entrer par un quartier
+          - generic [ref=e26]:
+            - button "Voir les 1 biens à vendre à Belair" [ref=e27] [cursor=pointer]:
+              - text: Belair
+              - superscript [ref=e28]: "1"
+            - button "Voir les 1 biens à vendre à Bertrange" [ref=e29] [cursor=pointer]:
+              - text: Bertrange
+              - superscript [ref=e30]: "1"
+            - button "Voir les 1 biens à louer à Clausen" [ref=e31] [cursor=pointer]:
+              - text: Clausen
+              - superscript [ref=e32]: 1 à louer
+            - button "Voir les 1 biens à vendre à Esch-sur-Alzette" [ref=e33] [cursor=pointer]:
+              - text: Esch-sur-Alzette
+              - superscript [ref=e34]: "1"
+            - button "Voir les 1 biens à louer à Gare" [ref=e35] [cursor=pointer]:
+              - text: Gare
+              - superscript [ref=e36]: 1 à louer
+            - button "Voir les 1 biens à vendre à Hollerich" [ref=e37] [cursor=pointer]:
+              - text: Hollerich
+              - superscript [ref=e38]: "1"
+            - button "Voir les 1 biens à vendre à Kirchberg" [ref=e39] [cursor=pointer]:
+              - text: Kirchberg
+              - superscript [ref=e40]: "1"
+        - paragraph [ref=e41]:
+          - text: Vous vendez plutôt ?
+          - link "Estimation gratuite de votre bien" [ref=e42] [cursor=pointer]:
+            - /url: "#estimation"
+      - figure "Quelques biens du moment" [ref=e43]:
+        - generic [ref=e44]:
+          - img "Façade et terrasses du penthouse au Kirchberg" [ref=e45]
+          - img "Villa contemporaine à Strassen, piscine et baies vitrées" [ref=e46]
+          - img "Salon de la maison de maître à Belair" [ref=e47]
+          - img "Loft d'artiste à Hollerich" [ref=e48]
+        - generic [ref=e50]:
+          - text: Kirchberg
+          - generic [ref=e51]: Penthouse lumineux
+          - generic [ref=e52]:
+            - strong [ref=e53]: 980 000 €
+            - text: · 135 m² · 3 chambres
+  - generic [ref=e60]:
+    - generic [ref=e61]:
+      - text: Nos biens
+      - heading "Trouvez votre prochaine adresse" [level=2] [ref=e62]:
+        - generic [ref=e63]: Trouvez
+        - generic [ref=e64]: votre
+        - generic [ref=e65]: prochaine
+        - generic [ref=e66]: adresse
+      - paragraph [ref=e67]: "Affinez votre recherche : la sélection se met à jour à chaque critère."
+    - generic [ref=e68]:
+      - generic [ref=e69]:
+        - group "Type de transaction" [ref=e70]:
+          - button "Acheter" [pressed] [ref=e71] [cursor=pointer]
+          - button "Louer" [ref=e72] [cursor=pointer]
+        - generic [ref=e73]:
+          - generic [ref=e77]: Rechercher un bien
+          - searchbox "Rechercher un bien" [ref=e78]
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - generic [ref=e81]: Localité
+          - combobox "Localité" [ref=e82] [cursor=pointer]:
+            - option "Tout le pays" [selected]
+            - option "Belair"
+            - option "Bertrange"
+            - option "Esch-sur-Alzette"
+            - option "Hollerich"
+            - option "Kirchberg"
+            - option "Limpertsberg"
+            - option "Merl"
+            - option "Mersch"
+            - option "Strassen"
+        - generic [ref=e83]:
+          - generic [ref=e84]: Type de bien
+          - combobox "Type de bien" [ref=e85] [cursor=pointer]:
+            - option "Tous les types" [selected]
+            - option "Appartement"
+            - option "Duplex"
+            - option "Loft"
+            - option "Maison"
+            - option "Penthouse"
+            - option "Terrain"
+            - option "Villa"
+        - generic [ref=e86]:
+          - generic [ref=e87]: Chambres
+          - combobox "Chambres" [ref=e88] [cursor=pointer]:
+            - option "Indifférent" [selected]
+            - option "1 et plus"
+            - option "2 et plus"
+            - option "3 et plus"
+            - option "4 et plus"
+            - option "5 et plus"
+        - generic [ref=e89]:
+          - generic [ref=e90]: Surface minimum
+          - combobox "Surface minimum" [ref=e91] [cursor=pointer]:
+            - option "Indifférent" [selected]
+            - option "50 m²"
+            - option "80 m²"
+            - option "100 m²"
+            - option "150 m²"
+            - option "200 m²"
+        - generic [ref=e92]:
+          - generic [ref=e93]: Budget max
+          - combobox "Budget max" [ref=e94] [cursor=pointer]:
+            - option "Sans limite" [selected]
+            - option "500 000 €"
+            - option "750 000 €"
+            - option "1 000 000 €"
+            - option "1 500 000 €"
+            - option "2 000 000 €"
+    - generic [ref=e95]:
+      - generic [ref=e96]: 9 biens à la vente
+      - generic [ref=e98]:
+        - generic [ref=e99]: Trier par
+        - combobox "Trier par" [ref=e100] [cursor=pointer]:
+          - option "Nouveautés" [selected]
+          - option "Prix croissant"
+          - option "Prix décroissant"
+          - option "Surface"
+    - generic [ref=e101]:
+      - article [ref=e102]:
+        - generic [ref=e103]:
+          - generic [ref=e104]: À vendre
+          - generic [ref=e105]: Nouveau
+          - img "Façade et terrasses du penthouse au Kirchberg" [ref=e106]
+        - generic [ref=e107]:
+          - generic [ref=e108]: Kirchberg, Luxembourg
+          - heading "Penthouse lumineux" [level=3] [ref=e109]
+          - paragraph [ref=e110]: Dernier étage, terrasse de 40 m², double parking en sous-sol.
+          - generic [ref=e111]:
+            - generic [ref=e112]: 135 m²
+            - generic [ref=e113]: 3 chambres
+            - generic [ref=e114]: Terrasse
+          - generic [ref=e115]:
+            - text: 980 000 €
+            - generic [ref=e116]: Réf. HZ-118
+      - article [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]: À vendre
+          - generic [ref=e120]: Nouveau
+          - img "Séjour de l'appartement neuf à Merl, claustra en bois clair" [ref=e121]
+        - generic [ref=e122]:
+          - generic [ref=e123]: Merl, Luxembourg
+          - heading "Appartement neuf" [level=3] [ref=e124]
+          - paragraph [ref=e125]: Livraison immédiate, classe énergétique A, cave et parking.
+          - generic [ref=e126]:
+            - generic [ref=e127]: 92 m²
+            - generic [ref=e128]: 2 chambres
+            - generic [ref=e129]: Balcon
+          - generic [ref=e130]:
+            - text: 745 000 €
+            - generic [ref=e131]: Réf. HZ-142
+      - article [ref=e132]:
+        - generic [ref=e133]:
+          - generic [ref=e134]: À vendre
+          - img "Salon de la maison de maître à Belair, fauteuil et parquet d'origine" [ref=e135]
+        - generic [ref=e136]:
+          - generic [ref=e137]: Belair, Luxembourg
+          - heading "Maison de maître" [level=3] [ref=e138]
+          - paragraph [ref=e139]: Belle époque, parquets d'origine, jardin clos plein sud.
+          - generic [ref=e140]:
+            - generic [ref=e141]: 240 m²
+            - generic [ref=e142]: 5 chambres
+            - generic [ref=e143]: Jardin
+          - generic [ref=e144]:
+            - text: 1 490 000 €
+            - generic [ref=e145]: Réf. HZ-104
+      - article [ref=e146]:
+        - generic [ref=e147]:
+          - generic [ref=e148]: À vendre
+          - img "Villa contemporaine à Strassen, piscine et baies vitrées" [ref=e149]
+        - generic [ref=e150]:
+          - generic [ref=e151]: Strassen, Luxembourg
+          - heading "Villa contemporaine" [level=3] [ref=e152]
+          - paragraph [ref=e153]: Volumes ouverts, piscine chauffée, terrain de 12 ares.
+          - generic [ref=e154]:
+            - generic [ref=e155]: 285 m²
+            - generic [ref=e156]: 5 chambres
+            - generic [ref=e157]: Piscine
+          - generic [ref=e158]:
+            - text: 1 850 000 €
+            - generic [ref=e159]: Réf. HZ-131
+      - article [ref=e160]:
+        - generic [ref=e161]:
+          - generic [ref=e162]: À vendre
+          - img "Pièce sous les toits du duplex à Limpertsberg, poutres apparentes" [ref=e163]
+        - generic [ref=e164]:
+          - generic [ref=e165]: Limpertsberg, Luxembourg
+          - heading "Duplex sous les toits" [level=3] [ref=e166]
+          - paragraph [ref=e167]: Poutres apparentes, mezzanine et vue dégagée sur le parc.
+          - generic [ref=e168]:
+            - generic [ref=e169]: 118 m²
+            - generic [ref=e170]: 3 chambres
+            - generic [ref=e171]: Charme
+          - generic [ref=e172]:
+            - text: 895 000 €
+            - generic [ref=e173]: Réf. HZ-155
+      - article [ref=e174]:
+        - generic [ref=e175]:
+          - generic [ref=e176]: À vendre
+          - img "Rangée de maisons mitoyennes en pierre à Bertrange" [ref=e177]
+        - generic [ref=e178]:
+          - generic [ref=e179]: Bertrange, Luxembourg
+          - heading "Maison mitoyenne" [level=3] [ref=e180]
+          - paragraph [ref=e181]: Quartier calme, école à pied, garage double et cave voûtée.
+          - generic [ref=e182]:
+            - generic [ref=e183]: 165 m²
+            - generic [ref=e184]: 4 chambres
+            - generic [ref=e185]: Garage
+          - generic [ref=e186]:
+            - text: 1 120 000 €
+            - generic [ref=e187]: Réf. HZ-160
+      - article [ref=e188]:
+        - generic [ref=e189]:
+          - generic [ref=e190]: À vendre
+          - img "Loft d'artiste à Hollerich, ancien atelier réhabilité" [ref=e191]
+        - generic [ref=e192]:
+          - generic [ref=e193]: Hollerich, Luxembourg
+          - heading "Loft d'artiste" [level=3] [ref=e194]
+          - paragraph [ref=e195]: Ancien atelier réhabilité, 4,2 m sous plafond, verrière plein est.
+          - generic [ref=e196]:
+            - generic [ref=e197]: 140 m²
+            - generic [ref=e198]: 2 chambres
+            - generic [ref=e199]: Volume
+          - generic [ref=e200]:
+            - text: 820 000 €
+            - generic [ref=e201]: Réf. HZ-173
+      - article [ref=e202]:
+        - generic [ref=e203]:
+          - generic [ref=e204]: À vendre
+          - img "Terrain à bâtir à Mersch, parcelle en lisière de bois" [ref=e205]
+        - generic [ref=e206]:
+          - generic [ref=e207]: Mersch, Luxembourg
+          - heading "Terrain à bâtir" [level=3] [ref=e208]
+          - paragraph [ref=e209]: Parcelle viabilisée, orientation sud-ouest, PAG favorable.
+          - generic [ref=e210]:
+            - generic [ref=e211]: 620 m²
+            - generic [ref=e212]: Terrain
+            - generic [ref=e213]: Constructible
+          - generic [ref=e214]:
+            - text: 495 000 €
+            - generic [ref=e215]: Réf. HZ-181
+      - article [ref=e216]:
+        - generic [ref=e217]:
+          - generic [ref=e218]: À vendre
+          - img "Séjour lumineux ouvert sur le balcon, appartement à Esch-sur-Alzette" [ref=e219]
+        - generic [ref=e220]:
+          - generic [ref=e221]: Esch-sur-Alzette, Luxembourg
+          - heading "Appartement vue Alzette" [level=3] [ref=e222]
+          - paragraph [ref=e223]: Deuxième étage avec ascenseur, balcon filant, proche gare.
+          - generic [ref=e224]:
+            - generic [ref=e225]: 76 m²
+            - generic [ref=e226]: 2 chambres
+            - generic [ref=e227]: Ascenseur
+          - generic [ref=e228]:
+            - text: 425 000 €
+            - generic [ref=e229]: Réf. HZ-190
+    - link "Un bien précis en tête ? Parlons-en" [ref=e231] [cursor=pointer]:
+      - /url: "#estimation"
+  - generic [ref=e233]:
+    - generic [ref=e234]:
+      - text: Nos services
+      - heading "Un accompagnement complet" [level=2] [ref=e235]:
+        - generic [ref=e236]: Un
+        - generic [ref=e237]: accompagnement
+        - generic [ref=e238]: complet
+      - paragraph [ref=e239]: De la première visite à la signature, un interlocuteur unique.
+    - generic [ref=e240]:
+      - generic [ref=e241]:
+        - generic [ref=e242]: I
+        - heading "Vente" [level=3] [ref=e243]
+        - paragraph [ref=e244]: Estimation juste, mise en valeur soignée et diffusion ciblée de votre bien.
+      - generic [ref=e245]:
+        - generic [ref=e246]: II
+        - heading "Achat" [level=3] [ref=e247]
+        - paragraph [ref=e248]: Une sélection sur-mesure selon vos critères, vos visites organisées de A à Z.
+      - generic [ref=e249]:
+        - generic [ref=e250]: III
+        - heading "Location" [level=3] [ref=e251]
+        - paragraph [ref=e252]: Gestion locative sereine, sélection des locataires et suivi complet.
+      - generic [ref=e253]:
+        - generic [ref=e254]: IV
+        - heading "Estimation" [level=3] [ref=e255]
+        - paragraph [ref=e256]: La valeur réelle de votre bien, gratuitement et sans engagement.
+  - generic [ref=e258]:
+    - text: Estimation gratuite
+    - heading [level=2] [ref=e259]:
+      - text: Quelle est la
+      - emphasis [ref=e260]: vraie valeur
+      - text: de votre bien ?
+    - paragraph [ref=e261]: Recevez une estimation précise et confidentielle, réalisée par un conseiller de l'agence.
+    - link "Demander mon estimation" [ref=e263] [cursor=pointer]:
+      - /url: tel:+352000000
+  - contentinfo [ref=e264]:
+    - generic [ref=e265]:
+      - generic [ref=e266]:
+        - generic [ref=e267]:
+          - link "Horizon" [ref=e268] [cursor=pointer]:
+            - /url: "#"
+          - generic [ref=e269]: Immobilier · Luxembourg
+        - generic [ref=e270]: +352 00 00 00contact@horizon-immo.exampleAvenue de la Liberté, Luxembourg
+      - generic [ref=e271]: Maquette de démonstration réalisée par NS Development — création de sites web au Luxembourg
+  - generic:
+    - button "Ouvrir la discussion"
+    - dialog "Discussion avec HORIZON Immobilier":
+      - generic:
+        - generic: H
+        - generic:
+          - generic: HORIZON Immobilier
+          - generic: Réponse immédiate
+      - log
+      - generic:
+        - textbox "Votre message":
+          - /placeholder: Écrivez votre question…
+        - button "Envoyer"
+      - generic:
+        - text: Assistant propulsé par
+        - link "NS Development":
+          - /url: https://nsdevelopment.lu

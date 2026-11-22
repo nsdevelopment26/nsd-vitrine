@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=390, initial-scale=1">
+<title>Écrans du téléphone NSD 360 (source)</title>
+<!-- Source des écrans affichés dans l'iPhone 3D de nsd-360.html.
+     Rendu par rendre-ecrans.sh : un écran par appel (?s=nom), 390 x 844 à 2x.
+     Aucun chiffre inventé : les écrans montrent des étapes, des statuts et des intitulés, jamais des résultats. -->
+<link rel="stylesheet" href="../../fonts/polices-dca6f46f1b.css">
+<style>
+  :root{--ink:#121212;--ink2:#55524e;--ink3:#6f6b66;--line:#ebe8e4;--soft:#f5f4f2;--red:#d81f29;--red-soft:#fcebec;--ok:#167a4a;--ok-soft:#e6f4ec;
+    --disp:'Sora',system-ui,sans-serif;--sans:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:390px;height:844px;overflow:hidden;background:#fff}
+  body{font:15px/1.4 var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .s{display:none;position:relative;width:390px;height:844px;overflow:hidden;background:#fff}
+  .s.on{display:block}
+  /* barre d'état + île */
+  .bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;justify-content:space-between;align-items:center;padding:14px 30px 0 34px;font:600 16px var(--sans);z-index:5}
+  .bar .ic{display:flex;gap:6px;align-items:center}
+  .bar i{display:block;background:currentColor;border-radius:2px}
+  .island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:124px;height:36px;border-radius:20px;background:#000;z-index:6}
+  .dark{color:#fff}
+  .pad{padding:72px 22px 28px}
+  h1{font:700 28px/1.12 var(--disp);letter-spacing:-.02em}
+  h2{font:700 21px/1.15 var(--disp);letter-spacing:-.01em}
+  .k{font:600 12px var(--mono);color:var(--ink3);letter-spacing:.02em}
+  .card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:7px 12px;font:500 13px var(--sans)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn{display:flex;justify-content:center;align-items:center;height:52px;border-radius:16px;background:var(--ink);color:#fff;font:600 16px var(--sans)}
+  .btn.ghost{background:var(--soft);color:var(--ink)}
+  .tab{position:absolute;left:0;right:0;bottom:0;height:84px;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding-top:14px;background:#fff}
+  .tab b{width:26px;height:26px;border-radius:8px;background:#e7e4e0;display:block}
+  .tab b.on{background:var(--ink)}
+  .home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:var(--ink)}
+  .dark .home,.home.w{background:#fff}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .row{display:flex;align-items:center;gap:10px}
+  .sp{justify-content:space-between}
+  .stack{display:grid;gap:12px}
+
+  /* 0. intro */
+  #intro{background:radial-gradient(120% 70% at 50% 0%,#ffffff 30%,#f1efec 100%)}
+  #intro .c{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:22px;text-align:center;padding:0 34px}
+  #intro .mark{position:relative;width:170px;height:170px;display:grid;place-items:center}
+  #intro .mark img{width:118px}
+  #intro .ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--ink);border-right-color:transparent;transform:rotate(-30deg)}
+  #intro .ring.b{inset:12px;border:1px solid #cfcac4;border-left-color:transparent;transform:rotate(40deg)}
+  #intro .n{position:absolute;right:-6px;bottom:18px;font:800 22px var(--disp);background:var(--red);color:#fff;border-radius:12px;padding:3px 9px}
+  #intro p{font:500 17px/1.4 var(--sans);color:var(--ink2)}
+  #intro .play{width:64px;height:64px;border-radius:50%;background:var(--ink);display:grid;place-items:center}
+  #intro .play i{width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+
+  /* 1. réunion */
+  #reunion .opts{display:flex;flex-wrap:wrap;gap:8px}
+  #reunion .line{height:10px;border-radius:5px;background:#eeebe7}
+
+  /* 2. tournage */
+  #tournage{background:#1b1a19}
+  #tournage .vf{position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 30%,#e9e4dd,#cbc3b8 70%,#a9a093)}
+  #tournage .vf img{position:absolute;left:50%;bottom:-40px;transform:translateX(-50%);width:520px;mix-blend-mode:multiply}
+  #tournage .grid{position:absolute;inset:0;background:
+     linear-gradient(90deg,transparent 33.2%,rgba(255,255,255,.35) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.35) 66.6%,transparent 66.8%),
+     linear-gradient(0deg,transparent 33.2%,rgba(255,255,255,.35) 33.3%,transparent 33.5%,transparent 66.5%,rgba(255,255,255,.35) 66.6%,transparent 66.8%)}
+  #tournage .rec{position:absolute;top:66px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;border-radius:10px;padding:6px 12px;font:600 15px var(--mono);display:flex;gap:8px;align-items:center}
+  #tournage .rec .dot{background:#ff3b30}
+  #tournage .prompt{position:absolute;left:16px;right:16px;bottom:150px;background:rgba(18,18,18,.72);color:#fff;border-radius:16px;padding:14px 16px;backdrop-filter:blur(6px)}
+  #tournage .prompt .k{color:#cfc9c2}
+  #tournage .prompt p{font:600 17px/1.35 var(--sans);margin-top:6px}
+  #tournage .shoot{position:absolute;bottom:42px;left:50%;transform:translateX(-50%);width:78px;height:78px;border-radius:50%;border:5px solid #fff;display:grid;place-items:center}
+  #tournage .shoot i{width:30px;height:30px;border-radius:8px;background:#ff3b30}
+
+  /* 3. validation */
+  .vid{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center}
+  .th{width:78px;height:104px;border-radius:12px;position:relative;overflow:hidden;background:#d9d3cb}
+  .th img{position:absolute;left:50%;top:-8px;transform:translateX(-50%);width:150px;mix-blend-mode:multiply}
+  .th .pl{position:absolute;left:8px;bottom:8px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center}
+  .th .pl i{border-left:8px solid var(--ink);border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:2px}
+  .st{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--sans);border-radius:99px;padding:4px 9px}
+  .st.ok{background:var(--ok-soft);color:var(--ok)} .st.wait{background:var(--red-soft);color:var(--red)} .st.plan{background:var(--soft);color:var(--ink2)}
+
+  /* 4. réseaux */
+  #reseaux .prof{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center}
+  #reseaux .av{width:72px;height:72px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font:700 22px var(--disp)}
+  #reseaux .g{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:0 -22px}
+  #reseaux .g div{aspect-ratio:3/4;position:relative;overflow:hidden}
+  #reseaux .g .t1{background:linear-gradient(160deg,#2a2826,#57524c)}
+  #reseaux .g .t2{background:linear-gradient(160deg,#ece7e0,#cfc6ba)}
+  #reseaux .g .t3{background:linear-gradient(160deg,#d81f29,#8f1219)}
+  #reseaux .g .t4{background:linear-gradient(160deg,#f6f4f1,#e3ddd5)}
+  #reseaux .g img{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:200%;mix-blend-mode:multiply}
+  #reseaux .g .lab{position:absolute;left:8px;bottom:8px;font:600 11px var(--sans);color:#fff;background:rgba(0,0,0,.45);border-radius:6px;padding:2px 6px}
+  #reseaux .g .t2 .lab,#reseaux .g .t4 .lab{color:var(--ink);background:rgba(255,255,255,.8)}
+  #reseaux .g .big{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font:800 19px/1.1 var(--disp);color:#fff}
+  #reseaux .g .t4 .big,#reseaux .g .t2 .big{color:var(--ink)}
+
+  /* 5. pub & google & crm */
+  .ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font:700 15px var(--disp);color:#fff;flex:none}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin-top:12px}
+  .kv dt{color:var(--ink3)} .kv dd{font-weight:600;text-align:right}
+  .bubble{background:var(--soft);border-radius:14px;padding:10px 12px;font-size:14px;color:var(--ink2)}
+
+  /* 6. rapport */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{border:1px solid var(--line);border-radius:16px;padding:14px}
+  .tile b{display:block;font:600 19px var(--disp);color:#6f6b66;margin-top:8px}
+  .bars{display:flex;align-items:flex-end;gap:7px;height:120px;padding-top:10px}
+  .bars i{flex:1;border-radius:6px 6px 2px 2px;background:#ece9e5}
+
+  /* 7. site : capture d'une vitrine */
+  #site{background:#fff}
+  #site img.cap{position:absolute;left:0;top:54px;width:390px;height:790px;object-fit:cover;object-position:top}
+
+  /* 8. tarif */
+  #tarif .price{border-radius:22px;padding:22px;background:var(--ink);color:#fff}
+  #tarif .price .k{color:#bdb8b1}
+  #tarif .price b{display:block;font:800 44px/1 var(--disp);margin-top:10px;letter-spacing:-.02em}
+  #tarif .price small{font:500 15px var(--sans);color:#d6d1ca}
+  #tarif .badge{display:inline-block;margin-top:14px;background:var(--red);border-radius:10px;padding:6px 10px;font:600 13px var(--sans)}
+</style>
+</head>
+<body>
+
+<!-- 0. Promesse -->
+<section class="s" id="intro">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="c">
+    <div class="mark"><span class="ring"></span><span class="ring b"></span><img src="../../nsd-symbole-noir.svg" alt=""><span class="n">360</span></div>
+    <h1>Votre marketing,<br>chaque semaine.</h1>
+    <p>Stratégie, vidéos, réseaux, publicité, Google et fichier clients.</p>
+    <div class="play"><i></i></div>
+  </div>
+  <div class="home"></div>
+</section>
+
+<!-- 1. On réfléchit ensemble -->
+<section class="s" id="reunion">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="pad stack" style="gap:16px">
+    <span class="k">Semaine 1 · réunion</span>
+    <h1>Notre prochain coup marketing</h1>
+    <div class="card stack">
+      <span class="k">On choisit le sujet</span>
+      <div class="opts"><span class="chip on">Une offre</span><span class="chip">Une saison</span><span class="chip">Un événement</span><span class="chip">Un recrutement</span></div>
+    </div>
+    <div class="card stack">
+      <div class="row sp"><span class="k">Ordre du jour</span><span class="k">1 à 2 h</span></div>
+      <div class="row"><span class="dot" style="background:var(--ink)"></span><span>Ce qui a marché la semaine passée</span></div>
+      <div class="row"><span class="dot" style="background:var(--ink)"></span><span>L'idée de la semaine</span></div>
+      <div class="row"><span class="dot" style="background:var(--ink)"></span><span>Les 3 vidéos à tourner</span></div>
+    </div>
+    <div class="card stack">
+      <span class="k">Décision</span>
+      <div class="line" style="width:86%"></div><div class="line" style="width:64%"></div>
+    </div>
+  </div>
+  <div class="home"></div>
+</section>
+
+<!-- 2. On tourne sur place -->
+<section class="s dark" id="tournage">
+  <div class="vf"><img src="../../sam.webp" alt=""></div>
+  <div class="grid"></div>
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="rec"><span class="dot"></span>00:00:14</div>
+  <div class="prompt"><span class="k">Script 2 sur 3 · écrit par NSD</span><p>« Cette semaine, on vous montre ce qui change chez nous… »</p></div>
+  <div class="shoot"><i></i></div>
+  <div class="home w"></div>
+</section>
+
+<!-- 3. On publie pour vous -->
+<section class="s" id="publie">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="pad stack" style="gap:14px">
+    <span class="k">Vos 3 vidéos de la semaine</span>
+    <h1>À vous de valider</h1>
+    <div class="card vid"><div class="th"><img src="../../sam.webp" alt=""><span class="pl"><i></i></span></div><div class="stack" style="gap:6px"><b>Vidéo 1</b><span class="st ok">● Validée</span><span class="k">Programmée · mardi</span></div></div>
+    <div class="card vid"><div class="th" style="background:#2a2826"><span class="pl"><i></i></span></div><div class="stack" style="gap:6px"><b>Vidéo 2</b><span class="st wait">● À valider</span><span class="k">Sous-titres à vos couleurs</span></div></div>
+    <div class="card vid"><div class="th" style="background:#e9e3da"><span class="pl"><i></i></span></div><div class="stack" style="gap:6px"><b>Vidéo 3</b><span class="st plan">● En montage</span><span class="k">2 séries de corrections</span></div></div>
+    <div class="row" style="gap:10px"><div class="btn" style="flex:1">Valider</div><div class="btn ghost" style="flex:1">Corriger</div></div>
+  </div>
+  <div class="home"></div>
+</section>
+
+<!-- 4. Réseaux -->
+<section class="s" id="reseaux">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="pad stack" style="gap:16px">
+    <div class="prof"><div class="av">VE</div><div class="stack" style="gap:4px"><h2>votre.entreprise</h2><span class="k">3 réseaux au choix</span></div></div>
+    <div class="row" style="gap:8px"><span class="chip on">12 vidéos</span><span class="chip">4 carrousels</span><span class="chip">16 publications</span></div>
+    <div class="g">
+      <div class="t2"><img src="../../sam.webp" alt=""><span class="lab">Vidéo</span></div>
+      <div class="t1"><span class="big">1/5</span><span class="lab">Carrousel</span></div>
+      <div class="t4"><span class="big">Offre</span><span class="lab">Vidéo</span></div>
+      <div class="t3"><span class="big">Nouveau</span><span class="lab">Vidéo</span></div>
+      <div class="t2"><span class="big">Avant<br>après</span><span class="lab">Carrousel</span></div>
+      <div class="t1"><img src="../../sam.webp" alt="" style="opacity:.9"><span class="lab">Vidéo</span></div>
+      <div class="t4"><span class="big">L'équipe</span><span class="lab">Vidéo</span></div>
+      <div class="t1"><span class="big">FAQ</span><span class="lab">Carrousel</span></div>
+      <div class="t2"><span class="big">Coulisses</span><span class="lab">Vidéo</span></div>
+    </div>
+  </div>
+  <div class="tab"><b class="on"></b><b></b><b></b><b></b><b></b></div>
+  <div class="home"></div>
+</section>
+
+<!-- 5. Publicité, Google, CRM -->
+<section class="s" id="pub">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="pad stack" style="gap:12px">
+    <span class="k">Ce qui tourne pour vous</span>
+    <div class="card">
+      <div class="row"><span class="ico" style="background:var(--ink)">Ads</span><div><b>Campagne Meta</b><br><span class="k">Créée et suivie par NSD</span></div></div>
+      <dl class="kv"><dt>Statut</dt><dd><span class="st ok">● En cours</span></dd><dt>Zone</dt><dd>Luxembourg</dd><dt>Budget</dt><dd>Payé par vous à Meta</dd></dl>
+    </div>
+    <div class="card stack" style="gap:10px">
+      <div class="row"><span class="ico" style="background:#5c5853">G</span><div><b>Fiche Google</b><br><span class="k">Posts, photos, avis</span></div></div>
+      <div class="bubble">Nouvel avis reçu</div>
+      <div class="bubble" style="background:var(--ok-soft);color:var(--ok)">Réponse publiée ✓</div>
+    </div>
+    <div class="card row sp"><div class="row"><span class="ico" style="background:var(--red)">@</span><div><b>Newsletter</b><br><span class="k">Envoi du mois</span></div></div><span class="st plan">Prête</span></div>
+    <div class="card row sp"><div class="row"><span class="ico" style="background:#8b8781">CRM</span><div><b>Fichier clients</b><br><span class="k">Relance automatique</span></div></div><span class="st ok">Active</span></div>
+  </div>
+  <div class="home"></div>
+</section>
+
+<!-- 6. Rapport mensuel -->
+<section class="s" id="rapport">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="pad stack" style="gap:14px">
+    <span class="k">Espace client · rapport du mois</span>
+    <h1>Ce que votre marketing vous rapporte</h1>
+    <div class="tiles">
+      <div class="tile"><span class="k">Vues</span><b>vos chiffres</b></div>
+      <div class="tile"><span class="k">Abonnés</span><b>vos chiffres</b></div>
+      <div class="tile"><span class="k">Messages</span><b>vos chiffres</b></div>
+      <div class="tile"><span class="k">Clients générés</span><b>vos chiffres</b></div>
+    </div>
+    <div class="card"><div class="row sp"><span class="k">Mois par mois</span><span class="k">rapport mensuel</span></div>
+      <div class="bars"><i style="height:30%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:55%"></i><i style="height:50%"></i><i style="height:66%"></i><i style="height:72%;background:var(--ink)"></i></div>
+    </div>
+  </div>
+  <div class="home"></div>
+</section>
+
+<!-- 7. Site (capture injectée par rendre-ecrans.sh) -->
+<section class="s" id="site"><img class="cap" src="capture-site.png" alt=""><div class="island"></div><div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div></section>
+
+<!-- 8. Tarif -->
+<section class="s" id="tarif">
+  <div class="island"></div>
+  <div class="bar"><span>9:41</span><span class="ic"><i style="width:18px;height:11px"></i><i style="width:24px;height:12px;border-radius:4px"></i></span></div>
+  <div class="pad stack" style="gap:16px">
+    <div class="row"><img src="../../nsd-symbole-noir.svg" alt="" style="width:46px"><span class="k" style="font-size:14px;color:var(--ink)">NSD 360</span></div>
+    <h1>Une offre claire.<br>Un seul interlocuteur.</h1>
+    <div class="price"><span class="k">Offre de lancement · 2 premiers mois</span><b>3 290 €<small> HT / mois</small></b><span class="badge">Réservée aux 3 premiers clients</span></div>
+    <div class="card row sp"><span class="k">Ensuite</span><b style="font:700 20px var(--disp)">5 490 € <small style="font:500 13px var(--sans);color:var(--ink3)">HT / mois</small></b></div>
+    <div class="btn">Parlons de votre prochain mois</div>
+  </div>
+  <div class="home"></div>
+</section>
+
+<script>
+  const id=new URLSearchParams(location.search).get('s')||'intro';
+  document.getElementById(id).classList.add('on');
+</script>
+</body>
+</html>

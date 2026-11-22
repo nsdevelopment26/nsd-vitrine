@@ -37,6 +37,14 @@
 
   let fiche = null;
   let historique = [];
+  // La conversation suit le visiteur d'une page à l'autre (même onglet), et porte un
+  // identifiant pour que la fonction chat-site la range au même endroit.
+  const MEM = 'nsdc-' + CFG.site;
+  let memoire = { id: '', historique: [], rendu: [] };
+  try { memoire = Object.assign(memoire, JSON.parse(sessionStorage.getItem(MEM) || '{}')); } catch (e) {}
+  if (!memoire.id) memoire.id = (crypto.randomUUID ? crypto.randomUUID() : '');
+  historique = Array.isArray(memoire.historique) ? memoire.historique : [];
+  const retenir = () => { try { memoire.historique = historique.slice(-24); memoire.rendu = memoire.rendu.slice(-40); sessionStorage.setItem(MEM, JSON.stringify(memoire)); } catch (e) {} };
   let ouvert = false;
   let occupe = false;
 
@@ -71,7 +79,7 @@
 
   .nsdc-panneau{position:fixed;right:20px;bottom:92px;width:376px;max-width:calc(100vw - 32px);
     height:min(560px,calc(100vh - 130px));background:#fff;border-radius:18px;z-index:2147483000;display:flex;
-    flex-direction:column;overflow:hidden;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:#17161b;
+    flex-direction:column;overflow:hidden;font:15px/1.5 'Geist',system-ui,-apple-system,"Segoe UI",sans-serif;color:#17161b;
     box-shadow:0 24px 60px -12px rgba(0,0,0,.3),0 0 0 1px rgba(0,0,0,.06);
     opacity:0;transform:translateY(14px) scale(.97);pointer-events:none;
     transition:opacity .26s,transform .26s cubic-bezier(.34,1.4,.64,1)}
@@ -107,6 +115,11 @@
     background:#fff;color:#403e48;cursor:pointer;transition:all .2s}
   .nsdc-puce:hover{border-color:var(--nsdc-accent);color:var(--nsdc-accent);transform:translateY(-1px)}
 
+  .nsdc-actions{display:flex;flex-wrap:wrap;gap:7px;align-self:flex-start;max-width:92%;animation:nsdc-monte .32s cubic-bezier(.22,1,.36,1) backwards}
+  .nsdc-action{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:8px 14px;border-radius:20px;
+    background:var(--nsdc-accent);color:var(--nsdc-encre);text-decoration:none;transition:transform .2s,opacity .2s}
+  .nsdc-action:hover{transform:translateY(-1px);opacity:.9}
+  .nsdc-action::after{content:"→";font-size:12px}
   .nsdc-bas{display:flex;gap:9px;padding:12px;border-top:1px solid #eae7e0;background:#fff;flex:none}
   .nsdc-bas input{flex:1;font:inherit;font-size:14.5px;padding:11px 15px;border:1px solid #e2ddd2;border-radius:22px;
     outline:0;background:#faf9f7;transition:border-color .2s,background .2s}
@@ -115,7 +128,7 @@
     cursor:pointer;display:grid;place-items:center;transition:transform .2s,opacity .2s}
   .nsdc-envoi:hover:not(:disabled){transform:scale(1.07)}
   .nsdc-envoi:disabled{opacity:.4;cursor:default}
-  .nsdc-pied{text-align:center;font-size:10.5px;color:#9a958c;padding:0 0 9px;background:#fff;letter-spacing:.02em}
+  .nsdc-pied{text-align:center;font-size:11.5px;color:#9a958c;padding:0 0 9px;background:#fff;letter-spacing:.02em}
   .nsdc-pied a{color:inherit}
 
   @media(max-width:520px){
@@ -176,15 +189,47 @@
   const form    = racine.querySelector('.nsdc-bas');
   const champ   = form.querySelector('input');
   const envoi   = form.querySelector('.nsdc-envoi');
+  const panneau = racine.querySelector('.nsdc-panneau');
+  // Fermé, le panneau est inerte : rien n'y est atteignable au clavier (audit du 17/11).
+  panneau.inert = true;
+  // Sur notre propre site, pas de lien « propulsé par » vers nous-mêmes.
+  if (/(^|\.)nsdevelopment\.lu$/.test(location.hostname) || CFG.site === 'ns-development') {
+    const lien = racine.querySelector('.nsdc-pied a'); if (lien) lien.replaceWith(document.createTextNode(lien.textContent));
+  }
+  // Les réponses n'existent qu'en français : hors français, l'assistant s'efface.
+  const selonLangue = () => {
+    const l = (window.nsLangue && window.nsLangue()) || document.documentElement.lang || 'fr';
+    racine.hidden = !CFG.endpoint && l !== 'fr';
+    if (racine.hidden && ouvert) basculer();
+  };
+  document.addEventListener('ns-langue', selonLangue);
 
   // ---- affichage ------------------------------------------------------------
-  function ajoute(texte, qui) {
+  function ajoute(texte, qui, sansMemoire) {
+    if (!sansMemoire && texte) { memoire.rendu.push({ t: texte, q: qui }); retenir(); }
     const d = document.createElement('div');
     d.className = 'nsdc-msg ' + (qui === 'moi' ? 'nsdc-moi' : 'nsdc-bot');
     d.textContent = texte;
     fil.appendChild(d);
     fil.scrollTop = fil.scrollHeight;
     return d;
+  }
+  function ajouteBoutons(liste, sansMemoire) {
+    if (!Array.isArray(liste) || !liste.length) return;
+    if (!sansMemoire) { memoire.rendu.push({ b: liste }); retenir(); }
+    const d = document.createElement('div');
+    d.className = 'nsdc-actions';
+    liste.forEach(x => {
+      // Seules nos adresses sortent de la fonction (liste fermée côté serveur) ; on revérifie ici.
+      if (!x || !/^(\/|tel:\+352|mailto:info@nsdevelopment\.lu$|https:\/\/(www\.instagram\.com\/nsdevelopment\.lu\/|mbcars\.lu\/))/.test(x.url)) return;
+      const a = document.createElement('a');
+      a.className = 'nsdc-action'; a.href = x.url; a.textContent = x.libelle;
+      if (/^https:/.test(x.url) || /\/demos\//.test(x.url)) { a.target = '_blank'; a.rel = 'noopener'; }
+      if (x.url.startsWith('/#') && (location.pathname === '/' || location.pathname.endsWith('index.html'))) a.addEventListener('click', () => { if (ouvert) basculer(); });
+      d.appendChild(a);
+    });
+    fil.appendChild(d);
+    fil.scrollTop = fil.scrollHeight;
   }
   function pointsSuspension() {
     const d = document.createElement('div');
@@ -219,8 +264,12 @@
     document.documentElement.classList.toggle('nsdc-open', ouvert);
     bulle.setAttribute('aria-expanded', String(ouvert));
     bulle.setAttribute('aria-label', ouvert ? 'Fermer la discussion' : 'Ouvrir la discussion');
+    panneau.inert = !ouvert;
+    if (!ouvert && racine.contains(document.activeElement)) bulle.focus();
     if (ouvert) {
-      if (!fil.children.length) {
+      if (!fil.children.length && memoire.rendu.length) {
+        memoire.rendu.forEach(x => x.b ? ajouteBoutons(x.b, true) : ajoute(x.t, x.q, true));
+      } else if (!fil.children.length) {
         ajoute(CFG.bienvenue, 'bot');
         proposePuces(fiche?.suggestions || ['Vos horaires ?', 'Où êtes-vous ?', 'Comment réserver ?']);
       }
@@ -228,6 +277,7 @@
     }
   }
   bulle.onclick = basculer;
+  selonLangue();
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && ouvert) basculer(); });
 
   // ---- envoi ----------------------------------------------------------------
@@ -245,12 +295,14 @@
     occupe = true; envoi.disabled = true; champ.value = ''; puces.innerHTML = '';
     dejaPosees.add(cle(texte));
     ajoute(texte, 'moi');
-    historique.push({ role: 'user', content: texte });
+    historique.push({ role: 'user', content: texte }); retenir();
     const attente = pointsSuspension();
 
     try {
-      if (CFG.endpoint) await viaIA(attente);
-      else await viaFiche(texte, attente);
+      if (CFG.endpoint) {
+        try { await viaIA(attente); }
+        catch (err) { if (err.messageVisiteur) throw err; console.warn('[nsd-chat] IA indisponible, réponse de la fiche', err); await viaFiche(texte, attente); }
+      } else await viaFiche(texte, attente);
     } catch (err) {
       console.error('[nsd-chat]', err);
       attente.remove();
@@ -262,48 +314,28 @@
     }
   }
 
-  /** Vraies réponses : la fonction Supabase, qui parle à Claude. */
+  /** Vraies réponses : la fonction Pilotage chat-site, qui parle à Claude (19/11/2026). */
   async function viaIA(attente) {
+    const langue = (window.nsLangue && window.nsLangue()) || document.documentElement.lang || 'fr';
     const rep = await fetch(CFG.endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ site: CFG.site, messages: historique }),
+      // text/plain : pas de pré-requête CORS, la fonction lit du JSON quand même.
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({ conversation: memoire.id, messages: historique.slice(-24), page: location.pathname, langue }),
     });
-    // 429 : plafond atteint. Ce n'est pas une panne, et le visiteur mérite
-    // une phrase qui lui dit quoi faire plutôt qu'un message d'erreur.
+    // 429 : plafond atteint. Ce n'est pas une panne : on dit quoi faire.
     if (rep.status === 429) {
-      const info = await rep.json().catch(() => ({}));
-      const suite = fiche?.telephone && fiche.telephone !== 'à compléter'
-        ? ` Vous pouvez nous joindre au ${fiche.telephone}.` : '';
       const e = new Error('plafond');
-      e.messageVisiteur = (info.error || 'Trop de messages pour aujourd\'hui.') + suite;
+      e.messageVisiteur = "J'ai beaucoup discuté aujourd'hui ! Pour aller plus loin, Sam vous répond directement au +352 621 757 113, ou par e-mail à info@nsdevelopment.lu.";
       throw e;
     }
-    if (!rep.ok || !rep.body) throw new Error('HTTP ' + rep.status);
-
+    const o = rep.ok ? await rep.json() : null;
+    if (!o || !o.ok || !o.texte) throw new Error('HTTP ' + rep.status);
+    if (o.conversation) memoire.id = o.conversation;
     attente.remove();
-    const bulleRep = ajoute('', 'bot');
-    const lecteur = rep.body.getReader();
-    const dec = new TextDecoder();
-    let tampon = '', complet = '';
-
-    while (true) {
-      const { done, value } = await lecteur.read();
-      if (done) break;
-      tampon += dec.decode(value, { stream: true });
-      const lignes = tampon.split('\n\n'); tampon = lignes.pop() || '';
-      for (const l of lignes) {
-        if (!l.startsWith('data: ')) continue;
-        const charge = l.slice(6);
-        if (charge === '[FIN]') continue;
-        const o = JSON.parse(charge);
-        if (o.erreur) throw new Error('flux interrompu');
-        complet += o.t;
-        bulleRep.textContent = complet;
-        fil.scrollTop = fil.scrollHeight;
-      }
-    }
-    historique.push({ role: 'assistant', content: complet });
+    ajoute(o.texte, 'bot');
+    ajouteBoutons(o.boutons);
+    historique.push({ role: 'assistant', content: o.texte }); retenir();
   }
 
   /** Mode démo : pas d'IA, on répond depuis la fiche par mots-clés. */

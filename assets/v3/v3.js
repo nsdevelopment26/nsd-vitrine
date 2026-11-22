@@ -1,0 +1,661 @@
+/* =====================================================================
+   NS Development · refonte v3 · comportements
+   Écrit à la main, sans librairie. Chaque bloc est indépendant :
+   si un élément manque dans la page, son bloc ne fait rien.
+   ===================================================================== */
+(function(){
+  'use strict';
+  const doc = document, html = doc.documentElement;
+  const $ = (s, r) => (r || doc).querySelector(s);
+  const $$ = (s, r) => Array.from((r || doc).querySelectorAll(s));
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fin = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const T = s => (window.nsT ? window.nsT(s) : s);
+  const retraduire = () => { if (window.nsRetranslate) window.nsRetranslate(); };
+  const FL = '<svg class="fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
+  const ICI_JS = document.currentScript && document.currentScript.src;
+
+  /* Anciennes ancres de l'accueil (site d'avant la refonte, liens déjà partagés, QR) :
+     elles mènent maintenant à la bonne page. Un serveur ne peut pas rediriger une ancre. */
+  const ANCIENNES_ANCRES = { '#pricing': 'tarifs.html#pricing', '#tarifs': 'tarifs.html', '#faq': 'tarifs.html#faq', '#domaine': 'tarifs.html#domaine',
+    '#demos': 'realisations.html', '#projets': 'realisations.html', '#services': 'services.html', '#espace': 'services.html#espace',
+    '#refonte': 'services.html#refonte', '#reseaux': 'marketing.html#reseaux', '#marketing': 'marketing.html' };
+  if (doc.body && doc.body.dataset.page === 'accueil' && ANCIENNES_ANCRES[location.hash] && !doc.getElementById(location.hash.slice(1))) {
+    location.replace(ANCIENNES_ANCRES[location.hash]);
+  }
+  const FLX = '<svg class="fl ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+
+  /* ---------- 1. Écran d'ouverture : l'animation du logo, une fois par visite ---------- */
+  let introFinie;
+  const introPrete = new Promise(r => { introFinie = r; });
+  (function intro(){
+    const el = $('#intro');
+    if (!el) { introFinie(); return; }
+    if (!html.classList.contains('intro-joue')) { el.remove(); introFinie(); return; }
+    try { sessionStorage.setItem('nsd-intro', '1'); } catch (e) {}
+    const vid = $('video', el);
+    let fini = false;
+    const finir = () => {
+      if (fini) return; fini = true;
+      el.classList.add('fin');
+      introFinie();
+      setTimeout(() => el.remove(), 1200);
+    };
+    const sansVideo = () => { el.classList.add('sans-video'); setTimeout(finir, 1300); };
+    $('.intro-passer', el).addEventListener('click', finir);
+    el.addEventListener('click', finir);
+    if (vid) {
+      vid.addEventListener('ended', () => setTimeout(finir, 150), { once: true });
+      vid.addEventListener('error', sansVideo, { once: true });
+      const p = vid.play();
+      if (p && p.catch) p.catch(sansVideo);
+      setTimeout(() => { if (!fini && vid.currentTime === 0) sansVideo(); }, 900);
+    } else sansVideo();
+    setTimeout(finir, 3600);
+  })();
+
+  /* ---------- 2. Apparitions au défilement (une seule fois) ---------- */
+  const voir = el => el.classList.add('vu');
+  const hero = $('.hero');
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { voir(e.target); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 }) : null;
+  $$('[data-r], .vague, .foot-marque, #mkPub').forEach(el => {
+    if (hero && hero.contains(el)) return;          // le hero attend la fin de l'ouverture
+    if (io) io.observe(el); else voir(el);
+  });
+  introPrete.then(() => {
+    if (!hero) return;
+    $$('[data-r], .titre-r', hero).forEach(voir);
+    const compo = $('#compo'); if (compo) voir(compo);
+  });
+
+  /* ---------- 3. En-tête : fond au défilement, masqué en descendant, lien actif ---------- */
+  (function tete(){
+    const t = $('#tete'); if (!t) return;
+    let dernier = 0, attente = false;
+    const maj = () => {
+      const y = scrollY;
+      t.classList.toggle('plein', y > 24);
+      const ouvert = html.classList.contains('menu-ouvert') || $('.langues[data-ouvert="1"]');
+      t.classList.toggle('cache', !ouvert && y > 640 && y > dernier + 4);
+      if (y < dernier - 4 || y < 640) t.classList.remove('cache');
+      dernier = y; attente = false;
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    maj();
+    // Sur l'accueil seulement : le lien « Services » s'allume quand on lit la section
+    const liens = $$('.menu a').filter(a => a.hash && a.pathname === location.pathname);
+    const cibles = liens.map(a => doc.getElementById(a.hash.slice(1))).filter(Boolean);
+    if (io && cibles.length) {
+      const vu = new IntersectionObserver(es => es.forEach(e => {
+        const a = liens.find(l => l.hash === '#' + e.target.id);
+        if (a) a.classList.toggle('ici', e.isIntersecting);
+      }), { rootMargin: '-45% 0px -50% 0px' });
+      cibles.forEach(c => vu.observe(c));
+    }
+  })();
+
+  /* ---------- 4. Langues : menu déroulant + copie dans le menu mobile ---------- */
+  (function langues(){
+    const bloc = $('#langues'); if (!bloc) return;
+    const bouton = $('button', bloc), courant = $('#langCourante');
+    const ouvrir = v => { bloc.dataset.ouvert = v ? '1' : '0'; bouton.setAttribute('aria-expanded', v ? 'true' : 'false'); };
+    bouton.addEventListener('click', e => { e.stopPropagation(); ouvrir(bloc.dataset.ouvert !== '1'); });
+    doc.addEventListener('click', e => { if (!bloc.contains(e.target)) ouvrir(false); });
+    doc.addEventListener('keydown', e => { if (e.key === 'Escape' && bloc.dataset.ouvert === '1') { ouvrir(false); bouton.focus(); } });
+    const etiquette = () => {
+      const l = window.nsLangue ? window.nsLangue() : 'fr';
+      const b = $('#langSel .lang-b[data-lang="' + l + '"]');
+      courant.textContent = b ? b.textContent : 'FR';
+    };
+    // i18n.js remplit #langSel au chargement : on attend qu'il l'ait fait
+    const copier = () => {
+      const src = $('#langSel'), dst = $('#langSelMobile');
+      if (!src || !src.children.length) return false;
+      if (dst && !dst.children.length) {
+        dst.innerHTML = src.innerHTML;
+        $$('.lang-b', dst).forEach(b => b.addEventListener('click', () => { window.nsSetLang && window.nsSetLang(b.dataset.lang); etiquette(); }));
+      }
+      $$('.lang-b', src).forEach(b => b.addEventListener('click', () => { etiquette(); ouvrir(false); }));
+      etiquette();
+      return true;
+    };
+    if (!copier()) {
+      let n = 0;
+      const essai = setInterval(() => { if (copier() || ++n > 40) clearInterval(essai); }, 50);
+    }
+  })();
+
+  /* ---------- 5. Menu mobile : rideau ---------- */
+  (function rideau(){
+    const b = $('#burger'), r = $('#rideau'); if (!b || !r) return;
+    const basculer = v => {
+      html.classList.toggle('menu-ouvert', v);
+      b.setAttribute('aria-expanded', v ? 'true' : 'false');
+      b.dataset.nsFrAria = v ? 'Fermer le menu' : 'Ouvrir le menu'; b.setAttribute('aria-label', T(b.dataset.nsFrAria));
+      r.setAttribute('aria-hidden', v ? 'false' : 'true');
+      r.inert = !v;
+      ['#contenu', 'footer'].forEach(sel => { const el = $(sel); if (el) el.inert = v; });
+      html.style.overflow = v ? 'hidden' : '';
+      if (v) { $('#tete').classList.remove('cache'); setTimeout(() => { const a = $('nav a', r); a && a.focus({ preventScroll: true }); }, 300); }
+    };
+    b.addEventListener('click', () => basculer(!html.classList.contains('menu-ouvert')));
+    $$('a', r).forEach(a => a.addEventListener('click', () => basculer(false)));
+    doc.addEventListener('keydown', e => { if (e.key === 'Escape' && html.classList.contains('menu-ouvert')) { basculer(false); b.focus(); } });
+    matchMedia('(min-width: 1101px)').addEventListener('change', e => { if (e.matches) basculer(false); });
+  })();
+
+  /* ---------- 6. Composition du hero : profondeur à la souris et au défilement ---------- */
+  (function compo(){
+    const c = $('#compo'); if (!c || reduit) return;
+    const ecrans = $$('.ecran', c).map(el => ({ el, k: parseFloat(el.dataset.prof) || 1 }));
+    let mx = 0, my = 0, cx = 0, cy = 0, sy = 0, raf = 0, visible = true;
+    const boucle = () => {
+      cx += (mx - cx) * 0.07; cy += (my - cy) * 0.07;
+      ecrans.forEach(({ el, k }) => {
+        el.style.setProperty('--px', (cx * k * 10).toFixed(2) + 'px');
+        el.style.setProperty('--py', (cy * k * 8).toFixed(2) + 'px');
+        el.style.setProperty('--sy', (-sy * k * 0.09).toFixed(2) + 'px');
+      });
+      raf = (visible && (Math.abs(mx - cx) > 0.001 || Math.abs(my - cy) > 0.001)) ? requestAnimationFrame(boucle) : 0;
+    };
+    const relancer = () => { if (!raf) raf = requestAnimationFrame(boucle); };
+    if (fin) addEventListener('pointermove', e => {
+      if (!visible) return;
+      mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; relancer();
+    }, { passive: true });
+    addEventListener('scroll', () => {
+      sy = Math.min(scrollY, innerHeight * 1.2);
+      visible = scrollY < innerHeight * 1.3;
+      if (visible) { if (!raf) raf = requestAnimationFrame(boucle); }
+    }, { passive: true });
+    // Le défilement seul doit aussi faire bouger : on force une image à chaque scroll
+    addEventListener('scroll', () => { if (visible) requestAnimationFrame(() => ecrans.forEach(({ el, k }) => el.style.setProperty('--sy', (-sy * k * 0.09).toFixed(2) + 'px'))); }, { passive: true });
+  })();
+
+  /* ---------- 7. Index des concepts : l'aperçu suit la souris ---------- */
+  (function apercu(){
+    const ap = $('#apercu'), liste = $('#index'); if (!ap || !liste || !fin) return;
+    const img = $('img', ap);
+    let x = 0, y = 0, ax = 0, ay = 0, raf = 0, on = false;
+    const boucle = () => {
+      ax += (x - ax) * 0.18; ay += (y - ay) * 0.18;
+      ap.style.transform = 'translate3d(' + (ax + 28) + 'px,' + (ay - 110) + 'px,0) scale(' + (on ? 1 : .85) + ')';
+      raf = on || Math.abs(x - ax) > .5 ? requestAnimationFrame(boucle) : 0;
+    };
+    $$('a', liste).forEach(a => {
+      a.addEventListener('pointerenter', () => {
+        if (img.getAttribute('src') !== a.dataset.apercu) img.src = a.dataset.apercu;
+        on = true; ap.classList.add('on'); if (!raf) raf = requestAnimationFrame(boucle);
+      });
+    });
+    liste.addEventListener('pointerleave', () => { on = false; ap.classList.remove('on'); });
+    liste.addEventListener('pointermove', e => { x = e.clientX; y = e.clientY; if (!raf) raf = requestAnimationFrame(boucle); });
+  })();
+
+  /* ---------- 8. Services : lignes qui s'ouvrent ---------- */
+  $$('.svc-btn').forEach(b => {
+    const pan0 = doc.getElementById(b.getAttribute('aria-controls')); if (pan0 && b.getAttribute('aria-expanded') !== 'true') pan0.inert = true;
+    b.addEventListener('click', () => {
+      const l = b.closest('.svc-l'), ouvert = !l.classList.contains('ouvert');
+      l.classList.toggle('ouvert', ouvert);
+      b.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+      const pan = doc.getElementById(b.getAttribute('aria-controls')); if (pan) pan.inert = !ouvert;
+    });
+  });
+
+  /* ---------- 9. Méthode : le rail se remplit avec la lecture ---------- */
+  (function etapes(){
+    const bloc = $('#etapes'); if (!bloc) return;
+    const rail = $('.rail', bloc), items = $$('.etape', bloc);
+    if (reduit) { rail.style.setProperty('--prog', 1); items.forEach(i => i.classList.add('actif')); return; }
+    let attente = false;
+    const maj = () => {
+      attente = false;
+      const r = bloc.getBoundingClientRect(), h = innerHeight;
+      const p = Math.min(1, Math.max(0, (h * 0.78 - r.top) / (r.height + h * 0.25)));
+      rail.style.setProperty('--prog', p.toFixed(3));
+      items.forEach((it, i) => it.classList.toggle('actif', p >= i / items.length + 0.04));
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    maj();
+  })();
+
+  /* ---------- 10. Parallaxe très modérée (espace client, photo) ---------- */
+  (function parallaxe(){
+    if (reduit) return;
+    const els = $$('[data-vit]').map(el => ({ el, v: parseFloat(el.dataset.vit) }));
+    const photo = $('#stPhoto');
+    if (!els.length && !photo) return;
+    let attente = false;
+    const maj = () => {
+      attente = false;
+      const h = innerHeight;
+      els.forEach(({ el, v }) => {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -200 || r.top > h + 200) return;
+        el.style.transform = 'translate3d(0,' + ((r.top + r.height / 2 - h / 2) * v).toFixed(1) + 'px,0)';
+      });
+      if (photo) {
+        const r = photo.parentNode.parentNode.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < h) photo.style.transform = 'translate3d(0,' + (((r.top + r.height / 2) - h / 2) * -0.08 - r.height * .06).toFixed(1) + 'px,0)';
+      }
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    maj();
+  })();
+
+  /* ---------- 11. Fiches projet ---------- */
+  const P = 'assets/v3/p/';
+  const PROJETS = {
+    'mb-cars': {
+      client: true, titre: 'MB Cars', secteur: "Voitures d'occasion, Pétange",
+      type: 'Site vitrine, stock de véhicules, rendez-vous en ligne, logo', quand: 'En ligne depuis le 14 novembre 2026',
+      img: 'mb-cars', m2: 'mb-cars-m2', lien: 'https://mbcars.lu/', lienTxt: 'Visiter mbcars.lu',
+      contexte: "MB Cars achète et revend des voitures d'occasion à Pétange. Pas de showroom à visiter : les annonces existaient sur les portails, mais rien ne présentait l'entreprise elle-même.",
+      besoin: "Un site qui inspire confiance avant le premier appel, un stock facile à parcourir, et des rendez-vous qui ne passent plus tous par le téléphone.",
+      da: "Blanc, noir et rouge, la nouvelle identité de MB Cars, logo compris, que nous avons dessinée. Les voitures prennent toute la place, posées sur le même fond de studio.",
+      fonctions: ['Stock filtrable et une fiche détaillée par véhicule', 'Prise de rendez-vous en ligne pour un essai', 'Recherche sur mesure du véhicule idéal', 'Page boutique', "Studio photo automatique : chaque voiture détourée sur un fond propre, validée photo par photo", 'Logo et identité'],
+      resultat: "En ligne sur mbcars.lu depuis le 14 novembre 2026. Le gérant gère ses photos lui-même, depuis son interface d'administration."
+    },
+    'vaurenne': {
+      titre: 'Maison Vaurenne', secteur: 'Restaurant gastronomique', type: 'Site vitrine avec réservation', img: 'vaurenne',
+      lien: 'demos/maison-vaurenne/index.html',
+      da: "Noir profond et grandes photographies de plats : l'ambiance d'une salle le soir, avant même d'avoir réservé.",
+      fonctions: ['Menus et carte photographiée', 'Cave', 'Réservation en ligne qui bloque vraiment un service complet']
+    },
+    'volte': {
+      titre: 'Maison Volte', secteur: 'École de danse', type: 'Site vitrine avec planning', img: 'volte',
+      lien: 'demos/ecole-danse/index.html',
+      da: 'Clair et éditorial : photographies monochromes, typographie de magazine, beaucoup de blanc.',
+      fonctions: ['Planning des cours de la semaine', 'Réservation en un clic', 'Fiches professeurs', 'Galerie plein écran']
+    },
+    'korvel': {
+      titre: 'KORVEL', secteur: 'Imprimerie et textile', type: 'Boutique en ligne', img: 'korvel',
+      lien: 'demos/korvel/index.html',
+      da: "Couleurs franches d'atelier, typographie massive, un ton direct de fabricant.",
+      fonctions: ['Boutique avec paiement Apple Pay (simulé dans le concept)', 'Configurateur : le client pose son logo sur un T-shirt', 'Catalogue print à feuilleter', 'Trois langues']
+    },
+    'ashcombe': {
+      titre: 'Ashcombe Lorant', secteur: "Cabinet d'avocats", type: 'Site institutionnel', img: 'ashcombe',
+      lien: 'demos/ashcombe-lorant/index.html',
+      da: "Le cabinet présenté comme la une d'un quotidien financier : colonnes, filets, papier saumon.",
+      fonctions: ['Dossiers gagnés', 'Carte des affaires dans le monde', 'Fiches des associés', 'Coupon-réponse']
+    },
+    'valombre': {
+      titre: 'Domaine de Valombre', secteur: 'Centre équestre', type: 'Site vitrine avec rendez-vous', img: 'valombre',
+      lien: 'demos/domaine-equestre/index.html',
+      da: 'Sombre et cinématique : grandes photographies, défilement fluide, mise en page de magazine.',
+      fonctions: ['Rendez-vous en ligne', 'Photographie plein cadre', 'Galerie des chevaux']
+    },
+    'orvane': {
+      titre: 'Fiduciaire Orvane', secteur: 'Fiduciaire et comptabilité', type: 'Site vitrine multilingue', img: 'orvane',
+      lien: 'demos/fiduciaire-orvane/index.html',
+      da: "Sobre et rassurant : vert profond, papier clair, la rigueur d'un cabinet.",
+      fonctions: ["La frise des échéances de l'année, avec le compte à rebours de la prochaine", 'Services', 'Rendez-vous', 'Quatre langues']
+    }
+  };
+
+  (function fiches(){
+    const dlg = $('#fichePj'); if (!dlg || !dlg.showModal) return;
+    let retour = null;
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const liste = a => '<ul>' + a.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+
+    function rendre(cle){
+      const p = PROJETS[cle]; if (!p) return false;
+      const ext = p.client;
+      const contexte = p.contexte || ("Concept de démonstration, créé par NS Development pour montrer ce qu'un site peut faire pour ce métier. Ce n'est pas un client : le nom et les contenus sont fictifs.");
+      const besoin = p.besoin || "Montrer qu'un site de ce métier peut avoir sa propre personnalité, et pas celle d'un modèle.";
+      const resultat = p.resultat ? esc(p.resultat)
+        : '<span>Le vôtre est chiffré sur ce que vous demandez vraiment.</span> <span>Le devis est gratuit.</span>';
+      dlg.innerHTML =
+        '<div class="fp-barre"><span class="label">' + (ext ? 'Réalisation client' : 'Concept de démonstration') + '</span>'
+        + '<button type="button" class="fp-fermer" data-fermer><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>Fermer</button></div>'
+        + '<div class="wrap">'
+        + '<div class="fp-haut">'
+        + '<span class="etiquette' + (ext ? ' client' : '') + '">' + (ext ? '<i aria-hidden="true"></i>Client' : 'Concept') + '</span>'
+        + '<h2 class="t-xl" id="fpTitre">' + esc(p.titre) + '</h2>'
+        + '<dl class="fiche"><dt>Secteur</dt><dd>' + esc(p.secteur) + '</dd><dt>Réalisation</dt><dd>' + esc(p.type) + '</dd>'
+        + (p.quand ? '<dt>Statut</dt><dd>' + esc(p.quand) + '</dd>' : '<dt>Statut</dt><dd>Site de démonstration</dd>') + '</dl>'
+        + '</div>'
+        + '<div class="fp-visuel"><figure class="grand"><img src="' + P + p.img + '-d.webp" srcset="' + P + p.img + '-d-800.webp 800w, ' + P + p.img + '-d.webp 1600w" sizes="100vw" width="1600" height="1000" alt="' + esc(p.titre) + ', page d\'accueil sur ordinateur"></figure>'
+        + '<figure class="tel"><img src="' + P + p.img + '-m.webp" width="600" height="1298" alt="' + esc(p.titre) + ' sur téléphone"></figure></div>'
+        + '<div class="fp-corps">'
+        + '<div class="fp-bloc"><h3>Le contexte</h3><p>' + esc(contexte) + '</p></div>'
+        + '<div class="fp-bloc"><h3>Le besoin</h3><p>' + esc(besoin) + '</p></div>'
+        + '<div class="fp-bloc"><h3>La direction artistique</h3><p>' + esc(p.da) + '</p></div>'
+        + '<div class="fp-bloc" style="grid-column:1 / span 6"><h3>Ce qui a été développé</h3>' + liste(p.fonctions) + '</div>'
+        + '<div class="fp-bloc" style="grid-column:8 / span 5"><h3>' + (ext ? 'Le résultat' : 'Pour votre projet') + '</h3><p>' + resultat + '</p></div>'
+        + '</div>'
+        + '<div class="fp-duo"><figure class="grand"><img src="' + P + p.img + '-d2.webp" srcset="' + P + p.img + '-d2-800.webp 800w, ' + P + p.img + '-d2.webp 1600w" sizes="(max-width: 980px) 100vw, 75vw" width="1600" height="1000" alt="' + esc(p.titre) + ', une section intérieure" loading="lazy"></figure>'
+        + '<figure class="tel"><img src="' + P + (p.m2 || p.img + '-m') + '.webp" width="600" height="1298" alt="" loading="lazy"></figure></div>'
+        + '<div class="fp-fin"><p>' + (ext ? 'Un projet comme celui-ci&nbsp;? Parlons du vôtre.' : 'Ce métier est le vôtre&nbsp;? On part de zéro, à votre image.') + '</p>'
+        + '<div class="cas-liens"><a class="btn" href="' + esc(p.lien) + '" target="_blank" rel="noopener">' + esc(ext ? p.lienTxt : 'Ouvrir la démo') + ' ' + FLX + '</a>'
+        + '<a class="lien" href="#contact" data-fermer>Discuter d\'un projet ' + FL + '</a></div></div>'
+        + '</div>';
+      retraduire();
+      return true;
+    }
+    function ouvrir(cle, source){
+      if (!rendre(cle)) return;
+      retour = source || null;
+      dlg.classList.remove('ferme');
+      dlg.showModal();
+      dlg.scrollTop = 0;
+      html.style.overflow = 'hidden'; html.classList.add('fiche-ouverte');
+      const f = $('.fp-fermer', dlg); f && f.focus({ preventScroll: true });
+    }
+    function fermer(){
+      if (!dlg.open) return;
+      const final = () => { dlg.close(); dlg.classList.remove('ferme'); html.style.overflow = ''; html.classList.remove('fiche-ouverte'); if (retour) retour.focus({ preventScroll: true }); };
+      if (reduit) return final();
+      dlg.classList.add('ferme');
+      setTimeout(final, 520);
+    }
+    doc.addEventListener('click', e => {
+      const b = e.target.closest('[data-pj]');
+      if (b) { e.preventDefault(); ouvrir(b.dataset.pj, b); return; }
+      if (e.target.closest('[data-fermer]') && dlg.contains(e.target)) {
+        const a = e.target.closest('a[href^="#"]');
+        fermer();
+        if (a) { e.preventDefault(); setTimeout(() => { const c = $(a.getAttribute('href')); c && c.scrollIntoView({ behavior: reduit ? 'auto' : 'smooth' }); }, 560); }
+      }
+    });
+    dlg.addEventListener('cancel', e => { e.preventDefault(); fermer(); });
+  })();
+
+  /* ---------- 11 bis. Objets 3D (ordinateur seulement, chargés quand le navigateur est libre) ---------- */
+  (function objets(){
+    const els = $$('[data-objet]').filter(e => e.querySelector('canvas'));
+    if (!els.length || reduit || innerWidth <= 980 || !ICI_JS) return;
+    const essai = doc.createElement('canvas');
+    if (!(essai.getContext('webgl2') || essai.getContext('webgl'))) return;
+    const lancer = () => import(new URL('objets3d.js?v=2', ICI_JS).href)
+      .then(m => els.forEach(el => m.monter(el).then(ok => { if (ok) { el.classList.add('pret'); const h = el.closest('.hero'); if (h) h.classList.add('objet-actif'); } })))
+      .catch(err => console.warn('Objets 3D indisponibles, images utilisées.', err));
+    // au premier geste du visiteur (souris, défilement), sinon 2,5 s après le chargement
+    let parti = false;
+    const go = () => { if (parti) return; parti = true; ['pointermove', 'scroll', 'keydown'].forEach(e => removeEventListener(e, go)); (window.requestIdleCallback || (f => setTimeout(f, 50)))(lancer, { timeout: 800 }); };
+    introPrete.then(() => {
+      ['pointermove', 'scroll', 'keydown'].forEach(e => addEventListener(e, go, { passive: true, once: true }));
+      const tard = () => setTimeout(go, 2500);
+      if (doc.readyState === 'complete') tard(); else addEventListener('load', tard, { once: true });
+    });
+  })();
+
+  /* ---------- 11 ter. Réalisations : inclinaison 3D au survol, image qui glisse au défilement ---------- */
+  (function vivant(){
+    if (reduit) return;
+    const cartes = $$('.mosaique .pj, .cas-visuel');
+    if (!cartes.length) return;
+    if (fin) cartes.forEach(c => {
+      const cadre = $('.cadre, .grand', c); if (!cadre) return;
+      c.addEventListener('pointermove', e => {
+        const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        cadre.style.transform = 'rotateY(' + (x * 7).toFixed(2) + 'deg) rotateX(' + (-y * 6).toFixed(2) + 'deg) translateZ(0)';
+      });
+      c.addEventListener('pointerleave', () => { cadre.style.transform = ''; });
+    });
+    const imgs = cartes.map(c => $('.cadre img, .grand img', c)).filter(Boolean);
+    let attente = false;
+    const maj = () => {
+      attente = false; const h = innerHeight;
+      imgs.forEach(im => { const r = im.parentNode.getBoundingClientRect(); if (r.bottom < 0 || r.top > h) return;
+        const k = ((r.top + r.height / 2) - h / 2) / h; im.style.transform = 'scale(1.08) translate3d(0,' + (k * -28).toFixed(1) + 'px,0)'; });
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true }); maj();
+  })();
+
+  /* ---------- 11 quater. Vidéo de fond de l'accueil : jamais en économie de données, en pause hors écran ---------- */
+  (function videoFond(){
+    const v = $('.hb-video'); if (!v) return;
+    const eco = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+    if (reduit || eco) { v.removeAttribute('autoplay'); v.preload = 'none'; v.pause(); return; }
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else v.pause(); })).observe(v);
+  })();
+
+  /* ---------- 12. Avant / après ---------- */
+  (function avantApres(){
+    const frame = $('#baFrame'), range = $('#baRange'); if (!frame || !range) return;
+    const pose = v => frame.style.setProperty('--pos', v + '%');
+    pose(range.value);
+    range.addEventListener('input', () => pose(range.value));
+    const placer = e => {
+      const r = frame.getBoundingClientRect();
+      const v = Math.min(100, Math.max(0, (e.clientX - r.left) / r.width * 100));
+      range.value = v; pose(v);
+    };
+    let glisse = false;
+    frame.addEventListener('pointerdown', e => { glisse = true; try { frame.setPointerCapture(e.pointerId); } catch (_) {} placer(e); });
+    frame.addEventListener('pointermove', e => { if (glisse || e.pointerType === 'mouse') placer(e); });
+    const stop = e => { glisse = false; try { frame.releasePointerCapture(e.pointerId); } catch (_) {} };
+    frame.addEventListener('pointerup', stop); frame.addEventListener('pointercancel', stop);
+  })();
+
+  /* ---------- 13. Simulateur de devis ----------
+     Plus de montant (règle du 17/11) : le type de site prépare la demande de devis. */
+  (function simulateur(){
+    // Règle de Nelson (17/11) : aucun montant hors « à partir de 990 € ». Le choix du type de site
+    // montre ce qu'il comprend et prépare la demande de devis (formulaire pré-rempli).
+    const base = $('#simBase'); if (!base) return;
+    const NS_TYPES = [
+      { id: 'essentiel', nom: 'Essentiel', desc: "Une page, tout l'essentiel", form: 'Site vitrine' },
+      { id: 'vitrine', nom: 'Vitrine', desc: '4 à 5 pages, galerie, services', form: 'Site vitrine' },
+      { id: 'pro', nom: 'Pro', desc: '8 à 10 pages, bilingue, référencement renforcé', form: 'Site vitrine' },
+      { id: 'boutique', nom: 'Boutique', desc: "Vente en ligne jusqu'à 50 produits", form: 'E-commerce / take-away' },
+      { id: 'signature', nom: 'Signature', desc: 'Sur-mesure, haut de gamme, 3 langues', form: 'Autre' }
+    ];
+    let type = 'vitrine';
+    const tot = $('#simTot'), detail = $('#simDetail'), cta = $('#simCta');
+    function calculer(){
+      const t = NS_TYPES.find(x => x.id === type);
+      tot.textContent = T(t.nom);
+      detail.textContent = T(t.desc);
+      cta.dataset.resume = t.nom + ' (' + t.desc + ')';
+      cta.dataset.form = t.form;
+      retraduire();
+    }
+    function rendre(){
+      base.innerHTML = NS_TYPES.map(o =>
+        '<label class="sim-o' + (o.id === type ? ' on' : '') + '" data-id="' + o.id + '">'
+        + '<input type="radio" name="sim-base" value="' + o.id + '"' + (o.id === type ? ' checked' : '') + '>'
+        + '<span class="rond" aria-hidden="true"></span>'
+        + '<span><b>' + o.nom + '</b><span class="desc">' + o.desc + '</span></span></label>').join('');
+      $$('input', base).forEach(inp => inp.addEventListener('change', () => {
+        type = inp.value;
+        $$('.sim-o', base).forEach(l => l.classList.toggle('on', l.dataset.id === type));
+        calculer();
+      }));
+      retraduire();
+    }
+    cta.addEventListener('click', () => {
+      const m = $('#m'), ty = $('#ty');
+      if (ty && cta.dataset.form && [...ty.options].some(o => o.value === cta.dataset.form)) ty.value = cta.dataset.form;
+      if (m && !m.value.trim()) m.value = T("Bonjour, je m'intéresse à un site") + ' ' + cta.dataset.resume + '.\n\n' + T("J'aimerais un devis précis pour mon projet.");
+    });
+    rendre(); calculer();
+  })();
+
+  /* ---------- 14. Vérificateur de nom de domaine (DNS public de Google) ---------- */
+  (function domaine(){
+    const form = $('#domForm'); if (!form) return;
+    const input = $('#domInput'), out = $('#domResults'), cta = $('#domCta');
+    const EXTS = ['lu', 'com', 'be', 'fr', 'eu'];
+    const LIB = { free: 'Disponible', taken: 'Déjà pris', checking: 'Vérification…', error: 'À confirmer' };
+    const nettoyer = v => v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\.(lu|com|be|fr|eu)$/, '')
+      .replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 63);
+    async function verifier(fqdn){
+      const ctrl = new AbortController(), to = setTimeout(() => ctrl.abort(), 6000);
+      try {
+        const r = await fetch('https://dns.google/resolve?name=' + encodeURIComponent(fqdn) + '&type=NS', { signal: ctrl.signal });
+        clearTimeout(to);
+        if (!r.ok) return 'error';
+        const j = await r.json();
+        if (j.Status === 3) return 'free';
+        if (j.Status === 0 && Array.isArray(j.Answer) && j.Answer.length) return 'taken';
+        if (j.Status === 0) return 'error';      // ni nom ni erreur : on ne promet pas « libre », « à confirmer »
+        return 'error';
+      } catch (e) { clearTimeout(to); return 'error'; }
+    }
+    form.addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const b = nettoyer(input.value);
+      if (!b) { input.focus(); return; }
+      input.value = b;
+      cta.classList.remove('on');
+      out.innerHTML = '';
+      const cartes = {};
+      EXTS.forEach((ext, i) => {
+        const el = doc.createElement('div');
+        el.className = 'dom-res checking';
+        el.style.animationDelay = (i * 60) + 'ms';
+        el.innerHTML = '<span class="dn"><em>' + b + '</em>.' + ext + '</span><span class="ds">' + T(LIB.checking) + '</span>';
+        out.appendChild(el); cartes[ext] = el;
+      });
+      let libre = 0;
+      await Promise.all(EXTS.map(async ext => {
+        const etat = await verifier(b + '.' + ext);
+        cartes[ext].className = 'dom-res ' + etat;
+        $('.ds', cartes[ext]).textContent = T(LIB[etat]);
+        if (etat === 'free') libre++;
+      }));
+      if (libre) cta.classList.add('on');
+    });
+  })();
+
+  /* ---------- 15. Formulaire de contact ----------
+     Envoi direct à la fonction contact-site (Supabase), qui range la demande et prévient
+     info@ (décision de Nelson, 17/11). Si la fonction ne répond pas, la demande s'ouvre
+     dans la messagerie du visiteur, déjà rédigée : rien n'est jamais perdu. */
+  (function contact(){
+    const f = $('#nsForm'); if (!f) return;
+    const ok = $('#nsOk'), bouton = $('button[type=submit]', f);
+    const API = 'https://atgykykesntvporvbvuf.supabase.co/functions/v1/contact-site';
+    const debut = Date.now();
+    const mailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+    const telOk = v => !v.trim() || /^[+()\d\s.\-]{6,}$/.test(v.trim());
+    const regles = [
+      ['n', v => v.trim().length > 1, 'Indiquez votre nom.'],
+      ['e', mailOk, 'Cette adresse e-mail ne semble pas complète.'],
+      ['t', telOk, 'Ce numéro ne semble pas valide.'],
+      ['ty', v => !!v, 'Choisissez un type de projet.'],
+      ['m', v => v.trim().length > 4, 'Dites-nous en quelques mots ce dont vous avez besoin.']
+    ];
+    const verifierChamp = ([id, test, msg]) => {
+      const el = $('#' + id), bloc = el.closest('.cf-f'), err = $('.msg-err', bloc);
+      const bon = test(el.value);
+      bloc.classList.toggle('err', !bon);
+      el.setAttribute('aria-invalid', bon ? 'false' : 'true');
+      err.textContent = bon ? '' : T(msg);
+      return bon;
+    };
+    const dire = (txt, erreur) => { ok.textContent = T(txt); ok.classList.add('on'); ok.classList.toggle('erreur', !!erreur); };
+    function parMessagerie(){
+      const s = encodeURIComponent('Demande de devis · ' + f.type.value + ' · ' + f.nom.value);
+      const b = encodeURIComponent('Nom : ' + f.nom.value + '\nE-mail : ' + f.email.value + '\nTéléphone : ' + (f.tel.value || 'non indiqué') + '\nType de projet : ' + f.type.value + '\n\nMessage :\n' + f.message.value + '\n');
+      location.href = 'mailto:info@nsdevelopment.lu?subject=' + s + '&body=' + b;
+      dire("Notre formulaire ne répond pas pour l'instant : votre messagerie s'ouvre avec la demande déjà rédigée. Envoyez-la et on vous répond sous 24 h ouvrées.", true);
+    }
+    regles.forEach(r => $('#' + r[0]).addEventListener('blur', () => { if ($('#' + r[0]).value) verifierChamp(r); }));
+    f.addEventListener('submit', ev => {
+      ev.preventDefault();
+      if (f.dataset.envoi === '1') return;
+      const resultats = regles.map(verifierChamp);
+      const premier = regles.find((r, i) => !resultats[i]);
+      if (premier) { $('#' + premier[0]).focus(); return; }
+      const donnees = {
+        nom: f.nom.value, email: f.email.value, tel: f.tel.value, type: f.type.value, message: f.message.value,
+        site_web: f.site_web ? f.site_web.value : '', duree: Date.now() - debut,
+        langue: (window.nsLangue && window.nsLangue()) || 'fr', page: location.pathname
+      };
+      f.dataset.envoi = '1'; bouton.disabled = true; f.setAttribute('aria-busy', 'true');
+      const fin = () => { f.dataset.envoi = ''; bouton.disabled = false; f.removeAttribute('aria-busy'); };
+      const delai = new AbortController(); const minuteur = setTimeout(() => delai.abort(), 15000);
+      fetch(API, { method: 'POST', body: JSON.stringify(donnees), headers: { 'Content-Type': 'text/plain' }, credentials: 'omit', signal: delai.signal })
+        .then(r => r.json().catch(() => ({})).then(j => ({ r, j })))
+        .then(({ r, j }) => {
+          clearTimeout(minuteur); fin();
+          if (r.ok && j.ok) { f.reset(); regles.forEach(([id]) => $('#' + id).removeAttribute('aria-invalid')); dire('Merci ! Votre demande est bien arrivée, on vous répond sous 24 h ouvrées.'); ok.insertAdjacentHTML('afterbegin', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="14" height="14"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'); return; }
+          if (r.status === 422) { dire('Un champ ne semble pas valide. Vérifiez votre e-mail et votre message.', true); return; }
+          if (r.status === 429) { dire('Vous avez déjà envoyé plusieurs demandes. On vous répond très vite, ou appelez Sam au +352 621 757 113.', true); return; }
+          parMessagerie();
+        })
+        .catch(() => { clearTimeout(minuteur); fin(); parMessagerie(); });
+    });
+  })();
+  /* ---------- 14. Réalisations : le chemin (17/11) ----------
+     Le tracé relie les étapes ; la partie parcourue se dessine au défilement et le point
+     « Vous » avance dessus. Une étape « atteinte » s'allume, le plan du haut suit. */
+  (function chemin(){
+    const voie = $('#voie'); if (!voie) return;
+    const svg = $('.trace', voie), fond = $('.trace-fond', voie), fait = $('.trace-fait', voie), vous = $('.vous', voie);
+    const etapes = $$('.arret', voie), noeuds = etapes.map(e => $('.noeud', e));
+    const depart = $('.depart', voie), arrivee = $('.arrivee .noeud', voie);
+    const pts = $$('.pl-pt'), chs = $$('.pl-ch'), ou = $('#plOu');
+    const chDe = pts.map(p => chs.indexOf(p.closest('.pl-ch')));
+    let L = 0, table = [], ys = [], H = 0, attente = false, dernier = -2;
+
+    function construire(){
+      const r = voie.getBoundingClientRect(); H = r.height;
+      const c = el => { const b = el.getBoundingClientRect(); return [b.left - r.left + b.width / 2, b.top - r.top + b.height / 2]; };
+      const n = noeuds.map(c), d = depart.getBoundingClientRect(), large = innerWidth > 900;
+      const P = [large ? [r.width / 2, d.bottom - r.top + 18] : [n[0][0], d.top - r.top + 4], ...n, c(arrivee)];
+      let trace = 'M' + P[0][0].toFixed(1) + ' ' + P[0][1].toFixed(1);
+      for (let i = 1; i < P.length; i++) {
+        const [x0, y0] = P[i - 1], [x1, y1] = P[i], k = (y1 - y0) * .55;
+        trace += ' C' + x0.toFixed(1) + ' ' + (y0 + k).toFixed(1) + ' ' + x1.toFixed(1) + ' ' + (y1 - k).toFixed(1) + ' ' + x1.toFixed(1) + ' ' + y1.toFixed(1);
+      }
+      svg.setAttribute('viewBox', '0 0 ' + r.width.toFixed(0) + ' ' + H.toFixed(0));
+      fond.setAttribute('d', trace); fait.setAttribute('d', trace);
+      L = fait.getTotalLength(); fait.style.strokeDasharray = L + ' ' + L;
+      table = []; const N = Math.max(200, Math.round(L / 12));
+      for (let i = 0; i <= N; i++) { const l = L * i / N, q = fait.getPointAtLength(l); table.push([l, q.x, q.y]); }
+      ys = n.map(p => p[1]); dernier = -2; maj();
+    }
+
+    function maj(){
+      attente = false; if (!table.length) return;
+      const r = voie.getBoundingClientRect(), cible = innerHeight * .56 - r.top;
+      let i = 0; while (i < table.length - 1 && table[i + 1][2] < cible) i++;
+      const a = table[i], b = table[Math.min(i + 1, table.length - 1)];
+      const t = b[2] > a[2] ? Math.min(1, Math.max(0, (cible - a[2]) / (b[2] - a[2]))) : 0;
+      const l = a[0] + (b[0] - a[0]) * t, x = a[1] + (b[1] - a[1]) * t, y = a[2] + (b[2] - a[2]) * t;
+      fait.style.strokeDashoffset = (L - l).toFixed(1);
+      vous.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      vous.classList.toggle('on', cible > table[0][2] && cible < H);
+      let ici = -1;
+      etapes.forEach((e, k) => { const ok = ys[k] <= cible + 4; e.classList.toggle('atteinte', ok); if (ok) ici = k; });
+      if (ici === dernier) return; dernier = ici;
+      const cur = Math.max(0, ici);
+      pts.forEach((p, k) => { p.classList.toggle('fait', k < ici); p.classList.toggle('ici', k === ici); if (k === cur) p.setAttribute('aria-current', 'step'); else p.removeAttribute('aria-current'); });
+      chs.forEach((c, k) => c.classList.toggle('ici', k === chDe[cur]));
+      if (ou) ou.textContent = String(cur + 1).padStart(2, '0');
+    }
+
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    if ('ResizeObserver' in window) { let t; new ResizeObserver(() => { clearTimeout(t); t = setTimeout(construire, 80); }).observe(voie); }
+    else addEventListener('resize', construire);
+    if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(construire);
+    construire();
+  })();
+
+  /* ---------- Barre « page suivante » sur mobile (17/11) : arrivée, puis fil doré de lecture ---------- */
+  (function(){
+    const barre = $('.suivante');
+    if (!barre) return;
+    const prog = $('.sv-prog', barre);
+    let attente = false;
+    const maj = () => {
+      attente = false;
+      const max = doc.documentElement.scrollHeight - innerHeight;
+      prog.style.setProperty('--lu', max > 0 ? Math.min(1, Math.max(0, scrollY / max)).toFixed(3) : 1);
+    };
+    addEventListener('scroll', () => { if (!attente) { attente = true; requestAnimationFrame(maj); } }, { passive: true });
+    addEventListener('resize', maj);
+    maj();
+    introPrete.then(() => setTimeout(() => barre.classList.add('on'), reduit ? 0 : 500));
+  })();
+})();

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NSD 360 — Votre service marketing, chaque semaine · Luxembourg</title>
+<meta name="description" content="NSD 360 : on vient chez vous chaque semaine au Luxembourg. Stratégie, 12 vidéos par mois, réseaux sociaux, publicité Meta, fiche Google et fichier clients, pour un seul interlocuteur.">
+<link rel="canonical" href="https://nsdevelopment.lu/nsd-360.html">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="NSD 360 — Votre service marketing, chaque semaine">
+<meta property="og:description" content="Une visite par semaine, trois vidéos publiées, vos réseaux, votre publicité, votre fiche Google et votre fichier clients. NS Development, Luxembourg.">
+<meta property="og:image" content="https://nsdevelopment.lu/assets/og-cover.png">
+<meta property="og:url" content="https://nsdevelopment.lu/nsd-360.html">
+<meta property="og:site_name" content="NS Development">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NSD 360 — Votre service marketing, chaque semaine">
+<meta name="twitter:description" content="Une visite par semaine, trois vidéos publiées, et tout votre digital au même endroit.">
+<meta name="twitter:image" content="https://nsdevelopment.lu/assets/og-cover.png">
+<link rel="stylesheet" href="assets/fonts/polices-dca6f46f1b.css">
+<link rel="stylesheet" href="assets/nsd360/nsd360.css?v=3">
+<link rel="preload" as="image" href="assets/nsd360/ecrans/intro.webp">
+<script>document.documentElement.classList.add('js')</script>
+<script type="importmap">{"imports":{"three":"./assets/vendor/three/three.module.min.js"}}</script>
+<script type="module" src="assets/nsd360/nsd360.js?v=4"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Service","name":"NSD 360","serviceType":"Marketing digital et production vidéo","areaServed":{"@type":"Country","name":"Luxembourg"},
+ "provider":{"@type":"Organization","name":"NS Development","url":"https://nsdevelopment.lu/","email":"info@nsdevelopment.lu","telephone":"+352621757113"},
+ "offers":[{"@type":"Offer","name":"Offre de lancement, 2 premiers mois","price":"3290","priceCurrency":"EUR","description":"Prix mensuel hors TVA, réservé aux 3 premiers clients"},
+           {"@type":"Offer","name":"Ensuite","price":"5490","priceCurrency":"EUR","description":"Prix mensuel hors TVA, facturé par période de 2 mois"}]}
+</script>
+</head>
+<body>
+
+<a class="skip" href="#tarifs">Aller aux tarifs</a>
+
+<header class="nav" id="nav">
+  <a href="index.html" class="brand" aria-label="NS Development, retour à l'accueil"><img src="assets/nsd-logo-horizontal-noir.svg" width="150" height="21" alt="NS Development"></a>
+  <nav class="nav-links" aria-label="Sections de l'offre NSD 360">
+    <a href="#semaine" data-go="1">Chaque semaine</a>
+    <a href="#compris" data-go="4">Ce qui est compris</a>
+    <a href="#resultats" data-go="6">Résultats</a>
+    <a href="#site" data-go="7">Site en option</a>
+    <a href="#tarifs" data-go="8">Tarifs</a>
+  </nav>
+  <a href="index.html#contact" class="cta">Discutons de votre projet</a>
+</header>
+
+<main>
+<!-- L'expérience : une scène fixe (gimbal + iPhone 3D) et des panneaux qui changent au défilement.
+     Sans JavaScript, les panneaux s'empilent normalement avec une image de l'écran. -->
+<section class="xp" id="xp" aria-label="Présentation de l'offre NSD 360">
+  <div class="stage" id="stage">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="phone2d" aria-hidden="true"><img id="phone2d" src="assets/nsd360/ecrans/intro.webp" alt="" width="390" height="844"></div>
+
+    <ol class="rail" aria-hidden="true">
+      <li data-scene="0">La promesse</li><li data-scene="1">Chaque semaine</li><li data-scene="2">Compris</li>
+      <li data-scene="3">Visibilité</li><li data-scene="4">Résultats</li><li data-scene="5">Site</li><li data-scene="6">Tarifs</li>
+    </ol>
+
+    <!-- 0. La promesse -->
+    <article class="pan left" data-beat="0" data-screen="intro" id="promesse">
+      <p class="kick">NSD 360 · offre tout-en-un</p>
+      <h1 class="t-xl" data-words>Votre service marketing, <em>chaque semaine.</em></h1>
+      <p class="lead">On s'occupe de tout votre digital : la stratégie, les vidéos tournées chez vous, vos réseaux sociaux, votre publicité, votre fiche Google et votre fichier clients.</p>
+      <p class="punch">Vous gardez votre temps pour votre métier.</p>
+      <p class="scroll-hint" aria-hidden="true"><span></span>Faites défiler</p>
+    </article>
+
+    <!-- 1. Chaque semaine (trois temps) -->
+    <article class="pan right" data-beat="1" data-screen="reunion" id="semaine">
+      <p class="step"><b>01</b> sur 03 · chaque semaine, on vient chez vous</p>
+      <h2 class="t-l" data-words>On réfléchit ensemble.</h2>
+      <p class="meta">1 à 2 heures</p>
+      <p class="lead">Votre prochain coup marketing : une offre, une saison, un événement ou un recrutement. On repart avec une décision claire.</p>
+    </article>
+    <article class="pan right" data-beat="2" data-screen="tournage">
+      <p class="step"><b>02</b> sur 03 · chaque semaine, on vient chez vous</p>
+      <h2 class="t-l" data-words>On tourne sur place.</h2>
+      <p class="meta">Environ 2 heures</p>
+      <p class="lead">Les scripts sont écrits par nos soins. Vous n'avez rien à préparer, on vous guide devant la caméra.</p>
+    </article>
+    <article class="pan right" data-beat="3" data-screen="publie">
+      <p class="step"><b>03</b> sur 03 · chaque semaine, on vient chez vous</p>
+      <h2 class="t-l" data-words>On publie pour vous.</h2>
+      <p class="meta">3 vidéos par semaine</p>
+      <p class="lead">Montées, sous-titrées à vos couleurs et publiées aux bonnes heures. Vous validez chaque vidéo avant sa sortie.</p>
+    </article>
+
+    <!-- 2. Tout ce qui est compris -->
+    <article class="pan left" data-beat="4" data-screen="reseaux" id="compris">
+      <h2 class="t-l" data-words>Tout votre marketing. <em>Un seul interlocuteur.</em></h2>
+      <ul class="facts">
+        <li><b>12</b><span>vidéos montées par mois pour Instagram, TikTok et YouTube Shorts</span></li>
+        <li><b>2</b><span>séries de corrections par vidéo</span></li>
+        <li><b>4</b><span>carrousels ou visuels complémentaires</span></li>
+        <li><b>16</b><span>publications sur 3 réseaux au choix, plus des stories régulières</span></li>
+        <li><b>L–V</b><span>réponses à vos commentaires et à vos messages, du lundi au vendredi</span></li>
+      </ul>
+    </article>
+
+    <!-- 3. Publicité, Google, CRM -->
+    <article class="pan right" data-beat="5" data-screen="pub">
+      <h2 class="t-l" data-words>Votre présence ne s'arrête pas <em>aux publications.</em></h2>
+      <ul class="ticks">
+        <li>Vos publicités Meta créées et suivies</li>
+        <li>Votre fiche Google tenue à jour : posts, photos, réponse à chaque avis</li>
+        <li>Une newsletter par mois à vos clients</li>
+        <li>Votre fichier clients, avec des relances automatiques</li>
+      </ul>
+      <p class="note">Le budget publicitaire n'est pas compris : vous le réglez directement à Meta, et vous en choisissez le montant.</p>
+    </article>
+
+    <!-- 4. Résultats -->
+    <article class="pan left" data-beat="6" data-screen="rapport" id="resultats">
+      <h2 class="t-l" data-words>Vous savez enfin ce que votre marketing <em>vous rapporte.</em></h2>
+      <p class="lead">Chaque mois, un rapport dans votre espace client.</p>
+      <ul class="kpis">
+        <li>Vues</li><li>Abonnés</li><li>Messages</li><li>Clients générés</li>
+      </ul>
+      <p class="note">Ce sont vos vrais chiffres, mois après mois. Nous ne promettons pas de résultat à l'avance : nous les mesurons avec vous.</p>
+    </article>
+
+    <!-- 5. Site en option -->
+    <article class="pan right" data-beat="7" data-screen="site" id="site">
+      <h2 class="t-l" data-words>Besoin d'un site&nbsp;? <em>On le fait aussi.</em></h2>
+      <p class="lead">Le site est une option. Si vous avez déjà le vôtre, vous le gardez.</p>
+      <ul class="ticks">
+        <li>Fait sur mesure : réservation en ligne, boutique, catalogue, plusieurs langues</li>
+        <li>Hébergé au Luxembourg</li>
+        <li>Pendant le pack : modifications illimitées et référencement local suivi, offerts</li>
+        <li>Chaque mois, vos nouvelles vidéos et photos y entrent</li>
+      </ul>
+      <p class="price-line"><span>Site à partir de</span><b>1 350 € HT</b></p>
+      <p class="note">Maintenance et hébergement à partir de 550 € HT par an. Le site s'engage sur 12 mois, à cause de l'hébergement.</p>
+    </article>
+
+    <!-- 6. Tarifs -->
+    <article class="pan right wide" data-beat="8" data-screen="tarif" id="tarifs">
+      <h2 class="t-l" data-words>Une offre claire. <em>Un seul interlocuteur.</em></h2>
+      <div class="prices">
+        <div class="pc hot">
+          <p class="pc-k">Offre de lancement · 2 premiers mois</p>
+          <p class="pc-p"><b>3 290 €</b><span>HT / mois</span></p>
+          <p class="pc-d">6 580 € HT pour les deux mois, payés au départ.</p>
+          <p class="pc-tag">Réservée aux 3 premiers clients</p>
+        </div>
+        <div class="pc">
+          <p class="pc-k">Ensuite</p>
+          <p class="pc-p"><b>5 490 €</b><span>HT / mois</span></p>
+          <p class="pc-d">10 980 € HT tous les 2 mois, payés en début de période.</p>
+        </div>
+      </div>
+      <a class="go" href="#conditions">Voir les conditions <span aria-hidden="true">↓</span></a>
+    </article>
+  </div>
+</section>
+
+<!-- Après l'expérience : le détail, puis le contact -->
+<section class="after" id="conditions">
+  <div class="wrap">
+    <h2 class="t-m">Les conditions, noir sur blanc.</h2>
+    <div class="conds">
+      <div><b>Engagement de 2 mois</b><span>Renouvelé automatiquement tous les 2 mois.</span></div>
+      <div><b>Arrêt simple</b><span>Par écrit, au moins 15 jours avant la fin de la période en cours.</span></div>
+      <div><b>Mise en place : 990 € HT</b><span>Une seule fois : audit, charte de vos vidéos, fiche Google, import de votre fichier clients.</span></div>
+      <div><b>Tout reste à vous</b><span>Vos comptes, vos vidéos et votre fichier clients vous appartiennent, même si vous arrêtez.</span></div>
+      <div><b>Les deux prix au contrat</b><span>L'offre de lancement et le prix suivant sont écrits dès la signature. En échange de l'offre de lancement, nous pouvons montrer votre travail dans notre portfolio, et vous nous donnez votre avis à la fin des 2 mois.</span></div>
+      <div><b>Prix hors TVA</b><span>TVA luxembourgeoise de 17 % en plus. Le budget publicitaire n'est pas compris.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2 class="t-xl" data-words>Parlons de votre <em>prochain mois.</em></h2>
+    <div class="people">
+      <div><b>Samir DINIS DA ROSA</b><span>Co-gérant · suivi client</span><a href="tel:+352621757113">+352 621 757 113</a></div>
+      <div><b>Par e-mail</b><span>Pour toute question</span><a href="mailto:info@nsdevelopment.lu">info@nsdevelopment.lu</a></div>
+    </div>
+    <a class="big-cta" href="index.html#contact">Discutons de votre projet <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a href="index.html"><img src="assets/nsd-logo-horizontal-noir.svg" width="130" height="18" alt="NS Development"></a>
+    <span>NS DEVELOPMENT SARL-S · Luxembourg · prix HT</span>
+    <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a> · <a href="cgv.html">CGV</a></span>
+  </div>
+</footer>
+</body>
+</html>
