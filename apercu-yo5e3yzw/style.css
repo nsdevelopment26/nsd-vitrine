@@ -101,11 +101,11 @@ section{position:relative}
 .explorer{display:grid;grid-template-columns:260px 1fr;gap:40px}
 .explorer > *,.ex-panel > *{min-width:0}
 .ex-tabs{display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.ex-tab{display:flex;align-items:baseline;gap:14px;padding:15px 4px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--mute);font:700 18px "Exo 2";text-align:left;cursor:pointer;position:relative;transition:color .25s,padding .3s}
+.ex-tab{display:flex;align-items:baseline;gap:14px;padding:15px 4px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--mute);font:700 18px "Exo 2";text-align:left;cursor:pointer;position:relative;transition:color .25s}
 .ex-tab small{font:500 12px "IBM Plex Sans";color:var(--mute);min-width:22px}
 .ex-tab::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ns-ease)}
 .ex-tab:hover{color:var(--steel)}
-.ex-tab[aria-selected="true"]{color:var(--steel);padding-left:12px}
+.ex-tab[aria-selected="true"]{color:var(--steel)}
 .ex-tab[aria-selected="true"]::after{transform:none}
 .ex-tab[aria-selected="true"] small{color:var(--amber-2)}
 .ex-panel{display:grid;grid-template-columns:1.15fr 1fr;gap:36px;align-items:start}
@@ -205,7 +205,7 @@ section{position:relative}
 .pick-chips{display:flex;flex-wrap:wrap;gap:8px}
 .pick-chips label{position:relative;cursor:pointer}
 .pick-chips input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.pick-chips span{display:block;padding:9px 14px;border:1px solid var(--line);font-size:14px;color:#d5d9dd;transition:all .2s}
+.pick-chips span{display:block;padding:9px 14px;border:1px solid var(--line);font-size:14px;color:#d5d9dd;transition:background-color .2s,border-color .2s,color .2s}
 .pick-chips label:hover span{border-color:var(--mute)}
 .pick-chips input:checked + span{background:var(--amber);border-color:var(--amber);color:#16110a;font-weight:600}
 .pick-chips input:focus-visible + span{outline:2px solid var(--amber-2);outline-offset:2px}
@@ -244,7 +244,7 @@ section{position:relative}
   .explorer{grid-template-columns:1fr}
   .ex-tabs{flex-direction:row;overflow-x:auto;border:0;gap:6px;padding-bottom:6px;scrollbar-width:none}
   .ex-tab{flex:0 0 auto;border:1px solid var(--line);padding:10px 14px;font-size:15px}
-  .ex-tab[aria-selected="true"]{padding-left:14px;border-color:var(--amber)}
+  .ex-tab[aria-selected="true"]{border-color:var(--amber)}
   .ex-tab::after{display:none}
   .steps{grid-template-columns:1fr 1fr;row-gap:40px}
   .steps::before{display:none}
