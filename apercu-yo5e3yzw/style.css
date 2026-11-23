@@ -1,0 +1,295 @@
+/* Franck S.A. — maquette NS Development
+   Direction « Atelier d'acier » : graphite brossé, lumière ambre de soudure, typographie technique.
+   Exo 2 = police de marque de Franck (reprise de leur charte), IBM Plex Sans = texte. */
+
+:root{
+  --ink:#121416;          /* graphite */
+  --ink-2:#1a1d21;        /* tôle */
+  --ink-3:#24282d;        /* profilé */
+  --line:#343a41;
+  --steel:#eceef0;        /* texte clair */
+  --mute:#a7adb4;         /* texte secondaire sur sombre, 7,9:1 */
+  --amber:#f3911b;        /* ambre de marque (Franck #F3911B) */
+  --amber-2:#fbbb10;
+  --amber-d:#a14c0c;      /* ambre pour fond clair, 5,2:1 sur béton */
+  --concrete:#e7e9eb;     /* béton clair */
+  --concrete-ink:#16191c;
+  --concrete-mute:#4d545b;
+  --cut:14px;             /* angle des boutons, rappel des barres du logo */
+  --wrap:1240px;
+  --ns-progress-color:#f3911b;
+  --ns-ease:cubic-bezier(.2,.75,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--ink);color:var(--steel);font:400 17px/1.6 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:"Exo 2",sans-serif;font-weight:800;line-height:1.04;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(2rem,4.2vw,3.4rem);max-width:18ch}
+p{margin:0}
+.wrap{width:min(var(--wrap),100% - 40px);margin-inline:auto}
+.skip{position:absolute;left:-999px;top:8px;background:var(--amber);color:var(--ink);padding:10px 14px;z-index:100}
+.skip:focus{left:8px}
+:focus-visible{outline:2px solid var(--amber-2);outline-offset:3px}
+
+/* bandeau maquette */
+.demo-band{margin:0;padding:8px 20px;background:var(--amber);color:#1a1205;font-size:13px;text-align:center;font-weight:500}
+
+/* ---------- boutons ---------- */
+.btn-cut{display:inline-flex;align-items:center;gap:.6em;padding:12px 22px;background:var(--amber);color:#16110a;text-decoration:none;font:700 15px/1 "Exo 2",sans-serif;letter-spacing:.02em;text-transform:uppercase;border:0;cursor:pointer;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%);transition:background .25s}
+.btn-cut:hover{background:var(--amber-2)}
+.btn-lg{padding:18px 30px;font-size:16px}
+.btn-line{display:inline-flex;gap:.6em;align-items:center;margin-top:28px;padding:14px 0;border-bottom:2px solid var(--amber);text-decoration:none;font:700 16px "Exo 2",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.btn-line:hover span{transform:translateX(5px)}
+.btn-line span{transition:transform .25s}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px max(20px,calc((100% - var(--wrap))/2));transition:background .3s,box-shadow .3s}
+.nav.ns-solid{background:rgba(18,20,22,.97);box-shadow:0 1px 0 var(--line)} /* pas de backdrop-filter : il piégerait le menu mobile en position fixe */
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand-mark{width:34px;height:34px}
+.brand-word{font:900 24px/1 "Exo 2",sans-serif;letter-spacing:.14em;color:var(--amber)}
+.brand-word small{font-size:11px;letter-spacing:.08em;color:var(--mute);margin-left:6px;font-weight:600}
+.nav-links{display:flex;align-items:center;gap:26px;font-size:15px}
+.nav-links a{text-decoration:none}
+.nav-tel{color:var(--mute);font-variant-numeric:tabular-nums}
+.nav-tel:hover{color:var(--steel)}
+.burger{display:none;width:46px;height:46px;background:none;border:1px solid var(--line);cursor:pointer;position:relative}
+.burger span{position:absolute;left:12px;right:12px;height:2px;background:var(--steel);transition:transform .3s}
+.burger span:first-child{top:18px}.burger span:last-child{top:26px}
+.burger[aria-expanded="true"] span:first-child{transform:translateY(4px) rotate(45deg)}
+.burger[aria-expanded="true"] span:last-child{transform:translateY(-4px) rotate(-45deg)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:calc(100svh - 110px);display:flex;align-items:flex-end;overflow:hidden;margin-top:-78px;padding-top:78px}
+.hero-media{position:absolute;inset:-6% 0 0}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:50% 40%;animation:kb 18s var(--ns-ease) both}
+@keyframes kb{from{transform:scale(1.14)}to{transform:scale(1)}}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,20,22,.55) 0%,rgba(18,20,22,.15) 35%,rgba(18,20,22,.86) 78%,var(--ink) 100%),linear-gradient(90deg,rgba(18,20,22,.75),transparent 70%)}
+.hero-grid{position:relative;width:min(var(--wrap),100% - 40px);margin:0 auto;padding:120px 0 72px;display:grid;grid-template-columns:1fr auto;gap:48px;align-items:end}
+.hero-kicker{font:600 13px/1 "IBM Plex Sans";letter-spacing:.14em;text-transform:uppercase;color:var(--amber-2);margin-bottom:22px}
+.hero h1{font-size:clamp(2.6rem,6.4vw,5.6rem);max-width:15ch;font-weight:900;text-transform:uppercase;letter-spacing:-.005em;line-height:1.06}
+.hero-lead{max-width:54ch;margin-top:26px;font-size:clamp(16px,1.4vw,19px);color:#d5d9dd}
+.hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:22px 28px;margin-top:36px}
+.hero-tel{color:var(--mute);text-decoration:none;font-size:15px}
+.hero-tel strong{color:var(--steel);font-weight:600;border-bottom:1px solid var(--amber)}
+.plate{margin:0;min-width:270px;border:1px solid rgba(236,238,240,.22);background:rgba(18,20,22,.55);backdrop-filter:blur(8px);padding:6px 22px}
+.plate div{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-bottom:1px solid rgba(236,238,240,.14)}
+.plate div:last-child{border:0}
+.plate dt{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.plate dd{margin:0;font:600 15px "Exo 2";text-align:right}
+.scroll-cue{position:absolute;left:50%;bottom:18px;width:2px;height:44px;background:rgba(236,238,240,.2);overflow:hidden}
+.scroll-cue span{position:absolute;inset:0;background:var(--amber);animation:cue 2.2s infinite}
+@keyframes cue{0%{transform:translateY(-100%)}60%,100%{transform:translateY(100%)}}
+
+/* ---------- partenaires ---------- */
+.partners{border-block:1px solid var(--line);background:var(--ink-2)}
+.partners ul{list-style:none;margin:0 auto;padding:0;width:min(var(--wrap),100% - 40px);display:grid;grid-template-columns:repeat(4,1fr)}
+.partners li{padding:22px 18px;font:700 17px "Exo 2";border-left:1px solid var(--line)}
+.partners li:first-child{border-left:0;padding-left:0}
+.partners b{display:block;font:500 12px "IBM Plex Sans";letter-spacing:.1em;text-transform:uppercase;color:var(--amber-2);margin-bottom:4px}
+
+/* ---------- sections ---------- */
+section{position:relative}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px 40px;margin-bottom:48px}
+.sec-head p{max-width:40ch;color:var(--mute)}
+.skills,.method,.jobs,.contact{padding:clamp(80px,11vw,140px) 0}
+
+/* ---------- explorateur ---------- */
+.explorer{display:grid;grid-template-columns:260px 1fr;gap:40px}
+.explorer > *,.ex-panel > *{min-width:0}
+.ex-tabs{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.ex-tab{display:flex;align-items:baseline;gap:14px;padding:15px 4px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--mute);font:700 18px "Exo 2";text-align:left;cursor:pointer;position:relative;transition:color .25s,padding .3s}
+.ex-tab small{font:500 12px "IBM Plex Sans";color:var(--mute);min-width:22px}
+.ex-tab::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ns-ease)}
+.ex-tab:hover{color:var(--steel)}
+.ex-tab[aria-selected="true"]{color:var(--steel);padding-left:12px}
+.ex-tab[aria-selected="true"]::after{transform:none}
+.ex-tab[aria-selected="true"] small{color:var(--amber-2)}
+.ex-panel{display:grid;grid-template-columns:1.15fr 1fr;gap:36px;align-items:start}
+.ex-figure{margin:0;position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--ink-3)}
+.ex-figure img{width:100%;height:100%;object-fit:cover;transition:opacity .45s,transform 1.2s var(--ns-ease)}
+.ex-figure.swap img{opacity:0;transform:scale(1.05)}
+.ex-figure figcaption{position:absolute;left:0;bottom:0;padding:10px 14px;background:rgba(18,20,22,.82);font-size:13px;color:#d5d9dd}
+.ex-figure.drawing{background:var(--ink-2)}
+.ex-num{font:500 13px "IBM Plex Sans";letter-spacing:.12em;color:var(--amber-2)}
+.ex-body h3{font-size:clamp(2rem,3.4vw,2.9rem);margin:10px 0 18px;text-transform:uppercase}
+.ex-body > p:not(.ex-num){color:#cfd3d7}
+.chips{list-style:none;padding:0;margin:24px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.chips li{padding:7px 12px;border:1px solid var(--line);font-size:14px;color:#d5d9dd}
+.ex-thumbs{display:flex;gap:10px;margin-top:26px}
+.ex-thumbs button{width:82px;height:62px;padding:0;border:1px solid var(--line);background:none;cursor:pointer;overflow:hidden;opacity:.6;transition:opacity .25s,border-color .25s}
+.ex-thumbs button img{width:100%;height:100%;object-fit:cover}
+.ex-thumbs button[aria-current="true"],.ex-thumbs button:hover{opacity:1;border-color:var(--amber)}
+.ex-body.swap{animation:fadein .5s var(--ns-ease)}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}}
+
+/* ---------- à propos ---------- */
+.about{background:var(--ink-2);padding:clamp(80px,10vw,130px) 0;border-block:1px solid var(--line)}
+.about-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:60px;align-items:center}
+.about-photo{margin:0}
+.about-photo img{width:100%;aspect-ratio:689/291;object-fit:cover;filter:saturate(.9)}
+.about-photo figcaption{margin-top:12px;font-size:13px;color:var(--mute)}
+.about-copy > p{margin-top:22px;color:#cfd3d7;max-width:52ch}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:40px;border-top:1px solid var(--line)}
+.stats div{padding:22px 0;border-bottom:1px solid var(--line)}
+.stats div:nth-child(odd){padding-right:20px;border-right:1px solid var(--line)}
+.stats div:nth-child(even){padding-left:24px}
+.stats strong{display:block;font:900 clamp(2rem,3.6vw,2.9rem)/1 "Exo 2";color:var(--amber)}
+.stats span{display:block;margin-top:8px;font-size:14px;color:var(--mute)}
+
+/* ---------- méthode ---------- */
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.steps::before{content:"";position:absolute;left:0;right:0;top:30px;height:2px;background:linear-gradient(90deg,var(--amber),var(--line))}
+.steps li{position:relative;padding:72px 24px 0 0}
+.step-n{position:absolute;top:12px;left:0;width:38px;height:38px;display:grid;place-items:center;font:800 14px/1 "Exo 2";color:var(--amber-2);z-index:0}
+.step-n::before{content:"";position:absolute;inset:0;background:var(--ink);border:2px solid var(--amber);transform:rotate(45deg);z-index:-1}
+.steps h3{font-size:22px;margin-bottom:12px}
+.steps p{color:var(--mute);font-size:16px}
+
+/* ---------- réalisations (section claire, béton) ---------- */
+.works{background:var(--concrete);color:var(--concrete-ink);padding:clamp(80px,11vw,140px) 0;--amber:var(--amber-d)}
+.works h2{color:var(--concrete-ink)}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{padding:10px 16px;background:transparent;border:1px solid #b9bfc5;color:var(--concrete-ink);font:600 14px "IBM Plex Sans";cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.filters button:hover{border-color:var(--concrete-ink)}
+.filters button.is-on{background:var(--concrete-ink);color:var(--concrete);border-color:var(--concrete-ink)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:120px;grid-auto-flow:dense;gap:12px}
+.card{position:relative;grid-column:span 4;grid-row:span 3;overflow:hidden;background:#cfd3d7;border:0;padding:0;cursor:zoom-in;text-align:left;color:#fff;transition:opacity .35s,transform .35s}
+.card.big{grid-column:span 8;grid-row:span 4}
+.card.tall{grid-row:span 4}
+.card img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ns-ease)}
+.card:hover img,.card:focus-visible img{transform:scale(1.06)}
+.card .cap{position:absolute;inset:auto 0 0 0;padding:44px 16px 14px;background:linear-gradient(transparent,rgba(10,12,14,.88));display:flex;justify-content:space-between;align-items:end;gap:12px}
+.card .cap b{font:700 17px/1.2 "Exo 2"}
+.card .cap span{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#f6c46b;white-space:nowrap}
+.card.is-hidden{display:none}
+
+/* ---------- histoire : frise horizontale épinglée ---------- */
+.history{height:340vh;background:var(--ink)}
+.history-pin{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.history-head{display:flex;justify-content:space-between;align-items:end;gap:30px}
+.history-head h2{max-width:20ch}
+.history-year{font:900 clamp(4rem,12vw,10rem)/.8 "Exo 2";color:var(--amber);font-variant-numeric:tabular-nums}
+.rail{width:min(var(--wrap),100% - 40px);margin:46px auto 0;height:2px;background:var(--line)}
+.rail-fill{height:100%;width:0;background:var(--amber)}
+.track{list-style:none;margin:0;padding:38px 0 0 max(20px,calc((100vw - var(--wrap))/2));display:flex;gap:26px;will-change:transform}
+.track li{flex:0 0 300px;padding:22px 22px 26px;background:var(--ink-2);border:1px solid var(--line);border-top:3px solid var(--line);transition:border-color .4s}
+.track li.on{border-top-color:var(--amber)}
+.track b{display:block;font:900 38px/1 "Exo 2";color:var(--amber);margin-bottom:12px}
+.track p{color:#cfd3d7;font-size:16px}
+
+/* ---------- carrières ---------- */
+.jobs{border-top:1px solid var(--line)}
+.jobs-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.jobs-grid > div > p{margin-top:20px;color:var(--mute);max-width:46ch}
+.roles{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.roles li{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 22px;background:var(--ink-2);border:1px solid var(--line);font:700 19px "Exo 2"}
+.roles span{order:2;font:500 12px "IBM Plex Sans";letter-spacing:.08em;text-transform:uppercase;color:var(--amber-2);text-align:right}
+
+/* ---------- contact ---------- */
+.contact{background:var(--ink-2);border-top:1px solid var(--line)}
+.contact-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px}
+.contact-info > p{margin-top:18px;color:var(--mute);max-width:40ch}
+.coords{list-style:none;padding:0;margin:36px 0 0;border-top:1px solid var(--line)}
+.coords li{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.coords span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding-top:3px}
+.coords a{text-decoration:none}
+.coords a:hover{color:var(--amber-2)}
+.brochure{display:inline-block;margin-top:26px;color:var(--amber-2);font-weight:600;text-decoration:none;border-bottom:1px solid currentColor}
+.form{background:var(--ink);border:1px solid var(--line);padding:clamp(22px,3vw,38px)}
+.pick{border:0;padding:0;margin:0 0 24px}
+.pick legend{font:700 15px "Exo 2";text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px}
+.pick-chips{display:flex;flex-wrap:wrap;gap:8px}
+.pick-chips label{position:relative;cursor:pointer}
+.pick-chips input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.pick-chips span{display:block;padding:9px 14px;border:1px solid var(--line);font-size:14px;color:#d5d9dd;transition:all .2s}
+.pick-chips label:hover span{border-color:var(--mute)}
+.pick-chips input:checked + span{background:var(--amber);border-color:var(--amber);color:#16110a;font-weight:600}
+.pick-chips input:focus-visible + span{outline:2px solid var(--amber-2);outline-offset:2px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;margin-bottom:22px}
+.f span{display:block;font-size:13px;color:var(--mute);margin-bottom:6px}
+.f input,.f textarea{width:100%;padding:13px 14px;background:var(--ink-2);border:1px solid var(--line);color:var(--steel);font:16px "IBM Plex Sans";transition:border-color .2s}
+.f input:focus,.f textarea:focus{outline:0;border-color:var(--amber)}
+.f textarea{resize:vertical}
+.f-wide{grid-column:1/-1}
+.f textarea::placeholder{color:#868d95}
+.form-err{min-height:1.2em;margin-bottom:12px;color:#ffb36b;font-size:14px}
+.form .ok{padding:18px;border:1px solid var(--amber);color:var(--steel)}
+
+/* ---------- footer ---------- */
+.foot{padding:64px 0 28px;border-top:1px solid var(--line)}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
+.foot-grid p{margin-top:16px;color:var(--mute);max-width:38ch;font-size:15px}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:15px}
+.foot ul a{text-decoration:none;color:#cfd3d7}
+.foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--mute)}
+.foot-bottom a{color:var(--amber-2)}
+
+/* ---------- visionneuse ---------- */
+.lb{position:fixed;inset:0;z-index:90;background:rgba(10,12,14,.95);display:grid;grid-template-columns:70px 1fr 70px;align-items:center}
+.lb[hidden]{display:none}
+.lb figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 0}
+.lb img{max-height:80vh;max-width:100%;object-fit:contain}
+.lb figcaption{font:600 16px "Exo 2";color:var(--steel)}
+.lb-x{position:absolute;top:16px;right:18px;width:48px;height:48px;font-size:30px;line-height:1;background:none;border:1px solid var(--line);color:var(--steel);cursor:pointer}
+.lb-nav{width:52px;height:52px;margin:auto;background:none;border:1px solid var(--line);color:var(--steel);font-size:20px;cursor:pointer}
+.lb-nav:hover,.lb-x:hover{border-color:var(--amber);color:var(--amber-2)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .nav-links{gap:18px}.nav-tel{display:none}
+  .explorer{grid-template-columns:1fr}
+  .ex-tabs{flex-direction:row;overflow-x:auto;border:0;gap:6px;padding-bottom:6px;scrollbar-width:none}
+  .ex-tab{flex:0 0 auto;border:1px solid var(--line);padding:10px 14px;font-size:15px}
+  .ex-tab[aria-selected="true"]{padding-left:14px;border-color:var(--amber)}
+  .ex-tab::after{display:none}
+  .steps{grid-template-columns:1fr 1fr;row-gap:40px}
+  .steps::before{display:none}
+}
+@media (max-width:860px){
+  .burger{display:block}
+  .nav-links{position:fixed;inset:0 0 0 auto;width:min(340px,86vw);flex-direction:column;align-items:flex-start;gap:22px;padding:100px 30px 30px;background:var(--ink-2);border-left:1px solid var(--line);font-size:20px;transform:translateX(100%);visibility:hidden;transition:transform .4s var(--ns-ease),visibility 0s .4s}
+  .nav-links.open{transform:none;visibility:visible;transition:transform .4s var(--ns-ease)}
+  .nav-tel{display:block}
+  .burger{z-index:2}
+  .hero-grid{grid-template-columns:1fr;padding-bottom:64px}
+  .plate{min-width:0}
+  .partners ul{grid-template-columns:1fr 1fr}
+  .partners li{border-left:0;padding-left:0;border-bottom:1px solid var(--line)}
+  .ex-panel{grid-template-columns:1fr}
+  .ex-figure{aspect-ratio:4/3}
+  .about-grid,.jobs-grid,.contact-grid{grid-template-columns:1fr;gap:40px}
+  .grid{grid-template-columns:1fr 1fr;grid-auto-rows:150px}
+  .card,.card.tall{grid-column:span 1;grid-row:span 2}
+  .card.big{grid-column:span 2;grid-row:span 2}
+  .history{height:auto}
+  .history-pin{position:static;height:auto;padding:90px 0}
+  .history-year,.rail{display:none}
+  .track{flex-direction:column;padding:30px 20px 0;transform:none!important}
+  .track li{flex:auto;border-top-color:var(--amber)}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .foot-grid > div{grid-column:1/-1}
+  .lb{grid-template-columns:1fr}
+  .lb-nav{position:absolute;bottom:20px}
+  .lb-prev{left:calc(50% - 62px)}.lb-next{right:calc(50% - 62px)}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .fields{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr}
+  .stats div:nth-child(odd){border-right:0;padding-right:0}
+  .stats div:nth-child(even){padding-left:0}
+  .steps{grid-template-columns:1fr}
+  .card .cap{flex-direction:column;align-items:flex-start;gap:4px;padding:34px 12px 10px}
+  .card .cap b{font-size:15px}
+  .coords li{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-media img,.scroll-cue span{animation:none}
+  .history{height:auto}
+  .history-pin{position:static;height:auto;padding:90px 0}
+  .track{flex-wrap:wrap;transform:none!important;padding-right:20px}
+}

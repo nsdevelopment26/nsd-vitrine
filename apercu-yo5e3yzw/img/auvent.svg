@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Dessin technique d'un auvent à membrane tendue">
+  <rect width="800" height="1000" fill="#1a1d21"/>
+  <g stroke="#2c3137" stroke-width="1">
+    <path d="M0 100H800M0 200H800M0 300H800M0 400H800M0 500H800M0 600H800M0 700H800M0 800H800M0 900H800"/>
+    <path d="M100 0V1000M200 0V1000M300 0V1000M400 0V1000M500 0V1000M600 0V1000M700 0V1000"/>
+  </g>
+  <!-- sol -->
+  <path d="M60 840H740" stroke="#a7adb4" stroke-width="2"/>
+  <!-- mâts -->
+  <g stroke="#eceef0" stroke-width="6" stroke-linecap="round">
+    <path d="M160 840V330"/><path d="M640 840V250"/><path d="M400 840V560"/>
+  </g>
+  <!-- câbles de tension -->
+  <g stroke="#a7adb4" stroke-width="2" stroke-dasharray="6 6">
+    <path d="M160 330L70 840"/><path d="M640 250L740 840"/>
+  </g>
+  <!-- membrane : double courbure -->
+  <path d="M160 330 C 300 470, 500 300, 640 250 C 590 400, 520 520, 400 560 C 300 520, 220 440, 160 330 Z" fill="#f3911b" fill-opacity=".18" stroke="#f3911b" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#f3911b" stroke-opacity=".55" stroke-width="1.5" fill="none">
+    <path d="M190 365 C 320 470, 500 330, 615 285"/>
+    <path d="M230 405 C 340 480, 490 380, 585 330"/>
+    <path d="M275 450 C 360 495, 470 430, 548 385"/>
+    <path d="M325 495 C 380 515, 440 480, 495 450"/>
+    <path d="M280 360 C 300 430, 340 500, 400 560"/>
+    <path d="M420 330 C 430 420, 420 500, 400 560"/>
+    <path d="M540 285 C 520 380, 470 470, 400 560"/>
+  </g>
+  <!-- points d'ancrage -->
+  <g fill="#fbbb10"><circle cx="160" cy="330" r="9"/><circle cx="640" cy="250" r="9"/><circle cx="400" cy="560" r="9"/></g>
+  <!-- cotes -->
+  <g fill="#a7adb4" font-family="IBM Plex Sans, sans-serif" font-size="22">
+    <text x="60" y="910">MEMBRANE TENDUE · DOUBLE COURBURE</text>
+    <text x="60" y="945" fill="#f3911b">Étude · fabrication · montage Franck S.A.</text>
+  </g>
+</svg>
