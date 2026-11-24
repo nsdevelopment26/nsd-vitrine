@@ -4892,8 +4892,47 @@ var NSDocs = (function () {
 
   // ------------------------------------------------------------------ devis
   // signataire : 'Sam' ou 'Nelson'. Un devis numéroté porte le cachet et la signature de NS Development.
+  // Tous les devis au format de Mélodie (Nelson, 24/11/2026) : un devis « un site » (formule, options,
+  // maintenance cochée) est traduit, au moment du PDF seulement, en lignes de devis complet. Les lignes
+  // enregistrées ne changent pas : factures, contrat et suivi lisent toujours les mêmes données.
+  function versComplet(d, lignes, c) {
+    const a = analyser(lignes, c), L = [], taux = Number(d.tva_taux) || 0;
+    const ligne = (partie, role, titre, desc, q, pu, mt) => L.push({ designation: etiqueter(partie, role, titre, desc), quantite: q, prix_unitaire_ht: pu, montant_ht: mt, ordre: L.length });
+    const fois = q => String(q).replace('.', ',');
+    ligne('creation', 'intro', 'Création du site | payé une fois', '', 0, 0, 0);
+    // Le prix enregistré de la ligne fait foi (pas celui du catalogue).
+    lignes.forEach(l => {
+      if (estFrais(l) || estGeste(l) || estMaintenance(l)) return;
+      const q = Number(l.quantite) || 1, pu = Number(l.prix_unitaire_ht) || 0, mt = Number(l.montant_ht) || 0;
+      const f = C.FORMULES.find(x => cleNom(x.n) === cleNom(l.designation));
+      if (f && a.formule === f.n) {
+        const inc = optionsIncluses(f.n);
+        return ligne('creation', '', 'Site · formule ' + f.n, f.desc + (inc.length ? '\nCompris dans la formule : ' + inc.join(' · ') + '.' : ''), q, pu, mt);
+      }
+      const o = C.OPTIONS.find(x => cleNom(x.n) === cleNom(l.designation));
+      if (q !== 1) return ligne('creation', '', (o ? o.n : l.designation) + ' (× ' + fois(q) + ')', fois(q) + ' × ' + eur(pu) + ' € HT', q, pu, mt);
+      ligne('creation', '', o ? o.n : l.designation, '', q, pu, mt);
+    });
+    if (a.geste) ligne('creation', 'remise', 'Geste commercial : ' + String(a.geste.pct).replace('.', ',') + ' % sur la création', '', 1, a.geste.montant, a.geste.montant);
+    const m = a.mtn;
+    if (m) {
+      // Un ancien devis trimestriel reste lu tel qu'il a été signé (3 mois) ; les nouveaux sont tous à l'année.
+      ligne('maintenance', 'intro', C.PREFIXE_MTN + ' | ' + (m.annuel ? 'par an, engagement 12 mois' : 'par trimestre, engagement 12 mois'),
+        m.annuel ? 'Payable à l’année (11 mois payés sur 12).' : 'Payable au trimestre.', m.annuel ? 12 : 3, 0, 0);
+      const sup = m.annuel ? C.MODULE.an : C.MODULE.trim;
+      ligne('maintenance', '', m.cat ? 'Maintenance ' + m.cat + (m.modules ? ' · + ' + m.modules + ' module' + (m.modules > 1 ? 's' : '') + ' (' + sup + ' € chacun)' : '') : 'Maintenance · forfait convenu',
+        'Compris : ' + C.INCLUS.charAt(0).toLowerCase() + C.INCLUS.slice(1) + (m.modules ? '\nChaque module ajouté en option se surveille et se sauvegarde.' : ''), 1, m.montant, m.montant);
+      a.recurrentes.forEach(r => ligne('maintenance', '', r.libelle.replace(/\s*·\s*(annuelle|trimestrielle)$/, ''), '', 1, r.montant, r.montant));
+    }
+    // Modalités : les notes du devis, les frais hors forfait, puis les règles habituelles.
+    const moda = String(d.notes || '').split('\n').map(x => x.trim()).filter(Boolean);
+    moda.push('Frais hors forfait : ' + (a.frais.length ? a.frais.map(f => f.libelle + (f.pu ? ' (' + eur(f.pu) + ' € HT)' : ' (sur devis)')).join(', ') + '. ' : '') + C.FRAIS_MENTION);
+    modalitesDefaut({}).forEach(x => moda.push(x.id === 'cgv' && taux !== 17 ? 'Prix hors taxes. Conditions générales de vente de NS Development applicables.' : x.texte));
+    return { d: Object.assign({}, d, { notes: moda.join('\n') }), lignes: L };
+  }
   function docDevisHTML(d, lignes, c, signataire) {
     if (estComplet(lignes)) return docDevisCompletHTML(d, lignes, c, signataire);
+    if ((lignes || []).length) { const v = versComplet(d, lignes, c || {}); return docDevisCompletHTML(v.d, v.lignes, c, signataire); }
     const E = EMETTEUR();
     const num = d.numero || 'Brouillon';
     const taux = Number(d.tva_taux) || 0;
@@ -5689,7 +5728,7 @@ const Factu = (() => {
   // ------------------------------------------------------------------ devis : composition
   // Même déroulé que le devis validé : 1 formule, 2 options, 3 maintenance
   // (obligatoire), 4 décompte avec acompte et solde.
-  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: false, frais: [], geste: 0, rec: {} };
+  const D = { prospect: null, clientId: '', base: null, opts: {}, lignes: [], mtnCat: null, annuel: true, frais: [], geste: 0, rec: {} };
   // L'heure hors forfait est annoncée sur chaque devis (grille du 30/09/2026), Sam peut la retirer.
   const FRAIS_DEFAUT = () => [{ designation: 'Heure de travail hors forfait, au-delà de l’heure de petites modifications comprise chaque trimestre', pu: NSDocs.CATALOGUE.TAUX_HORAIRE }];
   const nbModules = () => NSDocs.modulesVendus(D.opts, D.base).length;
@@ -5801,12 +5840,12 @@ const Factu = (() => {
   function nouveauDevis(prospect, edit) {
     if (!F.session) { S.vue = 'factu'; fermerFiche(); rendre(); return toast('Connecte-toi d’abord à la facturation.', true); }
     D.prospect = prospect || null; D.clientId = prospect && prospect.client ? prospect.client : '';
-    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = false; D.frais = FRAIS_DEFAUT(); D.geste = 0; D.rec = {}; D.editId = null;
+    D.base = null; D.opts = {}; D.lignes = []; D.mtnCat = null; D.annuel = true; // Maintenance à l'année seulement (Nelson, 24/11/2026) D.frais = FRAIS_DEFAUT(); D.geste = 0; D.rec = {}; D.editId = null;
     if (edit) {
       const a = edit.a; D.prospect = null; D.editId = edit.devis.id; D.clientId = edit.devis.client_id;
       D.base = a.formule; D.opts = Object.assign({}, a.options);
       D.lignes = a.libres.map(l => ({ designation: l.designation, quantite: Number(l.quantite) || 0, pu: Number(l.prix_unitaire_ht) || 0 }));
-      D.mtnCat = a.mtn && a.mtn.cat ? a.mtn.cat : (a.formule ? catDe(a.formule) : null); D.annuel = !!(a.mtn && a.mtn.annuel);
+      D.mtnCat = a.mtn && a.mtn.cat ? a.mtn.cat : (a.formule ? catDe(a.formule) : null); D.annuel = true; // plus de trimestre (24/11/2026) : un ancien devis rouvert repasse à l'année
       a.recurrentes.forEach(r => { const x = RECURRENTES.find(y => r.libelle.startsWith(y.n)); if (x) D.rec[x.id] = true; });
       D.frais = a.frais.map(f => ({ designation: f.libelle, pu: f.pu || '' }));
       D.geste = a.geste ? a.geste.pct : 0;
@@ -5878,7 +5917,7 @@ const Factu = (() => {
   const nouvelleLigne = (titre, desc, q, pu, src, offert) => ({ titre: titre || '', desc: desc || '', q: q == null ? 1 : q, pu: pu == null ? '' : pu, src: src || null, offert: !!offert });
   const PARTIES_DEF = {
     creation: { titre: 'Création', sous: 'payé une fois', intro: '' },
-    maintenance: { titre: 'Maintenance', sous: 'par an, engagement 12 mois', intro: 'Payable à l’année (11 mois payés sur 12) ou au trimestre.' },
+    maintenance: { titre: 'Maintenance', sous: 'par an, engagement 12 mois', intro: 'Payable à l’année (11 mois payés sur 12).' },
     marketing: { titre: 'Marketing et réseaux, Pack NSD 360', sous: '', intro: '' },
   };
   const DC = { editId: null, clientId: '', prospect: null, marques: [], cliente: false, shopify: false, parts: {}, creation: [], remise: { pct: 0, titre: 'Offre de lancement', desc: '' },
@@ -5939,7 +5978,7 @@ const Factu = (() => {
     if (a.creation.remise) { const r = a.creation.remise, m = /^(.*?)\s*:\s*([\d.,]+)\s*%/.exec(r.titre);
       const me = !m && /^(.*?)\s*:\s*([\d\s.,\u00a0\u202f]+)\s*€/.exec(r.titre);
       DC.remise = me ? { pct: 0, montant: -r.mt, titre: me[1], desc: r.desc } : { pct: m ? Number(m[2].replace(',', '.')) : 0, titre: m ? m[1] : r.titre, desc: r.desc }; }
-    DC.annuel = a.annuel;
+    DC.annuel = true; // plus de trimestre (24/11/2026)
     DC.maintenance = a.maintenance.lignes.map(x => { const l = vers(x);
       const cat = MAINTENANCE.find(m => x.titre.indexOf(m.cat.split(' / ').pop()) >= 0 || x.titre.indexOf(m.cat) >= 0);
       const rec = RECURRENTES.find(r => x.titre.indexOf(r.court || r.n) === 0 || (r.id === 'domaine' && /^Domaine supplémentaire/.test(x.titre)) || (r.id === 'mail' && /^Boîte mail supplémentaire/.test(x.titre)));
@@ -5977,7 +6016,7 @@ const Factu = (() => {
       else if (o) DC.creation.push(nouvelleLigne(o.court, o.n, l.quantite, o.pu));
       else DC.creation.push(nouvelleLigne(l.designation, '', l.quantite, l.prix_unitaire_ht));
     });
-    DC.annuel = !!D.annuel;
+    DC.annuel = true;
     DC.parts.maintenance.sous = DC.annuel ? 'par an, engagement 12 mois' : 'par trimestre, engagement 12 mois';
   }
   function dcOuvrir(prospect, edit, reprendre) {
@@ -6100,7 +6139,7 @@ const Factu = (() => {
     document.querySelectorAll('[data-dc-marque]').forEach(s => { const v = s.value; s.innerHTML = opts; if (DC.marques.includes(v)) s.value = v; else if (DC.marques.length) s.value = DC.marques[0]; });
     document.getElementById('dc-creation').innerHTML = DC.creation.map((l, i) => dcLigneHTML('creation', l, i)).join('') || '<div class="sous">Aucune ligne : ajoute une formule, une ligne sur mesure ou une option.</div>';
     document.getElementById('dc-maintenance').innerHTML = DC.maintenance.map((l, i) => dcLigneHTML('maintenance', l, i)).join('') || '<div class="sous">Aucune ligne : ajoute la maintenance de chaque site.</div>';
-    document.getElementById('dc-rythme').innerHTML = `<button type="button" data-fx="dc-rythme" data-v="an" class="${DC.annuel ? 'on' : ''}">À l’année<b>11 mois payés sur 12</b></button><button type="button" data-fx="dc-rythme" data-v="trim" class="${DC.annuel ? '' : 'on'}">Au trimestre<b>3 mois</b></button>`;
+    document.getElementById('dc-rythme').innerHTML = `<button type="button" data-fx="dc-rythme" data-v="an" class="on">À l’année<b>11 mois payés sur 12</b></button>`;
     const P = CP.PACK360;
     document.getElementById('dc-mkt-zone').innerHTML = DC.mktActif ? `${['marketing'].map(k => `<div class="fx-deux"><label class="champ">Titre de la partie<input data-dc-part="${k}" data-k="titre" value="${esc(DC.parts[k].titre)}"></label>
         <label class="champ">À côté du titre<input data-dc-part="${k}" data-k="sous" value="${esc(DC.parts[k].sous)}" placeholder="× 2, un par marque"></label></div>
@@ -6233,17 +6272,16 @@ const Factu = (() => {
     const inclus = NSDocs.optionsIncluses(D.base);
     document.getElementById('fx-opts').innerHTML = OPTIONS.filter(o => !o.qte).map(o => inclus.includes(o.n)
       ? `<button type="button" class="inclus" disabled aria-disabled="true">✓ ${esc(o.court)}<b>Inclus dans ${esc(D.base)}</b></button>`
-      : chip('data-fx-opt', o.n, o.court + (o.alerte ? ' ⚠' : ''), eur(o.pu) + ' €' + (o.module ? ' + ' + MODULE.trim + ' €/trim.' : '') + (o.rec ? ' + ' + eur(D.annuel ? recDe(o).an : recDe(o).trim) + (D.annuel ? ' €/an' : ' €/trim.') : ''), D.opts[o.n])).join('')
+      : chip('data-fx-opt', o.n, o.court + (o.alerte ? ' ⚠' : ''), eur(o.pu) + ' €' + (o.module ? ' + ' + MODULE.an + ' €/an' : '') + (o.rec ? ' + ' + eur(D.annuel ? recDe(o).an : recDe(o).trim) + (D.annuel ? ' €/an' : ' €/trim.') : ''), D.opts[o.n])).join('')
       + OPTIONS.filter(o => o.alerte && D.opts[o.n]).map(o => `<div class="fx-pas">⚠ ${esc(o.court)} : ${esc(o.alerte)}</div>`).join('');
-    document.getElementById('fx-mtn-cat').innerHTML = MAINTENANCE.map(m => chip('data-fx-mtn', m.cat, m.cat, eur(m.trim) + ' € / trim.', D.mtnCat === m.cat)).join('');
+    document.getElementById('fx-mtn-cat').innerHTML = MAINTENANCE.map(m => chip('data-fx-mtn', m.cat, m.cat, eur(m.an) + ' € / an', D.mtnCat === m.cat)).join('');
     const nm = nbModules();
     document.getElementById('fx-mtn-mod').innerHTML = nm
       ? `Modules en option : <b>${nm}</b> × ${eur(D.annuel ? MODULE.an : MODULE.trim)} € = <b>${eur(nm * (D.annuel ? MODULE.an : MODULE.trim))} € HT ${D.annuel ? 'par an' : 'par trimestre'}</b>, ajoutés à la maintenance.`
       : 'Aucun module en option : pas de supplément.';
     document.getElementById('fx-rec').innerHTML = RECURRENTES.filter(r => !r.lie).map(r => chip('data-fx-rec', r.id, r.court || r.n, '+ ' + eur(D.annuel ? r.an : r.trim) + ' € ' + (D.annuel ? '/ an' : '/ trim.'), D.rec[r.id])).join('');
     const m = MAINTENANCE.find(x => x.cat === D.mtnCat);
-    document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'trim', 'Trimestrielle (3 mois)', eur(m.trim) + ' € HT / trim.', !D.annuel)
-      + chip('data-fx-per', 'an', 'Annuelle (11 mois + 1 offert)', eur(m.an) + ' € HT / an · éco. ' + eur(m.trim * 4 - m.an) + ' €', D.annuel) : '<div class="sous">Choisis la formule, ou une catégorie.</div>';
+    document.getElementById('fx-mtn-per').innerHTML = m ? chip('data-fx-per', 'an', 'Annuelle (11 mois + 1 offert)', eur(m.an) + ' € HT / an · éco. ' + eur(m.trim * 4 - m.an) + ' €', D.annuel) : '<div class="sous">Choisis la formule, ou une catégorie.</div>';
     document.getElementById('fx-frais').innerHTML = D.frais.map((l, i) => `<div class="fx-frais" data-i="${i}">
       <input data-k="designation" placeholder="Ex. boîte mail supplémentaire" value="${esc(l.designation)}"><input data-k="pu" type="number" min="0" step="0.01" placeholder="Prix HT" value="${l.pu}">
       <button type="button" data-fx="suppr-frais" data-i="${i}" aria-label="Retirer">×</button></div>`).join('');
@@ -7792,7 +7830,7 @@ const Atelier = (() => {
       if (v > 0 && brut > 0) { const mt = r.type === 'eur' ? -Math.min(v, brut) : -arr(brut * v / 100);
         L.push({ designation: tag('creation', 'remise', (r.titre || 'Remise') + ' : ' + (r.type === 'eur' ? eur(v).replace(' €', '') + ' € sur la création' : String(v).replace('.', ',') + ' % sur la création'), r.type === 'eur' ? '' : ''), quantite: 1, prix_unitaire_ht: mt, montant_ht: mt }); }
     }
-    if (P.maintenance.length) { push('maintenance', 'intro', 'Maintenance | ' + (X.annuel ? 'par an, engagement 12 mois' : 'par trimestre, engagement 12 mois'), 'Payable à l’année (11 mois payés sur 12) ou au trimestre.', X.annuel ? 12 : 3, 0);
+    if (P.maintenance.length) { push('maintenance', 'intro', 'Maintenance | ' + (X.annuel ? 'par an, engagement 12 mois' : 'par trimestre, engagement 12 mois'), 'Payable à l’année (11 mois payés sur 12).', X.annuel ? 12 : 3, 0);
       P.maintenance.forEach(l => push('maintenance', '', l.titre, l.desc, l.q, l.pu, l.offert)); }
     if (P.mensuel.length || P.mensuelFixe.length) {
       const pack = Object.keys(X.sel).concat(Object.keys(X.inclus)).includes('M-360') || (X.base && X.base.id === 'M-360-MEP');
@@ -8026,7 +8064,7 @@ const Atelier = (() => {
   }
   function etape5() {
     const k = calcul(), hasMens = k.a.marketing.lignes.length > 0, hasMtn = k.a.maintenance.lignes.length > 0 || (pkg(X.pkg) || {}).maintenance;
-    return `${hasMtn ? `<div class="at-h">Maintenance</div><div class="at-chips"><button class="${X.annuel ? 'on' : ''}" data-at="x-rythme" data-v="an">À l’année<small>11 mois payés sur 12</small></button><button class="${X.annuel ? '' : 'on'}" data-at="x-rythme" data-v="trim">Au trimestre<small>engagement 12 mois</small></button>
+    return `${hasMtn ? `<div class="at-h">Maintenance</div><div class="at-chips"><button class="on" data-at="x-rythme" data-v="an">À l’année<small>11 mois payés sur 12, engagement 12 mois</small></button>
         <button class="${X.avecMtn ? '' : 'on'}" data-at="x-sansmtn">${X.avecMtn ? 'Retirer la maintenance' : 'Maintenance retirée'}<small>obligatoire pour une mise en ligne</small></button></div>` : ''}
       ${hasMens || Object.keys(X.sel).some(id => (cat(id) || {}).tarif === 'mois') ? `<div class="at-h">Services mensuels : durée de la période</div><div class="at-chips">${[1, 2, 3, 6, 12].map(n => `<button class="${X.mois === n ? 'on' : ''}" data-at="x-mois" data-v="${n}">${n} mois</button>`).join('')}</div>` : ''}
       <div class="at-h">Prestations sur mesure</div>
@@ -8259,7 +8297,7 @@ const Atelier = (() => {
     else if (at === 'x-analyser') { X.ia = analyser(X.besoin); if (!X.ia) toast('Décris d’abord le besoin.', true); dessiner(); }
     else if (at === 'x-ia-appliquer') { const ia = X.ia; if (!ia) return; if (ia.type) { X.type = ia.type; X.domaine = doms(cat(ia.type))[0]; if (!String(X.projet.desc).trim()) X.projet.desc = cat(ia.type).desc; } if (ia.pkg) appliquerPackage(ia.pkg); toast('Projet et package appliqués. Coche les prestations repérées que tu gardes.'); dessiner(); }
     else if (at === 'x-modele') chargerModele(v);
-    else if (at === 'x-rythme') { X.annuel = v === 'an'; dessiner(); }
+    else if (at === 'x-rythme') { X.annuel = true; dessiner(); } // plus de trimestre (Nelson, 24/11/2026)
     else if (at === 'x-sansmtn') { X.avecMtn = !X.avecMtn; dessiner(); }
     else if (at === 'x-mois') { X.mois = Number(v); dessiner(); }
     else if (at === 'x-libre') { const pre = { urgence: ['Supplément urgence', 'Délai raccourci : réalisation prioritaire.'], deplacement: ['Déplacement', 'Déplacement chez le client.'], frais: ['Frais exceptionnels', ''] }[v] || ['', ''];
